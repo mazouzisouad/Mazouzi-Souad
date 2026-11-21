@@ -29,6 +29,15 @@ puis, sur le téléphone, « Ajouter à l'écran d'accueil » pour l'utiliser co
 Pour essayer : **Paramètres → Charger des données de démonstration**.
 Ensuite, dans Paramètres : « Mon auto-école » (nom, SIRET, TVA… pour les factures), vos agences et vos moniteurs.
 
+## Contrats et signature électronique
+
+- **Paramètres → Contrats** : modèles de contrat avec des champs automatiques (nom, adresse, NEPH, agence, tarifs…).
+  Le modèle fourni est indicatif : vérifiez-le ou collez le texte de votre contrat habituel.
+- **Fiche élève → Contrats → Nouveau contrat** : le contrat est rempli tout seul, modifiable avant signature.
+- **Faire signer** : l'élève (ou son représentant légal) coche « lu et approuvé » et signe au doigt sur le téléphone / la tablette.
+  La signature de l'auto-école est enregistrée une fois puis ajoutée automatiquement.
+- Le contrat signé (date et heure de signature) est envoyé en PDF par e-mail, WhatsApp…
+
 ## Places d'examen réservées
 
 Dès la réservation sur RdvPermis, l'agence place l'examen au planning avec le **nombre de places réservées**

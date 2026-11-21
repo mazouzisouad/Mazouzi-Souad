@@ -95,6 +95,8 @@ function defaultState() {
       { id: uid(), libelle: 'Forfait 20h A2', prix: 950 },
       { id: uid(), libelle: 'Formation passerelle A2 → A (7h)', prix: 350 },
     ],
+    modeles: modelesParDefaut(),
+    contrats: [],
     eleves: [],
     seances: [],
     factures: [],
@@ -126,7 +128,8 @@ function migrate(db) {
   db.settings = Object.assign({}, def.settings, db.settings || {});
   for (const k of ['capacite', 'tarifHeure', 'tarifExamen', 'dureeDefaut']) db.settings[k] = Object.assign({}, def.settings[k], db.settings[k] || {});
   db.entreprise = Object.assign({}, def.entreprise, db.entreprise || {});
-  for (const k of ['agences', 'moniteurs', 'prestations', 'eleves', 'seances', 'factures', 'paiements']) db[k] = db[k] || [];
+  for (const k of ['agences', 'moniteurs', 'prestations', 'eleves', 'seances', 'factures', 'paiements', 'contrats']) db[k] = db[k] || [];
+  if (!Array.isArray(db.modeles)) db.modeles = modelesParDefaut();
   if (!db.agences.length) db.agences = def.agences;
   for (const e of db.eleves) if (!STATUTS_ELEVE[e.statut]) e.statut = 'en_cours';
   return db;
@@ -918,6 +921,8 @@ function viewFiche(id) {
       </div>
       <h3>Factures</h3>${factures.length ? facturesTable(factures, false) : '<p class="muted">Aucune facture.</p>'}
       <h3 style="margin-top:14px">Paiements</h3>${paiements.length ? paiementsTable(paiements, false) : '<p class="muted">Aucun paiement.</p>'}`;
+  } else if (o === 'contrats') {
+    contenu = viewContratsEleve(id);
   } else {
     contenu = `<dl class="kv">
       <dt>Agence</dt><dd>${esc(a?.nom || '—')}</dd>
@@ -927,6 +932,7 @@ function viewFiche(id) {
       <dt>Adresse</dt><dd>${esc([e.adresse, [e.cp, e.ville].filter(Boolean).join(' ')].filter(Boolean).join(', ') || '—')}</dd>
       <dt>Naissance</dt><dd>${e.naissance ? fmtDate(e.naissance) : '—'}</dd>
       <dt>N° NEPH</dt><dd>${esc(e.neph || '—')}</dd>
+      <dt>Heures prévues</dt><dd>${e.heuresPrevues ? esc(e.heuresPrevues) + ' h' : '—'}</dd>
       <dt>Code obtenu le</dt><dd>${e.code ? fmtDate(e.code) : '—'}</dd>
       <dt>Statut</dt><dd>${esc(STATUTS_ELEVE[e.statut] || '')}</dd>
       <dt>Notes</dt><dd>${esc(e.notes || '—').replace(/\n/g, '<br>')}</dd>
@@ -961,6 +967,7 @@ function viewFiche(id) {
     <div class="seg" style="margin:14px 0 12px">
       <button class="${o === 'lecons' ? 'on' : ''}" data-action="ongletFiche" data-o="lecons">Leçons</button>
       <button class="${o === 'compte' ? 'on' : ''}" data-action="ongletFiche" data-o="compte">Compte</button>
+      <button class="${o === 'contrats' ? 'on' : ''}" data-action="ongletFiche" data-o="contrats">Contrats ${DB.contrats.some((c) => c.eleveId === id && c.statut !== 'signe') ? '<span class="count">!</span>' : ''}</button>
       <button class="${o === 'infos' ? 'on' : ''}" data-action="ongletFiche" data-o="infos">Infos</button>
     </div>
     ${contenu}
@@ -991,6 +998,7 @@ function openEleve(eleve, { onSaved, onCancel } = {}) {
           <label class="field"><span>Date de naissance</span><input name="naissance" type="date" value="${esc(e.naissance || '')}"></label>
           <label class="field"><span>N° NEPH</span><input name="neph" value="${esc(e.neph || '')}"></label>
           <label class="field"><span>Code obtenu le</span><input name="code" type="date" value="${esc(e.code || '')}"></label>
+          <label class="field"><span>Heures prévues (évaluation)</span><input name="heuresPrevues" type="number" min="0" value="${esc(e.heuresPrevues || '')}"></label>
           <label class="field"><span>Statut</span>
             <select name="statut">${Object.entries(STATUTS_ELEVE).map(([k, l]) => `<option value="${k}" ${(e.statut || 'en_cours') === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
           <label class="field full"><span>Notes</span><textarea name="notes">${esc(e.notes || '')}</textarea></label>
@@ -1599,6 +1607,7 @@ function viewParametres() {
       </form>
       <div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn primary" data-action="saveSettings">Enregistrer</button></div>
     </div>
+    ${viewParamContrats()}
     <div class="card">
       <h2>Prestations (pour les factures)</h2>
       ${DB.prestations.map((p) => ligne(`<span class="name">${esc(p.libelle)}</span><strong>${eur(p.prix)}</strong>`, 'editPrestation', p.id)).join('')}
@@ -1831,8 +1840,8 @@ const ACTIONS = {
   backEleves() { UI.eleveOuvert = null; render(); },
   deleteEleve(d) {
     const id = d.id;
-    if (DB.factures.some((f) => f.eleveId === id) || DB.paiements.some((p) => p.eleveId === id)) {
-      return toast('Cet élève a des factures ou paiements : mettez-le plutôt en « Permis obtenu » ou « Abandon ».', true);
+    if (DB.factures.some((f) => f.eleveId === id) || DB.paiements.some((p) => p.eleveId === id) || DB.contrats.some((c) => c.eleveId === id && c.statut === 'signe')) {
+      return toast('Cet élève a des factures, paiements ou un contrat signé : mettez-le plutôt en « Permis obtenu » ou « Abandon ».', true);
     }
     if (!confirm('Supprimer cet élève et le retirer de ses leçons ?')) return;
     DB.eleves = DB.eleves.filter((e) => e.id !== id);
@@ -2045,6 +2054,8 @@ const ACTIONS = {
     DB = defaultState(); save(); go('planning'); toast('Données effacées');
   },
 };
+
+Object.assign(ACTIONS, CONTRAT_ACTIONS);
 
 /* ---------------------------------------------------------------------
    Synchronisation en ligne

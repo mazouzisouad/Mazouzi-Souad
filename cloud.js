@@ -10,13 +10,13 @@
    Organisation dans Firestore :
      ecole/config     → paramètres, auto-école, agences, moniteurs, prestations
      ecole/compteur   → dernier numéro de facture (protégé contre les doublons)
-     eleves/{id}, seances/{id}, factures/{id}, paiements/{id}
+     eleves/{id}, seances/{id}, factures/{id}, paiements/{id}, contrats/{id}
    ===================================================================== */
 'use strict';
 
 const CLOUD_CFG_KEY = 'motoplanning_firebase';
-const CLOUD_COLLS = ['eleves', 'seances', 'factures', 'paiements'];
-const CLOUD_CONFIG_KEYS = ['version', 'settings', 'entreprise', 'agences', 'moniteurs', 'prestations'];
+const CLOUD_COLLS = ['eleves', 'seances', 'factures', 'paiements', 'contrats'];
+const CLOUD_CONFIG_KEYS = ['version', 'settings', 'entreprise', 'agences', 'moniteurs', 'prestations', 'modeles'];
 
 // JSON avec clés triées : sert à comparer local / en ligne sans faux écarts
 function stableStringify(v) {
@@ -100,8 +100,9 @@ const Cloud = {
     this.unsubs = [];
     this.ready = false;
     this.empty = false;
-    this.remote = { config: null, compteur: 0, eleves: new Map(), seances: new Map(), factures: new Map(), paiements: new Map() };
-    this.synced = { config: null, eleves: new Map(), seances: new Map(), factures: new Map(), paiements: new Map() };
+    this.remote = { config: null, compteur: 0 };
+    this.synced = { config: null };
+    for (const c of CLOUD_COLLS) { this.remote[c] = new Map(); this.synced[c] = new Map(); }
   },
 
   subscribe() {
