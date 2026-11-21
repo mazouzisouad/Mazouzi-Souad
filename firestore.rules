@@ -40,6 +40,13 @@ service cloud.firestore {
     match /eleves_planning/{id} {
       allow read: if moniteur();
     }
+    // Fiche de suivi : tous les moniteurs la lisent, chacun écrit / modifie ses propres commentaires
+    match /suivi/{id} {
+      allow read: if moniteur();
+      allow create: if moniteur() && request.resource.data.auteur == email();
+      allow update: if moniteur() && resource.data.auteur == email() && request.resource.data.auteur == email();
+      allow delete: if moniteur() && resource.data.auteur == email();
+    }
     match /seances/{id} {
       allow read: if moniteur() && resource.data.moniteurId == monId();
       allow update: if moniteur()

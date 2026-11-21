@@ -50,6 +50,13 @@ Un clic par élève envoie (SMS, WhatsApp ou e-mail) un message complet : date, 
 L'appli retient qui a été prévenu. Réglages : Paramètres → Rappels d'examen ; heure / lieu du rendez-vous
 modifiables pour chaque examen.
 
+## Fiche de suivi
+
+Pour chaque élève, un historique de suivi pédagogique : après une leçon, le moniteur (ou la direction) choisit
+un avis en 1 clic (😊 Bien / 😐 Moyen / 😟 À revoir), coche les points travaillés (plateau ou circulation)
+et ajoute un commentaire. Depuis le planning (bouton « 📋 Suivi » à côté de chaque élève) ou la fiche élève
+(onglet « 📋 Suivi »). Les moniteurs lisent tout le suivi et modifient seulement leurs propres commentaires.
+
 ## Places d'examen réservées
 
 Dès la réservation sur RdvPermis, l'agence place l'examen au planning avec le **nombre de places réservées**

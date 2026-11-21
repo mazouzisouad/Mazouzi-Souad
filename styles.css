@@ -290,3 +290,24 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
 .user-chip { margin-left: auto; display: flex; align-items: center; gap: 8px; color: #cbd5e1; }
 .user-chip .btn { background: transparent; color: #e2e8f0; border-color: #475569; }
 @media (max-width: 640px) { .user-chip span { display: none; } .user-chip { position: absolute; right: 8px; top: 6px; } .topbar { padding-top: 40px; } }
+
+/* ---------- Fiche de suivi ---------- */
+.avis-choix { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.avis-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 6px;
+  border: 2px solid var(--line); border-radius: 12px; background: #fff; cursor: pointer; font: inherit; font-size: 26px;
+}
+.avis-btn span { font-size: 13px; font-weight: 600; color: var(--muted); }
+.avis-btn.on { border-color: var(--primary); background: #fff7ed; }
+.avis-btn.on span { color: var(--ink); }
+.tags-choix { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 10px; }
+.tag-btn { border: 1px solid #cbd5e1; background: #fff; border-radius: 999px; padding: 6px 11px; font: inherit; font-size: 13px; cursor: pointer; }
+.tag-btn.on { background: #1e293b; border-color: #1e293b; color: #fff; }
+.small-seg button { padding: 4px 10px; font-size: 13px; }
+.suivi-liste { display: flex; flex-direction: column; gap: 8px; }
+.suivi-item { border: 1px solid var(--line); border-left: 4px solid #94a3b8; border-radius: 10px; padding: 10px 12px; background: #fff; }
+.suivi-item.ok { border-left-color: var(--ok); }
+.suivi-item.warn { border-left-color: var(--warn); }
+.suivi-item.bad { border-left-color: var(--bad); }
+.suivi-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.suivi-texte-lu { margin-top: 6px; font-size: 14px; }

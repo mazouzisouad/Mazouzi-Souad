@@ -24,7 +24,7 @@
 'use strict';
 
 const CLOUD_CFG_KEY = 'motoplanning_firebase';
-const CLOUD_COLLS = ['eleves', 'seances', 'factures', 'paiements', 'contrats'];
+const CLOUD_COLLS = ['eleves', 'seances', 'factures', 'paiements', 'contrats', 'suivi'];
 const CLOUD_CONFIG_KEYS = ['version', 'settings', 'entreprise', 'agences', 'moniteurs', 'prestations', 'modeles'];
 
 // JSON avec clés triées : sert à comparer local / en ligne sans faux écarts
@@ -185,7 +185,7 @@ const Cloud = {
 
   subscribe() {
     const admin = this.role === 'admin';
-    const attendus = new Set(admin ? ['config', 'compteur', 'public', 'roles', 'eleves_planning', ...CLOUD_COLLS] : ['public', 'eleves_planning', 'seances']);
+    const attendus = new Set(admin ? ['config', 'compteur', 'public', 'roles', 'eleves_planning', ...CLOUD_COLLS] : ['public', 'eleves_planning', 'seances', 'suivi']);
     const recu = (k) => {
       attendus.delete(k);
       if (attendus.size) return;
@@ -224,6 +224,7 @@ const Cloud = {
       for (const c of CLOUD_COLLS) coll(c);
     } else {
       coll('seances', this.fs.collection('seances').where('moniteurId', '==', this.monId));
+      coll('suivi'); // fiche de suivi : lue par tous les moniteurs, chacun écrit les siens
       // Si la direction retire l'accès, l'appli se ferme aussitôt
       const email = (this.user.email || '').toLowerCase();
       this.unsubs.push(this.fs.collection('ecole').doc('roles').onSnapshot((d) => {
@@ -253,6 +254,7 @@ const Cloud = {
         agences: clean(pub.agences || []),
         moniteurs: clean(pub.moniteurs || []),
         prestations: [], modeles: [], factures: [], paiements: [], contrats: [],
+        suivi: [...this.remote.suivi.values()].map(clean),
         eleves: [...this.remote.eleves_planning.values()].map(clean),
         seances: [...this.remote.seances.values()].map(clean),
       };
@@ -297,6 +299,18 @@ const Cloud = {
         if (!this.synced.seances.has(item.id)) continue;
         const s = stableStringify(clean(item));
         if (this.synced.seances.get(item.id) !== s) { ops.push(['update', this.fs.collection('seances').doc(item.id), { eleves: clean(item.eleves) }]); this.synced.seances.set(item.id, s); }
+      }
+      // … et ses propres commentaires de suivi
+      const moi = (this.user.email || '').toLowerCase();
+      const ids = new Set();
+      for (const item of db.suivi || []) {
+        if (item.auteur !== moi) continue;
+        ids.add(item.id);
+        const s = stableStringify(clean(item));
+        if (this.synced.suivi.get(item.id) !== s) { ops.push(['set', this.fs.collection('suivi').doc(item.id), clean(item)]); this.synced.suivi.set(item.id, s); }
+      }
+      for (const [id, s] of [...this.synced.suivi.entries()]) {
+        if (!ids.has(id) && JSON.parse(s).auteur === moi) { ops.push(['delete', this.fs.collection('suivi').doc(id)]); this.synced.suivi.delete(id); }
       }
     } else {
       const cfg = {};

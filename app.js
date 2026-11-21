@@ -100,6 +100,7 @@ function defaultState() {
     ],
     modeles: modelesParDefaut(),
     contrats: [],
+    suivi: [],
     eleves: [],
     seances: [],
     factures: [],
@@ -137,7 +138,7 @@ function migrate(db) {
   for (const k of ['capacite', 'tarifHeure', 'tarifExamen', 'fraisRepassage', 'heuresPrepa', 'dureeDefaut', 'rappel']) db.settings[k] = Object.assign({}, def.settings[k], db.settings[k] || {});
   db.settings.rappel.documents = Object.assign({}, def.settings.rappel.documents, db.settings.rappel.documents || {});
   db.entreprise = Object.assign({}, def.entreprise, db.entreprise || {});
-  for (const k of ['agences', 'moniteurs', 'prestations', 'eleves', 'seances', 'factures', 'paiements', 'contrats']) db[k] = db[k] || [];
+  for (const k of ['agences', 'moniteurs', 'prestations', 'eleves', 'seances', 'factures', 'paiements', 'contrats', 'suivi']) db[k] = db[k] || [];
   if (!Array.isArray(db.modeles)) db.modeles = modelesParDefaut();
   else majModelesFournis(db.modeles);
   if (!db.agences.length) db.agences = def.agences;
@@ -653,6 +654,7 @@ function openSeanceMoniteur(s) {
     body: `
       <p><strong>${s.debut} – ${s.fin}</strong>${s.lieu ? ` · 📍 ${esc(s.lieu)}` : ''}${exam && (s.rdvHeure || s.rdvLieu) ? `<br><span class="small muted">RDV élèves : ${esc(s.rdvHeure || '')} ${esc(s.rdvLieu || '')}</span>` : ''}</p>
       <div class="lbl">Élèves (${s.eleves.length})</div>
+      <p class="muted small" style="margin:-2px 0 8px">Notez la présence, puis « 📋 Suivi » pour donner votre avis sur la leçon.</p>
       <div class="chips">
         ${s.eleves.length ? s.eleves.map((p, i) => {
           const e = byId('eleves', p.eleveId);
@@ -664,6 +666,7 @@ function openSeanceMoniteur(s) {
             <select data-presence-i="${i}" class="presence ${p.statut}">
               ${Object.entries(statutsPour(s.type)).map(([k, l]) => `<option value="${k}" ${p.statut === k ? 'selected' : ''}>${l}</option>`).join('')}
             </select>
+            <button class="btn small" data-action="suiviDepuisSeance" data-eleve="${p.eleveId}" title="Fiche de suivi">📋 Suivi</button>
           </div>`;
         }).join('') : '<div class="muted small">Aucun élève inscrit.</div>'}
       </div>`,
@@ -795,6 +798,7 @@ function refreshDraft() {
       <select data-on-change="setPresence" data-i="${i}" class="presence ${p.statut}">
         ${Object.entries(statutsPour(draft.type)).map(([k, l]) => `<option value="${k}" ${p.statut === k ? 'selected' : ''}>${l}</option>`).join('')}
       </select>
+      ${draft.id ? `<button class="btn small" data-action="suiviDepuisSeance" data-eleve="${p.eleveId}" title="Fiche de suivi">📋 Suivi</button>` : ''}
       <button class="btn small ghost" data-action="removeEleve" data-i="${i}" title="Retirer">✕</button>
     </div>`;
   }).join('') : '<div class="muted small">Aucun élève pour l\'instant.</div>';
@@ -993,6 +997,8 @@ function viewFiche(id) {
       </div>
       <h3>Factures</h3>${factures.length ? facturesTable(factures, false) : '<p class="muted">Aucune facture.</p>'}
       <h3 style="margin-top:14px">Paiements</h3>${paiements.length ? paiementsTable(paiements, false) : '<p class="muted">Aucun paiement.</p>'}`;
+  } else if (o === 'suivi') {
+    contenu = viewSuiviEleve(id);
   } else if (o === 'contrats') {
     contenu = viewContratsEleve(id);
   } else {
@@ -1038,6 +1044,7 @@ function viewFiche(id) {
     </div>
     <div class="seg" style="margin:14px 0 12px">
       <button class="${o === 'lecons' ? 'on' : ''}" data-action="ongletFiche" data-o="lecons">Leçons</button>
+      <button class="${o === 'suivi' ? 'on' : ''}" data-action="ongletFiche" data-o="suivi">📋 Suivi ${(DB.suivi || []).some((x) => x.eleveId === id) ? `<span class="muted small">(${DB.suivi.filter((x) => x.eleveId === id).length})</span>` : ''}</button>
       <button class="${o === 'compte' ? 'on' : ''}" data-action="ongletFiche" data-o="compte">Compte</button>
       <button class="${o === 'contrats' ? 'on' : ''}" data-action="ongletFiche" data-o="contrats">Contrats ${DB.contrats.some((c) => c.eleveId === id && c.statut !== 'signe') ? '<span class="count">!</span>' : ''}</button>
       <button class="${o === 'infos' ? 'on' : ''}" data-action="ongletFiche" data-o="infos">Infos</button>
@@ -1885,6 +1892,20 @@ const ACTIONS = {
     openSeance({ type, date: d.date, debut: d.t, fin: fromMin(toMin(d.t) + dur), moniteurId: d.mon, lieu: '', eleves: [] });
   },
   editSeance(d) { const s = byId('seances', d.id); if (s) (estMoniteur() ? openSeanceMoniteur(s) : openSeance(s)); },
+  suiviDepuisSeance(d) {
+    if (estMoniteur()) {
+      const s = byId('seances', draft.id);
+      $$('[data-presence-i]').forEach((el) => { draft.eleves[+el.dataset.presenceI].statut = el.value; });
+      if (s && JSON.stringify(s.eleves) !== JSON.stringify(draft.eleves)) { s.eleves = draft.eleves; save(); }
+    } else {
+      readDraft();
+      const { errors } = seanceConflicts(draft);
+      if (errors.length) { refreshDraft(); return toast(errors[0], true); }
+      Object.assign(byId('seances', draft.id), JSON.parse(JSON.stringify(draft)));
+      save(); render();
+    }
+    ACTIONS.openSuivi({ eleve: d.eleve, seance: draft.id }, null, { stopPropagation() {} });
+  },
   saveSeanceMoniteur() {
     const s = byId('seances', draft.id);
     if (!s) return closeModal();
@@ -2260,7 +2281,7 @@ const ACTIONS = {
   },
 };
 
-Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS);
+Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS, SUIVI_ACTIONS);
 
 /* ---------------------------------------------------------------------
    Synchronisation en ligne
