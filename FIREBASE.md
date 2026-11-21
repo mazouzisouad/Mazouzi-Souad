@@ -20,8 +20,9 @@ sur ordinateur et téléphone. Il utilise Firebase (service de Google, gratuit p
 
 1. Menu de gauche : **Créer → Authentication** → **Commencer**.
 2. Onglet **Méthode de connexion** → **Adresse e-mail/Mot de passe** → Activer → Enregistrer.
-3. Onglet **Utilisateurs** → **Ajouter un utilisateur** : créez un compte pour chaque agence et chaque moniteur
-   (les mêmes e-mails que dans les règles), avec un mot de passe.
+3. Onglet **Utilisateurs** → **Ajouter un utilisateur** : créez le compte des **propriétaires** (les e-mails écrits
+   dans les règles). Les autres accès (moniteurs, secrétariat) se créent ensuite directement dans l'appli :
+   **Paramètres → Accès à l'appli**.
 4. Onglet **Paramètres → Domaines autorisés** : ajoutez l'adresse où l'appli sera en ligne
    (par exemple `mazouzisouad.github.io`).
 

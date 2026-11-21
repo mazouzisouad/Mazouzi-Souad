@@ -1,22 +1,51 @@
 rules_version = '2';
 
 // Règles de sécurité du planning partagé.
-// Seules les personnes dont l'e-mail est dans la liste peuvent lire et modifier les données.
-// → Remplacez les e-mails d'exemple par ceux de vos agences et de vos moniteurs.
+//
+// - Propriétaires (liste ci-dessous) : accès complet, toujours.
+// - Autres comptes « direction / secrétariat » et moniteurs : se gèrent dans l'appli
+//   (Paramètres → Accès à l'appli), sans retoucher ces règles.
+// - Un moniteur ne voit que SES séances, le nom / téléphone des élèves et la liste des
+//   auto-écoles et moniteurs. Il peut seulement noter présences et résultats.
+//   Paiements, factures, contrats, fiches complètes et paramètres lui sont interdits.
+//
+// → Remplacez les e-mails d'exemple par ceux des propriétaires.
 service cloud.firestore {
   match /databases/{database}/documents {
-    function autorise() {
-      return request.auth != null
-        && request.auth.token.email in [
-          'direction@exemple.fr',
-          'agence1@exemple.fr',
-          'agence2@exemple.fr',
-          'moniteur1@exemple.fr',
-          'moniteur2@exemple.fr'
-        ];
+    function connecte() { return request.auth != null && request.auth.token.email != null; }
+    function email() { return request.auth.token.email.lower(); }
+    function proprietaire() {
+      return connecte() && email() in [
+        'proprietaire1@exemple.fr',
+        'proprietaire2@exemple.fr'
+      ];
     }
+    function rolesExistent() { return exists(/databases/$(database)/documents/ecole/roles); }
+    function roles() { return get(/databases/$(database)/documents/ecole/roles).data; }
+    function admin() { return proprietaire() || (connecte() && rolesExistent() && email() in roles().admins); }
+    function moniteur() { return connecte() && rolesExistent() && email() in roles().moniteurs; }
+    function monId() { return roles().moniteurIds[email()]; }
+
+    // Direction : tout
     match /{document=**} {
-      allow read, write: if autorise();
+      allow read, write: if admin();
+    }
+    // Moniteurs : le strict nécessaire pour leur planning
+    match /ecole/roles {
+      allow read: if moniteur();
+    }
+    match /ecole/public {
+      allow read: if moniteur();
+    }
+    match /eleves_planning/{id} {
+      allow read: if moniteur();
+    }
+    match /seances/{id} {
+      allow read: if moniteur() && resource.data.moniteurId == monId();
+      allow update: if moniteur()
+        && resource.data.moniteurId == monId()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['eleves'])
+        && request.resource.data.eleves.size() == resource.data.eleves.size();
     }
   }
 }

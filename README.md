@@ -61,7 +61,11 @@ Dès la réservation sur RdvPermis, l'agence place l'examen au planning avec le 
 Pour que les agences et les moniteurs voient **le même planning en direct**, l'appli utilise Firebase
 (gratuit). Mise en place pas à pas : voir **[FIREBASE.md](FIREBASE.md)**.
 
-- Connexion par e-mail + mot de passe ; seuls les e-mails listés dans `firestore.rules` ont accès.
+- Connexion par e-mail + mot de passe. Deux niveaux d'accès, protégés par les règles Firebase :
+  **direction / secrétariat** (tout) et **moniteur** (uniquement son planning : élèves, présences, résultats —
+  ni paiements, ni factures, ni contrats, ni fiches, ni paramètres).
+- Les accès se donnent et se retirent dans l'appli : **Paramètres → Accès à l'appli** (création du compte comprise).
+- Se déconnecter efface les données gardées sur l'appareil.
 - Fonctionne hors connexion : les changements partent dès que le réseau revient.
 - Numéros de facture sans doublon, même si deux agences facturent au même moment.
 

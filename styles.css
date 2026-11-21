@@ -285,3 +285,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
 
 /* ---------- Rappels ---------- */
 .card.rappel.envoye { background: #f0fdf4; border-color: #bbf7d0; }
+
+/* ---------- Utilisateur connecté ---------- */
+.user-chip { margin-left: auto; display: flex; align-items: center; gap: 8px; color: #cbd5e1; }
+.user-chip .btn { background: transparent; color: #e2e8f0; border-color: #475569; }
+@media (max-width: 640px) { .user-chip span { display: none; } .user-chip { position: absolute; right: 8px; top: 6px; } .topbar { padding-top: 40px; } }

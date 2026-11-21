@@ -7,9 +7,18 @@
    - Fonctionne aussi hors connexion : les changements partent dès
      que le réseau revient.
 
+   Deux niveaux d'accès (protégés par les règles Firebase) :
+     - direction / secrétariat : tout ;
+     - moniteur : uniquement SES séances, le nom et le téléphone des élèves,
+       la liste des auto-écoles et des moniteurs. Il peut noter les présences
+       et les résultats, rien d'autre.
+
    Organisation dans Firestore :
-     ecole/config     → paramètres, auto-école, agences, moniteurs, prestations
-     ecole/compteur   → dernier numéro de facture (protégé contre les doublons)
+     ecole/config     → paramètres, auto-écoles, moniteurs, prestations (direction)
+     ecole/compteur   → dernier numéro de facture (direction)
+     ecole/roles      → qui est direction / moniteur (lu par les moniteurs)
+     ecole/public     → auto-écoles (nom, couleur), moniteurs, réglages du planning
+     eleves_planning/{id} → nom, prénom, téléphone, auto-école de chaque élève
      eleves/{id}, seances/{id}, factures/{id}, paiements/{id}, contrats/{id}
    ===================================================================== */
 'use strict';
@@ -44,9 +53,13 @@ function parseFirebaseConfig(text) {
   return cfg;
 }
 
+const ROLE_CACHE_KEY = 'motoplanning_role';
+
 const Cloud = {
   enabled: false,   // une configuration Firebase existe
   user: null,       // utilisateur connecté
+  role: null,       // 'admin' (direction) ou 'moniteur'
+  monId: null,      // pour un moniteur : son identifiant dans la liste des moniteurs
   ready: false,     // données en ligne chargées
   empty: false,     // base en ligne vide (première mise en service)
   error: '',
@@ -82,99 +95,239 @@ const Cloud = {
       this.onState();
       return true;
     }
-    this.auth.onAuthStateChanged((u) => {
+    this.auth.onAuthStateChanged(async (u) => {
       this.user = u;
       this.stop();
-      if (u) this.subscribe();
+      this.role = null; this.monId = null;
+      if (u) {
+        try {
+          await this.detecterRole();
+          this.error = '';
+          this.subscribe();
+        } catch (e) {
+          this.error = this.messageErreur(e);
+        }
+      }
       this.onState();
     });
     return true;
   },
 
-  login(email, password) { return this.auth.signInWithEmailAndPassword(email, password); },
-  logout() { return this.auth.signOut(); },
-  resetPassword(email) { return this.auth.sendPasswordResetEmail(email); },
+  messageErreur(e) {
+    return /permission/i.test((e && (e.code + ' ' + e.message)) || '')
+      ? "Ce compte n'a pas accès au planning. Demandez à la direction de vous donner l'accès (Paramètres → Accès à l'appli)."
+      : 'Connexion au planning impossible : ' + (e && e.message);
+  },
+
+  // Direction si on peut lire la configuration interne ; sinon moniteur si l'e-mail est dans la liste des rôles
+  async detecterRole() {
+    const email = (this.user.email || '').toLowerCase();
+    const cache = () => { try { return JSON.parse(localStorage.getItem(ROLE_CACHE_KEY) || 'null'); } catch (e) { return null; } };
+    const memo = (role, monId) => { try { localStorage.setItem(ROLE_CACHE_KEY, JSON.stringify({ email, role, monId })); } catch (e) { /* */ } };
+    try {
+      await this.fs.collection('ecole').doc('config').get();
+      this.role = 'admin'; memo('admin'); return;
+    } catch (e) {
+      if (!/permission/i.test(e.code + ' ' + e.message)) {
+        const c = cache(); // hors connexion : on reprend le dernier rôle connu
+        if (c && c.email === email) { this.role = c.role; this.monId = c.monId || null; return; }
+        throw e;
+      }
+    }
+    const d = (await this.fs.collection('ecole').doc('roles').get()).data() || {};
+    if ((d.moniteurs || []).includes(email) && d.moniteurIds && d.moniteurIds[email]) {
+      this.role = 'moniteur'; this.monId = d.moniteurIds[email]; memo('moniteur', this.monId); return;
+    }
+    throw Object.assign(new Error('permission-denied'), { code: 'permission-denied' });
+  },
+
+  login(email, password) { return this.auth.signInWithEmailAndPassword(email.trim(), password); },
+  // Déconnexion : on efface aussi les données gardées sur l'appareil (confidentialité)
+  async logout() {
+    this.deconnexion = true; // plus aucune écriture locale à partir d'ici
+    this.stop();
+    const effacer = () => { try { localStorage.removeItem('motoplanning_v1'); localStorage.removeItem(ROLE_CACHE_KEY); } catch (e) { /* */ } };
+    effacer();
+    try { await this.auth.signOut(); } catch (e) { /* */ }
+    const delai = (ms) => new Promise((r) => setTimeout(r, ms));
+    try { await Promise.race([this.fs.terminate().then(() => this.fs.clearPersistence()), delai(3000)]); } catch (e) { /* */ }
+    effacer();
+    location.reload();
+  },
+  resetPassword(email) { return this.auth.sendPasswordResetEmail(email.trim()); },
+
+  // Crée le compte de connexion d'une autre personne sans déconnecter la direction
+  async creerCompte(email, motDePasse) {
+    const cfg = this.config();
+    const app2 = firebase.apps.find((a) => a.name === 'creation') || firebase.initializeApp(cfg, 'creation');
+    const auth2 = app2.auth();
+    if (cfg.emulator && !auth2._emuOk) { auth2.useEmulator(`http://${cfg.emulator.auth}`, { disableWarnings: true }); auth2._emuOk = true; }
+    try {
+      await auth2.createUserWithEmailAndPassword(email.trim(), motDePasse);
+      return 'cree';
+    } catch (e) {
+      if (e.code === 'auth/email-already-in-use') return 'existe';
+      throw e;
+    } finally {
+      try { await auth2.signOut(); } catch (e) { /* */ }
+    }
+  },
 
   stop() {
     this.unsubs.forEach((u) => u());
     this.unsubs = [];
     this.ready = false;
     this.empty = false;
-    this.remote = { config: null, compteur: 0 };
-    this.synced = { config: null };
-    for (const c of CLOUD_COLLS) { this.remote[c] = new Map(); this.synced[c] = new Map(); }
+    this.remote = { config: null, compteur: 0, public: null, roles: null };
+    this.synced = { config: null, public: null, roles: null };
+    for (const c of [...CLOUD_COLLS, 'eleves_planning']) { this.remote[c] = new Map(); this.synced[c] = new Map(); }
   },
 
   subscribe() {
-    const attendus = new Set(['config', 'compteur', ...CLOUD_COLLS]);
+    const admin = this.role === 'admin';
+    const attendus = new Set(admin ? ['config', 'compteur', 'public', 'roles', 'eleves_planning', ...CLOUD_COLLS] : ['public', 'eleves_planning', 'seances']);
     const recu = (k) => {
       attendus.delete(k);
       if (attendus.size) return;
       const premier = !this.ready;
-      if (premier) this.empty = !this.remote.config;
+      if (premier) this.empty = admin && !this.remote.config;
       if (!this.empty) this.onChange(this.compose()); // données prêtes avant le premier affichage
       if (premier) { this.ready = true; this.onState(); }
     };
     const onErr = (e) => {
-      this.error = /permission/i.test(e.code + ' ' + e.message)
-        ? "Ce compte n'a pas accès au planning. Demandez à la direction d'ajouter votre e-mail dans les règles Firebase."
-        : 'Connexion au planning impossible : ' + e.message;
-      this.onState();
+      if (/permission/i.test(e.code + ' ' + e.message)) return this.perdreAcces();
+      this.error = this.messageErreur(e); this.onState();
     };
+    const doc = (nom, cle, apres) => this.unsubs.push(this.fs.collection('ecole').doc(nom).onSnapshot((d) => {
+      this.remote[cle] = d.exists ? d.data() : null;
+      if (cle in this.synced) this.synced[cle] = d.exists ? stableStringify(d.data()) : null;
+      if (apres) apres(d);
+      recu(cle);
+    }, onErr));
+    const coll = (nom, requete) => this.unsubs.push((requete || this.fs.collection(nom)).onSnapshot((snap) => {
+      snap.docChanges().forEach((ch) => {
+        if (ch.type === 'removed') { this.remote[nom].delete(ch.doc.id); this.synced[nom].delete(ch.doc.id); }
+        else { this.remote[nom].set(ch.doc.id, ch.doc.data()); this.synced[nom].set(ch.doc.id, stableStringify(ch.doc.data())); }
+      });
+      recu(nom);
+    }, onErr));
 
-    this.unsubs.push(this.fs.collection('ecole').doc('config').onSnapshot((d) => {
-      this.remote.config = d.exists ? d.data() : null;
-      this.synced.config = d.exists ? stableStringify(d.data()) : null;
-      if (d.exists && this.ready && this.empty) { this.empty = false; this.onState(); }
-      recu('config');
-    }, onErr));
-    this.unsubs.push(this.fs.collection('ecole').doc('compteur').onSnapshot((d) => {
-      this.remote.compteur = d.exists ? Number(d.data().n) || 0 : 0;
-      recu('compteur');
-    }, onErr));
-    for (const c of CLOUD_COLLS) {
-      this.unsubs.push(this.fs.collection(c).onSnapshot((snap) => {
-        snap.docChanges().forEach((ch) => {
-          if (ch.type === 'removed') { this.remote[c].delete(ch.doc.id); this.synced[c].delete(ch.doc.id); }
-          else { this.remote[c].set(ch.doc.id, ch.doc.data()); this.synced[c].set(ch.doc.id, stableStringify(ch.doc.data())); }
-        });
-        recu(c);
+    doc('public', 'public');
+    coll('eleves_planning');
+    if (admin) {
+      doc('config', 'config', (d) => { if (d.exists && this.ready && this.empty) { this.empty = false; this.onState(); } });
+      this.unsubs.push(this.fs.collection('ecole').doc('compteur').onSnapshot((d) => {
+        this.remote.compteur = d.exists ? Number(d.data().n) || 0 : 0;
+        recu('compteur');
+      }, onErr));
+      doc('roles', 'roles');
+      for (const c of CLOUD_COLLS) coll(c);
+    } else {
+      coll('seances', this.fs.collection('seances').where('moniteurId', '==', this.monId));
+      // Si la direction retire l'accès, l'appli se ferme aussitôt
+      const email = (this.user.email || '').toLowerCase();
+      this.unsubs.push(this.fs.collection('ecole').doc('roles').onSnapshot((d) => {
+        const r = d.data() || {};
+        if (!(r.moniteurs || []).includes(email) || (r.moniteurIds || {})[email] !== this.monId) this.perdreAcces();
       }, onErr));
     }
   },
 
-  // Reconstitue la base complète à partir de la copie en ligne
+  // Accès retiré (ou jamais donné) : on ferme et on efface les données gardées sur l'appareil
+  perdreAcces() {
+    this.stop();
+    this.role = null;
+    this.error = this.messageErreur({ code: 'permission-denied' });
+    try { localStorage.removeItem('motoplanning_v1'); localStorage.removeItem(ROLE_CACHE_KEY); } catch (e) { /* */ }
+    this.onState();
+  },
+
+  // Reconstitue la base à partir de la copie en ligne
   compose() {
+    if (this.role !== 'admin') {
+      const pub = this.remote.public || {};
+      return {
+        version: 2,
+        settings: clean(pub.settings || {}),
+        entreprise: {},
+        agences: clean(pub.agences || []),
+        moniteurs: clean(pub.moniteurs || []),
+        prestations: [], modeles: [], factures: [], paiements: [], contrats: [],
+        eleves: [...this.remote.eleves_planning.values()].map(clean),
+        seances: [...this.remote.seances.values()].map(clean),
+      };
+    }
     const db = clean(this.remote.config || {});
     db.entreprise = Object.assign({}, db.entreprise || {}, { compteur: this.remote.compteur });
     for (const c of CLOUD_COLLS) db[c] = [...this.remote[c].values()].map(clean);
     return db;
   },
 
+  // Ce que les moniteurs ont le droit de voir, calculé à partir de la base complète
+  derive(db) {
+    const low = (x) => String(x || '').trim().toLowerCase();
+    const avecAcces = (db.moniteurs || []).filter((m) => m.email);
+    return {
+      roles: {
+        admins: [...new Set(((db.settings && db.settings.acces && db.settings.acces.admins) || []).map(low).filter(Boolean))],
+        moniteurs: avecAcces.map((m) => low(m.email)),
+        moniteurIds: Object.fromEntries(avecAcces.map((m) => [low(m.email), m.id])),
+      },
+      public: {
+        agences: (db.agences || []).map((a) => ({ id: a.id, nom: a.nom || '', couleur: a.couleur || '', adresse: a.adresse || '', cp: a.cp || '', ville: a.ville || '', tel: a.tel || '' })),
+        moniteurs: (db.moniteurs || []).map((m) => ({ id: m.id, prenom: m.prenom || '', nom: m.nom || '', couleur: m.couleur || '' })),
+        settings: {
+          capacite: (db.settings && db.settings.capacite) || {},
+          dureeDefaut: (db.settings && db.settings.dureeDefaut) || {},
+          heureMin: (db.settings && db.settings.heureMin) || '07:00',
+          heureMax: (db.settings && db.settings.heureMax) || '20:00',
+        },
+      },
+      eleves_planning: (db.eleves || []).map((e) => ({ id: e.id, nom: e.nom || '', prenom: e.prenom || '', agenceId: e.agenceId || '', tel: e.tel || '', formation: e.formation || '', statut: e.statut || '' })),
+    };
+  },
+
   // Envoie en ligne uniquement ce qui a changé
   async push(db) {
     if (!this.ready || this.empty || !this.user) return;
     const ops = [];
-    const cfg = {};
-    for (const k of CLOUD_CONFIG_KEYS) cfg[k] = db[k];
-    cfg.entreprise = Object.assign({}, db.entreprise);
-    delete cfg.entreprise.compteur;
-    const sCfg = stableStringify(clean(cfg));
-    if (sCfg !== this.synced.config) { ops.push(['set', this.fs.collection('ecole').doc('config'), clean(cfg)]); this.synced.config = sCfg; }
-    for (const c of CLOUD_COLLS) {
-      const ids = new Set();
-      for (const item of db[c]) {
-        ids.add(item.id);
+    if (this.role !== 'admin') {
+      // Moniteur : seulement les présences / résultats de ses séances
+      for (const item of db.seances) {
+        if (!this.synced.seances.has(item.id)) continue;
         const s = stableStringify(clean(item));
-        if (this.synced[c].get(item.id) !== s) { ops.push(['set', this.fs.collection(c).doc(item.id), clean(item)]); this.synced[c].set(item.id, s); }
+        if (this.synced.seances.get(item.id) !== s) { ops.push(['update', this.fs.collection('seances').doc(item.id), { eleves: clean(item.eleves) }]); this.synced.seances.set(item.id, s); }
       }
-      for (const id of [...this.synced[c].keys()]) {
-        if (!ids.has(id)) { ops.push(['delete', this.fs.collection(c).doc(id)]); this.synced[c].delete(id); }
+    } else {
+      const cfg = {};
+      for (const k of CLOUD_CONFIG_KEYS) cfg[k] = db[k];
+      cfg.entreprise = Object.assign({}, db.entreprise);
+      delete cfg.entreprise.compteur;
+      const sCfg = stableStringify(clean(cfg));
+      if (sCfg !== this.synced.config) { ops.push(['set', this.fs.collection('ecole').doc('config'), clean(cfg)]); this.synced.config = sCfg; }
+      const der = this.derive(db);
+      for (const k of ['roles', 'public']) {
+        const sK = stableStringify(der[k]);
+        if (sK !== this.synced[k]) { ops.push(['set', this.fs.collection('ecole').doc(k), der[k]]); this.synced[k] = sK; }
+      }
+      const listes = Object.assign({}, ...CLOUD_COLLS.map((c) => ({ [c]: db[c] })), { eleves_planning: der.eleves_planning });
+      for (const c of Object.keys(listes)) {
+        const ids = new Set();
+        for (const item of listes[c]) {
+          ids.add(item.id);
+          const s = stableStringify(clean(item));
+          if (this.synced[c].get(item.id) !== s) { ops.push(['set', this.fs.collection(c).doc(item.id), clean(item)]); this.synced[c].set(item.id, s); }
+        }
+        for (const id of [...this.synced[c].keys()]) {
+          if (!ids.has(id)) { ops.push(['delete', this.fs.collection(c).doc(id)]); this.synced[c].delete(id); }
+        }
       }
     }
     for (let i = 0; i < ops.length; i += 450) {
       const batch = this.fs.batch();
-      for (const [op, ref, data] of ops.slice(i, i + 450)) op === 'set' ? batch.set(ref, data) : batch.delete(ref);
+      for (const [op, ref, data] of ops.slice(i, i + 450)) {
+        if (op === 'set') batch.set(ref, data); else if (op === 'update') batch.update(ref, data); else batch.delete(ref);
+      }
       await batch.commit();
     }
   },
@@ -201,4 +354,5 @@ const Cloud = {
   setCompteur(n) { return this.fs.collection('ecole').doc('compteur').set({ n: Number(n) || 0 }); },
 
   get actif() { return this.enabled && this.user && this.ready && !this.empty; },
+  get moniteur() { return this.actif && this.role === 'moniteur'; },
 };

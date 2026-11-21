@@ -145,6 +145,7 @@ function migrate(db) {
   return db;
 }
 function save() {
+  if (Cloud.deconnexion) return;
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); }
   catch (e) { toast("Impossible d'enregistrer : " + e.message, true); }
   if (Cloud.actif) Cloud.push(DB).catch((e) => toast('Synchronisation impossible : ' + e.message, true));
@@ -311,11 +312,19 @@ function viewConnexion() {
   </div>`;
 }
 
+const estMoniteur = () => Cloud.moniteur;
+
 function render() {
   const v = $('#view');
   const bloque = Cloud.enabled && !Cloud.actif;
   $('#tabs').hidden = bloque;
+  $('#user-chip').innerHTML = Cloud.user
+    ? `<span class="small">${esc(Cloud.user.email)}${Cloud.role === 'moniteur' ? ' · moniteur' : Cloud.role === 'admin' ? ' · direction' : ''}</span> <button class="btn small" data-action="cloudLogout" title="Se déconnecter">⎋ Déconnexion</button>`
+    : '';
   if (bloque) { v.innerHTML = viewConnexion(); return; }
+  // Moniteur : uniquement le planning
+  $$('#tabs button').forEach((b) => { b.hidden = estMoniteur() && b.dataset.view !== 'planning'; });
+  if (estMoniteur() && UI.view !== 'planning') UI.view = 'planning';
   majMenu();
   if (UI.view === 'planning') v.innerHTML = viewPlanning();
   else if (UI.view === 'eleves') v.innerHTML = UI.eleveOuvert ? viewFiche(UI.eleveOuvert) : viewEleves();
@@ -342,7 +351,10 @@ document.addEventListener('change', (e) => {
    PLANNING (grille horaire, comme AGX)
    --------------------------------------------------------------------- */
 function viewPlanning() {
+  const moni = estMoniteur();
+  if (moni) UI.moniteurSemaine = Cloud.monId;
   if (!UI.moniteurSemaine || !byId('moniteurs', UI.moniteurSemaine)) UI.moniteurSemaine = DB.moniteurs[0]?.id || null;
+  const moniteursVus = moni ? DB.moniteurs.filter((m) => m.id === Cloud.monId) : DB.moniteurs;
   const semaine = UI.mode === 'semaine';
   const lundi = mondayOf(UI.date);
 
@@ -353,7 +365,7 @@ function viewPlanning() {
       return { date: d, mon: UI.moniteurSemaine, titre: fmtDayHead(d), today: d === todayISO() };
     });
   } else {
-    cols = DB.moniteurs.map((m) => ({ date: UI.date, mon: m.id, titre: moniteurNom(m), couleur: m.couleur }));
+    cols = moniteursVus.map((m) => ({ date: UI.date, mon: m.id, titre: moniteurNom(m), couleur: m.couleur }));
   }
 
   const titre = semaine
@@ -372,14 +384,14 @@ function viewPlanning() {
     <input type="date" value="${UI.date}" data-on-change="navPick" style="width:auto">
     <h1 class="cap">${esc(titre)}</h1>
     <div class="spacer"></div>
-    <button class="btn" data-action="importExamens" title="Coller l'e-mail RdvPermis pour placer les examens">📥 Importer des examens (RdvPermis)</button>
+    ${moni ? '' : `<button class="btn" data-action="importExamens" title="Coller l'e-mail RdvPermis pour placer les examens">📥 Importer des examens (RdvPermis)</button>`}
   </div>
-  ${bandeauRappels()}
-  ${semaine ? `<div class="seg" style="margin-bottom:10px">
+  ${moni ? '' : bandeauRappels()}
+  ${semaine && !moni ? `<div class="seg" style="margin-bottom:10px">
       ${DB.moniteurs.map((m) => `<button class="${UI.moniteurSemaine === m.id ? 'on' : ''}" data-action="setMonSemaine" data-id="${m.id}"><span class="dot" style="background:${esc(m.couleur)}"></span>${esc(moniteurNom(m))}</button>`).join('')}
     </div>` : ''}
-  ${DB.moniteurs.length ? agendaGrid(cols) : '<div class="card empty">Ajoutez vos moniteurs dans Paramètres.</div>'}
-  <p class="muted small" style="margin-top:8px">Cliquez sur une case vide pour placer une leçon ou un examen · Cliquez dessus pour ajouter un élève, noter les présences ou les résultats.
+  ${cols.length ? agendaGrid(cols) : `<div class="card empty">${moni ? "Votre compte n'est relié à aucun moniteur : contactez la direction." : 'Ajoutez vos moniteurs dans Paramètres.'}</div>`}
+  <p class="muted small" style="margin-top:8px">${moni ? 'Cliquez sur une leçon ou un examen pour voir les élèves et noter les présences ou les résultats.' : 'Cliquez sur une case vide pour placer une leçon ou un examen · Cliquez dessus pour ajouter un élève, noter les présences ou les résultats.'}
   &nbsp; ${DB.agences.length > 1 ? DB.agences.map((a) => `<span class="dot" style="background:${esc(a.couleur)}"></span>${esc(a.nom)}`).join(' &nbsp; ') : ''}</p>`;
 }
 
@@ -628,6 +640,36 @@ function validerImport() {
     toast(`${ajoutes} élève(s) ajouté(s) aux examens${deja ? ` · ${deja} déjà au planning` : ''}`);
   }
   importTexte = '';
+}
+
+/* ---------------------------------------------------------------------
+   Fenêtre « séance » pour un moniteur : consultation + présences / résultats
+   --------------------------------------------------------------------- */
+function openSeanceMoniteur(s) {
+  draft = JSON.parse(JSON.stringify(s));
+  const exam = isExam(s.type);
+  openModal({
+    title: `${TYPES[s.type].label} — ${esc(fmtDayLong(s.date))}`,
+    body: `
+      <p><strong>${s.debut} – ${s.fin}</strong>${s.lieu ? ` · 📍 ${esc(s.lieu)}` : ''}${exam && (s.rdvHeure || s.rdvLieu) ? `<br><span class="small muted">RDV élèves : ${esc(s.rdvHeure || '')} ${esc(s.rdvLieu || '')}</span>` : ''}</p>
+      <div class="lbl">Élèves (${s.eleves.length})</div>
+      <div class="chips">
+        ${s.eleves.length ? s.eleves.map((p, i) => {
+          const e = byId('eleves', p.eleveId);
+          const a = agenceDe(e);
+          return `<div class="chip-row">
+            <span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}"></span>
+            <span class="name">${esc(eleveNom(e))} <span class="muted small">${esc(a?.nom || '')}</span>
+              ${e?.tel ? `<br><a class="small" href="tel:${esc(e.tel)}">📞 ${esc(e.tel)}</a>` : ''}</span>
+            <select data-presence-i="${i}" class="presence ${p.statut}">
+              ${Object.entries(statutsPour(s.type)).map(([k, l]) => `<option value="${k}" ${p.statut === k ? 'selected' : ''}>${l}</option>`).join('')}
+            </select>
+          </div>`;
+        }).join('') : '<div class="muted small">Aucun élève inscrit.</div>'}
+      </div>`,
+    foot: `<button class="btn" data-action="closeModal">Fermer</button>
+      ${s.eleves.length ? '<button class="btn primary" data-action="saveSeanceMoniteur">Enregistrer</button>' : ''}`,
+  });
 }
 
 /* ---------------------------------------------------------------------
@@ -1668,6 +1710,7 @@ function viewParametres() {
       ${DB.prestations.map((p) => ligne(`<span class="name">${esc(p.libelle)}</span><strong>${eur(p.prix)}</strong>`, 'editPrestation', p.id)).join('')}
       <button class="btn" data-action="editPrestation">+ Ajouter</button>
     </div>
+    ${viewAcces()}
     <div class="card">
       <h2>🌐 Planning partagé en ligne</h2>
       ${Cloud.actif ? `
@@ -1691,6 +1734,64 @@ function viewParametres() {
       </div>
     </div>
   </div>`;
+}
+
+function viewAcces() {
+  if (!Cloud.actif) return '';
+  const admins = (DB.settings.acces && DB.settings.acces.admins) || [];
+  return `
+    <div class="card">
+      <h2>🔐 Accès à l'appli</h2>
+      <p class="muted small"><strong>Direction / secrétariat</strong> : accès complet. <strong>Moniteur</strong> : uniquement son planning (élèves, présences, résultats) — pas de paiements, factures, contrats, fiches ni paramètres.</p>
+      <h3>Moniteurs</h3>
+      ${DB.moniteurs.map((m) => `
+        <div class="chip-row" style="flex-wrap:wrap">
+          <span class="dot" style="background:${esc(m.couleur)}"></span>
+          <span class="name">${esc(moniteurNom(m))} <span class="muted small">${m.email ? esc(m.email) : ''}</span></span>
+          ${m.email ? '<span class="badge ok">accès moniteur</span>' : '<span class="badge">pas d\'accès</span>'}
+          <button class="btn small" data-action="accesMoniteur" data-id="${m.id}">${m.email ? 'Modifier' : 'Donner l\'accès'}</button>
+          ${m.email ? `<button class="btn small ghost" data-action="retirerAccesMoniteur" data-id="${m.id}" title="Retirer l'accès">✕</button>` : ''}
+        </div>`).join('') || '<p class="muted small">Ajoutez d\'abord vos moniteurs ci-dessus.</p>'}
+      <h3 style="margin-top:12px">Direction / secrétariat</h3>
+      <p class="muted small">Les comptes propriétaires (écrits dans les règles Firebase) ont toujours un accès complet.</p>
+      ${admins.map((em) => `<div class="chip-row"><span class="name">${esc(em)}</span><span class="badge ok">accès complet</span>
+        <button class="btn small ghost" data-action="retirerAdmin" data-email="${esc(em)}" title="Retirer l'accès">✕</button></div>`).join('')}
+      <button class="btn" data-action="ajouterAdmin">+ Ajouter un accès direction / secrétariat</button>
+    </div>`;
+}
+
+function openAcces({ titre, email = '', explication, onOk }) {
+  openModal({
+    title: titre,
+    body: `
+      <p class="muted small">${explication}</p>
+      <form id="acces-form" class="form-grid" onsubmit="return false">
+        <label class="field full"><span>E-mail de connexion *</span><input name="email" type="email" required value="${esc(email)}"></label>
+        <label class="field full"><span>Mot de passe provisoire (6 caractères min.) — laissez vide si le compte existe déjà</span><input name="mdp" type="text" autocomplete="off" minlength="6"></label>
+      </form>
+      <p class="muted small">Communiquez le mot de passe à la personne de vive voix ou par SMS. Elle pourra le changer avec « Mot de passe oublié ? » sur l'écran de connexion.</p>`,
+    foot: `<button class="btn" data-action="closeModal">Annuler</button><button class="btn primary" id="acces-ok">Enregistrer</button>`,
+    onMount: (m) => {
+      $('#acces-ok', m).addEventListener('click', async () => {
+        const form = $('#acces-form');
+        if (!form.reportValidity()) return;
+        const { email: em, mdp } = formData(form);
+        const email = em.toLowerCase();
+        $('#acces-ok').disabled = true;
+        try {
+          let etat = 'existe';
+          if (mdp) etat = await Cloud.creerCompte(email, mdp);
+          onOk(email);
+          save(); closeModal(); render();
+          toast(etat === 'cree' ? `Compte créé pour ${email} ✅` : `Accès donné à ${email} ✅`);
+        } catch (e) {
+          $('#acces-ok').disabled = false;
+          const msg = { 'auth/weak-password': 'mot de passe trop court (6 caractères minimum)', 'auth/invalid-email': 'e-mail invalide' }[e.code] || e.message;
+          toast('Impossible : ' + msg, true);
+        }
+      });
+    },
+  });
 }
 
 function openSimpleForm({ title, fields, values = {}, onSave, onDelete }) {
@@ -1778,11 +1879,19 @@ const ACTIONS = {
 
   /* Placer une leçon */
   slot(d) {
+    if (estMoniteur()) return toast('Seule la direction place les leçons. Cliquez sur une leçon pour noter les présences.');
     const type = 'circulation';
     const dur = DB.settings.dureeDefaut[type] || 120;
     openSeance({ type, date: d.date, debut: d.t, fin: fromMin(toMin(d.t) + dur), moniteurId: d.mon, lieu: '', eleves: [] });
   },
-  editSeance(d) { const s = byId('seances', d.id); if (s) openSeance(s); },
+  editSeance(d) { const s = byId('seances', d.id); if (s) (estMoniteur() ? openSeanceMoniteur(s) : openSeance(s)); },
+  saveSeanceMoniteur() {
+    const s = byId('seances', draft.id);
+    if (!s) return closeModal();
+    $$('[data-presence-i]').forEach((el) => { draft.eleves[+el.dataset.presenceI].statut = el.value; });
+    s.eleves = draft.eleves;
+    save(); closeModal(); render(); toast('Enregistré');
+  },
   setType(d) {
     readDraft();
     const avant = draft.type;
@@ -2103,9 +2212,40 @@ const ACTIONS = {
   },
   async cloudForget() {
     if (!confirm('Désactiver le planning partagé sur cet appareil ? (Les données en ligne ne sont pas effacées.)')) return;
-    try { await Cloud.logout(); } catch (e) { /* déjà déconnecté */ }
     Cloud.forgetConfig();
-    location.reload();
+    await Cloud.logout(); // recharge la page
+  },
+  accesMoniteur(d) {
+    const m = byId('moniteurs', d.id);
+    openAcces({
+      titre: `Accès moniteur — ${esc(moniteurNom(m))}`,
+      email: m.email || '',
+      explication: `${esc(moniteurNom(m))} verra uniquement <strong>son</strong> planning : ses leçons et examens, le nom et le téléphone des élèves, et pourra noter présences et résultats.`,
+      onOk: (email) => {
+        if (DB.moniteurs.some((x) => x.id !== m.id && (x.email || '').toLowerCase() === email)) throw new Error('cet e-mail est déjà utilisé par un autre moniteur');
+        m.email = email;
+      },
+    });
+  },
+  retirerAccesMoniteur(d) {
+    const m = byId('moniteurs', d.id);
+    if (!confirm(`Retirer l'accès de ${moniteurNom(m)} ? Il ne pourra plus voir le planning.`)) return;
+    delete m.email; save(); render(); toast('Accès retiré');
+  },
+  ajouterAdmin() {
+    openAcces({
+      titre: 'Accès direction / secrétariat',
+      explication: 'Cette personne aura un <strong>accès complet</strong> : planning, élèves, paiements, factures, contrats et paramètres.',
+      onOk: (email) => {
+        DB.settings.acces = DB.settings.acces || { admins: [] };
+        if (!DB.settings.acces.admins.includes(email)) DB.settings.acces.admins.push(email);
+      },
+    });
+  },
+  retirerAdmin(d) {
+    if (!confirm(`Retirer l'accès complet de ${d.email} ?`)) return;
+    DB.settings.acces.admins = DB.settings.acces.admins.filter((x) => x !== d.email);
+    save(); render(); toast('Accès retiré');
   },
   loadDemo() {
     if (Cloud.actif) return toast('Impossible en mode partagé : cela remplacerait le planning de tout le monde.', true);
@@ -2135,6 +2275,7 @@ function renderPlusTard() {
   }, 250);
 }
 Cloud.onChange = (db) => {
+  if (Cloud.deconnexion) return;
   DB = migrate(db);
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); } catch (e) { /* plein */ }
   renderPlusTard();
@@ -2146,7 +2287,7 @@ Cloud.onState = () => render();
    --------------------------------------------------------------------- */
 Cloud.start();
 render();
-save(); // enregistre aussi les données converties depuis une ancienne version
+if (!Cloud.enabled) save(); // enregistre aussi les données converties depuis une ancienne version
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
