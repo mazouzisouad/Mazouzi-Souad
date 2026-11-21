@@ -252,3 +252,9 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
 .exam-res.ok { color: var(--ok); }
 .exam-res.warn { color: var(--warn); }
 .exam-res.bad { color: var(--bad); }
+
+/* ---------- Repassages ---------- */
+.count {
+  display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 999px;
+  background: var(--bad); color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center;
+}

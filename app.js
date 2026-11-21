@@ -184,14 +184,36 @@ function eleveExamens(eid) {
     const st = (s) => s.eleves.find((p) => p.eleveId === eid).statut;
     const admis = list.find((s) => st(s) === 'admis');
     const prevu = list.find((s) => s.date >= todayISO() && st(s) === 'prevu');
-    const nbAjourne = list.filter((s) => st(s) === 'ajourne').length;
+    const nbAjourne = list.filter((s) => ['ajourne', 'absent'].includes(st(s))).length;
     if (admis) out[t] = { cls: 'ok', txt: `Admis le ${fmtDate(admis.date)}` };
     else if (prevu) out[t] = { cls: 'warn', txt: `Le ${fmtDate(prevu.date)} à ${prevu.debut}` };
-    else if (nbAjourne) out[t] = { cls: 'bad', txt: `Ajourné${nbAjourne > 1 ? ` (${nbAjourne} fois)` : ''}` };
+    else if (nbAjourne) out[t] = { cls: 'bad', txt: `Repassage à programmer (${nbAjourne} échec${nbAjourne > 1 ? 's' : ''})` };
     else out[t] = { cls: '', txt: '—' };
   }
   return out;
 }
+// Élèves qui ont raté (ajourné ou absent) un examen et doivent le repasser.
+// Pour chaque élève et chaque épreuve, on regarde le dernier examen avec un résultat.
+function repassages() {
+  const out = [];
+  for (const e of DB.eleves) {
+    if (e.statut === 'abandon') continue;
+    for (const t of ['exam_plateau', 'exam_circulation']) {
+      const list = eleveSeances(e.id).filter((s) => s.type === t);
+      const st = (s) => s.eleves.find((p) => p.eleveId === e.id).statut;
+      const passes = list.filter((s) => st(s) !== 'prevu');
+      if (!passes.length) continue;
+      const dernier = passes[passes.length - 1];
+      if (!['ajourne', 'absent'].includes(st(dernier))) continue;
+      const nbEchecs = passes.filter((s) => ['ajourne', 'absent'].includes(st(s))).length;
+      const programme = list.find((s) => st(s) === 'prevu' && (s.date + s.debut) > (dernier.date + dernier.debut));
+      out.push({ eleve: e, type: t, dernier, resultat: st(dernier), numPassage: passes.length + 1, nbEchecs, programme });
+    }
+  }
+  return out.sort((a, b) => (!!a.programme - !!b.programme) || a.dernier.date.localeCompare(b.dernier.date));
+}
+const ordinal = (n) => (n === 1 ? '1er' : `${n}e`);
+
 function nonFactures(eid) {
   const out = [];
   for (const s of eleveSeances(eid)) {
@@ -218,6 +240,7 @@ const UI = {
   voirAnciens: false,
   eleveOuvert: null,
   ongletFiche: 'lecons',
+  ongletEleves: 'tous',
   ongletPaiements: 'factures',
   moisEnc: todayISO().slice(0, 7),
 };
@@ -234,7 +257,13 @@ $('#tabs').addEventListener('click', (e) => {
   if (b) go(b.dataset.view, b.dataset.view === 'eleves' ? { eleveOuvert: null } : {});
 });
 
+function majMenu() {
+  const n = repassages().filter((r) => !r.programme).length;
+  $('#tabs [data-view=eleves]').innerHTML = `👤 Élèves${n ? ` <span class="count" title="En attente de repassage">${n}</span>` : ''}`;
+}
+
 function render() {
+  majMenu();
   const v = $('#view');
   if (UI.view === 'planning') v.innerHTML = viewPlanning();
   else if (UI.view === 'eleves') v.innerHTML = UI.eleveOuvert ? viewFiche(UI.eleveOuvert) : viewEleves();
@@ -516,6 +545,40 @@ function seanceConflicts(s) {
 /* ---------------------------------------------------------------------
    ÉLÈVES
    --------------------------------------------------------------------- */
+function ongletsEleves() {
+  const n = repassages().filter((r) => !r.programme && (!UI.filtreAgence || r.eleve.agenceId === UI.filtreAgence)).length;
+  return `<div class="seg" style="margin-bottom:12px">
+    <button class="${UI.ongletEleves === 'tous' ? 'on' : ''}" data-action="ongletEleves" data-o="tous">Tous les élèves</button>
+    <button class="${UI.ongletEleves === 'repassage' ? 'on' : ''}" data-action="ongletEleves" data-o="repassage">En attente de repassage ${n ? `<span class="count">${n}</span>` : ''}</button>
+  </div>`;
+}
+
+function viewRepassages() {
+  const q = UI.rechercheEleve.toLowerCase();
+  const list = repassages()
+    .filter((r) => !UI.filtreAgence || r.eleve.agenceId === UI.filtreAgence)
+    .filter((r) => !q || `${r.eleve.nom} ${r.eleve.prenom} ${r.eleve.prenom} ${r.eleve.nom}`.toLowerCase().includes(q));
+  const ligne = (r) => {
+    const e = r.eleve;
+    const epreuve = r.type === 'exam_plateau' ? 'Plateau' : 'Circulation';
+    return `<tr class="clickable" data-action="openFiche" data-id="${e.id}">
+      <td><strong>${esc(e.nom.toUpperCase())}</strong> ${esc(e.prenom)}</td>
+      <td>${agenceBadge(agenceDe(e))}</td>
+      <td><span class="badge ${r.type}">Repassage ${epreuve.toLowerCase()}</span></td>
+      <td>${ordinal(r.numPassage)} passage</td>
+      <td>${r.resultat === 'absent' ? 'Absent' : 'Ajourné'} le ${fmtDate(r.dernier.date)}</td>
+      <td>${r.programme
+        ? `<span class="badge ok">Programmé le ${fmtDate(r.programme.date)} à ${r.programme.debut}</span>`
+        : `<button class="btn small primary" data-action="placerRepassage" data-eleve="${e.id}" data-type="${r.type}">🎓 Programmer</button>`}</td>
+    </tr>`;
+  };
+  return list.length ? `<div class="table-wrap"><table>
+    <thead><tr><th>Élève</th><th>Agence</th><th>Épreuve à repasser</th><th>Passage</th><th>Dernier examen</th><th></th></tr></thead>
+    <tbody>${list.map(ligne).join('')}</tbody></table></div>
+    <p class="muted small" style="margin-top:8px">Un élève apparaît ici dès qu'il est noté « Ajourné » ou « Absent » à un examen. Il disparaît quand il est admis au repassage.</p>`
+    : '<div class="card empty">Aucun élève en attente de repassage 👍</div>';
+}
+
 function viewEleves() {
   const q = UI.rechercheEleve.toLowerCase();
   const list = DB.eleves
@@ -532,6 +595,8 @@ function viewEleves() {
     ${agenceSelect(UI.filtreAgence, 'filtreAgence')}
     <button class="btn primary" data-action="newEleve">+ Nouvel élève</button>
   </div>
+  ${ongletsEleves()}
+  ${UI.ongletEleves === 'repassage' ? viewRepassages() : `
   ${list.length ? `
   <div class="table-wrap"><table>
     <thead><tr><th>Élève</th><th>Agence</th><th>Téléphone</th><th>Prochaine leçon</th><th class="num">Reste dû</th></tr></thead>
@@ -548,7 +613,7 @@ function viewEleves() {
       </tr>`;
     }).join('')}
     </tbody></table></div>` : `<div class="card empty">Aucun élève. <br><br><button class="btn primary" data-action="newEleve">+ Ajouter un élève</button></div>`}
-  <label class="row small muted" style="margin-top:10px;gap:6px"><input type="checkbox" style="width:auto" data-on-change="voirAnciens" ${UI.voirAnciens ? 'checked' : ''}> Afficher aussi les anciens élèves (permis obtenu, abandon)</label>`;
+  <label class="row small muted" style="margin-top:10px;gap:6px"><input type="checkbox" style="width:auto" data-on-change="voirAnciens" ${UI.voirAnciens ? 'checked' : ''}> Afficher aussi les anciens élèves (permis obtenu, abandon)</label>`}`;
 }
 
 function agenceSelect(val, handler, withAll = true) {
@@ -1428,7 +1493,7 @@ const ACTIONS = {
     }
     if (draft.id) Object.assign(byId('seances', draft.id), draft);
     else { draft.id = uid(); DB.seances.push(draft); }
-    save(); closeModal(); render(); toast('Leçon enregistrée');
+    save(); closeModal(); render(); toast(isExam(draft.type) ? 'Examen enregistré' : 'Leçon enregistrée');
   },
   deleteSeance() {
     if (draft.eleves.some((p) => p.factureId)) return toast('Impossible : cette leçon est déjà facturée.', true);
@@ -1455,6 +1520,16 @@ const ACTIONS = {
   },
   filtreAgence(d, el) { UI.filtreAgence = el.value; render(); },
   voirAnciens(d, el) { UI.voirAnciens = el.checked; render(); },
+  ongletEleves(d) { UI.ongletEleves = d.o; render(); },
+  placerRepassage(d, el, ev) {
+    ev.stopPropagation();
+    const date = todayISO() < UI.date ? UI.date : todayISO();
+    openSeance({
+      type: d.type, date, debut: '08:00', fin: fromMin(toMin('08:00') + (DB.settings.dureeDefaut[d.type] || 180)),
+      moniteurId: DB.moniteurs[0]?.id, lieu: '', eleves: [{ eleveId: d.eleve, statut: 'prevu' }],
+    });
+    toast('Choisissez la date et l\'heure du repassage');
+  },
   newEleve() { openEleve({ agenceId: UI.filtreAgence || DB.agences[0]?.id, formation: 'A2', statut: 'en_cours' }); },
   editEleve(d) { openEleve(byId('eleves', d.id)); },
   openFiche(d) { go('eleves', { eleveOuvert: d.id, ongletFiche: 'lecons' }); },
