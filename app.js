@@ -2436,6 +2436,13 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     .then((r) => r.update())
     .catch(() => {});
   // Nouvelle version installée → on recharge une fois pour l'afficher
+  // (pas lors de la toute première visite : seulement quand une version remplace une autre)
+  const avaitUneVersion = !!navigator.serviceWorker.controller;
   let rechargee = false;
-  navigator.serviceWorker.addEventListener('controllerchange', () => { if (!rechargee) { rechargee = true; location.reload(); } });
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!avaitUneVersion || rechargee) return;
+    const a = document.activeElement;
+    if (a && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) return; // ne coupe pas une saisie en cours
+    rechargee = true; location.reload();
+  });
 }
