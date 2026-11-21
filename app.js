@@ -78,6 +78,7 @@ function defaultState() {
       tarifExamen: { exam_plateau: 0, exam_circulation: 0 }, // 1er accompagnement (0 = offert)
       fraisRepassage: { exam_plateau: 100, exam_circulation: 150 },
       heuresPrepa: { min: 4, max: 6 },
+      rappel: JSON.parse(JSON.stringify(RAPPEL_DEFAUT)),
       dureeDefaut: { plateau: 120, circulation: 120, exam_plateau: 180, exam_circulation: 180 },
       heureMin: '07:00',
       heureMax: '20:00',
@@ -133,7 +134,8 @@ function migrate(db) {
     db.settings.tarifExamen = { exam_plateau: 0, exam_circulation: 0 };
   }
   db.settings = Object.assign({}, def.settings, db.settings || {});
-  for (const k of ['capacite', 'tarifHeure', 'tarifExamen', 'fraisRepassage', 'heuresPrepa', 'dureeDefaut']) db.settings[k] = Object.assign({}, def.settings[k], db.settings[k] || {});
+  for (const k of ['capacite', 'tarifHeure', 'tarifExamen', 'fraisRepassage', 'heuresPrepa', 'dureeDefaut', 'rappel']) db.settings[k] = Object.assign({}, def.settings[k], db.settings[k] || {});
+  db.settings.rappel.documents = Object.assign({}, def.settings.rappel.documents, db.settings.rappel.documents || {});
   db.entreprise = Object.assign({}, def.entreprise, db.entreprise || {});
   for (const k of ['agences', 'moniteurs', 'prestations', 'eleves', 'seances', 'factures', 'paiements', 'contrats']) db[k] = db[k] || [];
   if (!Array.isArray(db.modeles)) db.modeles = modelesParDefaut();
@@ -372,6 +374,7 @@ function viewPlanning() {
     <div class="spacer"></div>
     <button class="btn" data-action="importExamens" title="Coller l'e-mail RdvPermis pour placer les examens">📥 Importer des examens (RdvPermis)</button>
   </div>
+  ${bandeauRappels()}
   ${semaine ? `<div class="seg" style="margin-bottom:10px">
       ${DB.moniteurs.map((m) => `<button class="${UI.moniteurSemaine === m.id ? 'on' : ''}" data-action="setMonSemaine" data-id="${m.id}"><span class="dot" style="background:${esc(m.couleur)}"></span>${esc(moniteurNom(m))}</button>`).join('')}
     </div>` : ''}
@@ -684,6 +687,12 @@ function openSeance(seance) {
             <input id="s-lieu" value="${esc(draft.lieu || '')}" placeholder="Ex : centre d'examen de …" list="lieux-exam"></div>
         </div>
         <p class="muted small" style="margin:4px 0 0">Mettez le nombre de places réservées sur RdvPermis : les noms des élèves pourront être ajoutés plus tard.</p>
+        <div class="row" style="align-items:flex-end;gap:12px">
+          <div style="flex:0 0 170px"><div class="lbl">RDV élèves à</div>
+            <input id="s-rdvh" type="time" step="300" value="${esc(draft.rdvHeure || '')}"></div>
+          <div style="flex:1;min-width:200px"><div class="lbl">Lieu du rendez-vous</div>
+            <input id="s-rdvl" value="${esc(draft.rdvLieu || '')}" placeholder="vide = à l'auto-école de chaque élève"></div>
+        </div>
         <datalist id="lieux-exam">${[...new Set(DB.seances.filter((x) => isExam(x.type)).map((x) => x.lieu).filter(Boolean))].map((l) => `<option value="${esc(l)}">`).join('')}</datalist>
       </div>
       <div class="lbl">Durée</div>
@@ -696,7 +705,7 @@ function openSeance(seance) {
       </div>
       <div id="s-errors" style="margin-top:10px"></div>`,
     foot: `
-      ${!isNew ? `<div class="left"><button class="btn danger" data-action="deleteSeance">Supprimer</button><button class="btn" data-action="duplicateSeance" title="Même leçon la semaine suivante">Copier à +7 j</button></div>` : ''}
+      ${!isNew ? `<div class="left"><button class="btn danger" data-action="deleteSeance">Supprimer</button><button class="btn" data-action="duplicateSeance" title="Même leçon la semaine suivante">Copier à +7 j</button><button class="btn" id="s-rappel" data-action="rappelsSeance">🔔 Prévenir les élèves</button></div>` : ''}
       <button class="btn" data-action="closeModal">Annuler</button>
       <button class="btn primary" data-action="saveSeance">${isNew ? 'Placer sur le planning' : 'Enregistrer'}</button>`,
     onMount: (mod) => {
@@ -716,6 +725,8 @@ function readDraft() {
   if (isExam(draft.type) && $('#s-lieu')) {
     draft.lieu = $('#s-lieu').value.trim();
     draft.places = parseInt($('#s-places').value, 10) || 0;
+    draft.rdvHeure = $('#s-rdvh').value || '';
+    draft.rdvLieu = $('#s-rdvl').value.trim();
   }
 }
 
@@ -725,6 +736,8 @@ function refreshDraft() {
   const dur = toMin(draft.fin) - toMin(draft.debut);
   $$('#s-type button').forEach((b) => b.classList.toggle('on', b.dataset.t === draft.type));
   $('#s-lieu-wrap').hidden = !isExam(draft.type);
+  if (isExam(draft.type)) $('#s-rdvh').placeholder = heureRdv({ ...draft, rdvHeure: '' });
+  if ($('#s-rappel')) $('#s-rappel').hidden = !isExam(draft.type);
   $('#s-duree').innerHTML = DUREES.map((d) => `<button data-action="setDuree" data-d="${d}" class="${d === dur ? 'on' : ''}">${fmtH(d / 60)}</button>`).join('')
     + `<span class="muted small" style="align-self:center;margin-left:8px">${draft.debut} → ${draft.fin}</span>`;
   const capEl = $('#s-cap');
@@ -1648,6 +1661,7 @@ function viewParametres() {
       </form>
       <div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn primary" data-action="saveSettings">Enregistrer</button></div>
     </div>
+    ${viewParamRappels()}
     ${viewParamContrats()}
     <div class="card">
       <h2>Prestations (pour les factures)</h2>
@@ -2106,7 +2120,7 @@ const ACTIONS = {
   },
 };
 
-Object.assign(ACTIONS, CONTRAT_ACTIONS);
+Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS);
 
 /* ---------------------------------------------------------------------
    Synchronisation en ligne

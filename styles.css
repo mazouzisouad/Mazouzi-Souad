@@ -282,3 +282,6 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
 .sig-pad.sig-tampon { justify-content: space-around; gap: 8px; padding: 6px; }
 .sig-pad.sig-tampon img { max-width: 55%; }
 .mini-sig { height: 34px; max-width: 90px; object-fit: contain; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+
+/* ---------- Rappels ---------- */
+.card.rappel.envoye { background: #f0fdf4; border-color: #bbf7d0; }

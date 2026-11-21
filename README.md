@@ -42,6 +42,14 @@ Ensuite, dans Paramètres : « Mon auto-école » (nom, SIRET, TVA… pour les f
 - **Faire signer** : l'élève (ou son représentant légal) coche « lu et approuvé » et signe au doigt sur le téléphone / la tablette.
 - Le contrat signé (date et heure de signature) est envoyé en PDF par e-mail, WhatsApp…
 
+## Rappels d'examen (la veille)
+
+La veille d'un examen, le planning affiche « 🔔 Examens demain : N élèves à prévenir ».
+Un clic par élève envoie (SMS, WhatsApp ou e-mail) un message complet : date, heure et lieu de l'examen,
+**heure et lieu du rendez-vous**, **moniteur**, **documents à apporter** et **équipement obligatoire**.
+L'appli retient qui a été prévenu. Réglages : Paramètres → Rappels d'examen ; heure / lieu du rendez-vous
+modifiables pour chaque examen.
+
 ## Places d'examen réservées
 
 Dès la réservation sur RdvPermis, l'agence place l'examen au planning avec le **nombre de places réservées**
