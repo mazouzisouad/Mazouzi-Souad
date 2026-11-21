@@ -77,9 +77,9 @@ function bandeau(doc, f, pl, ec, { W, h, M }) {
     doc.circle(W - h * 1.45, -2, h * 0.32, 'F');
   });
   doc.setFillColor(...pl.accent); doc.rect(0, h, W, 1.6, 'F');
-  doc.setTextColor(255, 255, 255); f.bold(); doc.setFontSize(h > 40 ? 18 : 15);
+  doc.setTextColor(...surFonce()); f.bold(); doc.setFontSize(h > 40 ? 18 : 15);
   doc.text(f.t(ec.nom), M, h > 40 ? 17 : 14);
-  f.reg(); doc.setFontSize(7.8); doc.setTextColor(226, 232, 240);
+  f.reg(); doc.setFontSize(7.8); doc.setTextColor(...sousFonce());
   const lignes = [
     [ec.adresse, [ec.cp, ec.ville].filter(Boolean).join(' ')].filter(Boolean).join(', '),
     [ec.tel, ec.email].filter(Boolean).join('  ·  '),
@@ -107,10 +107,10 @@ function buildCarteRdvPdfModerne(eleveId, seances) {
     if (pg > 0) doc.addPage('a5', 'portrait');
     doc.setFillColor(248, 250, 252); doc.rect(0, 0, W, H, 'F');
     bandeau(doc, f, pl, Object.assign({}, ec, { siret: '', agrement: '' }), { W, h: 34, M });
-    pastille(doc, f, W - M, 30, 'CARTE DE RENDEZ-VOUS', pl.accent, [255, 255, 255], { taille: 7, droite: true });
+    pastille(doc, f, W - M, 30, 'CARTE DE RENDEZ-VOUS', pl.accent, surAccent(), { taille: 7, droite: true });
 
     // Accueil
-    doc.setTextColor(...pl.fonce); f.bold(); doc.setFontSize(18);
+    doc.setTextColor(...(pl.encre || pl.fonce)); f.bold(); doc.setFontSize(18);
     doc.text(f.t(`Bonjour ${e.prenom} !`), M, 50);
     f.reg(); doc.setFontSize(9); doc.setTextColor(...GRIS);
     doc.text(f.t(`Voici vos prochains rendez-vous moto${e.formation ? '  ·  ' + e.formation : ''}`), M, 56);
@@ -130,7 +130,7 @@ function buildCarteRdvPdfModerne(eleveId, seances) {
       // pavé date
       const d = parseISO(s.date);
       doc.setFillColor(...pl.accent); doc.roundedRect(M, y, 22, h, 4, 4, 'F'); doc.rect(M + 18, y, 4, h, 'F');
-      doc.setTextColor(255, 255, 255);
+      doc.setTextColor(...surAccent());
       f.semi(); doc.setFontSize(6.5); doc.text(d.toLocaleDateString('fr-FR', { weekday: 'short' }).replace('.', '').toUpperCase(), M + 11, y + 5.5, { align: 'center' });
       f.bold(); doc.setFontSize(16); doc.text(String(d.getDate()), M + 11, y + 13.2, { align: 'center' });
       f.semi(); doc.setFontSize(6.5); doc.text(d.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '').toUpperCase(), M + 11, y + 18, { align: 'center' });
@@ -140,7 +140,7 @@ function buildCarteRdvPdfModerne(eleveId, seances) {
       const ct = couleurType(s.type);
       let px = M + w - 3;
       px -= pastille(doc, f, px, y + 7.6, f.t(TYPES[s.type].label), ct.fond, ct.texte, { taille: 7, droite: true }) + 1.5;
-      if (s.prepa) pastille(doc, f, px, y + 7.6, 'Prépa examen', pl.clair, pl.fonce, { taille: 6.5, droite: true });
+      if (s.prepa) pastille(doc, f, px, y + 7.6, 'Prépa examen', pl.clair, (pl.encre || pl.fonce), { taille: 6.5, droite: true });
       // détails
       f.reg(); doc.setFontSize(8); doc.setTextColor(...GRIS);
       const m = byId('moniteurs', s.moniteurId);
@@ -158,7 +158,7 @@ function buildCarteRdvPdfModerne(eleveId, seances) {
     const cond = doc.splitTextToSize(f.t(DB.settings.conditionsRdv || ''), W - 2 * M - 8);
     const hc = cond.length * 3.2 + 6;
     doc.setFillColor(...pl.clair); doc.roundedRect(M, H - 10 - hc, W - 2 * M, hc, 3, 3, 'F');
-    doc.setTextColor(...pl.fonce); doc.text(cond, M + 4, H - 10 - hc + 5.2);
+    doc.setTextColor(...(pl.encre || pl.fonce)); doc.text(cond, M + 4, H - 10 - hc + 5.2);
     if (pages > 1) { doc.setTextColor(...GRIS); doc.setFontSize(7); doc.text(`${pg + 1}/${pages}`, W - M, H - 4, { align: 'right' }); }
   }
   return doc;
@@ -181,10 +181,10 @@ function buildFacturePdfModerne(fac) {
   const W = 210, M = 16;
 
   bandeau(doc, f, pl, ec, { W, h: 44, M });
-  doc.setTextColor(255, 255, 255); f.bold(); doc.setFontSize(26);
+  doc.setTextColor(...surFonce()); f.bold(); doc.setFontSize(26);
   doc.text('FACTURE', W - M, 19, { align: 'right' });
-  pastille(doc, f, W - M, 28, f.t(`N° ${fac.numero}`), pl.accent, [255, 255, 255], { taille: 8.5, droite: true });
-  f.reg(); doc.setFontSize(8.5); doc.setTextColor(226, 232, 240);
+  pastille(doc, f, W - M, 28, f.t(`N° ${fac.numero}`), pl.accent, surAccent(), { taille: 8.5, droite: true });
+  f.reg(); doc.setFontSize(8.5); doc.setTextColor(...sousFonce());
   doc.text(`Émise le ${fmtDate(fac.date)}`, W - M, 37, { align: 'right' });
 
   // Deux cartes : client / récapitulatif
@@ -217,7 +217,7 @@ function buildFacturePdfModerne(fac) {
   let y = cy + ch + 12;
   const cols = { d: M + 4, q: 134, pu: 162, tot: W - M - 4 };
   doc.setFillColor(...pl.fonce); doc.roundedRect(M, y - 6, W - 2 * M, 10, 3, 3, 'F');
-  doc.setTextColor(255, 255, 255); f.semi(); doc.setFontSize(8.5);
+  doc.setTextColor(...surFonce()); f.semi(); doc.setFontSize(8.5);
   doc.text('Désignation', cols.d, y); doc.text('Qté', cols.q, y, { align: 'right' });
   doc.text('Prix unit. TTC', cols.pu, y, { align: 'right' }); doc.text('Total TTC', cols.tot, y, { align: 'right' });
   y += 6;
@@ -245,12 +245,12 @@ function buildFacturePdfModerne(fac) {
   if (tot.taux > 0) { sousLigne('Total HT', f.eur(tot.ht)); sousLigne(`TVA ${String(tot.taux).replace('.', ',')} %`, f.eur(tot.tva)); }
   y += 1;
   doc.setFillColor(...pl.accent); doc.roundedRect(tx, y - 6, 82, 13, 4, 4, 'F');
-  doc.setTextColor(255, 255, 255); f.semi(); doc.setFontSize(10); doc.text('Total TTC', tx + 5, y + 2);
+  doc.setTextColor(...surAccent()); f.semi(); doc.setFontSize(10); doc.text('Total TTC', tx + 5, y + 2);
   f.bold(); doc.setFontSize(15); doc.text(f.eur(tot.ttc), W - M - 5, y + 2.4, { align: 'right' });
   y += 13;
   if (paye > 0 && reste > 0.005) {
     sousLigne('Déjà réglé', '- ' + f.eur(paye));
-    f.bold(); doc.setFontSize(11); doc.setTextColor(...pl.fonce); doc.text('Reste à payer', tx + 4, y + 1);
+    f.bold(); doc.setFontSize(11); doc.setTextColor(...(pl.encre || pl.fonce)); doc.text('Reste à payer', tx + 4, y + 1);
     doc.text(f.eur(reste), W - M - 4, y + 1, { align: 'right' }); y += 8;
   }
   if (tot.taux === 0) { f.reg(); doc.setFontSize(8); doc.setTextColor(...GRIS); doc.text('TVA non applicable, art. 293 B du CGI', W - M, y, { align: 'right' }); y += 5; }
@@ -266,7 +266,7 @@ function buildFacturePdfModerne(fac) {
   const pays = DB.paiements.filter((p) => p.factureId === fac.id).sort((a, b) => a.date.localeCompare(b.date));
   if (pays.length) {
     y += 6;
-    f.semi(); doc.setFontSize(9); doc.setTextColor(...pl.fonce); doc.text('Règlements reçus', M, y); y += 5;
+    f.semi(); doc.setFontSize(9); doc.setTextColor(...(pl.encre || pl.fonce)); doc.text('Règlements reçus', M, y); y += 5;
     f.reg(); doc.setFontSize(8.5); doc.setTextColor(...GRIS);
     pays.forEach((p) => {
       doc.setFillColor(...pl.accent); doc.circle(M + 1.2, y - 1.1, 0.9, 'F');
@@ -297,7 +297,7 @@ function buildContratPdfModerne(c) {
   const W = 210, M = 18, BAS = 272;
 
   bandeau(doc, f, pl, ec, { W, h: 36, M });
-  pastille(doc, f, W - M, 31, 'CONTRAT DE FORMATION', pl.accent, [255, 255, 255], { taille: 7.5, droite: true });
+  pastille(doc, f, W - M, 31, 'CONTRAT DE FORMATION', pl.accent, surAccent(), { taille: 7.5, droite: true });
   let y = 50;
 
   const saut = (h) => { if (y + h > BAS) { doc.addPage(); y = 22; } };
@@ -311,18 +311,18 @@ function buildContratPdfModerne(c) {
       const titre = ligne.replace(/^#\s+/, '');
       const art = titre.match(/^Article\s+(\d+)\s*[–-]\s*(.*)$/i);
       if (premierTitre && !art) {
-        f.bold(); doc.setFontSize(15); doc.setTextColor(...pl.fonce);
+        f.bold(); doc.setFontSize(15); doc.setTextColor(...(pl.encre || pl.fonce));
         const t = doc.splitTextToSize(f.t(titre), W - 2 * M);
         saut(t.length * 6.5 + 4); doc.text(t, M, y); y += t.length * 6.5 + 3;
       } else if (art) {
         saut(14); y += 3;
         doc.setFillColor(...pl.accent); doc.circle(M + 3.6, y - 1.4, 3.6, 'F');
-        doc.setTextColor(255, 255, 255); f.bold(); doc.setFontSize(8.5); doc.text(art[1], M + 3.6, y + 0.2, { align: 'center' });
-        f.semi(); doc.setFontSize(11); doc.setTextColor(...pl.fonce);
+        doc.setTextColor(...surAccent()); f.bold(); doc.setFontSize(8.5); doc.text(art[1], M + 3.6, y + 0.2, { align: 'center' });
+        f.semi(); doc.setFontSize(11); doc.setTextColor(...(pl.encre || pl.fonce));
         doc.text(f.t(art[2]), M + 10, y);
         y += 6.5;
       } else {
-        saut(12); y += 2; f.semi(); doc.setFontSize(11); doc.setTextColor(...pl.fonce);
+        saut(12); y += 2; f.semi(); doc.setFontSize(11); doc.setTextColor(...(pl.encre || pl.fonce));
         doc.text(f.t(titre), M, y); y += 6;
       }
       premierTitre = false;
@@ -440,7 +440,7 @@ function buildFacturePdfClassique(f) {
 
   let y = 96;
   doc.setFillColor(...palette().fonce); doc.rect(M, y - 5, W - 2 * M, 8, 'F');
-  doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+  doc.setTextColor(...surFonce()); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
   doc.text('Désignation', M + 2, y); doc.text('Qté', 130, y, { align: 'right' });
   doc.text('PU TTC', 165, y, { align: 'right' }); doc.text('Total TTC', W - M - 2, y, { align: 'right' });
   doc.setTextColor(15, 23, 42); doc.setFont('helvetica', 'normal');
@@ -498,7 +498,7 @@ function buildCarteRdvPdfClassique(eleveId, seances) {
     if (pg > 0) doc.addPage([148, 105], 'landscape');
     doc.setFillColor(...palette().fonce); doc.rect(0, 0, W, 20, 'F');
     doc.setFillColor(...palette().accent); doc.rect(0, 20, W, 1.5, 'F');
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor(...surFonce());
     doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
     doc.text(pdfText(ec.nom), M, 9);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);

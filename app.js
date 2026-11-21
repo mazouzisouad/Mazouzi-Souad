@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · couleur par auto-école';
+const APP_VERSION = '2026-11-22 · couleurs Tremblay / Familys / Smile';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -148,6 +148,16 @@ function migrate(db) {
   db.settings.rappel.documents = Object.assign({}, def.settings.rappel.documents, db.settings.rappel.documents || {});
   db.entreprise = Object.assign({}, def.entreprise, db.entreprise || {});
   for (const k of ['agences', 'moniteurs', 'prestations', 'eleves', 'seances', 'factures', 'paiements', 'contrats', 'suivi']) db[k] = db[k] || [];
+  // Couleurs demandées pour les auto-écoles (appliquées une seule fois ; modifiables ensuite dans Paramètres)
+  if (db.settings && !db.settings.couleursAuto1 && Array.isArray(db.agences)) {
+    for (const a of db.agences) {
+      const n = String(a.nom || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      if (/tremblay/.test(n)) a.couleursPdf = 'bleuRose';
+      else if (/famil/.test(n)) a.couleursPdf = 'vertGris';
+      else if (/smile/.test(n)) a.couleursPdf = 'jaune';
+    }
+    db.settings.couleursAuto1 = true;
+  }
   if (!Array.isArray(db.modeles)) db.modeles = modelesParDefaut();
   else majModelesFournis(db.modeles);
   if (!db.agences.length) db.agences = def.agences;
@@ -1531,7 +1541,14 @@ const PALETTES = {
   noir: { nom: 'Noir & or', fonce: [23, 23, 23], accent: [202, 138, 4], clair: [254, 249, 195] },
   rouge: { nom: 'Rouge & gris', fonce: [31, 41, 55], accent: [220, 38, 38], clair: [254, 226, 226] },
   gris: { nom: 'Sobre (gris)', fonce: [55, 65, 81], accent: [107, 114, 128], clair: [243, 244, 246] },
+  bleuRose: { nom: 'Bleu clair & rose', fonce: [14, 165, 233], accent: [236, 72, 153], clair: [252, 231, 243], encre: [3, 105, 161] },
+  vertGris: { nom: 'Vert & gris', fonce: [75, 85, 99], accent: [22, 163, 74], clair: [220, 252, 231], encre: [21, 128, 61] },
+  jaune: { nom: 'Jaune', fonce: [250, 204, 21], accent: [234, 179, 8], clair: [254, 249, 195], encre: [133, 77, 14], surFonce: [41, 37, 36], sousFonce: [87, 83, 78], surAccent: [41, 37, 36] },
 };
+// Couleur du texte posé sur la couleur foncée / sur l'accent (blanc, sauf palettes claires comme le jaune)
+const surFonce = () => palette().surFonce || [255, 255, 255];
+const sousFonce = () => palette().sousFonce || [226, 232, 240];
+const surAccent = () => palette().surAccent || [255, 255, 255];
 // Auto-école du document en cours de création (sa couleur passe avant la couleur générale)
 let PDF_AGENCE = null;
 const palette = () => PALETTES[PDF_AGENCE && PDF_AGENCE.couleursPdf] || PALETTES[DB.settings.couleursPdf] || PALETTES.orange;
