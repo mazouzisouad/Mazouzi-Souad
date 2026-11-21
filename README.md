@@ -29,14 +29,24 @@ puis, sur le téléphone, « Ajouter à l'écran d'accueil » pour l'utiliser co
 Pour essayer : **Paramètres → Charger des données de démonstration**.
 Ensuite, dans Paramètres : « Mon auto-école » (nom, SIRET, TVA… pour les factures), vos agences et vos moniteurs.
 
-## Important : où sont les données ?
+## Places d'examen réservées
 
-Les données sont enregistrées **dans le navigateur de l'appareil utilisé**. Elles ne sont pas partagées
-automatiquement entre plusieurs téléphones. Utilisez **Paramètres → Sauvegarder (fichier)** régulièrement,
-et **Restaurer** pour transférer les données sur un autre appareil.
-Pour que les deux moniteurs voient le même planning en temps réel, il faudra ajouter une base de données
-en ligne (étape suivante possible).
+Dès la réservation sur RdvPermis, l'agence place l'examen au planning avec le **nombre de places réservées**
+(sans les noms). L'examen affiche « 3 places à attribuer » ; les noms se mettent plus tard
+(onglet **Élèves → Examens à venir** ; les élèves en attente de repassage sont proposés en premier).
+
+## Planning partagé en ligne
+
+Pour que les agences et les moniteurs voient **le même planning en direct**, l'appli utilise Firebase
+(gratuit). Mise en place pas à pas : voir **[FIREBASE.md](FIREBASE.md)**.
+
+- Connexion par e-mail + mot de passe ; seuls les e-mails listés dans `firestore.rules` ont accès.
+- Fonctionne hors connexion : les changements partent dès que le réseau revient.
+- Numéros de facture sans doublon, même si deux agences facturent au même moment.
+
+Sans Firebase, l'appli fonctionne seule sur un appareil (données dans le navigateur ;
+Paramètres → Sauvegarder / Restaurer pour les transférer).
 
 ## Technique
 
-HTML/CSS/JavaScript sans installation. PDF générés avec [jsPDF](https://github.com/parallax/jsPDF) (licence MIT, inclus dans `vendor/`).
+HTML/CSS/JavaScript sans installation. PDF générés avec [jsPDF](https://github.com/parallax/jsPDF) (licence MIT) ; synchronisation avec le SDK Firebase (Apache 2.0). Les deux sont inclus dans `vendor/`.

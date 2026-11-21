@@ -1,6 +1,7 @@
 // Service worker : permet d'utiliser l'appli hors connexion (installée sur le téléphone).
-const CACHE = 'moto-planning-v1';
-const FILES = ['./', 'index.html', 'styles.css', 'app.js', 'icon.svg', 'manifest.webmanifest', 'vendor/jspdf.umd.min.js'];
+const CACHE = 'moto-planning-v2';
+const FILES = ['./', 'index.html', 'styles.css', 'app.js', 'icon.svg', 'manifest.webmanifest', 'vendor/jspdf.umd.min.js',
+  'config.js', 'cloud.js', 'vendor/firebase/firebase-app-compat.js', 'vendor/firebase/firebase-auth-compat.js', 'vendor/firebase/firebase-firestore-compat.js'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));
@@ -16,6 +17,7 @@ self.addEventListener('activate', (e) => {
 // Réseau d'abord (pour avoir toujours la dernière version), cache si hors ligne.
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
+  if (new URL(e.request.url).origin !== self.location.origin) return; // Firebase & co : pas de cache
   e.respondWith(
     fetch(e.request)
       .then((res) => {

@@ -16,6 +16,8 @@ const TYPES = {
   exam_circulation: { label: 'Examen circulation', short: '🎓 Exam circu', exam: true },
 };
 const isExam = (type) => !!TYPES[type]?.exam;
+// Capacité d'une séance : pour un examen, le nombre de places réservées sur RdvPermis s'il est renseigné
+const capDe = (s) => (isExam(s.type) && Number(s.places) > 0 ? Number(s.places) : DB.settings.capacite[s.type]);
 const STATUTS_PRESENCE = { prevu: 'Prévu', present: 'Présent', absent: 'Absent (dû)', excuse: 'Excusé' };
 const STATUTS_EXAMEN = { prevu: 'Prévu', admis: 'Admis ✅', ajourne: 'Ajourné ❌', absent: 'Absent' };
 const statutsPour = (type) => (isExam(type) ? STATUTS_EXAMEN : STATUTS_PRESENCE);
@@ -132,6 +134,7 @@ function migrate(db) {
 function save() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); }
   catch (e) { toast("Impossible d'enregistrer : " + e.message, true); }
+  if (Cloud.actif) Cloud.push(DB).catch((e) => toast('Synchronisation impossible : ' + e.message, true));
 }
 
 const byId = (list, id) => DB[list].find((x) => x.id === id);
@@ -262,9 +265,36 @@ function majMenu() {
   $('#tabs [data-view=eleves]').innerHTML = `👤 Élèves${n ? ` <span class="count" title="En attente de repassage">${n}</span>` : ''}`;
 }
 
+function viewConnexion() {
+  if (Cloud.user && !Cloud.ready) return `<div class="card empty">${Cloud.error ? `<div class="alert bad">${esc(Cloud.error)}</div><button class="btn" data-action="cloudLogout">Se déconnecter</button>` : '⏳ Chargement du planning en ligne…'}</div>`;
+  if (Cloud.user && Cloud.empty) {
+    return `<div class="card" style="max-width:560px;margin:30px auto">
+      <h2>Mise en service du planning partagé</h2>
+      <p>Le planning en ligne est vide. Voulez-vous y envoyer les données de cet appareil (élèves, planning, factures, paiements, paramètres) ?</p>
+      <p class="muted small">À faire une seule fois, depuis l'appareil qui contient les bonnes données.</p>
+      <div class="row"><button class="btn primary" data-action="cloudUpload">⬆️ Envoyer mes données en ligne</button>
+      <button class="btn" data-action="cloudStartEmpty">Commencer avec un planning vide</button></div>
+    </div>`;
+  }
+  return `<div class="card" style="max-width:380px;margin:40px auto">
+    <h2>Connexion</h2>
+    <p class="muted small">Planning partagé — connectez-vous avec l'e-mail et le mot de passe fournis par l'auto-école.</p>
+    ${Cloud.error ? `<div class="alert bad">${esc(Cloud.error)}</div>` : ''}
+    <form id="login-form" class="form-grid" style="grid-template-columns:1fr" onsubmit="return false">
+      <label class="field"><span>E-mail</span><input name="email" type="email" autocomplete="username" required></label>
+      <label class="field"><span>Mot de passe</span><input name="password" type="password" autocomplete="current-password" required></label>
+      <button class="btn primary" data-action="cloudLogin">Se connecter</button>
+      <button class="btn ghost small" data-action="cloudReset">Mot de passe oublié ?</button>
+    </form>
+  </div>`;
+}
+
 function render() {
-  majMenu();
   const v = $('#view');
+  const bloque = Cloud.enabled && !Cloud.actif;
+  $('#tabs').hidden = bloque;
+  if (bloque) { v.innerHTML = viewConnexion(); return; }
+  majMenu();
   if (UI.view === 'planning') v.innerHTML = viewPlanning();
   else if (UI.view === 'eleves') v.innerHTML = UI.eleveOuvert ? viewFiche(UI.eleveOuvert) : viewEleves();
   else if (UI.view === 'paiements') v.innerHTML = viewPaiements();
@@ -374,7 +404,7 @@ function agendaGrid(cols) {
 function blocSeance(s, hMin) {
   const top = ((toMin(s.debut) - hMin) / 30) * ROW_H;
   const height = Math.max(ROW_H, ((toMin(s.fin) - toMin(s.debut)) / 30) * ROW_H) - 2;
-  const cap = DB.settings.capacite[s.type];
+  const cap = capDe(s);
   const n = s.eleves.length;
   const noms = s.eleves.map((p) => {
     const e = byId('eleves', p.eleveId);
@@ -387,6 +417,7 @@ function blocSeance(s, hMin) {
   <div class="ag-bloc ${s.type}" style="top:${top + 1}px;height:${height}px" data-action="editSeance" data-id="${s.id}">
     <div class="ag-bloc-top"><span>${s.debut} ${TYPES[s.type].short}</span><span class="fill ${n >= cap ? 'full' : 'free'}">${n}/${cap}</span></div>
     <div class="ag-els">${noms}</div>
+    ${isExam(s.type) && n < cap ? `<div class="ag-libre">${cap - n} place${cap - n > 1 ? 's' : ''} à attribuer</div>` : ''}
     ${isExam(s.type) && s.lieu ? `<div class="ag-lieu">📍 ${esc(s.lieu)}</div>` : ''}
   </div>`;
 }
@@ -626,8 +657,13 @@ function openSeance(seance) {
         ${Object.entries(TYPES).map(([k, t]) => `<button data-action="setType" data-t="${k}" class="${draft.type === k ? 'on' : ''} ${k}">${t.exam ? '🎓 ' : ''}${t.label}<small>${t.exam ? 'accompagnement · ' : ''}max ${DB.settings.capacite[k]}</small></button>`).join('')}
       </div>
       <div id="s-lieu-wrap">
-        <div class="lbl">Centre d'examen</div>
-        <input id="s-lieu" value="${esc(draft.lieu || '')}" placeholder="Ex : centre d'examen de …" list="lieux-exam">
+        <div class="row" style="align-items:flex-end;gap:12px">
+          <div style="flex:0 0 170px"><div class="lbl">Places réservées</div>
+            <input id="s-places" type="number" min="1" max="${DB.settings.capacite.exam_plateau}" value="${esc(draft.places || '')}" placeholder="ex : 3"></div>
+          <div style="flex:1;min-width:200px"><div class="lbl">Centre d'examen</div>
+            <input id="s-lieu" value="${esc(draft.lieu || '')}" placeholder="Ex : centre d'examen de …" list="lieux-exam"></div>
+        </div>
+        <p class="muted small" style="margin:4px 0 0">Mettez le nombre de places réservées sur RdvPermis : les noms des élèves pourront être ajoutés plus tard.</p>
         <datalist id="lieux-exam">${[...new Set(DB.seances.filter((x) => isExam(x.type)).map((x) => x.lieu).filter(Boolean))].map((l) => `<option value="${esc(l)}">`).join('')}</datalist>
       </div>
       <div class="lbl">Durée</div>
@@ -644,9 +680,9 @@ function openSeance(seance) {
       <button class="btn" data-action="closeModal">Annuler</button>
       <button class="btn primary" data-action="saveSeance">${isNew ? 'Placer sur le planning' : 'Enregistrer'}</button>`,
     onMount: (mod) => {
-      ['#s-date', '#s-debut', '#s-mon'].forEach((sel) => $(sel, mod).addEventListener('change', () => { readDraft(); refreshDraft(); }));
+      ['#s-date', '#s-debut', '#s-mon', '#s-places'].forEach((sel) => $(sel, mod).addEventListener('change', () => { readDraft(); refreshDraft(); }));
       refreshDraft();
-      if (isNew) setTimeout(() => $('#s-search')?.focus(), 50);
+      if (isNew && !isExam(draft.type) && matchMedia('(pointer: fine)').matches) setTimeout(() => $('#s-search')?.focus(), 50);
     },
   });
 }
@@ -657,11 +693,14 @@ function readDraft() {
   draft.debut = $('#s-debut').value || draft.debut;
   draft.fin = fromMin(toMin(draft.debut) + dur);
   draft.moniteurId = $('#s-mon').value;
-  if (isExam(draft.type) && $('#s-lieu')) draft.lieu = $('#s-lieu').value.trim();
+  if (isExam(draft.type) && $('#s-lieu')) {
+    draft.lieu = $('#s-lieu').value.trim();
+    draft.places = parseInt($('#s-places').value, 10) || 0;
+  }
 }
 
 function refreshDraft() {
-  const cap = DB.settings.capacite[draft.type];
+  const cap = capDe(draft);
   const n = draft.eleves.length;
   const dur = toMin(draft.fin) - toMin(draft.debut);
   $$('#s-type button').forEach((b) => b.classList.toggle('on', b.dataset.t === draft.type));
@@ -701,25 +740,35 @@ function renderResults() {
   for (const o of DB.seances) if (o.id !== draft.id && overlaps(o, draft)) o.eleves.forEach((p) => occupes.add(p.eleveId));
   let list = DB.eleves.filter((e) => e.statut === 'en_cours' && !inscrits.has(e.id));
   if (q) list = list.filter((e) => `${e.nom} ${e.prenom} ${e.prenom} ${e.nom} ${e.tel}`.toLowerCase().includes(q));
-  list.sort(triNom);
-  if (!q && list.length > 6) list = list.slice(0, 6);
+  const tags = new Map();
+  if (isExam(draft.type)) {
+    for (const r of repassages()) if (r.type === draft.type) tags.set(r.eleve.id, `repassage ${r.type === 'exam_plateau' ? 'plateau' : 'circulation'}`);
+    if (draft.type === 'exam_circulation') {
+      for (const e of list) if (!tags.has(e.id) && eleveExamens(e.id).exam_plateau.cls === 'ok' && eleveExamens(e.id).exam_circulation.cls !== 'warn') tags.set(e.id, 'plateau ✅');
+    }
+  }
+  list.sort((a, b) => (tags.has(b.id) - tags.has(a.id)) || triNom(a, b));
+  if (!q && list.length > 6) list = list.slice(0, Math.max(6, [...tags.keys()].length));
   else list = list.slice(0, 12);
   box.innerHTML = list.map((e) => {
     const a = agenceDe(e);
     const busy = occupes.has(e.id);
+    const tag = tags.get(e.id);
     return `<button class="result" data-action="pickEleve" data-id="${e.id}" ${busy ? 'disabled title="Déjà en leçon à cette heure"' : ''}>
       <span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}"></span>
       <strong>${esc(e.nom.toUpperCase())}</strong> ${esc(e.prenom)}
       <span class="muted small">${esc(a?.nom || '')}${busy ? ' · déjà pris' : ''}</span>
+      ${tag ? `<span class="badge exam_plateau">${esc(tag)}</span>` : ''}
     </button>`;
   }).join('') + `<button class="result add" data-action="quickEleve">＋ Nouvel élève${q ? ` « ${esc(q)} »` : ''}</button>`;
 }
 
 function seanceConflicts(s) {
   const errors = [];
-  const cap = DB.settings.capacite[s.type];
+  const cap = capDe(s);
   if (!s.date) errors.push('Choisissez une date.');
-  if (s.eleves.length > cap) errors.push(`${s.eleves.length} élèves pour ${cap} places maximum en ${TYPES[s.type].label.toLowerCase()}.`);
+  if (isExam(s.type) && Number(s.places) > DB.settings.capacite[s.type]) errors.push(`${s.places} places : le maximum réglé pour un ${TYPES[s.type].label.toLowerCase()} est ${DB.settings.capacite[s.type]} (modifiable dans Paramètres).`);
+  if (s.eleves.length > cap) errors.push(`${s.eleves.length} élèves pour ${cap} place${cap > 1 ? 's' : ''} en ${TYPES[s.type].label.toLowerCase()}.`);
   for (const o of DB.seances.filter((x) => x.id !== s.id && overlaps(x, s))) {
     if (o.moniteurId === s.moniteurId) errors.push(`${moniteurNom(byId('moniteurs', s.moniteurId))} a déjà une leçon de ${o.debut} à ${o.fin}.`);
     for (const p of s.eleves) {
@@ -737,7 +786,31 @@ function ongletsEleves() {
   return `<div class="seg" style="margin-bottom:12px">
     <button class="${UI.ongletEleves === 'tous' ? 'on' : ''}" data-action="ongletEleves" data-o="tous">Tous les élèves</button>
     <button class="${UI.ongletEleves === 'repassage' ? 'on' : ''}" data-action="ongletEleves" data-o="repassage">En attente de repassage ${n ? `<span class="count">${n}</span>` : ''}</button>
+    <button class="${UI.ongletEleves === 'examens' ? 'on' : ''}" data-action="ongletEleves" data-o="examens">Examens à venir ${placesLibres() ? `<span class="count">${placesLibres()}</span>` : ''}</button>
   </div>`;
+}
+
+const examensAVenir = () => DB.seances.filter((x) => isExam(x.type) && x.date >= todayISO()).sort((a, b) => (a.date + a.debut).localeCompare(b.date + b.debut));
+const placesLibres = () => examensAVenir().reduce((n, x) => n + Math.max(0, capDe(x) - x.eleves.length), 0);
+
+function viewExamens() {
+  const list = examensAVenir();
+  if (!list.length) return '<div class="card empty">Aucun examen à venir. Placez-le dans le planning dès la réservation sur RdvPermis.</div>';
+  return `<div class="table-wrap"><table>
+    <thead><tr><th>Date</th><th>Épreuve</th><th>Centre</th><th>Moniteur</th><th>Élèves</th><th>Places</th></tr></thead>
+    <tbody>${list.map((x) => {
+      const cap = capDe(x);
+      const libres = cap - x.eleves.length;
+      return `<tr class="clickable" data-action="editSeance" data-id="${x.id}">
+        <td><strong>${fmtDate(x.date)}</strong> ${x.debut}</td>
+        <td><span class="badge ${x.type}">${TYPES[x.type].label}</span></td>
+        <td>${esc(x.lieu || '—')}</td>
+        <td>${esc(moniteurNom(byId('moniteurs', x.moniteurId)))}</td>
+        <td>${x.eleves.map((p) => esc(eleveNom(byId('eleves', p.eleveId)))).join(', ') || '<span class="muted">—</span>'}</td>
+        <td>${libres > 0 ? `<span class="badge warn">${libres} à attribuer</span>` : '<span class="badge ok">complet</span>'} <span class="muted small">${x.eleves.length}/${cap}</span></td>
+      </tr>`;
+    }).join('')}</tbody></table></div>
+    <p class="muted small" style="margin-top:8px">Cliquez sur un examen pour attribuer les places : les élèves en attente de repassage sont proposés en premier.</p>`;
 }
 
 function viewRepassages() {
@@ -784,7 +857,7 @@ function viewEleves() {
     <button class="btn primary" data-action="newEleve">+ Nouvel élève</button>
   </div>
   ${ongletsEleves()}
-  ${UI.ongletEleves === 'repassage' ? viewRepassages() : `
+  ${UI.ongletEleves === 'repassage' ? viewRepassages() : UI.ongletEleves === 'examens' ? viewExamens() : `
   ${list.length ? `
   <div class="table-wrap"><table>
     <thead><tr><th>Élève</th><th>Agence</th><th>Téléphone</th><th>Prochaine leçon</th><th class="num">Reste dû</th></tr></thead>
@@ -1132,7 +1205,7 @@ function updateTotalFacture() {
   $('#total-ttc').textContent = eur(draftFacture.lignes.reduce((s, l) => s + (Number(l.qte) || 0) * (Number(l.pu) || 0), 0));
 }
 
-function saveFacture() {
+async function saveFacture() {
   const form = formData($('#facture-form'));
   const isNew = !draftFacture.id;
   if (isNew) draftFacture.eleveId = form.eleveId;
@@ -1144,7 +1217,10 @@ function saveFacture() {
   let f;
   if (isNew) {
     const ent = DB.entreprise;
-    ent.compteur = (Number(ent.compteur) || 0) + 1;
+    if (Cloud.actif) {
+      try { ent.compteur = await Cloud.nextNumero(); }
+      catch (e) { return toast('Connexion nécessaire pour numéroter la facture : ' + e.message, true); }
+    } else ent.compteur = (Number(ent.compteur) || 0) + 1;
     draftFacture.id = uid();
     draftFacture.numero = `${ent.prefixe || 'F'}-${draftFacture.date.slice(0, 4)}-${String(ent.compteur).padStart(4, '0')}`;
     draftFacture.tva = Number(ent.tva) || 0;
@@ -1529,6 +1605,18 @@ function viewParametres() {
       <button class="btn" data-action="editPrestation">+ Ajouter</button>
     </div>
     <div class="card">
+      <h2>🌐 Planning partagé en ligne</h2>
+      ${Cloud.actif ? `
+        <p><span class="badge ok">Connecté</span> ${esc(Cloud.user.email)}</p>
+        <p class="muted small">Toutes les modifications sont partagées en direct avec les agences et les moniteurs.</p>
+        <div class="row"><button class="btn" data-action="cloudLogout">Se déconnecter</button>
+        ${window.FIREBASE_CONFIG ? '' : '<button class="btn danger" data-action="cloudForget">Désactiver sur cet appareil</button>'}</div>`
+      : `
+        <p class="muted small">Pour que les agences et les moniteurs voient le même planning. Collez la configuration de votre projet Firebase (voir le guide FIREBASE.md).</p>
+        <textarea id="cloud-cfg" placeholder='const firebaseConfig = { apiKey: "...", projectId: "...", ... };'></textarea>
+        <div class="row" style="margin-top:8px"><button class="btn primary" data-action="cloudActiver">Activer le planning partagé</button></div>`}
+    </div>
+    <div class="card">
       <h2>Sauvegarde</h2>
       <p class="muted small">Les données sont gardées sur cet appareil. Faites une sauvegarde régulièrement.</p>
       <div class="row">
@@ -1642,7 +1730,7 @@ const ACTIONS = {
   setDuree(d) { draft.fin = fromMin(toMin(draft.debut) + Number(d.d)); refreshDraft(); },
   searchEleve() { renderResults(); },
   pickEleve(d) {
-    if (draft.eleves.length >= DB.settings.capacite[draft.type]) return toast('Leçon complète', true);
+    if (draft.eleves.length >= capDe(draft)) return toast('Complet', true);
     draft.eleves.push({ eleveId: d.id, statut: 'prevu' });
     $('#s-search').value = '';
     refreshDraft();
@@ -1662,7 +1750,7 @@ const ACTIONS = {
     const [nom, ...rest] = q.split(/\s+/);
     openEleve({ nom: nom || '', prenom: rest.join(' '), agenceId: DB.agences[0]?.id, formation: 'A2', statut: 'en_cours' }, {
       onSaved: (e) => {
-        if (snapshot.eleves.length < DB.settings.capacite[snapshot.type]) snapshot.eleves.push({ eleveId: e.id, statut: 'prevu' });
+        if (snapshot.eleves.length < capDe(snapshot)) snapshot.eleves.push({ eleveId: e.id, statut: 'prevu' });
         openSeance(snapshot);
       },
       onCancel: () => openSeance(snapshot),
@@ -1672,7 +1760,7 @@ const ACTIONS = {
     readDraft();
     const { errors } = seanceConflicts(draft);
     if (errors.length) { refreshDraft(); return toast(errors[0], true); }
-    if (!draft.eleves.length && !confirm('Aucun élève : placer quand même ce créneau ?')) return;
+    if (!draft.eleves.length && !(isExam(draft.type) && draft.places) && !confirm('Aucun élève : placer quand même ce créneau ?')) return;
     // Admis à l'examen circulation → permis obtenu
     if (draft.type === 'exam_circulation') {
       const recus = draft.eleves.filter((p) => p.statut === 'admis').map((p) => byId('eleves', p.eleveId)).filter((e) => e && e.statut !== 'obtenu');
@@ -1839,6 +1927,7 @@ const ACTIONS = {
         data.compteur = parseInt(data.compteur, 10) || 0;
         data.tva = Number(data.tva) || 0;
         Object.assign(DB.entreprise, data);
+        if (Cloud.actif) Cloud.setCompteur(data.compteur).catch(() => {});
       },
     });
   },
@@ -1900,17 +1989,57 @@ const ACTIONS = {
       try {
         const data = JSON.parse(reader.result);
         if (!data.eleves || !data.seances) throw new Error('fichier non reconnu');
-        if (!confirm('Remplacer toutes les données actuelles par celles de la sauvegarde ?')) return;
+        if (!confirm(Cloud.actif ? 'ATTENTION : mode partagé. Remplacer le planning de TOUT LE MONDE par celui de la sauvegarde ?' : 'Remplacer toutes les données actuelles par celles de la sauvegarde ?')) return;
         DB = migrate(data); save(); render(); toast('Données restaurées');
       } catch (err) { toast('Restauration impossible : ' + err.message, true); }
     };
     reader.readAsText(file);
   },
+  async cloudLogin() {
+    const form = $('#login-form');
+    if (!form.reportValidity()) return;
+    const { email, password } = formData(form);
+    Cloud.error = '';
+    try { await Cloud.login(email, password); }
+    catch (e) { Cloud.error = 'E-mail ou mot de passe incorrect.'; render(); }
+  },
+  async cloudReset() {
+    const email = $('#login-form [name=email]').value.trim();
+    if (!email) return toast("Tapez d'abord votre e-mail", true);
+    try { await Cloud.resetPassword(email); toast('E-mail de réinitialisation envoyé'); }
+    catch (e) { toast('Impossible : ' + e.message, true); }
+  },
+  async cloudLogout() { await Cloud.logout(); },
+  async cloudUpload() {
+    try { await Cloud.upload(DB); toast('Données envoyées en ligne ✅'); render(); }
+    catch (e) { toast('Envoi impossible : ' + e.message, true); }
+  },
+  async cloudStartEmpty() {
+    if (!confirm('Commencer avec un planning vide (les données de cet appareil ne seront pas envoyées) ?')) return;
+    DB = defaultState();
+    try { await Cloud.upload(DB); render(); } catch (e) { toast('Impossible : ' + e.message, true); }
+  },
+  cloudActiver() {
+    try {
+      const cfg = parseFirebaseConfig($('#cloud-cfg').value);
+      Cloud.saveConfig(cfg);
+      toast('Configuration enregistrée, redémarrage…');
+      setTimeout(() => location.reload(), 600);
+    } catch (e) { toast('Configuration non reconnue : ' + e.message, true); }
+  },
+  async cloudForget() {
+    if (!confirm('Désactiver le planning partagé sur cet appareil ? (Les données en ligne ne sont pas effacées.)')) return;
+    try { await Cloud.logout(); } catch (e) { /* déjà déconnecté */ }
+    Cloud.forgetConfig();
+    location.reload();
+  },
   loadDemo() {
+    if (Cloud.actif) return toast('Impossible en mode partagé : cela remplacerait le planning de tout le monde.', true);
     if (DB.eleves.length && !confirm('Remplacer les données actuelles par des données de démonstration ?')) return;
     DB = demoData(); save(); go('planning', { date: todayISO(), mode: 'jour' }); toast('Données de démonstration chargées');
   },
   resetData() {
+    if (Cloud.actif) return toast('Impossible en mode partagé : cela effacerait le planning de tout le monde.', true);
     if (!confirm('Effacer TOUTES les données ?')) return;
     if (!confirm('Vraiment tout effacer ? C\'est irréversible.')) return;
     DB = defaultState(); save(); go('planning'); toast('Données effacées');
@@ -1918,8 +2047,28 @@ const ACTIONS = {
 };
 
 /* ---------------------------------------------------------------------
+   Synchronisation en ligne
+   --------------------------------------------------------------------- */
+let renderTimer = null;
+function renderPlusTard() {
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(() => {
+    const a = document.activeElement;
+    if (a && $('#view').contains(a) && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) return renderPlusTard();
+    render();
+  }, 250);
+}
+Cloud.onChange = (db) => {
+  DB = migrate(db);
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); } catch (e) { /* plein */ }
+  renderPlusTard();
+};
+Cloud.onState = () => render();
+
+/* ---------------------------------------------------------------------
    Démarrage
    --------------------------------------------------------------------- */
+Cloud.start();
 render();
 save(); // enregistre aussi les données converties depuis une ancienne version
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {

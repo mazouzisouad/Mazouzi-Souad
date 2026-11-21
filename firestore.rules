@@ -1,0 +1,22 @@
+rules_version = '2';
+
+// Règles de sécurité du planning partagé.
+// Seules les personnes dont l'e-mail est dans la liste peuvent lire et modifier les données.
+// → Remplacez les e-mails d'exemple par ceux de vos agences et de vos moniteurs.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function autorise() {
+      return request.auth != null
+        && request.auth.token.email in [
+          'direction@exemple.fr',
+          'agence1@exemple.fr',
+          'agence2@exemple.fr',
+          'moniteur1@exemple.fr',
+          'moniteur2@exemple.fr'
+        ];
+    }
+    match /{document=**} {
+      allow read, write: if autorise();
+    }
+  }
+}
