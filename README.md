@@ -34,6 +34,7 @@ Ensuite, dans Paramètres : « Mon auto-école » (nom, SIRET, TVA… pour les f
 - **Paramètres → Contrats** : modèles de contrat avec des champs automatiques (nom, adresse, NEPH, agence, tarifs…).
   Le modèle fourni est indicatif : vérifiez-le ou collez le texte de votre contrat habituel.
 - **Fiche élève → Contrats → Nouveau contrat** : le contrat est rempli tout seul, modifiable avant signature.
+- Le modèle fourni prévoit l'examen blanc obligatoire avant chaque épreuve, 4 à 6 h de préparation, le 1er accompagnement offert et les frais de repassage (100 € plateau, 150 € circulation) — réglables dans Paramètres.
 - **Faire signer** : l'élève (ou son représentant légal) coche « lu et approuvé » et signe au doigt sur le téléphone / la tablette.
   La signature de l'auto-école est enregistrée une fois puis ajoutée automatiquement.
 - Le contrat signé (date et heure de signature) est envoyé en PDF par e-mail, WhatsApp…

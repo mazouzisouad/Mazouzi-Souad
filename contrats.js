@@ -27,8 +27,12 @@ const CHAMPS_CONTRAT = {
   date_du_jour: 'Date du jour',
   prix_heure_plateau: 'Prix heure plateau',
   prix_heure_circulation: 'Prix heure circulation',
-  prix_examen_plateau: 'Prix accompagnement examen plateau',
-  prix_examen_circulation: 'Prix accompagnement examen circulation',
+  prix_examen_plateau: '1er accompagnement examen plateau',
+  prix_examen_circulation: '1er accompagnement examen circulation',
+  prix_repassage_plateau: 'Frais de repassage plateau',
+  prix_repassage_circulation: 'Frais de repassage circulation',
+  heures_preparation_min: 'Heures de préparation (min)',
+  heures_preparation_max: 'Heures de préparation (max)',
   max_plateau: 'Max élèves plateau',
   max_circulation: 'Max élèves circulation',
   conditions_rdv: "Conditions d'annulation",
@@ -50,7 +54,36 @@ Le présent contrat a pour objet la formation pratique de l'élève à la condui
 # Article 3 – Déroulement
 La formation comprend des leçons sur plateau hors circulation (jusqu'à {{max_plateau}} élèves par moniteur) et des leçons en circulation (jusqu'à {{max_circulation}} élèves par moniteur). L'élève doit porter un équipement conforme : casque homologué, gants certifiés, blouson ou veste à manches longues, pantalon ou combinaison, bottes ou chaussures montantes.
 
-# Article 4 – Tarifs (TTC)
+# Article 4 – Examen blanc et préparation aux examens
+Avant chaque épreuve pratique, plateau (hors circulation) comme circulation, l'élève doit valider un examen blanc. L'examen blanc se déroule dans les mêmes conditions que l'examen final ; il est validé si l'élève ne commet aucune faute éliminatoire.
+Une fois l'examen blanc validé, l'établissement inscrit l'élève sur une date d'examen, selon les places disponibles.
+Avant cette date, une préparation à l'examen est planifiée : {{heures_preparation_min}} heures minimum et {{heures_preparation_max}} heures maximum, pour l'épreuve plateau comme pour l'épreuve circulation.
+
+# Article 5 – Tarifs (TTC)
+Heure de formation plateau : {{prix_heure_plateau}}
+Heure de formation circulation : {{prix_heure_circulation}}
+Premier accompagnement à l'examen plateau : {{prix_examen_plateau}}
+Premier accompagnement à l'examen circulation : {{prix_examen_circulation}}
+En cas d'échec, chaque nouvelle présentation donne lieu à des frais de repassage :
+- examen plateau : {{prix_repassage_plateau}}
+- examen circulation : {{prix_repassage_circulation}}
+
+# Article 6 – Paiement
+Les prestations sont payables selon les modalités convenues avec l'établissement. Une facture est remise pour chaque règlement.
+
+# Article 7 – Annulation des leçons
+{{conditions_rdv}}
+
+# Article 8 – Résiliation
+L'élève peut mettre fin au contrat à tout moment. Les prestations déjà effectuées restent dues ; les sommes versées pour des prestations non effectuées sont remboursées. Le dossier de l'élève lui est restitué sur demande.
+
+# Article 9 – Litiges
+En cas de litige, l'élève peut recourir gratuitement à un médiateur de la consommation : ________________.
+
+Fait à {{ville_agence}}, le {{date_du_jour}}.`;
+
+// Ancienne version (v1) du modèle fourni : remplacée automatiquement si elle n'a pas été modifiée
+const ANCIEN_BLOC_V1 = `# Article 4 – Tarifs (TTC)
 Heure de formation plateau : {{prix_heure_plateau}}
 Heure de formation circulation : {{prix_heure_circulation}}
 Accompagnement à l'examen plateau : {{prix_examen_plateau}}
@@ -65,13 +98,13 @@ Les prestations sont payables selon les modalités convenues avec l'établisseme
 # Article 7 – Présentation aux examens
 L'établissement présente l'élève aux épreuves lorsque son niveau le permet, selon les places d'examen disponibles.
 
-# Article 8 – Résiliation
-L'élève peut mettre fin au contrat à tout moment. Les prestations déjà effectuées restent dues ; les sommes versées pour des prestations non effectuées sont remboursées. Le dossier de l'élève lui est restitué sur demande.
-
-# Article 9 – Litiges
-En cas de litige, l'élève peut recourir gratuitement à un médiateur de la consommation : ________________.
-
-Fait à {{ville_agence}}, le {{date_du_jour}}.`;
+# Article 8 – Résiliation`;
+function majModelesFournis(modeles) {
+  const debut = MODELE_CONTRAT_DEFAUT.indexOf('# Article 4 –');
+  const fin = MODELE_CONTRAT_DEFAUT.indexOf('# Article 8 – Résiliation') + '# Article 8 – Résiliation'.length;
+  const ancien = MODELE_CONTRAT_DEFAUT.slice(0, debut) + ANCIEN_BLOC_V1 + MODELE_CONTRAT_DEFAUT.slice(fin);
+  for (const m of modeles) if (m.texte === ancien) m.texte = MODELE_CONTRAT_DEFAUT;
+}
 
 function modelesParDefaut() {
   return [{ id: uid(), nom: 'Contrat de formation moto', texte: MODELE_CONTRAT_DEFAUT }];
@@ -103,8 +136,12 @@ function variablesContrat(e) {
     date_du_jour: fmtDate(todayISO()),
     prix_heure_plateau: eur(s.tarifHeure.plateau),
     prix_heure_circulation: eur(s.tarifHeure.circulation),
-    prix_examen_plateau: eur(s.tarifExamen.exam_plateau),
-    prix_examen_circulation: eur(s.tarifExamen.exam_circulation),
+    prix_examen_plateau: s.tarifExamen.exam_plateau ? eur(s.tarifExamen.exam_plateau) : 'offert',
+    prix_examen_circulation: s.tarifExamen.exam_circulation ? eur(s.tarifExamen.exam_circulation) : 'offert',
+    prix_repassage_plateau: eur(s.fraisRepassage.exam_plateau),
+    prix_repassage_circulation: eur(s.fraisRepassage.exam_circulation),
+    heures_preparation_min: s.heuresPrepa.min,
+    heures_preparation_max: s.heuresPrepa.max,
     max_plateau: s.capacite.plateau,
     max_circulation: s.capacite.circulation,
     conditions_rdv: s.conditionsRdv,
@@ -398,7 +435,8 @@ function openModele(m) {
       <div class="champs">${Object.entries(CHAMPS_CONTRAT).map(([k, l]) => `<button class="badge" data-action="insChamp" data-k="${k}" title="{{${k}}}">${esc(l)}</button>`).join('')}</div>
       <p class="muted small">Astuce : une ligne qui commence par « # » devient un titre. Vous pouvez coller le texte de votre contrat actuel.</p>
       <textarea id="md-texte" class="contrat-edit">${esc(m.texte)}</textarea>`,
-    foot: `${!isNew ? `<div class="left"><button class="btn danger" data-action="delModele" data-id="${m.id}">Supprimer</button></div>` : ''}
+    foot: `<div class="left">${!isNew ? `<button class="btn danger" data-action="delModele" data-id="${m.id}">Supprimer</button>` : ''}
+      <button class="btn" data-action="modeleFourni">Remettre le modèle fourni</button></div>
       <button class="btn" data-action="closeModal">Annuler</button>
       <button class="btn primary" data-action="saveModele" data-id="${m.id || ''}">Enregistrer</button>`,
   });
@@ -473,6 +511,10 @@ const CONTRAT_ACTIONS = {
     if (!confirm('Supprimer ce modèle ? (les contrats déjà faits sont conservés)')) return;
     DB.modeles = DB.modeles.filter((x) => x.id !== d.id);
     save(); closeModal(); render();
+  },
+  modeleFourni() {
+    if ($('#md-texte').value.trim() && !confirm('Remplacer le texte par le modèle fourni ? (pensez à Enregistrer ensuite)')) return;
+    $('#md-texte').value = MODELE_CONTRAT_DEFAUT;
   },
   editSignatureEcole() { openSignatureEcole(); },
   saveSignatureEcole() {

@@ -75,7 +75,9 @@ function defaultState() {
     settings: {
       capacite: { circulation: 3, plateau: 5, exam_plateau: 8, exam_circulation: 3 },
       tarifHeure: { plateau: 45, circulation: 50 },
-      tarifExamen: { exam_plateau: 90, exam_circulation: 120 },
+      tarifExamen: { exam_plateau: 0, exam_circulation: 0 }, // 1er accompagnement (0 = offert)
+      fraisRepassage: { exam_plateau: 100, exam_circulation: 150 },
+      heuresPrepa: { min: 4, max: 6 },
       dureeDefaut: { plateau: 120, circulation: 120, exam_plateau: 180, exam_circulation: 180 },
       heureMin: '07:00',
       heureMax: '20:00',
@@ -90,8 +92,8 @@ function defaultState() {
     ],
     prestations: [
       { id: uid(), libelle: "Frais d'inscription / dossier", prix: 80 },
-      { id: uid(), libelle: 'Accompagnement examen plateau', prix: 90 },
-      { id: uid(), libelle: 'Accompagnement examen circulation', prix: 120 },
+      { id: uid(), libelle: 'Frais de repassage examen plateau', prix: 100 },
+      { id: uid(), libelle: 'Frais de repassage examen circulation', prix: 150 },
       { id: uid(), libelle: 'Forfait 20h A2', prix: 950 },
       { id: uid(), libelle: 'Formation passerelle A2 → A (7h)', prix: 350 },
     ],
@@ -125,11 +127,17 @@ function migrate(db) {
     delete db.ecoles;
   }
   db.version = 2;
+  // anciens réglages : 1er accompagnement payant (90 / 120 €) → désormais offert, repassages payants
+  if (db.settings && !db.settings.fraisRepassage && db.settings.tarifExamen
+      && db.settings.tarifExamen.exam_plateau === 90 && db.settings.tarifExamen.exam_circulation === 120) {
+    db.settings.tarifExamen = { exam_plateau: 0, exam_circulation: 0 };
+  }
   db.settings = Object.assign({}, def.settings, db.settings || {});
-  for (const k of ['capacite', 'tarifHeure', 'tarifExamen', 'dureeDefaut']) db.settings[k] = Object.assign({}, def.settings[k], db.settings[k] || {});
+  for (const k of ['capacite', 'tarifHeure', 'tarifExamen', 'fraisRepassage', 'heuresPrepa', 'dureeDefaut']) db.settings[k] = Object.assign({}, def.settings[k], db.settings[k] || {});
   db.entreprise = Object.assign({}, def.entreprise, db.entreprise || {});
   for (const k of ['agences', 'moniteurs', 'prestations', 'eleves', 'seances', 'factures', 'paiements', 'contrats']) db[k] = db[k] || [];
   if (!Array.isArray(db.modeles)) db.modeles = modelesParDefaut();
+  else majModelesFournis(db.modeles);
   if (!db.agences.length) db.agences = def.agences;
   for (const e of db.eleves) if (!STATUTS_ELEVE[e.statut]) e.statut = 'en_cours';
   return db;
@@ -1121,10 +1129,24 @@ function viewPaiements() {
    --------------------------------------------------------------------- */
 let draftFacture = null;
 
+// Numéro de passage d'un élève à une épreuve : 1 = premier passage, 2 = 1er repassage…
+function numeroPassage(eleveId, s) {
+  const avant = DB.seances.filter((x) => x.type === s.type && x.id !== s.id && (x.date + x.debut) < (s.date + s.debut)
+    && x.eleves.some((p) => p.eleveId === eleveId && ['admis', 'ajourne', 'absent'].includes(p.statut)));
+  return avant.length + 1;
+}
+
 function ligneSeance(s, eleveId) {
   const p = s.eleves.find((x) => x.eleveId === eleveId);
   if (isExam(s.type)) {
-    return { libelle: `Accompagnement ${TYPES[s.type].label.toLowerCase()} du ${fmtDate(s.date)}${s.lieu ? ' - ' + s.lieu : ''}`, qte: 1, pu: DB.settings.tarifExamen[s.type] || 0, seanceId: s.id };
+    const n = numeroPassage(eleveId, s);
+    const epreuve = TYPES[s.type].label.toLowerCase();
+    const lieu = s.lieu ? ' - ' + s.lieu : '';
+    if (n === 1) {
+      const prix = DB.settings.tarifExamen[s.type] || 0;
+      return { libelle: `Accompagnement ${epreuve} du ${fmtDate(s.date)}${lieu} (1er passage${prix ? '' : ' - offert'})`, qte: 1, pu: prix, seanceId: s.id };
+    }
+    return { libelle: `Frais de repassage ${epreuve} du ${fmtDate(s.date)}${lieu} (${n}e passage)`, qte: 1, pu: DB.settings.fraisRepassage[s.type] || 0, seanceId: s.id };
   }
   return {
     libelle: `Leçon ${TYPES[s.type].label.toLowerCase()} du ${fmtDate(s.date)} ${s.debut}-${s.fin}${p?.statut === 'absent' ? ' (absence non excusée)' : ''}`,
@@ -1598,8 +1620,12 @@ function viewParametres() {
         <label class="field"><span>Prix heure plateau (€)</span><input type="number" step="0.01" name="tarifPlateau" value="${s.tarifHeure.plateau}"></label>
         <label class="field"><span>Max élèves examen plateau</span><input type="number" min="1" name="capExP" value="${s.capacite.exam_plateau}"></label>
         <label class="field"><span>Max élèves examen circulation</span><input type="number" min="1" name="capExC" value="${s.capacite.exam_circulation}"></label>
-        <label class="field"><span>Prix accompagnement examen plateau (€)</span><input type="number" step="0.01" name="tarifExP" value="${s.tarifExamen.exam_plateau}"></label>
-        <label class="field"><span>Prix accompagnement examen circulation (€)</span><input type="number" step="0.01" name="tarifExC" value="${s.tarifExamen.exam_circulation}"></label>
+        <label class="field"><span>1er accompagnement examen plateau (€, 0 = offert)</span><input type="number" step="0.01" min="0" name="tarifExP" value="${s.tarifExamen.exam_plateau}"></label>
+        <label class="field"><span>1er accompagnement examen circulation (€, 0 = offert)</span><input type="number" step="0.01" min="0" name="tarifExC" value="${s.tarifExamen.exam_circulation}"></label>
+        <label class="field"><span>Frais de repassage plateau (€)</span><input type="number" step="0.01" min="0" name="repP" value="${s.fraisRepassage.exam_plateau}"></label>
+        <label class="field"><span>Frais de repassage circulation (€)</span><input type="number" step="0.01" min="0" name="repC" value="${s.fraisRepassage.exam_circulation}"></label>
+        <label class="field"><span>Préparation examen : heures minimum</span><input type="number" min="0" name="prepaMin" value="${s.heuresPrepa.min}"></label>
+        <label class="field"><span>Préparation examen : heures maximum</span><input type="number" min="0" name="prepaMax" value="${s.heuresPrepa.max}"></label>
         <label class="field"><span>Planning de</span><input type="time" step="1800" name="heureMin" value="${s.heureMin}"></label>
         <label class="field"><span>à</span><input type="time" step="1800" name="heureMax" value="${s.heureMax}"></label>
         <label class="field full"><span>Texte en bas de la carte de RDV</span><textarea name="conditionsRdv">${esc(s.conditionsRdv)}</textarea></label>
@@ -1913,6 +1939,10 @@ const ACTIONS = {
     s.capacite.exam_circulation = Math.max(1, parseInt(f.capExC, 10) || 3);
     s.tarifExamen.exam_plateau = Number(f.tarifExP) || 0;
     s.tarifExamen.exam_circulation = Number(f.tarifExC) || 0;
+    s.fraisRepassage.exam_plateau = Number(f.repP) || 0;
+    s.fraisRepassage.exam_circulation = Number(f.repC) || 0;
+    s.heuresPrepa.min = parseInt(f.prepaMin, 10) || 0;
+    s.heuresPrepa.max = Math.max(s.heuresPrepa.min, parseInt(f.prepaMax, 10) || 0);
     if (f.heureMin && f.heureMax && toMin(f.heureMax) > toMin(f.heureMin)) { s.heureMin = f.heureMin; s.heureMax = f.heureMax; }
     s.conditionsRdv = f.conditionsRdv;
     s.mentionsFacture = f.mentionsFacture;
