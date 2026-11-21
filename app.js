@@ -260,19 +260,32 @@ function blancValide(eleveId, base, avant = '9999') {
   return l[l.length - 1] || null;
 }
 // Heures de préparation planifiées entre l'examen blanc validé et l'examen
+// Leçons « 🎯 prépa examen » de l'élève pour cette épreuve, entre son examen blanc validé et l'examen
 function preparation(eleveId, exam) {
   const base = baseDe(exam.type);
   const blanc = blancValide(eleveId, base, debutDe(exam));
   const depuis = blanc ? finDe(blanc) : '';
-  return eleveSeances(eleveId)
-    .filter((s) => s.type === base && debutDe(s) >= depuis && debutDe(s) < debutDe(exam) && ['prevu', 'present'].includes(statutDe(s, eleveId)))
-    .reduce((h, s) => h + durH(s), 0);
+  const res = { faites: 0, prevues: 0, total: 0 };
+  for (const s of eleveSeances(eleveId)) {
+    if (s.type !== base || !s.prepa || debutDe(s) < depuis || debutDe(s) >= debutDe(exam)) continue;
+    const st = statutDe(s, eleveId);
+    if (st === 'present') res.faites += durH(s);
+    else if (st === 'prevu') res.prevues += durH(s);
+  }
+  res.total = res.faites + res.prevues;
+  return res;
 }
-function prepBadge(h) {
+function prepBadge(p) {
   const { min, max } = DB.settings.heuresPrepa;
+  const h = p.total;
   const cls = h < min ? 'bad' : h > max ? 'warn' : 'ok';
   const txt = h < min ? `il manque ${fmtH(min - h)}` : h > max ? `au-delà de ${max}h` : 'OK';
-  return `<span class="badge ${cls}" title="Heures de préparation planifiées depuis l'examen blanc (${min} à ${max}h)">Prépa ${fmtH(h)} · ${txt}</span>`;
+  const detail = p.prevues ? ` (${fmtH(p.faites)} faite${p.faites > 1 ? 's' : ''} + ${fmtH(p.prevues)} prévue${p.prevues > 1 ? 's' : ''})` : '';
+  return `<span class="badge ${cls}" title="Leçons « 🎯 prépa examen » depuis l'examen blanc (${min} à ${max}h)">🎯 Prépa ${fmtH(h)}${detail} · ${txt}</span>`;
+}
+// Prochain examen d'un élève pour une épreuve (pour la fiche et le planning)
+function prochainExamen(eleveId, base) {
+  return eleveSeances(eleveId).find((s) => s.type === 'exam_' + base && s.date >= todayISO() && statutDe(s, eleveId) === 'prevu') || null;
 }
 // Élèves qui ont validé leur examen blanc : à inscrire, ou déjà inscrits (avec leur préparation)
 function pretsPourExamen() {
@@ -286,7 +299,7 @@ function pretsPourExamen() {
       // un échec à l'examen après ce blanc : il faut refaire un examen blanc
       if (exams.some((s) => debutDe(s) > finDe(blanc) && ['ajourne', 'absent'].includes(statutDe(s, e.id)))) continue;
       const exam = exams.find((s) => debutDe(s) > finDe(blanc) && statutDe(s, e.id) === 'prevu') || null;
-      out.push({ eleve: e, base, blanc, exam, prepa: exam ? preparation(e.id, exam) : 0 });
+      out.push({ eleve: e, base, blanc, exam, prepa: exam ? preparation(e.id, exam) : null });
     }
   }
   return out.sort((a, b) => (!!a.exam - !!b.exam) || a.blanc.date.localeCompare(b.blanc.date));
@@ -525,8 +538,8 @@ function blocSeance(s, hMin) {
     return `<div class="ag-el ${barre ? 'abs' : ''}"><span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}"></span>${esc(eleveCourt(e))}${res}</div>`;
   }).join('');
   return `
-  <div class="ag-bloc ${s.type}" style="top:${top + 1}px;height:${height}px" data-action="editSeance" data-id="${s.id}">
-    <div class="ag-bloc-top"><span>${s.debut} ${TYPES[s.type].short}</span><span class="fill ${n >= cap ? 'full' : 'free'}">${n}/${cap}</span></div>
+  <div class="ag-bloc ${s.type}${s.prepa ? ' prepa' : ''}" style="top:${top + 1}px;height:${height}px" data-action="editSeance" data-id="${s.id}">
+    <div class="ag-bloc-top"><span>${s.debut} ${TYPES[s.type].short}${s.prepa ? ' <span class="tag-prepa">🎯 Prépa exam</span>' : ''}</span><span class="fill ${n >= cap ? 'full' : 'free'}">${n}/${cap}</span></div>
     <div class="ag-els">${noms}</div>
     ${isExam(s.type) && n < cap ? `<div class="ag-libre">${cap - n} place${cap - n > 1 ? 's' : ''} à attribuer</div>` : ''}
     ${isExam(s.type) && s.lieu ? `<div class="ag-lieu">📍 ${esc(s.lieu)}</div>` : ''}
@@ -725,7 +738,7 @@ function openSeanceMoniteur(s) {
   draft = JSON.parse(JSON.stringify(s));
   const exam = isExam(s.type);
   openModal({
-    title: `${TYPES[s.type].label} — ${esc(fmtDayLong(s.date))}`,
+    title: `${TYPES[s.type].label}${s.prepa ? ' · 🎯 Prépa examen' : ''} — ${esc(fmtDayLong(s.date))}`,
     body: `
       <p><strong>${s.debut} – ${s.fin}</strong>${s.lieu ? ` · 📍 ${esc(s.lieu)}` : ''}${exam && (s.rdvHeure || s.rdvLieu) ? `<br><span class="small muted">RDV élèves : ${esc(s.rdvHeure || '')} ${esc(s.rdvLieu || '')}</span>` : ''}</p>
       <div class="lbl">Élèves (${s.eleves.length})</div>
@@ -815,6 +828,13 @@ function openSeance(seance) {
         </div>
         <datalist id="lieux-exam">${[...new Set(DB.seances.filter((x) => isExam(x.type)).map((x) => x.lieu).filter(Boolean))].map((l) => `<option value="${esc(l)}">`).join('')}</datalist>
       </div>
+      <div id="s-prepa-wrap">
+        <div class="lbl">Cette leçon est…</div>
+        <div class="seg" id="s-prepa">
+          <button data-action="setPrepa" data-v="0">Leçon normale</button>
+          <button data-action="setPrepa" data-v="1">🎯 Préparation à l'examen</button>
+        </div>
+      </div>
       <div class="lbl">Durée</div>
       <div class="seg" id="s-duree"></div>
       <div class="lbl row between"><span>Élèves <span id="s-cap" class="fill"></span></span></div>
@@ -856,6 +876,8 @@ function refreshDraft() {
   const dur = toMin(draft.fin) - toMin(draft.debut);
   $$('#s-type button').forEach((b) => b.classList.toggle('on', b.dataset.t === draft.type));
   $('#s-lieu-wrap').hidden = !isExam(draft.type);
+  $('#s-prepa-wrap').hidden = categorie(draft.type) !== 'lecon';
+  $$('#s-prepa button').forEach((b) => b.classList.toggle('on', (b.dataset.v === '1') === !!draft.prepa));
   if (isExam(draft.type)) $('#s-rdvh').placeholder = heureRdv({ ...draft, rdvHeure: '' });
   if ($('#s-rappel')) $('#s-rappel').hidden = !isExam(draft.type);
   $('#s-duree').innerHTML = DUREES.map((d) => `<button data-action="setDuree" data-d="${d}" class="${d === dur ? 'on' : ''}">${fmtH(d / 60)}</button>`).join('')
@@ -900,6 +922,12 @@ function renderResults() {
     for (const r of repassages()) if (r.type === draft.type && !tags.has(r.eleve.id)) tags.set(r.eleve.id, `repassage ${r.type === 'exam_plateau' ? 'plateau' : 'circulation'} · blanc à refaire`);
     if (draft.type === 'exam_circulation') {
       for (const e of list) if (!tags.has(e.id) && eleveExamens(e.id).exam_plateau.cls === 'ok' && eleveExamens(e.id).exam_circulation.cls !== 'warn') tags.set(e.id, 'plateau ✅');
+    }
+  }
+  if (draft.prepa && categorie(draft.type) === 'lecon') {
+    for (const e of list) {
+      const ex = prochainExamen(e.id, baseDe(draft.type));
+      if (ex) { const p = preparation(e.id, ex); tags.set(e.id, `examen le ${fmtDate(ex.date)} · prépa ${fmtH(p.total)}/${DB.settings.heuresPrepa.min}h`); }
     }
   }
   list.sort((a, b) => (tags.has(b.id) - tags.has(a.id)) || triNom(a, b));
@@ -1061,7 +1089,7 @@ function viewFiche(id) {
         const cls = { present: 'ok', admis: 'ok', absent: 'bad', ajourne: 'bad', excuse: 'warn', prevu: '' }[p.statut];
         return `<tr class="clickable" data-action="editSeance" data-id="${s.id}">
           <td>${fmtDate(s.date)}</td><td>${s.debut}–${s.fin}</td>
-          <td><span class="badge ${s.type}">${TYPES[s.type].short}</span></td>
+          <td><span class="badge ${s.type}">${TYPES[s.type].short}</span>${s.prepa ? ' <span class="badge prepa">🎯 Prépa exam</span>' : ''}</td>
           <td>${esc(moniteurNom(byId('moniteurs', s.moniteurId)))}</td>
           <td><span class="badge ${cls}">${statutLabel(s.type, p.statut)}</span></td></tr>`;
       }).join('')}</tbody></table></div>` : '<div class="empty">Aucune leçon. Placez-la depuis le planning.</div>';
@@ -1118,6 +1146,7 @@ function viewFiche(id) {
       <div><span>À venir</span><strong>${fmtH(h.aVenir)}</strong></div>
       <div><span>Examen plateau</span><strong class="exam-res ${ex.exam_plateau.cls}">${ex.exam_plateau.txt}</strong></div>
       <div><span>Examen circulation</span><strong class="exam-res ${ex.exam_circulation.cls}">${ex.exam_circulation.txt}</strong></div>
+      ${['plateau', 'circulation'].map((b) => { const ex = prochainExamen(id, b); return ex ? `<div><span>Prépa examen ${b} (le ${fmtDate(ex.date)})</span><strong>${prepBadge(preparation(id, ex))}</strong></div>` : ''; }).join('')}
       <div><span>Reste dû</span><strong style="color:${fin.solde > 0 ? 'var(--bad)' : 'var(--ok)'}">${eur(Math.max(0, fin.solde))}</strong></div>
     </div>
     <div class="seg" style="margin:14px 0 12px">
@@ -1298,7 +1327,7 @@ function ligneSeance(s, eleveId) {
     return { libelle: `Frais de repassage ${epreuve} du ${fmtDate(s.date)}${lieu} (${n}e passage)`, qte: 1, pu: DB.settings.fraisRepassage[s.type] || 0, seanceId: s.id };
   }
   return {
-    libelle: `${isBlanc(s.type) ? 'Examen blanc ' + baseDe(s.type) : 'Leçon ' + TYPES[s.type].label.toLowerCase()} du ${fmtDate(s.date)} ${s.debut}-${s.fin}${p?.statut === 'absent' ? ' (absence non excusée)' : ''}`,
+    libelle: `${isBlanc(s.type) ? 'Examen blanc ' + baseDe(s.type) : 'Leçon ' + TYPES[s.type].label.toLowerCase() + (s.prepa ? ' (préparation examen)' : '')} du ${fmtDate(s.date)} ${s.debut}-${s.fin}${p?.statut === 'absent' ? ' (absence non excusée)' : ''}`,
     qte: round2(durH(s)),
     pu: DB.settings.tarifHeure[baseDe(s.type)] || 0,
     seanceId: s.id,
@@ -1931,6 +1960,7 @@ function demoData() {
   add(-7, '08:00', '10:00', 'plateau', 'm1', [0, 1, 2, 3, 4]);
   add(-7, '10:00', '12:00', 'circulation', 'm2', [5, 6, 7]);
   add(-3, '14:00', '16:00', 'circulation', 'm1', [0, 1]);
+  db.seances[db.seances.length - 1].prepa = true;
   add(0, '08:00', '10:00', 'plateau', 'm1', [0, 2, 4, 6, 8]);
   add(0, '08:00', '10:00', 'circulation', 'm2', [1, 3, 5]);
   add(0, '10:30', '12:30', 'circulation', 'm1', [7, 9]);
@@ -1940,6 +1970,8 @@ function demoData() {
   add(1, '13:30', '15:30', 'circulation', 'm2', [6, 8]);
   add(2, '08:00', '10:00', 'plateau', 'm1', [0, 1, 2, 3]);
   add(3, '10:00', '12:00', 'circulation', 'm2', [4, 5, 7]);
+  add(2, '14:00', '16:00', 'circulation', 'm2', [0, 3]);
+  db.seances[db.seances.length - 1].prepa = true;
   add(-2, '08:00', '11:00', 'exam_plateau', 'm2', [5, 6, 7]);
   add(4, '13:00', '16:00', 'exam_circulation', 'm1', [0, 3]);
   db.seances[db.seances.length - 2].lieu = "Centre d'examen Lyon Sud";
@@ -2000,9 +2032,11 @@ const ACTIONS = {
     const avant = draft.type;
     draft.type = d.t;
     for (const p of draft.eleves) if (!statutsPour(draft.type)[p.statut]) p.statut = 'prevu';
+    if (categorie(draft.type) !== 'lecon') delete draft.prepa;
     if (!draft.id && categorie(avant) !== categorie(draft.type)) draft.fin = fromMin(toMin(draft.debut) + dureeDe(draft.type));
     refreshDraft();
   },
+  setPrepa(d) { draft.prepa = d.v === '1'; refreshDraft(); },
   setDuree(d) { draft.fin = fromMin(toMin(draft.debut) + Number(d.d)); refreshDraft(); },
   searchEleve() { renderResults(); },
   pickEleve(d) {

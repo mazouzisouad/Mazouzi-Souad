@@ -317,3 +317,9 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
 .seg.big button.on.blanc_plateau, .seg.big button.on.blanc_circulation { background: #fef3c7; color: #92400e; }
 .ag-bloc.blanc_plateau, .ag-bloc.blanc_circulation { background: #fffbeb; border-color: #fcd34d; border-left-color: #d97706; border-style: dashed; border-left-style: solid; }
 .badge.blanc_plateau, .badge.blanc_circulation { background: #fef3c7; color: #92400e; }
+
+/* ---------- Leçons « prépa examen » ---------- */
+.ag-bloc.prepa { box-shadow: inset 0 0 0 2px #f97316; }
+.tag-prepa { font-size: 10px; font-weight: 700; background: #f97316; color: #fff; border-radius: 6px; padding: 0 4px; margin-left: 2px; white-space: nowrap; }
+.badge.prepa { background: #ffedd5; color: #c2410c; }
+.mini-stats .badge { font-size: 12px; white-space: normal; }

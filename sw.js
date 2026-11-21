@@ -1,5 +1,5 @@
 // Service worker : permet d'utiliser l'appli hors connexion (installée sur le téléphone).
-const CACHE = 'moto-planning-v7';
+const CACHE = 'moto-planning-v8';
 const FILES = ['./', 'index.html', 'styles.css', 'app.js', 'icon.svg', 'manifest.webmanifest', 'vendor/jspdf.umd.min.js',
   'config.js', 'cloud.js', 'contrats.js', 'rappels.js', 'suivi.js', 'vendor/firebase/firebase-app-compat.js', 'vendor/firebase/firebase-auth-compat.js', 'vendor/firebase/firebase-firestore-compat.js'];
 
