@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · couleurs des documents';
+const APP_VERSION = '2026-11-22 · nouveau design des documents';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -1538,145 +1538,7 @@ function pdfText(s) {
   return String(s ?? '').replace(/[  ]/g, ' ').replace(/→/g, '->').replace(/[’]/g, "'").replace(/[“”]/g, '"').replace(/³/g, '3');
 }
 
-function buildFacturePdf(f) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-  const ent = DB.entreprise;
-  const e = byId('eleves', f.eleveId);
-  const ag = byId('agences', f.agenceId) || agenceDe(e);
-  const t = factureTotaux(f);
-  const paye = facturePaye(f);
-  const W = 210, M = 18;
-
-  doc.setFillColor(...palette().accent); doc.rect(0, 0, W, 6, 'F');
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
-  const ec = ecoleDe(ag);
-  doc.text(pdfText(ec.nom), M, 20);
-  doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
-  const lignesEnt = [
-    ec.adresse, [ec.cp, ec.ville].filter(Boolean).join(' '),
-    [ec.tel && 'Tél. ' + ec.tel, ec.email].filter(Boolean).join(' - '),
-    ec.siret && 'SIRET ' + ec.siret, ec.agrement && 'Agrément ' + ec.agrement,
-  ].filter(Boolean);
-  lignesEnt.forEach((l, i) => doc.text(pdfText(l), M, 25 + i * 4.2));
-
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(22);
-  doc.text('FACTURE', W - M, 22, { align: 'right' });
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-  doc.text(pdfText(`N° ${f.numero}`), W - M, 29, { align: 'right' });
-  doc.text(`Date : ${fmtDate(f.date)}`, W - M, 34, { align: 'right' });
-
-  const cy = 54;
-  doc.setDrawColor(226, 232, 240); doc.setFillColor(248, 250, 252);
-  doc.roundedRect(W - M - 85, cy, 85, 30, 2, 2, 'FD');
-  doc.setFontSize(8); doc.setTextColor(100, 116, 139); doc.text('FACTURÉ À', W - M - 81, cy + 6);
-  doc.setTextColor(15, 23, 42); doc.setFontSize(11); doc.setFont('helvetica', 'bold');
-  doc.text(pdfText(e ? `${e.prenom} ${e.nom.toUpperCase()}` : ''), W - M - 81, cy + 12);
-  doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
-  [e?.adresse, [e?.cp, e?.ville].filter(Boolean).join(' '), e?.email, e?.neph && 'NEPH ' + e.neph]
-    .filter(Boolean).forEach((l, i) => doc.text(pdfText(l), W - M - 81, cy + 17 + i * 4));
-
-  let y = 96;
-  doc.setFillColor(...palette().fonce); doc.rect(M, y - 5, W - 2 * M, 8, 'F');
-  doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
-  doc.text('Désignation', M + 2, y); doc.text('Qté', 130, y, { align: 'right' });
-  doc.text('PU TTC', 165, y, { align: 'right' }); doc.text('Total TTC', W - M - 2, y, { align: 'right' });
-  doc.setTextColor(15, 23, 42); doc.setFont('helvetica', 'normal');
-  y += 9;
-  for (const l of f.lignes) {
-    const wrapped = doc.splitTextToSize(pdfText(l.libelle), 105);
-    if (y + wrapped.length * 4.5 > 255) { doc.addPage(); y = 20; }
-    doc.text(wrapped, M + 2, y);
-    doc.text(String(l.qte).replace('.', ','), 130, y, { align: 'right' });
-    doc.text(eurPdf(l.pu), 165, y, { align: 'right' });
-    doc.text(eurPdf(l.qte * l.pu), W - M - 2, y, { align: 'right' });
-    y += wrapped.length * 4.5 + 2;
-    doc.setDrawColor(226, 232, 240); doc.line(M, y - 3, W - M, y - 3);
-  }
-
-  y += 4;
-  if (y > 240) { doc.addPage(); y = 20; }
-  const tx = 125;
-  const lineTot = (label, val, bold = false) => {
-    doc.setFont('helvetica', bold ? 'bold' : 'normal'); doc.setFontSize(bold ? 11 : 9.5);
-    doc.text(pdfText(label), tx, y); doc.text(val, W - M - 2, y, { align: 'right' }); y += bold ? 7 : 5.5;
-  };
-  if (t.taux > 0) { lineTot('Total HT', eurPdf(t.ht)); lineTot(`TVA ${String(t.taux).replace('.', ',')} %`, eurPdf(t.tva)); }
-  doc.setFillColor(...palette().clair); doc.rect(tx - 3, y - 5, W - M - tx + 3, 8, 'F');
-  lineTot('Total TTC', eurPdf(t.ttc), true);
-  if (paye > 0) { lineTot('Déjà réglé', '- ' + eurPdf(paye)); lineTot('Reste à payer', eurPdf(Math.max(0, t.ttc - paye)), true); }
-  if (t.taux === 0) { doc.setFontSize(8.5); doc.setFont('helvetica', 'italic'); doc.text('TVA non applicable, art. 293 B du CGI', M, y); y += 5; }
-
-  const pays = DB.paiements.filter((p) => p.factureId === f.id).sort((a, b) => a.date.localeCompare(b.date));
-  if (pays.length) {
-    y += 4; doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.text('Règlements reçus', M, y); y += 5;
-    doc.setFont('helvetica', 'normal');
-    pays.forEach((p) => { doc.text(pdfText(`${fmtDate(p.date)} - ${p.mode}${p.reference ? ' (' + p.reference + ')' : ''} : ${eurPdf(p.montant)}`), M, y); y += 4.5; });
-  }
-
-  doc.setFontSize(7.5); doc.setTextColor(100, 116, 139); doc.setFont('helvetica', 'normal');
-  const foot = doc.splitTextToSize(pdfText(DB.settings.mentionsFacture || ''), W - 2 * M);
-  doc.text(foot, W / 2, 285 - foot.length * 3.5, { align: 'center' });
-  doc.text(pdfText([ec.nom, ec.siret && 'SIRET ' + ec.siret].filter(Boolean).join(' - ')), W / 2, 289, { align: 'center' });
-  return doc;
-}
-
-function buildCarteRdvPdf(eleveId, seances) {
-  const { jsPDF } = window.jspdf;
-  const e = byId('eleves', eleveId);
-  const ent = DB.entreprise;
-  const ag = agenceDe(e);
-  const doc = new jsPDF({ unit: 'mm', format: [148, 105], orientation: 'landscape' });
-  const W = 148, H = 105, M = 8;
-  const perPage = 7;
-  const pages = Math.max(1, Math.ceil(seances.length / perPage));
-  const ec = ecoleDe(ag);
-  const coord = [ec.tel, [ec.adresse, ec.cp, ec.ville].filter(Boolean).join(' ')].filter(Boolean);
-  for (let pg = 0; pg < pages; pg++) {
-    if (pg > 0) doc.addPage([148, 105], 'landscape');
-    doc.setFillColor(...palette().fonce); doc.rect(0, 0, W, 20, 'F');
-    doc.setFillColor(...palette().accent); doc.rect(0, 20, W, 1.5, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
-    doc.text(pdfText(ec.nom), M, 9);
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
-    doc.text(pdfText(coord.join('  -  ')), M, 15);
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
-    doc.text('CARTE DE RENDEZ-VOUS', W - M, 9, { align: 'right' });
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
-    doc.text('Formation moto', W - M, 15, { align: 'right' });
-
-    doc.setTextColor(15, 23, 42);
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(11);
-    doc.text(pdfText(`${e.prenom} ${e.nom.toUpperCase()}`), M, 29);
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
-    doc.text(pdfText([e.formation, e.neph && 'NEPH ' + e.neph].filter(Boolean).join('  -  ')), W - M, 29, { align: 'right' });
-
-    let y = 37;
-    doc.setFillColor(241, 245, 249); doc.rect(M, y - 4, W - 2 * M, 6, 'F');
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5);
-    doc.text('DATE', M + 2, y); doc.text('HORAIRE', M + 52, y); doc.text('TYPE', M + 75, y); doc.text('MONITEUR', M + 96, y);
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
-    y += 6;
-    const chunk = seances.slice(pg * perPage, (pg + 1) * perPage);
-    if (!chunk.length) doc.text('Aucun rendez-vous programmé.', M + 2, y);
-    for (const s of chunk) {
-      const d = parseISO(s.date).toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
-      doc.setFont('helvetica', 'bold'); doc.text(pdfText(d), M + 2, y);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`${s.debut} - ${s.fin}`, M + 52, y);
-      doc.text(pdfText(isExam(s.type) ? 'Examen ' + (s.type === 'exam_plateau' ? 'plateau' : 'circu') : TYPES[s.type].label), M + 75, y);
-      doc.text(pdfText(moniteurNom(byId('moniteurs', s.moniteurId))), M + 96, y);
-      doc.setDrawColor(226, 232, 240); doc.line(M, y + 2, W - M, y + 2);
-      y += 6.6;
-    }
-    doc.setFontSize(6.5); doc.setTextColor(100, 116, 139);
-    const cond = doc.splitTextToSize(pdfText(DB.settings.conditionsRdv || ''), W - 2 * M);
-    doc.text(cond, M, H - 4 - (cond.length - 1) * 2.8);
-    if (pages > 1) doc.text(`${pg + 1}/${pages}`, W - M, H - 4, { align: 'right' });
-  }
-  return doc;
-}
+// buildFacturePdf et buildCarteRdvPdf : voir pdfdesign.js
 
 function texteCarteRdv(eleveId, seances) {
   const e = byId('eleves', eleveId);
