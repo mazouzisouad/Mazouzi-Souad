@@ -8,6 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
+const APP_VERSION = '2026-11-21 · prépa examen';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -1843,6 +1844,7 @@ function viewParametres() {
     </div>
     <div class="card">
       <h2>Sauvegarde</h2>
+      <p class="muted small">Version de l'appli : <strong>${APP_VERSION}</strong></p>
       <p class="muted small">Les données sont gardées sur cet appareil. Faites une sauvegarde régulièrement.</p>
       <div class="row">
         <button class="btn primary" data-action="exportData">⬇️ Sauvegarder</button>
@@ -2430,5 +2432,10 @@ Cloud.start();
 render();
 if (!Cloud.enabled) save(); // enregistre aussi les données converties depuis une ancienne version
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+    .then((r) => r.update())
+    .catch(() => {});
+  // Nouvelle version installée → on recharge une fois pour l'afficher
+  let rechargee = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (!rechargee) { rechargee = true; location.reload(); } });
 }

@@ -1,5 +1,5 @@
 // Service worker : permet d'utiliser l'appli hors connexion (installée sur le téléphone).
-const CACHE = 'moto-planning-v9';
+const CACHE = 'moto-planning-v10';
 const FILES = ['./', 'index.html', 'styles.css', 'app.js', 'icon.svg', 'manifest.webmanifest', 'vendor/jspdf.umd.min.js',
   'config.js', 'cloud.js', 'contrats.js', 'rappels.js', 'suivi.js', 'vendor/firebase/firebase-app-compat.js', 'vendor/firebase/firebase-auth-compat.js', 'vendor/firebase/firebase-firestore-compat.js'];
 
@@ -18,8 +18,10 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
   if (new URL(e.request.url).origin !== self.location.origin) return; // Firebase & co : pas de cache
+  // « no-cache » : le navigateur redemande toujours au serveur s'il y a une nouvelle version
+  const frais = new Request(e.request.url, { cache: 'no-cache', credentials: 'same-origin' });
   e.respondWith(
-    fetch(e.request)
+    fetch(frais)
       .then((res) => {
         const copy = res.clone();
         caches.open(CACHE).then((c) => c.put(e.request, copy));
