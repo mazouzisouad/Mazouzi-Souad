@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-21 · prépa examen';
+const APP_VERSION = '2026-11-21 · envoi e-mail auto';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -1708,8 +1708,12 @@ function openSendDialog({ title, doc, filename, eleve, subject, text, extraBody 
     body: `
       ${extraBody}
       <p class="muted small">Pour : <strong>${esc(eleveNom(eleve))}</strong>${email ? ' · ' + esc(email) : ''}${tel ? ' · ' + esc(tel) : ''}</p>
+      ${emailAutoPret() ? `<div class="envoi-auto">
+        <button class="btn primary big" data-send="auto" ${email ? '' : 'disabled title="Pas d\'e-mail sur la fiche"'}>📧 Envoyer par e-mail (PDF joint)</button>
+        <div class="small muted" id="envoi-etat">${email ? `Part tout de suite à ${esc(email)}, avec le PDF en pièce jointe.` : "Ajoutez l'e-mail de l'élève sur sa fiche pour l'envoi automatique."}</div>
+      </div>` : ''}
       <div class="send-options">
-        ${canShareFile ? '<button class="btn primary" data-send="share">📲 Envoyer le PDF (mail, WhatsApp…)</button>' : ''}
+        ${canShareFile ? `<button class="btn ${emailAutoPret() ? '' : 'primary'}" data-send="share">📲 Envoyer le PDF (mail, WhatsApp…)</button>` : ''}
         <button class="btn" data-send="mail" ${email ? '' : 'disabled title="Pas d\'e-mail sur la fiche"'}>✉️ Par e-mail</button>
         <button class="btn" data-send="sms" ${tel ? '' : 'disabled title="Pas de téléphone sur la fiche"'}>💬 Par SMS</button>
         <button class="btn" data-send="wa" ${tel ? '' : 'disabled title="Pas de téléphone sur la fiche"'}>🟢 Par WhatsApp</button>
@@ -1723,7 +1727,17 @@ function openSendDialog({ title, doc, filename, eleve, subject, text, extraBody 
         if (!b) return;
         const k = b.dataset.send;
         try {
-          if (k === 'share') await navigator.share({ files: [file], title: subject, text });
+          if (k === 'auto') {
+            b.disabled = true;
+            $('#envoi-etat').textContent = '⏳ Envoi en cours…';
+            const base64 = doc.output('datauristring').split(',')[1];
+            const r = await envoyerEmailAuto({ to: email, subject, text, ecole: ecoleDe(agenceDe(eleve)), pj: { nom: filename, base64 } });
+            const m = messageResultat(r, email);
+            $('#envoi-etat').textContent = m.txt;
+            b.disabled = false;
+            if (m.ok && r.etat === 'ok') b.textContent = '✅ Envoyé — renvoyer ?';
+            toast(m.txt, !m.ok);
+          } else if (k === 'share') await navigator.share({ files: [file], title: subject, text });
           else if (k === 'mail') { downloadBlob(blob, filename); setTimeout(() => { window.location.href = mailto; }, 400); toast('PDF téléchargé : joignez-le à l\'e-mail'); }
           else if (k === 'sms') window.location.href = sms;
           else if (k === 'wa') window.open(wa, '_blank');
@@ -1830,6 +1844,7 @@ function viewParametres() {
       <button class="btn" data-action="editPrestation">+ Ajouter</button>
     </div>
     ${viewAcces()}
+    ${viewParamEmail()}
     <div class="card">
       <h2>🌐 Planning partagé en ligne</h2>
       ${Cloud.actif ? `
@@ -2403,7 +2418,7 @@ const ACTIONS = {
   },
 };
 
-Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS, SUIVI_ACTIONS);
+Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS, SUIVI_ACTIONS, EMAIL_ACTIONS);
 
 /* ---------------------------------------------------------------------
    Synchronisation en ligne

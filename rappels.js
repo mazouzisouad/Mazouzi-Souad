@@ -111,6 +111,7 @@ function openRappels(date, seanceId) {
           </div>
         </div>`;
       }).join('') : '<div class="empty">Aucun élève inscrit à un examen ce jour-là.</div>'}
+      ${emailAutoPret() && list.some((r) => !r.p.rappel && r.e.email) ? `<div class="row" style="justify-content:flex-end;margin-bottom:8px"><button class="btn primary" data-action="rappelsTousMail">📧 Envoyer tous les rappels par e-mail (${list.filter((r) => !r.p.rappel && r.e.email).length})</button></div>` : ''}
       <p class="muted small">Le contenu (documents, équipement, heure du rendez-vous) se règle dans Paramètres → Rappels d'examen. Pour un examen précis, l'heure et le lieu du rendez-vous se changent dans l'examen.</p>`,
     foot: '<button class="btn" data-action="closeModal">Fermer</button>',
   });
@@ -150,10 +151,34 @@ const RAPPEL_ACTIONS = {
     try {
       if (d.via === 'sms') window.location.href = `sms:${encodeURIComponent(e.tel)}${/iPhone|iPad|Mac/i.test(navigator.userAgent) ? '&' : '?'}body=${encodeURIComponent(msg)}`;
       else if (d.via === 'wa') window.open(`https://wa.me/${phoneIntl(e.tel)}?text=${encodeURIComponent(msg)}`, '_blank');
-      else if (d.via === 'mail') window.location.href = `mailto:${encodeURIComponent(e.email)}?subject=${encodeURIComponent(`Rappel : votre examen moto ${r.s.type === 'exam_plateau' ? 'plateau' : 'circulation'} du ${fmtDate(r.s.date)} - ${ec.nom}`)}&body=${encodeURIComponent(msg)}`;
+      else if (d.via === 'mail' && emailAutoPret()) {
+        toast('Envoi en cours…');
+        const res = await envoyerEmailAuto({ to: e.email, subject: `Rappel : votre examen moto ${r.s.type === 'exam_plateau' ? 'plateau' : 'circulation'} du ${fmtDate(r.s.date)} - ${ec.nom}`, text: msg, ecole: ec });
+        const m = messageResultat(res, e.email);
+        toast(m.txt, !m.ok);
+        if (!m.ok) return;
+      } else if (d.via === 'mail') window.location.href = `mailto:${encodeURIComponent(e.email)}?subject=${encodeURIComponent(`Rappel : votre examen moto ${r.s.type === 'exam_plateau' ? 'plateau' : 'circulation'} du ${fmtDate(r.s.date)} - ${ec.nom}`)}&body=${encodeURIComponent(msg)}`;
       else if (d.via === 'copie') { await navigator.clipboard.writeText(msg); toast('Message copié'); }
     } catch (err) { return toast('Impossible : ' + err.message, true); }
     if (d.via !== 'copie') RAPPEL_ACTIONS.rappelMarquer(d);
+  },
+  async rappelsTousMail() {
+    const list = openRappels.list.map((r, i) => ({ r, i })).filter(({ r }) => !r.p.rappel && r.e.email);
+    if (!confirm(`Envoyer le rappel par e-mail à ${list.length} élève(s) ?`)) return;
+    toast('Envoi en cours…');
+    let ok = 0; let ko = 0;
+    for (const { r, i } of list) {
+      const ec = ecoleDe(agenceDe(r.e));
+      const msg = $(`#rp-msg-${i}`)?.value || texteRappel(r.s, r.e.id);
+      const res = await envoyerEmailAuto({ to: r.e.email, subject: `Rappel : votre examen moto ${r.s.type === 'exam_plateau' ? 'plateau' : 'circulation'} du ${fmtDate(r.s.date)} - ${ec.nom}`, text: msg, ecole: ec });
+      if (res.etat === 'erreur') { ko++; continue; }
+      ok++;
+      const s = byId('seances', r.s.id); const p = s && s.eleves.find((x) => x.eleveId === r.e.id);
+      if (p) p.rappel = new Date().toISOString();
+    }
+    save(); render();
+    openRappels(rappelsOuverts.date, rappelsOuverts.seanceId);
+    toast(ko ? `${ok} envoyé(s), ${ko} en erreur` : `${ok} rappel(s) envoyé(s) par e-mail ✅`, !!ko);
   },
   rappelMarquer(d) {
     const r = openRappels.list[+d.i];

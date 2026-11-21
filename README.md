@@ -20,6 +20,7 @@ de plusieurs auto-écoles avec deux moniteurs (ou plus).
 **💶 Paiements** — factures numérotées, encaissements (CB, espèces, chèque, CPF…), élèves qui doivent de l'argent.
 
 **📤 Envoi** — carte de rendez-vous et facture en PDF, par partage téléphone (mail, WhatsApp…), e-mail, SMS, ou impression.
+Avec l'extension Firebase « Trigger Email », **envoi automatique par e-mail en un clic, PDF joint** (voir [EMAIL.md](EMAIL.md)).
 
 ## Utilisation
 
