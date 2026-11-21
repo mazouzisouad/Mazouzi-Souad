@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · nouveau design des documents';
+const APP_VERSION = '2026-11-22 · style moderne en option';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -1714,6 +1714,10 @@ function viewParametres() {
     <div class="card">
       <h2>🎨 Couleurs des documents</h2>
       <p class="muted small">Carte de rendez-vous, factures et contrats.</p>
+      <div class="seg" style="margin-bottom:10px">
+        <button class="${DB.settings.designPdf === 'moderne' ? '' : 'on'}" data-action="choisirDesign" data-k="classique">Style classique</button>
+        <button class="${DB.settings.designPdf === 'moderne' ? 'on' : ''}" data-action="choisirDesign" data-k="moderne">✨ Style moderne (nouveau)</button>
+      </div>
       <div class="palettes">
         ${Object.entries(PALETTES).map(([k, pl]) => `<button class="palette ${(DB.settings.couleursPdf || 'orange') === k ? 'on' : ''}" data-action="choisirPalette" data-k="${k}">
           <span class="pal-bande" style="background:rgb(${pl.fonce})"><span style="background:rgb(${pl.accent})"></span></span>
@@ -2012,6 +2016,7 @@ const ACTIONS = {
   },
   filtreAgence(d, el) { UI.filtreAgence = el.value; render(); },
   voirAnciens(d, el) { UI.voirAnciens = el.checked; render(); },
+  choisirDesign(d) { DB.settings.designPdf = d.k; save(); render(); toast(d.k === 'moderne' ? 'Style moderne activé' : 'Style classique'); },
   choisirPalette(d) { DB.settings.couleursPdf = d.k; save(); render(); toast('Couleurs : ' + PALETTES[d.k].nom); },
   apercuPalette() {
     const e = DB.eleves[0];
