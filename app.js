@@ -12,15 +12,23 @@ const STORAGE_KEY = 'motoplanning_v1';
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
   circulation: { label: 'Circulation', short: 'Circu' },
+  blanc_plateau: { label: 'Examen blanc plateau', short: '📝 Blanc plateau', blanc: true },
+  blanc_circulation: { label: 'Examen blanc circulation', short: '📝 Blanc circu', blanc: true },
   exam_plateau: { label: 'Examen plateau', short: '🎓 Exam plateau', exam: true },
   exam_circulation: { label: 'Examen circulation', short: '🎓 Exam circu', exam: true },
 };
 const isExam = (type) => !!TYPES[type]?.exam;
-// Capacité d'une séance : pour un examen, le nombre de places réservées sur RdvPermis s'il est renseigné
-const capDe = (s) => (isExam(s.type) && Number(s.places) > 0 ? Number(s.places) : DB.settings.capacite[s.type]);
+const isBlanc = (type) => !!TYPES[type]?.blanc;
+const baseDe = (type) => (String(type || '').includes('plateau') ? 'plateau' : 'circulation');
+const categorie = (type) => (isExam(type) ? 'exam' : isBlanc(type) ? 'blanc' : 'lecon');
+// Capacité d'une séance : pour un examen, le nombre de places réservées sur RdvPermis s'il est renseigné ;
+// un examen blanc suit la même limite que la leçon (plateau 5, circulation 3)
+const capDe = (s) => (isExam(s.type) && Number(s.places) > 0 ? Number(s.places) : (DB.settings.capacite[s.type] ?? DB.settings.capacite[baseDe(s.type)]));
+const dureeDe = (type) => DB.settings.dureeDefaut[type] || DB.settings.dureeDefaut[baseDe(type)] || 120;
 const STATUTS_PRESENCE = { prevu: 'Prévu', present: 'Présent', absent: 'Absent (dû)', excuse: 'Excusé' };
 const STATUTS_EXAMEN = { prevu: 'Prévu', admis: 'Admis ✅', ajourne: 'Ajourné ❌', absent: 'Absent' };
-const statutsPour = (type) => (isExam(type) ? STATUTS_EXAMEN : STATUTS_PRESENCE);
+const STATUTS_BLANC = { prevu: 'Prévu', valide: 'Validé ✅', nonvalide: 'Non validé ❌', absent: 'Absent (dû)', excuse: 'Excusé' };
+const statutsPour = (type) => (isExam(type) ? STATUTS_EXAMEN : isBlanc(type) ? STATUTS_BLANC : STATUTS_PRESENCE);
 const statutLabel = (type, st) => statutsPour(type)[st] || st;
 const STATUTS_ELEVE = { en_cours: 'En formation', obtenu: 'Permis obtenu', abandon: 'Abandon' };
 const FORMATIONS = ['A2', 'A', 'Passerelle A2 → A', 'Formation 125 cm³', 'Autre'];
@@ -79,7 +87,7 @@ function defaultState() {
       fraisRepassage: { exam_plateau: 100, exam_circulation: 150 },
       heuresPrepa: { min: 4, max: 6 },
       rappel: JSON.parse(JSON.stringify(RAPPEL_DEFAUT)),
-      dureeDefaut: { plateau: 120, circulation: 120, exam_plateau: 180, exam_circulation: 180 },
+      dureeDefaut: { plateau: 120, circulation: 120, blanc_plateau: 60, blanc_circulation: 60, exam_plateau: 180, exam_circulation: 180 },
       heureMin: '07:00',
       heureMax: '20:00',
       conditionsRdv: "Toute leçon non décommandée au moins 48 heures à l'avance sera due, sauf motif légitime justifié.",
@@ -198,7 +206,7 @@ function eleveHeures(eid) {
   const now = todayISO();
   for (const s of eleveSeances(eid)) {
     const p = s.eleves.find((x) => x.eleveId === eid);
-    if (p.statut === 'present' && !isExam(s.type)) res[s.type] += durH(s);
+    if (['present', 'valide', 'nonvalide'].includes(p.statut) && !isExam(s.type)) res[baseDe(s.type)] += durH(s);
     else if (p.statut === 'prevu' && s.date >= now) res.aVenir += durH(s);
   }
   return res;
@@ -240,6 +248,73 @@ function repassages() {
   return out.sort((a, b) => (!!a.programme - !!b.programme) || a.dernier.date.localeCompare(b.dernier.date));
 }
 const ordinal = (n) => (n === 1 ? '1er' : `${n}e`);
+
+/* ---------- Examen blanc → prêts pour l'examen → préparation ---------- */
+const statutDe = (s, eleveId) => s.eleves.find((p) => p.eleveId === eleveId)?.statut;
+const finDe = (s) => s.date + ' ' + s.fin;
+const debutDe = (s) => s.date + ' ' + s.debut;
+
+// Dernier examen blanc validé pour une épreuve, avant un moment donné
+function blancValide(eleveId, base, avant = '9999') {
+  const l = eleveSeances(eleveId).filter((s) => s.type === 'blanc_' + base && statutDe(s, eleveId) === 'valide' && finDe(s) <= avant);
+  return l[l.length - 1] || null;
+}
+// Heures de préparation planifiées entre l'examen blanc validé et l'examen
+function preparation(eleveId, exam) {
+  const base = baseDe(exam.type);
+  const blanc = blancValide(eleveId, base, debutDe(exam));
+  const depuis = blanc ? finDe(blanc) : '';
+  return eleveSeances(eleveId)
+    .filter((s) => s.type === base && debutDe(s) >= depuis && debutDe(s) < debutDe(exam) && ['prevu', 'present'].includes(statutDe(s, eleveId)))
+    .reduce((h, s) => h + durH(s), 0);
+}
+function prepBadge(h) {
+  const { min, max } = DB.settings.heuresPrepa;
+  const cls = h < min ? 'bad' : h > max ? 'warn' : 'ok';
+  const txt = h < min ? `il manque ${fmtH(min - h)}` : h > max ? `au-delà de ${max}h` : 'OK';
+  return `<span class="badge ${cls}" title="Heures de préparation planifiées depuis l'examen blanc (${min} à ${max}h)">Prépa ${fmtH(h)} · ${txt}</span>`;
+}
+// Élèves qui ont validé leur examen blanc : à inscrire, ou déjà inscrits (avec leur préparation)
+function pretsPourExamen() {
+  const out = [];
+  for (const e of DB.eleves.filter((x) => x.statut === 'en_cours')) {
+    for (const base of ['plateau', 'circulation']) {
+      const exams = eleveSeances(e.id).filter((s) => s.type === 'exam_' + base);
+      if (exams.some((s) => statutDe(s, e.id) === 'admis')) continue;
+      const blanc = blancValide(e.id, base);
+      if (!blanc) continue;
+      // un échec à l'examen après ce blanc : il faut refaire un examen blanc
+      if (exams.some((s) => debutDe(s) > finDe(blanc) && ['ajourne', 'absent'].includes(statutDe(s, e.id)))) continue;
+      const exam = exams.find((s) => debutDe(s) > finDe(blanc) && statutDe(s, e.id) === 'prevu') || null;
+      out.push({ eleve: e, base, blanc, exam, prepa: exam ? preparation(e.id, exam) : 0 });
+    }
+  }
+  return out.sort((a, b) => (!!a.exam - !!b.exam) || a.blanc.date.localeCompare(b.blanc.date));
+}
+
+function viewPrets() {
+  const q = UI.rechercheEleve.toLowerCase();
+  const list = pretsPourExamen()
+    .filter((r) => !UI.filtreAgence || r.eleve.agenceId === UI.filtreAgence)
+    .filter((r) => !q || `${r.eleve.nom} ${r.eleve.prenom} ${r.eleve.prenom} ${r.eleve.nom}`.toLowerCase().includes(q));
+  const { min, max } = DB.settings.heuresPrepa;
+  if (!list.length) return `<div class="card empty">Aucun élève n'a encore validé d'examen blanc.<br><span class="small">Placez un « 📝 Examen blanc » dans le planning, puis notez « Validé ✅ » quand l'élève ne fait aucune faute éliminatoire.</span></div>`;
+  return `<div class="table-wrap"><table>
+    <thead><tr><th>Élève</th><th>Auto-école</th><th>Épreuve</th><th>Examen blanc</th><th>Examen</th><th>Préparation (${min} à ${max}h)</th></tr></thead>
+    <tbody>${list.map((r) => {
+      const e = r.eleve;
+      return `<tr class="clickable" data-action="openFiche" data-id="${e.id}">
+        <td><strong>${esc(e.nom.toUpperCase())}</strong> ${esc(e.prenom)}</td>
+        <td>${agenceBadge(agenceDe(e))}</td>
+        <td><span class="badge exam_${r.base}">${r.base === 'plateau' ? 'Plateau' : 'Circulation'}</span></td>
+        <td>✅ validé le ${fmtDate(r.blanc.date)}</td>
+        <td>${r.exam ? `<span class="badge ok">le ${fmtDate(r.exam.date)} à ${r.exam.debut}</span>`
+          : `<button class="btn small primary" data-action="placerRepassage" data-eleve="${e.id}" data-type="exam_${r.base}">🎓 Inscrire à l'examen</button>`}</td>
+        <td>${r.exam ? prepBadge(r.prepa) : `<span class="muted small">à planifier après l'inscription</span>`}</td>
+      </tr>`;
+    }).join('')}</tbody></table></div>
+    <p class="muted small" style="margin-top:8px">Un élève apparaît ici dès que son examen blanc est noté « Validé ✅ ». La préparation compte les leçons plateau ou circulation (selon l'épreuve) planifiées entre l'examen blanc et l'examen.</p>`;
+}
 
 function nonFactures(eid) {
   const out = [];
@@ -446,7 +521,7 @@ function blocSeance(s, hMin) {
     const e = byId('eleves', p.eleveId);
     const a = agenceDe(e);
     const barre = p.statut === 'absent' || p.statut === 'excuse';
-    const res = p.statut === 'admis' ? ' ✅' : p.statut === 'ajourne' ? ' ❌' : '';
+    const res = ['admis', 'valide'].includes(p.statut) ? ' ✅' : ['ajourne', 'nonvalide'].includes(p.statut) ? ' ❌' : '';
     return `<div class="ag-el ${barre ? 'abs' : ''}"><span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}"></span>${esc(eleveCourt(e))}${res}</div>`;
   }).join('');
   return `
@@ -722,7 +797,7 @@ function openSeance(seance) {
       </div>
       <div class="lbl">Type</div>
       <div class="seg big types" id="s-type">
-        ${Object.entries(TYPES).map(([k, t]) => `<button data-action="setType" data-t="${k}" class="${draft.type === k ? 'on' : ''} ${k}">${t.exam ? '🎓 ' : ''}${t.label}<small>${t.exam ? 'accompagnement · ' : ''}max ${DB.settings.capacite[k]}</small></button>`).join('')}
+        ${Object.entries(TYPES).map(([k, t]) => `<button data-action="setType" data-t="${k}" class="${draft.type === k ? 'on' : ''} ${k}">${t.exam ? '🎓 ' : t.blanc ? '📝 ' : ''}${t.label}<small>${t.exam ? 'accompagnement · ' : t.blanc ? 'sans faute éliminatoire · ' : ''}max ${capDe({ type: k })}</small></button>`).join('')}
       </div>
       <div id="s-lieu-wrap">
         <div class="row" style="align-items:flex-end;gap:12px">
@@ -821,7 +896,8 @@ function renderResults() {
   if (q) list = list.filter((e) => `${e.nom} ${e.prenom} ${e.prenom} ${e.nom} ${e.tel}`.toLowerCase().includes(q));
   const tags = new Map();
   if (isExam(draft.type)) {
-    for (const r of repassages()) if (r.type === draft.type) tags.set(r.eleve.id, `repassage ${r.type === 'exam_plateau' ? 'plateau' : 'circulation'}`);
+    for (const r of pretsPourExamen()) if (!r.exam && 'exam_' + r.base === draft.type) tags.set(r.eleve.id, 'examen blanc ✅');
+    for (const r of repassages()) if (r.type === draft.type && !tags.has(r.eleve.id)) tags.set(r.eleve.id, `repassage ${r.type === 'exam_plateau' ? 'plateau' : 'circulation'} · blanc à refaire`);
     if (draft.type === 'exam_circulation') {
       for (const e of list) if (!tags.has(e.id) && eleveExamens(e.id).exam_plateau.cls === 'ok' && eleveExamens(e.id).exam_circulation.cls !== 'warn') tags.set(e.id, 'plateau ✅');
     }
@@ -865,6 +941,7 @@ function ongletsEleves() {
   return `<div class="seg" style="margin-bottom:12px">
     <button class="${UI.ongletEleves === 'tous' ? 'on' : ''}" data-action="ongletEleves" data-o="tous">Tous les élèves</button>
     <button class="${UI.ongletEleves === 'repassage' ? 'on' : ''}" data-action="ongletEleves" data-o="repassage">En attente de repassage ${n ? `<span class="count">${n}</span>` : ''}</button>
+    <button class="${UI.ongletEleves === 'prets' ? 'on' : ''}" data-action="ongletEleves" data-o="prets">Prêts pour l'examen ${(() => { const n = pretsPourExamen().filter((r) => !r.exam && (!UI.filtreAgence || r.eleve.agenceId === UI.filtreAgence)).length; return n ? `<span class="count">${n}</span>` : ''; })()}</button>
     <button class="${UI.ongletEleves === 'examens' ? 'on' : ''}" data-action="ongletEleves" data-o="examens">Examens à venir ${placesLibres() ? `<span class="count">${placesLibres()}</span>` : ''}</button>
   </div>`;
 }
@@ -885,7 +962,7 @@ function viewExamens() {
         <td><span class="badge ${x.type}">${TYPES[x.type].label}</span></td>
         <td>${esc(x.lieu || '—')}</td>
         <td>${esc(moniteurNom(byId('moniteurs', x.moniteurId)))}</td>
-        <td>${x.eleves.map((p) => esc(eleveNom(byId('eleves', p.eleveId)))).join(', ') || '<span class="muted">—</span>'}</td>
+        <td>${x.eleves.map((p) => `<div>${esc(eleveNom(byId('eleves', p.eleveId)))} ${p.statut === 'prevu' ? prepBadge(preparation(p.eleveId, x)) : ''}</div>`).join('') || '<span class="muted">—</span>'}</td>
         <td>${libres > 0 ? `<span class="badge warn">${libres} à attribuer</span>` : '<span class="badge ok">complet</span>'} <span class="muted small">${x.eleves.length}/${cap}</span></td>
       </tr>`;
     }).join('')}</tbody></table></div>
@@ -906,13 +983,14 @@ function viewRepassages() {
       <td><span class="badge ${r.type}">Repassage ${epreuve.toLowerCase()}</span></td>
       <td>${ordinal(r.numPassage)} passage</td>
       <td>${r.resultat === 'absent' ? 'Absent' : 'Ajourné'} le ${fmtDate(r.dernier.date)}</td>
+      <td>${(() => { const b = blancValide(e.id, baseDe(r.type)); return b && finDe(b) > debutDe(r.dernier) ? `<span class="badge ok">✅ validé le ${fmtDate(b.date)}</span>` : '<span class="badge warn">📝 à refaire</span>'; })()}</td>
       <td>${r.programme
         ? `<span class="badge ok">Programmé le ${fmtDate(r.programme.date)} à ${r.programme.debut}</span>`
         : `<button class="btn small primary" data-action="placerRepassage" data-eleve="${e.id}" data-type="${r.type}">🎓 Programmer</button>`}</td>
     </tr>`;
   };
   return list.length ? `<div class="table-wrap"><table>
-    <thead><tr><th>Élève</th><th>Agence</th><th>Épreuve à repasser</th><th>Passage</th><th>Dernier examen</th><th></th></tr></thead>
+    <thead><tr><th>Élève</th><th>Agence</th><th>Épreuve à repasser</th><th>Passage</th><th>Dernier examen</th><th>Examen blanc</th><th></th></tr></thead>
     <tbody>${list.map(ligne).join('')}</tbody></table></div>
     <p class="muted small" style="margin-top:8px"><button class="btn small" data-action="importExamens">📥 Importer des dates d'examen (RdvPermis)</button></p>
     <p class="muted small" style="margin-top:8px">Un élève apparaît ici dès qu'il est noté « Ajourné » ou « Absent » à un examen. Il disparaît quand il est admis au repassage.</p>`
@@ -936,7 +1014,7 @@ function viewEleves() {
     <button class="btn primary" data-action="newEleve">+ Nouvel élève</button>
   </div>
   ${ongletsEleves()}
-  ${UI.ongletEleves === 'repassage' ? viewRepassages() : UI.ongletEleves === 'examens' ? viewExamens() : `
+  ${UI.ongletEleves === 'repassage' ? viewRepassages() : UI.ongletEleves === 'prets' ? viewPrets() : UI.ongletEleves === 'examens' ? viewExamens() : `
   ${list.length ? `
   <div class="table-wrap"><table>
     <thead><tr><th>Élève</th><th>Agence</th><th>Téléphone</th><th>Prochaine leçon</th><th class="num">Reste dû</th></tr></thead>
@@ -1220,9 +1298,9 @@ function ligneSeance(s, eleveId) {
     return { libelle: `Frais de repassage ${epreuve} du ${fmtDate(s.date)}${lieu} (${n}e passage)`, qte: 1, pu: DB.settings.fraisRepassage[s.type] || 0, seanceId: s.id };
   }
   return {
-    libelle: `Leçon ${TYPES[s.type].label.toLowerCase()} du ${fmtDate(s.date)} ${s.debut}-${s.fin}${p?.statut === 'absent' ? ' (absence non excusée)' : ''}`,
+    libelle: `${isBlanc(s.type) ? 'Examen blanc ' + baseDe(s.type) : 'Leçon ' + TYPES[s.type].label.toLowerCase()} du ${fmtDate(s.date)} ${s.debut}-${s.fin}${p?.statut === 'absent' ? ' (absence non excusée)' : ''}`,
     qte: round2(durH(s)),
-    pu: DB.settings.tarifHeure[s.type] || 0,
+    pu: DB.settings.tarifHeure[baseDe(s.type)] || 0,
     seanceId: s.id,
   };
 }
@@ -1867,6 +1945,10 @@ function demoData() {
   db.seances[db.seances.length - 2].lieu = "Centre d'examen Lyon Sud";
   db.seances[db.seances.length - 2].eleves.forEach((p, i) => { p.statut = i === 1 ? 'ajourne' : 'admis'; });
   db.seances[db.seances.length - 1].lieu = "Centre d'examen Lyon Sud";
+  add(-5, '17:00', '18:00', 'blanc_plateau', 'm1', [4, 9]);
+  db.seances[db.seances.length - 1].eleves = [{ eleveId: 'el4', statut: 'valide' }, { eleveId: 'el9', statut: 'nonvalide' }];
+  add(-6, '10:00', '11:00', 'blanc_circulation', 'm2', [0, 3]);
+  db.seances[db.seances.length - 1].eleves = [{ eleveId: 'el0', statut: 'valide' }, { eleveId: 'el3', statut: 'valide' }];
   return db;
 }
 
@@ -1888,7 +1970,7 @@ const ACTIONS = {
   slot(d) {
     if (estMoniteur()) return toast('Seule la direction place les leçons. Cliquez sur une leçon pour noter les présences.');
     const type = 'circulation';
-    const dur = DB.settings.dureeDefaut[type] || 120;
+    const dur = dureeDe(type);
     openSeance({ type, date: d.date, debut: d.t, fin: fromMin(toMin(d.t) + dur), moniteurId: d.mon, lieu: '', eleves: [] });
   },
   editSeance(d) { const s = byId('seances', d.id); if (s) (estMoniteur() ? openSeanceMoniteur(s) : openSeance(s)); },
@@ -1918,7 +2000,7 @@ const ACTIONS = {
     const avant = draft.type;
     draft.type = d.t;
     for (const p of draft.eleves) if (!statutsPour(draft.type)[p.statut]) p.statut = 'prevu';
-    if (!draft.id && isExam(avant) !== isExam(draft.type)) draft.fin = fromMin(toMin(draft.debut) + (DB.settings.dureeDefaut[draft.type] || 120));
+    if (!draft.id && categorie(avant) !== categorie(draft.type)) draft.fin = fromMin(toMin(draft.debut) + dureeDe(draft.type));
     refreshDraft();
   },
   setDuree(d) { draft.fin = fromMin(toMin(draft.debut) + Number(d.d)); refreshDraft(); },
@@ -1963,7 +2045,7 @@ const ACTIONS = {
     }
     if (draft.id) Object.assign(byId('seances', draft.id), draft);
     else { draft.id = uid(); DB.seances.push(draft); }
-    save(); closeModal(); render(); toast(isExam(draft.type) ? 'Examen enregistré' : 'Leçon enregistrée');
+    save(); closeModal(); render(); toast(isExam(draft.type) ? 'Examen enregistré' : isBlanc(draft.type) ? 'Examen blanc enregistré' : 'Leçon enregistrée');
   },
   deleteSeance() {
     if (draft.eleves.some((p) => p.factureId)) return toast('Impossible : cette leçon est déjà facturée.', true);

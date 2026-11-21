@@ -311,3 +311,9 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
 .suivi-item.bad { border-left-color: var(--bad); }
 .suivi-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
 .suivi-texte-lu { margin-top: 6px; font-size: 14px; }
+
+/* ---------- Examens blancs ---------- */
+.seg.big.types { grid-template-columns: 1fr 1fr; }
+.seg.big button.on.blanc_plateau, .seg.big button.on.blanc_circulation { background: #fef3c7; color: #92400e; }
+.ag-bloc.blanc_plateau, .ag-bloc.blanc_circulation { background: #fffbeb; border-color: #fcd34d; border-left-color: #d97706; border-style: dashed; border-left-style: solid; }
+.badge.blanc_plateau, .badge.blanc_circulation { background: #fef3c7; color: #92400e; }

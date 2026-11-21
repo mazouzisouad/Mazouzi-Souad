@@ -50,6 +50,14 @@ Un clic par élève envoie (SMS, WhatsApp ou e-mail) un message complet : date, 
 L'appli retient qui a été prévenu. Réglages : Paramètres → Rappels d'examen ; heure / lieu du rendez-vous
 modifiables pour chaque examen.
 
+## Examen blanc → prêts pour l'examen → préparation
+
+- Dans le planning : « 📝 Examen blanc plateau / circulation », résultat **Validé ✅** (aucune faute éliminatoire) ou **Non validé ❌**.
+- **Élèves → Prêts pour l'examen** : les élèves qui ont validé leur examen blanc, avec un bouton pour les inscrire à l'examen.
+- Pour chaque élève inscrit : les **heures de préparation** planifiées entre l'examen blanc et l'examen (4 à 6 h, réglable),
+  en rouge s'il en manque.
+- Après un échec à l'examen, la liste des repassages indique si l'examen blanc est à refaire.
+
 ## Fiche de suivi
 
 Pour chaque élève, un historique de suivi pédagogique : après une leçon, le moniteur (ou la direction) choisit
