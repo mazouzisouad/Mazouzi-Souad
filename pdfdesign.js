@@ -384,9 +384,20 @@ function buildContratPdfModerne(c) {
    Choix du style (Paramètres) : « classique » (par défaut) ou « moderne »
    ===================================================================== */
 const styleModerne = () => DB.settings.designPdf === 'moderne';
-function buildCarteRdvPdf(eleveId, seances) { return styleModerne() ? buildCarteRdvPdfModerne(eleveId, seances) : buildCarteRdvPdfClassique(eleveId, seances); }
-function buildFacturePdf(f) { return styleModerne() ? buildFacturePdfModerne(f) : buildFacturePdfClassique(f); }
-function buildContratPdf(c) { return styleModerne() ? buildContratPdfModerne(c) : buildContratPdfClassique(c); }
+// La couleur suit l'auto-école de l'élève (si une couleur lui est attribuée)
+function pourAgence(agence, fabrique) {
+  PDF_AGENCE = agence || null;
+  try { return fabrique(); } finally { PDF_AGENCE = null; }
+}
+function buildCarteRdvPdf(eleveId, seances) {
+  return pourAgence(agenceDe(byId('eleves', eleveId)), () => (styleModerne() ? buildCarteRdvPdfModerne(eleveId, seances) : buildCarteRdvPdfClassique(eleveId, seances)));
+}
+function buildFacturePdf(f) {
+  return pourAgence(byId('agences', f.agenceId) || agenceDe(byId('eleves', f.eleveId)), () => (styleModerne() ? buildFacturePdfModerne(f) : buildFacturePdfClassique(f)));
+}
+function buildContratPdf(c) {
+  return pourAgence(agenceDe(byId('eleves', c.eleveId)), () => (styleModerne() ? buildContratPdfModerne(c) : buildContratPdfClassique(c)));
+}
 
 /* ---------- Ancien style (classique) ---------- */
 function buildFacturePdfClassique(f) {

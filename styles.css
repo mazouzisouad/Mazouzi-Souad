@@ -335,3 +335,5 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
 .pal-bande { display: block; height: 28px; border-radius: 6px; position: relative; overflow: hidden; }
 .pal-bande span { position: absolute; left: 0; right: 0; bottom: 0; height: 5px; }
 .pal-nom { font-size: 12px; font-weight: 600; }
+.pal-mini { display: inline-block; width: 34px; height: 20px; border-radius: 5px; position: relative; overflow: hidden; flex: none; }
+.pal-mini span { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; }

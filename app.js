@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · style moderne en option';
+const APP_VERSION = '2026-11-22 · couleur par auto-école';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -1532,7 +1532,9 @@ const PALETTES = {
   rouge: { nom: 'Rouge & gris', fonce: [31, 41, 55], accent: [220, 38, 38], clair: [254, 226, 226] },
   gris: { nom: 'Sobre (gris)', fonce: [55, 65, 81], accent: [107, 114, 128], clair: [243, 244, 246] },
 };
-const palette = () => PALETTES[DB.settings.couleursPdf] || PALETTES.orange;
+// Auto-école du document en cours de création (sa couleur passe avant la couleur générale)
+let PDF_AGENCE = null;
+const palette = () => PALETTES[PDF_AGENCE && PDF_AGENCE.couleursPdf] || PALETTES[DB.settings.couleursPdf] || PALETTES.orange;
 
 function pdfText(s) {
   return String(s ?? '').replace(/[  ]/g, ' ').replace(/→/g, '->').replace(/[’]/g, "'").replace(/[“”]/g, '"').replace(/³/g, '3');
@@ -1724,6 +1726,17 @@ function viewParametres() {
           <span class="pal-nom">${esc(pl.nom)}</span></button>`).join('')}
       </div>
       <div class="row" style="margin-top:10px"><button class="btn small" data-action="apercuPalette">👁️ Voir un exemple de carte de RDV</button></div>
+      ${DB.agences.length > 1 ? `<h3 style="margin-top:14px">Une couleur par auto-école</h3>
+        <p class="muted small">Les documents d'un élève prennent la couleur de <strong>son</strong> auto-école. « Couleur générale » = celle choisie ci-dessus.</p>
+        ${DB.agences.map((a) => { const pl = PALETTES[a.couleursPdf]; return `<div class="chip-row">
+          <span class="pal-mini" style="background:rgb(${(pl || palette()).fonce})"><span style="background:rgb(${(pl || palette()).accent})"></span></span>
+          <span class="name">${esc(a.nom)}</span>
+          <select data-on-change="paletteAgence" data-id="${a.id}" style="width:auto">
+            <option value="">Couleur générale</option>
+            ${Object.entries(PALETTES).map(([k, x]) => `<option value="${k}" ${a.couleursPdf === k ? 'selected' : ''}>${esc(x.nom)}</option>`).join('')}
+          </select>
+          <button class="btn small ghost" data-action="apercuPalette" data-agence="${a.id}" title="Voir un exemple">👁️</button>
+        </div>`; }).join('')}` : ''}
     </div>
     ${viewParamRappels()}
     ${viewParamContrats()}
@@ -2018,8 +2031,14 @@ const ACTIONS = {
   voirAnciens(d, el) { UI.voirAnciens = el.checked; render(); },
   choisirDesign(d) { DB.settings.designPdf = d.k; save(); render(); toast(d.k === 'moderne' ? 'Style moderne activé' : 'Style classique'); },
   choisirPalette(d) { DB.settings.couleursPdf = d.k; save(); render(); toast('Couleurs : ' + PALETTES[d.k].nom); },
-  apercuPalette() {
-    const e = DB.eleves[0];
+  paletteAgence(d, el) {
+    const a = byId('agences', d.id);
+    if (el.value) a.couleursPdf = el.value; else delete a.couleursPdf;
+    save(); render(); toast(`${a.nom} : ${el.value ? PALETTES[el.value].nom : 'couleur générale'}`);
+  },
+  apercuPalette(d) {
+    const e = (d && d.agence ? DB.eleves.find((x) => x.agenceId === d.agence) : null) || DB.eleves[0];
+    if (d && d.agence && (!e || e.agenceId !== d.agence)) return toast("Aucun élève dans cette auto-école pour l'exemple", true);
     if (!e) return toast("Ajoutez d'abord un élève", true);
     window.open(URL.createObjectURL(buildCarteRdvPdf(e.id, rdvAVenir(e.id)).output('blob')), '_blank');
   },
