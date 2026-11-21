@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · couleurs Tremblay / Familys / Smile';
+const APP_VERSION = '2026-11-22 · style moderne par défaut';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -158,6 +158,8 @@ function migrate(db) {
     }
     db.settings.couleursAuto1 = true;
   }
+  // Style moderne par défaut pour tout le monde (une fois ; « classique » reste possible ensuite)
+  if (db.settings && !db.settings.designAuto1) { db.settings.designPdf = 'moderne'; db.settings.designAuto1 = true; }
   if (!Array.isArray(db.modeles)) db.modeles = modelesParDefaut();
   else majModelesFournis(db.modeles);
   if (!db.agences.length) db.agences = def.agences;
@@ -1734,8 +1736,8 @@ function viewParametres() {
       <h2>🎨 Couleurs des documents</h2>
       <p class="muted small">Carte de rendez-vous, factures et contrats.</p>
       <div class="seg" style="margin-bottom:10px">
-        <button class="${DB.settings.designPdf === 'moderne' ? '' : 'on'}" data-action="choisirDesign" data-k="classique">Style classique</button>
-        <button class="${DB.settings.designPdf === 'moderne' ? 'on' : ''}" data-action="choisirDesign" data-k="moderne">✨ Style moderne (nouveau)</button>
+        <button class="${DB.settings.designPdf !== 'classique' ? 'on' : ''}" data-action="choisirDesign" data-k="moderne">✨ Style moderne</button>
+        <button class="${DB.settings.designPdf === 'classique' ? 'on' : ''}" data-action="choisirDesign" data-k="classique">Style classique</button>
       </div>
       <div class="palettes">
         ${Object.entries(PALETTES).map(([k, pl]) => `<button class="palette ${(DB.settings.couleursPdf || 'orange') === k ? 'on' : ''}" data-action="choisirPalette" data-k="${k}">

@@ -383,7 +383,7 @@ function buildContratPdfModerne(c) {
 /* =====================================================================
    Choix du style (Paramètres) : « classique » (par défaut) ou « moderne »
    ===================================================================== */
-const styleModerne = () => DB.settings.designPdf === 'moderne';
+const styleModerne = () => DB.settings.designPdf !== 'classique'; // moderne par défaut
 // La couleur suit l'auto-école de l'élève (si une couleur lui est attribuée)
 function pourAgence(agence, fabrique) {
   PDF_AGENCE = agence || null;
