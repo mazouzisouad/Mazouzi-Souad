@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · envoi e-mail (Apps Script)';
+const APP_VERSION = '2026-11-22 · couleurs des documents';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -1521,6 +1521,19 @@ function openPaiement(p) {
 /* ---------------------------------------------------------------------
    PDF : facture & carte de rendez-vous
    --------------------------------------------------------------------- */
+// Couleurs des documents PDF (carte de RDV, facture, contrat) — au choix dans Paramètres
+const PALETTES = {
+  orange: { nom: 'Orange & ardoise', fonce: [30, 41, 59], accent: [249, 115, 22], clair: [255, 237, 213] },
+  marine: { nom: 'Bleu marine', fonce: [23, 37, 84], accent: [37, 99, 235], clair: [219, 234, 254] },
+  turquoise: { nom: 'Vert turquoise', fonce: [19, 78, 74], accent: [20, 184, 166], clair: [204, 251, 241] },
+  bordeaux: { nom: 'Bordeaux', fonce: [76, 5, 25], accent: [190, 18, 60], clair: [255, 228, 230] },
+  violet: { nom: 'Violet', fonce: [46, 16, 101], accent: [124, 58, 237], clair: [237, 233, 254] },
+  noir: { nom: 'Noir & or', fonce: [23, 23, 23], accent: [202, 138, 4], clair: [254, 249, 195] },
+  rouge: { nom: 'Rouge & gris', fonce: [31, 41, 55], accent: [220, 38, 38], clair: [254, 226, 226] },
+  gris: { nom: 'Sobre (gris)', fonce: [55, 65, 81], accent: [107, 114, 128], clair: [243, 244, 246] },
+};
+const palette = () => PALETTES[DB.settings.couleursPdf] || PALETTES.orange;
+
 function pdfText(s) {
   return String(s ?? '').replace(/[  ]/g, ' ').replace(/→/g, '->').replace(/[’]/g, "'").replace(/[“”]/g, '"').replace(/³/g, '3');
 }
@@ -1535,7 +1548,7 @@ function buildFacturePdf(f) {
   const paye = facturePaye(f);
   const W = 210, M = 18;
 
-  doc.setFillColor(249, 115, 22); doc.rect(0, 0, W, 6, 'F');
+  doc.setFillColor(...palette().accent); doc.rect(0, 0, W, 6, 'F');
   doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
   const ec = ecoleDe(ag);
   doc.text(pdfText(ec.nom), M, 20);
@@ -1564,7 +1577,7 @@ function buildFacturePdf(f) {
     .filter(Boolean).forEach((l, i) => doc.text(pdfText(l), W - M - 81, cy + 17 + i * 4));
 
   let y = 96;
-  doc.setFillColor(30, 41, 59); doc.rect(M, y - 5, W - 2 * M, 8, 'F');
+  doc.setFillColor(...palette().fonce); doc.rect(M, y - 5, W - 2 * M, 8, 'F');
   doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
   doc.text('Désignation', M + 2, y); doc.text('Qté', 130, y, { align: 'right' });
   doc.text('PU TTC', 165, y, { align: 'right' }); doc.text('Total TTC', W - M - 2, y, { align: 'right' });
@@ -1589,7 +1602,7 @@ function buildFacturePdf(f) {
     doc.text(pdfText(label), tx, y); doc.text(val, W - M - 2, y, { align: 'right' }); y += bold ? 7 : 5.5;
   };
   if (t.taux > 0) { lineTot('Total HT', eurPdf(t.ht)); lineTot(`TVA ${String(t.taux).replace('.', ',')} %`, eurPdf(t.tva)); }
-  doc.setFillColor(255, 237, 213); doc.rect(tx - 3, y - 5, W - M - tx + 3, 8, 'F');
+  doc.setFillColor(...palette().clair); doc.rect(tx - 3, y - 5, W - M - tx + 3, 8, 'F');
   lineTot('Total TTC', eurPdf(t.ttc), true);
   if (paye > 0) { lineTot('Déjà réglé', '- ' + eurPdf(paye)); lineTot('Reste à payer', eurPdf(Math.max(0, t.ttc - paye)), true); }
   if (t.taux === 0) { doc.setFontSize(8.5); doc.setFont('helvetica', 'italic'); doc.text('TVA non applicable, art. 293 B du CGI', M, y); y += 5; }
@@ -1621,8 +1634,8 @@ function buildCarteRdvPdf(eleveId, seances) {
   const coord = [ec.tel, [ec.adresse, ec.cp, ec.ville].filter(Boolean).join(' ')].filter(Boolean);
   for (let pg = 0; pg < pages; pg++) {
     if (pg > 0) doc.addPage([148, 105], 'landscape');
-    doc.setFillColor(30, 41, 59); doc.rect(0, 0, W, 20, 'F');
-    doc.setFillColor(249, 115, 22); doc.rect(0, 20, W, 1.5, 'F');
+    doc.setFillColor(...palette().fonce); doc.rect(0, 0, W, 20, 'F');
+    doc.setFillColor(...palette().accent); doc.rect(0, 20, W, 1.5, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
     doc.text(pdfText(ec.nom), M, 9);
@@ -1835,6 +1848,16 @@ function viewParametres() {
         <label class="field full"><span>Texte en bas des factures</span><textarea name="mentionsFacture">${esc(s.mentionsFacture)}</textarea></label>
       </form>
       <div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn primary" data-action="saveSettings">Enregistrer</button></div>
+    </div>
+    <div class="card">
+      <h2>🎨 Couleurs des documents</h2>
+      <p class="muted small">Carte de rendez-vous, factures et contrats.</p>
+      <div class="palettes">
+        ${Object.entries(PALETTES).map(([k, pl]) => `<button class="palette ${(DB.settings.couleursPdf || 'orange') === k ? 'on' : ''}" data-action="choisirPalette" data-k="${k}">
+          <span class="pal-bande" style="background:rgb(${pl.fonce})"><span style="background:rgb(${pl.accent})"></span></span>
+          <span class="pal-nom">${esc(pl.nom)}</span></button>`).join('')}
+      </div>
+      <div class="row" style="margin-top:10px"><button class="btn small" data-action="apercuPalette">👁️ Voir un exemple de carte de RDV</button></div>
     </div>
     ${viewParamRappels()}
     ${viewParamContrats()}
@@ -2127,6 +2150,12 @@ const ACTIONS = {
   },
   filtreAgence(d, el) { UI.filtreAgence = el.value; render(); },
   voirAnciens(d, el) { UI.voirAnciens = el.checked; render(); },
+  choisirPalette(d) { DB.settings.couleursPdf = d.k; save(); render(); toast('Couleurs : ' + PALETTES[d.k].nom); },
+  apercuPalette() {
+    const e = DB.eleves[0];
+    if (!e) return toast("Ajoutez d'abord un élève", true);
+    window.open(URL.createObjectURL(buildCarteRdvPdf(e.id, rdvAVenir(e.id)).output('blob')), '_blank');
+  },
   ongletEleves(d) { UI.ongletEleves = d.o; render(); },
   importExamens() { if (!DB.moniteurs.length) return toast('Ajoutez d\'abord un moniteur', true); openImport(); },
   importAnalyser() {

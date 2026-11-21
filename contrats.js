@@ -443,7 +443,7 @@ function buildContratPdf(c) {
   const W = 210, M = 18, BAS = 275;
   let y = 16;
 
-  doc.setFillColor(249, 115, 22); doc.rect(0, 0, W, 4, 'F');
+  doc.setFillColor(...palette().accent); doc.rect(0, 0, W, 4, 'F');
   doc.setFont('helvetica', 'bold'); doc.setFontSize(11);
   doc.text(pdfText(c.ecoleNom || ec.nom), M, y);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(100, 116, 139);
