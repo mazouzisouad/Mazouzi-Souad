@@ -12,13 +12,19 @@ const STORAGE_KEY = 'motoplanning_v1';
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
   circulation: { label: 'Circulation', short: 'Circu' },
+  exam_plateau: { label: 'Examen plateau', short: '🎓 Exam plateau', exam: true },
+  exam_circulation: { label: 'Examen circulation', short: '🎓 Exam circu', exam: true },
 };
+const isExam = (type) => !!TYPES[type]?.exam;
 const STATUTS_PRESENCE = { prevu: 'Prévu', present: 'Présent', absent: 'Absent (dû)', excuse: 'Excusé' };
+const STATUTS_EXAMEN = { prevu: 'Prévu', admis: 'Admis ✅', ajourne: 'Ajourné ❌', absent: 'Absent' };
+const statutsPour = (type) => (isExam(type) ? STATUTS_EXAMEN : STATUTS_PRESENCE);
+const statutLabel = (type, st) => statutsPour(type)[st] || st;
 const STATUTS_ELEVE = { en_cours: 'En formation', obtenu: 'Permis obtenu', abandon: 'Abandon' };
 const FORMATIONS = ['A2', 'A', 'Passerelle A2 → A', 'Formation 125 cm³', 'Autre'];
 const MODES_PAIEMENT = ['CB', 'Espèces', 'Chèque', 'Virement', 'CPF', 'Autre'];
 const COULEURS_AGENCE = ['#f97316', '#16a34a', '#db2777', '#0891b2', '#ca8a04', '#7c3aed'];
-const DUREES = [60, 90, 120, 150, 180];
+const DUREES = [60, 90, 120, 150, 180, 240];
 
 // Grille du planning
 const ROW_H = 24; // hauteur (px) d'un créneau de 30 min
@@ -65,9 +71,10 @@ function defaultState() {
   return {
     version: 2,
     settings: {
-      capacite: { circulation: 3, plateau: 5 },
+      capacite: { circulation: 3, plateau: 5, exam_plateau: 8, exam_circulation: 3 },
       tarifHeure: { plateau: 45, circulation: 50 },
-      dureeDefaut: { plateau: 120, circulation: 120 },
+      tarifExamen: { exam_plateau: 90, exam_circulation: 120 },
+      dureeDefaut: { plateau: 120, circulation: 120, exam_plateau: 180, exam_circulation: 180 },
       heureMin: '07:00',
       heureMax: '20:00',
       conditionsRdv: "Toute leçon non décommandée au moins 48 heures à l'avance sera due, sauf motif légitime justifié.",
@@ -115,7 +122,7 @@ function migrate(db) {
   }
   db.version = 2;
   db.settings = Object.assign({}, def.settings, db.settings || {});
-  for (const k of ['capacite', 'tarifHeure', 'dureeDefaut']) db.settings[k] = Object.assign({}, def.settings[k], db.settings[k] || {});
+  for (const k of ['capacite', 'tarifHeure', 'tarifExamen', 'dureeDefaut']) db.settings[k] = Object.assign({}, def.settings[k], db.settings[k] || {});
   db.entreprise = Object.assign({}, def.entreprise, db.entreprise || {});
   for (const k of ['agences', 'moniteurs', 'prestations', 'eleves', 'seances', 'factures', 'paiements']) db[k] = db[k] || [];
   if (!db.agences.length) db.agences = def.agences;
@@ -164,10 +171,26 @@ function eleveHeures(eid) {
   const now = todayISO();
   for (const s of eleveSeances(eid)) {
     const p = s.eleves.find((x) => x.eleveId === eid);
-    if (p.statut === 'present') res[s.type] += durH(s);
+    if (p.statut === 'present' && !isExam(s.type)) res[s.type] += durH(s);
     else if (p.statut === 'prevu' && s.date >= now) res.aVenir += durH(s);
   }
   return res;
+}
+// Résumé des examens d'un élève (admis / prochain / ajourné)
+function eleveExamens(eid) {
+  const out = {};
+  for (const t of ['exam_plateau', 'exam_circulation']) {
+    const list = eleveSeances(eid).filter((s) => s.type === t);
+    const st = (s) => s.eleves.find((p) => p.eleveId === eid).statut;
+    const admis = list.find((s) => st(s) === 'admis');
+    const prevu = list.find((s) => s.date >= todayISO() && st(s) === 'prevu');
+    const nbAjourne = list.filter((s) => st(s) === 'ajourne').length;
+    if (admis) out[t] = { cls: 'ok', txt: `Admis le ${fmtDate(admis.date)}` };
+    else if (prevu) out[t] = { cls: 'warn', txt: `Le ${fmtDate(prevu.date)} à ${prevu.debut}` };
+    else if (nbAjourne) out[t] = { cls: 'bad', txt: `Ajourné${nbAjourne > 1 ? ` (${nbAjourne} fois)` : ''}` };
+    else out[t] = { cls: '', txt: '—' };
+  }
+  return out;
 }
 function nonFactures(eid) {
   const out = [];
@@ -272,7 +295,7 @@ function viewPlanning() {
       ${DB.moniteurs.map((m) => `<button class="${UI.moniteurSemaine === m.id ? 'on' : ''}" data-action="setMonSemaine" data-id="${m.id}"><span class="dot" style="background:${esc(m.couleur)}"></span>${esc(moniteurNom(m))}</button>`).join('')}
     </div>` : ''}
   ${DB.moniteurs.length ? agendaGrid(cols) : '<div class="card empty">Ajoutez vos moniteurs dans Paramètres.</div>'}
-  <p class="muted small" style="margin-top:8px">Cliquez sur une case vide pour placer une leçon · Cliquez sur une leçon pour ajouter un élève ou noter les présences.
+  <p class="muted small" style="margin-top:8px">Cliquez sur une case vide pour placer une leçon ou un examen · Cliquez dessus pour ajouter un élève, noter les présences ou les résultats.
   &nbsp; ${DB.agences.length > 1 ? DB.agences.map((a) => `<span class="dot" style="background:${esc(a.couleur)}"></span>${esc(a.nom)}`).join(' &nbsp; ') : ''}</p>`;
 }
 
@@ -326,12 +349,14 @@ function blocSeance(s, hMin) {
     const e = byId('eleves', p.eleveId);
     const a = agenceDe(e);
     const barre = p.statut === 'absent' || p.statut === 'excuse';
-    return `<div class="ag-el ${barre ? 'abs' : ''}"><span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}"></span>${esc(eleveCourt(e))}</div>`;
+    const res = p.statut === 'admis' ? ' ✅' : p.statut === 'ajourne' ? ' ❌' : '';
+    return `<div class="ag-el ${barre ? 'abs' : ''}"><span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}"></span>${esc(eleveCourt(e))}${res}</div>`;
   }).join('');
   return `
   <div class="ag-bloc ${s.type}" style="top:${top + 1}px;height:${height}px" data-action="editSeance" data-id="${s.id}">
     <div class="ag-bloc-top"><span>${s.debut} ${TYPES[s.type].short}</span><span class="fill ${n >= cap ? 'full' : 'free'}">${n}/${cap}</span></div>
     <div class="ag-els">${noms}</div>
+    ${isExam(s.type) && s.lieu ? `<div class="ag-lieu">📍 ${esc(s.lieu)}</div>` : ''}
   </div>`;
 }
 
@@ -371,7 +396,7 @@ function openSeance(seance) {
   const isNew = !draft.id;
   const m = byId('moniteurs', draft.moniteurId);
   openModal({
-    title: isNew ? 'Placer une leçon' : 'Leçon',
+    title: isNew ? 'Placer sur le planning' : (isExam(draft.type) ? 'Examen' : 'Leçon'),
     body: `
       <div class="row" style="margin-bottom:12px">
         <input type="date" id="s-date" value="${draft.date}" style="width:auto">
@@ -381,8 +406,13 @@ function openSeance(seance) {
         </select>
       </div>
       <div class="lbl">Type</div>
-      <div class="seg big" id="s-type">
-        ${Object.entries(TYPES).map(([k, t]) => `<button data-action="setType" data-t="${k}" class="${draft.type === k ? 'on' : ''} ${k}">${t.label}<small>max ${DB.settings.capacite[k]}</small></button>`).join('')}
+      <div class="seg big types" id="s-type">
+        ${Object.entries(TYPES).map(([k, t]) => `<button data-action="setType" data-t="${k}" class="${draft.type === k ? 'on' : ''} ${k}">${t.exam ? '🎓 ' : ''}${t.label}<small>${t.exam ? 'accompagnement · ' : ''}max ${DB.settings.capacite[k]}</small></button>`).join('')}
+      </div>
+      <div id="s-lieu-wrap">
+        <div class="lbl">Centre d'examen</div>
+        <input id="s-lieu" value="${esc(draft.lieu || '')}" placeholder="Ex : centre d'examen de …" list="lieux-exam">
+        <datalist id="lieux-exam">${[...new Set(DB.seances.filter((x) => isExam(x.type)).map((x) => x.lieu).filter(Boolean))].map((l) => `<option value="${esc(l)}">`).join('')}</datalist>
       </div>
       <div class="lbl">Durée</div>
       <div class="seg" id="s-duree"></div>
@@ -396,7 +426,7 @@ function openSeance(seance) {
     foot: `
       ${!isNew ? `<div class="left"><button class="btn danger" data-action="deleteSeance">Supprimer</button><button class="btn" data-action="duplicateSeance" title="Même leçon la semaine suivante">Copier à +7 j</button></div>` : ''}
       <button class="btn" data-action="closeModal">Annuler</button>
-      <button class="btn primary" data-action="saveSeance">${isNew ? 'Placer la leçon' : 'Enregistrer'}</button>`,
+      <button class="btn primary" data-action="saveSeance">${isNew ? 'Placer sur le planning' : 'Enregistrer'}</button>`,
     onMount: (mod) => {
       ['#s-date', '#s-debut', '#s-mon'].forEach((sel) => $(sel, mod).addEventListener('change', () => { readDraft(); refreshDraft(); }));
       refreshDraft();
@@ -411,6 +441,7 @@ function readDraft() {
   draft.debut = $('#s-debut').value || draft.debut;
   draft.fin = fromMin(toMin(draft.debut) + dur);
   draft.moniteurId = $('#s-mon').value;
+  if (isExam(draft.type) && $('#s-lieu')) draft.lieu = $('#s-lieu').value.trim();
 }
 
 function refreshDraft() {
@@ -418,6 +449,7 @@ function refreshDraft() {
   const n = draft.eleves.length;
   const dur = toMin(draft.fin) - toMin(draft.debut);
   $$('#s-type button').forEach((b) => b.classList.toggle('on', b.dataset.t === draft.type));
+  $('#s-lieu-wrap').hidden = !isExam(draft.type);
   $('#s-duree').innerHTML = DUREES.map((d) => `<button data-action="setDuree" data-d="${d}" class="${d === dur ? 'on' : ''}">${fmtH(d / 60)}</button>`).join('')
     + `<span class="muted small" style="align-self:center;margin-left:8px">${draft.debut} → ${draft.fin}</span>`;
   const capEl = $('#s-cap');
@@ -431,7 +463,7 @@ function refreshDraft() {
       <span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}"></span>
       <span class="name">${esc(eleveNom(e))} <span class="muted small">${esc(a?.nom || '')}</span></span>
       <select data-on-change="setPresence" data-i="${i}" class="presence ${p.statut}">
-        ${Object.entries(STATUTS_PRESENCE).map(([k, l]) => `<option value="${k}" ${p.statut === k ? 'selected' : ''}>${l}</option>`).join('')}
+        ${Object.entries(statutsPour(draft.type)).map(([k, l]) => `<option value="${k}" ${p.statut === k ? 'selected' : ''}>${l}</option>`).join('')}
       </select>
       <button class="btn small ghost" data-action="removeEleve" data-i="${i}" title="Retirer">✕</button>
     </div>`;
@@ -533,21 +565,22 @@ function viewFiche(id) {
   const a = agenceDe(e);
   const h = eleveHeures(id);
   const fin = eleveFinances(id);
+  const ex = eleveExamens(id);
   const o = UI.ongletFiche;
 
   let contenu = '';
   if (o === 'lecons') {
     const ss = eleveSeances(id).slice().reverse();
     contenu = ss.length ? `<div class="table-wrap"><table>
-      <thead><tr><th>Date</th><th>Heure</th><th>Type</th><th>Moniteur</th><th>Présence</th></tr></thead>
+      <thead><tr><th>Date</th><th>Heure</th><th>Type</th><th>Moniteur</th><th>Présence / résultat</th></tr></thead>
       <tbody>${ss.map((s) => {
         const p = s.eleves.find((x) => x.eleveId === id);
-        const cls = { present: 'ok', absent: 'bad', excuse: 'warn', prevu: '' }[p.statut];
+        const cls = { present: 'ok', admis: 'ok', absent: 'bad', ajourne: 'bad', excuse: 'warn', prevu: '' }[p.statut];
         return `<tr class="clickable" data-action="editSeance" data-id="${s.id}">
           <td>${fmtDate(s.date)}</td><td>${s.debut}–${s.fin}</td>
           <td><span class="badge ${s.type}">${TYPES[s.type].short}</span></td>
           <td>${esc(moniteurNom(byId('moniteurs', s.moniteurId)))}</td>
-          <td><span class="badge ${cls}">${STATUTS_PRESENCE[p.statut]}</span></td></tr>`;
+          <td><span class="badge ${cls}">${statutLabel(s.type, p.statut)}</span></td></tr>`;
       }).join('')}</tbody></table></div>` : '<div class="empty">Aucune leçon. Placez-la depuis le planning.</div>';
   } else if (o === 'compte') {
     const factures = DB.factures.filter((f) => f.eleveId === id).sort((x, y) => y.date.localeCompare(x.date));
@@ -595,6 +628,8 @@ function viewFiche(id) {
       <div><span>Plateau</span><strong>${fmtH(h.plateau)}</strong></div>
       <div><span>Circulation</span><strong>${fmtH(h.circulation)}</strong></div>
       <div><span>À venir</span><strong>${fmtH(h.aVenir)}</strong></div>
+      <div><span>Examen plateau</span><strong class="exam-res ${ex.exam_plateau.cls}">${ex.exam_plateau.txt}</strong></div>
+      <div><span>Examen circulation</span><strong class="exam-res ${ex.exam_circulation.cls}">${ex.exam_circulation.txt}</strong></div>
       <div><span>Reste dû</span><strong style="color:${fin.solde > 0 ? 'var(--bad)' : 'var(--ok)'}">${eur(Math.max(0, fin.solde))}</strong></div>
     </div>
     <div class="seg" style="margin:14px 0 12px">
@@ -754,6 +789,9 @@ let draftFacture = null;
 
 function ligneSeance(s, eleveId) {
   const p = s.eleves.find((x) => x.eleveId === eleveId);
+  if (isExam(s.type)) {
+    return { libelle: `Accompagnement ${TYPES[s.type].label.toLowerCase()} du ${fmtDate(s.date)}${s.lieu ? ' - ' + s.lieu : ''}`, qte: 1, pu: DB.settings.tarifExamen[s.type] || 0, seanceId: s.id };
+  }
   return {
     libelle: `Leçon ${TYPES[s.type].label.toLowerCase()} du ${fmtDate(s.date)} ${s.debut}-${s.fin}${p?.statut === 'absent' ? ' (absence non excusée)' : ''}`,
     qte: round2(durH(s)),
@@ -797,7 +835,7 @@ function openFacture(f) {
       <h3 style="margin-top:14px">Autres leçons de ${esc(eleveNom(eleve))} pas encore facturées</h3>
       <div class="check-list" id="dispo-lecons">
         ${dispo.map((x) => `<label><input type="checkbox" value="${x.seance.id}">
-          ${fmtDate(x.seance.date)} ${x.seance.debut} · ${TYPES[x.seance.type].short} · ${fmtH(durH(x.seance))} · <span class="muted">${STATUTS_PRESENCE[x.part.statut]}</span></label>`).join('')}
+          ${fmtDate(x.seance.date)} ${x.seance.debut} · ${TYPES[x.seance.type].short} · ${fmtH(durH(x.seance))} · <span class="muted">${statutLabel(x.seance.type, x.part.statut)}</span></label>`).join('')}
       </div>
       <button class="btn small" style="margin-top:6px" data-action="factureAddLecons">Ajouter les leçons cochées</button>` : ''}
     `,
@@ -1071,7 +1109,7 @@ function buildCarteRdvPdf(eleveId, seances) {
       doc.setFont('helvetica', 'bold'); doc.text(pdfText(d), M + 2, y);
       doc.setFont('helvetica', 'normal');
       doc.text(`${s.debut} - ${s.fin}`, M + 52, y);
-      doc.text(TYPES[s.type].label, M + 75, y);
+      doc.text(pdfText(isExam(s.type) ? 'Examen ' + (s.type === 'exam_plateau' ? 'plateau' : 'circu') : TYPES[s.type].label), M + 75, y);
       doc.text(pdfText(moniteurNom(byId('moniteurs', s.moniteurId))), M + 96, y);
       doc.setDrawColor(226, 232, 240); doc.line(M, y + 2, W - M, y + 2);
       y += 6.6;
@@ -1088,7 +1126,7 @@ function texteCarteRdv(eleveId, seances) {
   const e = byId('eleves', eleveId);
   const ent = DB.entreprise;
   const ag = agenceDe(e);
-  const lignes = seances.map((s) => `- ${parseISO(s.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} de ${s.debut} à ${s.fin} : ${TYPES[s.type].label}`);
+  const lignes = seances.map((s) => `- ${parseISO(s.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} de ${s.debut} à ${s.fin} : ${TYPES[s.type].label}${s.lieu ? ' (' + s.lieu + ')' : ''}`);
   return `Bonjour ${e.prenom},\n\nVoici vos prochains rendez-vous moto :\n${lignes.join('\n') || '(aucun)'}\n\n${DB.settings.conditionsRdv}\n\n${ent.nom}${ag && DB.agences.length > 1 ? ' - ' + ag.nom : ''}${(ag?.tel || ent.tel) ? ' - ' + (ag?.tel || ent.tel) : ''}`;
 }
 
@@ -1221,6 +1259,10 @@ function viewParametres() {
         <label class="field"><span>Max élèves plateau</span><input type="number" min="1" name="capPlateau" value="${s.capacite.plateau}"></label>
         <label class="field"><span>Prix heure circulation (€)</span><input type="number" step="0.01" name="tarifCirc" value="${s.tarifHeure.circulation}"></label>
         <label class="field"><span>Prix heure plateau (€)</span><input type="number" step="0.01" name="tarifPlateau" value="${s.tarifHeure.plateau}"></label>
+        <label class="field"><span>Max élèves examen plateau</span><input type="number" min="1" name="capExP" value="${s.capacite.exam_plateau}"></label>
+        <label class="field"><span>Max élèves examen circulation</span><input type="number" min="1" name="capExC" value="${s.capacite.exam_circulation}"></label>
+        <label class="field"><span>Prix accompagnement examen plateau (€)</span><input type="number" step="0.01" name="tarifExP" value="${s.tarifExamen.exam_plateau}"></label>
+        <label class="field"><span>Prix accompagnement examen circulation (€)</span><input type="number" step="0.01" name="tarifExC" value="${s.tarifExamen.exam_circulation}"></label>
         <label class="field"><span>Planning de</span><input type="time" step="1800" name="heureMin" value="${s.heureMin}"></label>
         <label class="field"><span>à</span><input type="time" step="1800" name="heureMax" value="${s.heureMax}"></label>
         <label class="field full"><span>Texte en bas de la carte de RDV</span><textarea name="conditionsRdv">${esc(s.conditionsRdv)}</textarea></label>
@@ -1307,6 +1349,11 @@ function demoData() {
   add(1, '13:30', '15:30', 'circulation', 'm2', [6, 8]);
   add(2, '08:00', '10:00', 'plateau', 'm1', [0, 1, 2, 3]);
   add(3, '10:00', '12:00', 'circulation', 'm2', [4, 5, 7]);
+  add(-2, '08:00', '11:00', 'exam_plateau', 'm2', [5, 6, 7]);
+  add(4, '13:00', '16:00', 'exam_circulation', 'm1', [0, 3]);
+  db.seances[db.seances.length - 2].lieu = "Centre d'examen Lyon Sud";
+  db.seances[db.seances.length - 2].eleves.forEach((p, i) => { p.statut = i === 1 ? 'ajourne' : 'admis'; });
+  db.seances[db.seances.length - 1].lieu = "Centre d'examen Lyon Sud";
   return db;
 }
 
@@ -1332,7 +1379,11 @@ const ACTIONS = {
   },
   editSeance(d) { const s = byId('seances', d.id); if (s) openSeance(s); },
   setType(d) {
+    readDraft();
+    const avant = draft.type;
     draft.type = d.t;
+    for (const p of draft.eleves) if (!statutsPour(draft.type)[p.statut]) p.statut = 'prevu';
+    if (!draft.id && isExam(avant) !== isExam(draft.type)) draft.fin = fromMin(toMin(draft.debut) + (DB.settings.dureeDefaut[draft.type] || 120));
     refreshDraft();
   },
   setDuree(d) { draft.fin = fromMin(toMin(draft.debut) + Number(d.d)); refreshDraft(); },
@@ -1369,6 +1420,12 @@ const ACTIONS = {
     const { errors } = seanceConflicts(draft);
     if (errors.length) { refreshDraft(); return toast(errors[0], true); }
     if (!draft.eleves.length && !confirm('Aucun élève : placer quand même ce créneau ?')) return;
+    // Admis à l'examen circulation → permis obtenu
+    if (draft.type === 'exam_circulation') {
+      const recus = draft.eleves.filter((p) => p.statut === 'admis').map((p) => byId('eleves', p.eleveId)).filter((e) => e && e.statut !== 'obtenu');
+      recus.forEach((e) => { e.statut = 'obtenu'; });
+      if (recus.length) setTimeout(() => toast(`🎉 Permis obtenu : ${recus.map(eleveNom).join(', ')}`), 600);
+    }
     if (draft.id) Object.assign(byId('seances', draft.id), draft);
     else { draft.id = uid(); DB.seances.push(draft); }
     save(); closeModal(); render(); toast('Leçon enregistrée');
@@ -1475,6 +1532,10 @@ const ACTIONS = {
     s.capacite.plateau = Math.max(1, parseInt(f.capPlateau, 10) || 5);
     s.tarifHeure.circulation = Number(f.tarifCirc) || 0;
     s.tarifHeure.plateau = Number(f.tarifPlateau) || 0;
+    s.capacite.exam_plateau = Math.max(1, parseInt(f.capExP, 10) || 8);
+    s.capacite.exam_circulation = Math.max(1, parseInt(f.capExC, 10) || 3);
+    s.tarifExamen.exam_plateau = Number(f.tarifExP) || 0;
+    s.tarifExamen.exam_circulation = Number(f.tarifExC) || 0;
     if (f.heureMin && f.heureMax && toMin(f.heureMax) > toMin(f.heureMin)) { s.heureMin = f.heureMin; s.heureMax = f.heureMax; }
     s.conditionsRdv = f.conditionsRdv;
     s.mentionsFacture = f.mentionsFacture;

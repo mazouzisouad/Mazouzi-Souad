@@ -237,3 +237,18 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
 .check-list { display: flex; flex-direction: column; gap: 4px; max-height: 220px; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px; padding: 6px; }
 .check-list label { display: flex; gap: 8px; align-items: center; font-size: 14px; }
 .check-list input { width: auto; }
+
+/* ---------- Examens ---------- */
+:root { --exam: #e11d48; }
+.seg.big.types { display: grid; grid-template-columns: 1fr 1fr; }
+.seg.big button.on.exam_plateau, .seg.big button.on.exam_circulation { background: #ffe4e6; color: #be123c; }
+.ag-bloc.exam_plateau, .ag-bloc.exam_circulation {
+  background: repeating-linear-gradient(135deg, #fff1f2 0 8px, #ffe4e6 8px 16px);
+  border-color: #fda4af; border-left-color: var(--exam);
+}
+.ag-lieu { font-size: 11px; color: #9f1239; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.badge.exam_plateau, .badge.exam_circulation { background: #ffe4e6; color: #be123c; }
+.exam-res { font-size: 15px !important; }
+.exam-res.ok { color: var(--ok); }
+.exam-res.warn { color: var(--warn); }
+.exam-res.bad { color: var(--bad); }

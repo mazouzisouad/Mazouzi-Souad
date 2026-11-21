@@ -10,6 +10,7 @@ de plusieurs auto-écoles avec deux moniteurs (ou plus).
 - Cliquer sur une case vide → choisir **Plateau** (max 5) ou **Circulation** (max 3), la durée, puis taper le nom des élèves.
 - Cliquer sur une leçon → ajouter un élève, noter les présences (présent / absent / excusé), déplacer, copier à la semaine suivante.
 - Blocage automatique : leçon complète, moniteur ou élève déjà pris à la même heure.
+- **Examens** : « Examen plateau » et « Examen circulation » (accompagnement) avec les élèves présentés, le centre d'examen et le résultat (admis / ajourné / absent). Admis à la circulation → permis obtenu.
 - Chaque élève a une pastille de couleur selon son **agence d'inscription**.
 
 **👤 Élèves** — fiche simple (onglets Leçons / Compte / Infos), agence d'inscription, heures faites, reste dû.
