@@ -31,12 +31,15 @@ Ensuite, dans Paramètres : « Mon auto-école » (nom, SIRET, TVA… pour les f
 
 ## Contrats et signature électronique
 
-- **Paramètres → Contrats** : modèles de contrat avec des champs automatiques (nom, adresse, NEPH, agence, tarifs…).
+- **Paramètres → Auto-écoles** : chaque auto-école a sa propre identité (nom, SIRET, agrément, assurance, garantie financière, médiateur).
+  Sur les contrats, factures et cartes de RDV, **seule l'auto-école où l'élève est inscrit** apparaît.
+- **Paramètres → Contrats** : modèles de contrat avec des champs automatiques (élève, auto-école, tarifs…), et pour chaque auto-école
+  **sa signature et son tampon** (photo), ajoutés automatiquement sur les contrats de ses élèves.
+- Le modèle fourni suit la structure du contrat type officiel des écoles de conduite et les mentions de l'article R.213-3 du Code de la route.
   Le modèle fourni est indicatif : vérifiez-le ou collez le texte de votre contrat habituel.
 - **Fiche élève → Contrats → Nouveau contrat** : le contrat est rempli tout seul, modifiable avant signature.
 - Le modèle fourni prévoit l'examen blanc obligatoire avant chaque épreuve, 4 à 6 h de préparation, le 1er accompagnement offert et les frais de repassage (100 € plateau, 150 € circulation) — réglables dans Paramètres.
 - **Faire signer** : l'élève (ou son représentant légal) coche « lu et approuvé » et signe au doigt sur le téléphone / la tablette.
-  La signature de l'auto-école est enregistrée une fois puis ajoutée automatiquement.
 - Le contrat signé (date et heure de signature) est envoyé en PDF par e-mail, WhatsApp…
 
 ## Places d'examen réservées

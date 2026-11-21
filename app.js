@@ -154,6 +154,15 @@ const eleveNom = (e) => (e ? `${e.prenom} ${e.nom}`.trim() : '—');
 const eleveCourt = (e) => (e ? `${e.prenom} ${(e.nom || '').charAt(0).toUpperCase()}.` : '—');
 const moniteurNom = (m) => (m ? `${m.prenom} ${m.nom}`.trim() : '—');
 const agenceDe = (e) => (e ? byId('agences', e.agenceId) : null);
+// Identité d'une auto-école (agence) : ses propres informations ; les infos communes ne servent
+// qu'à compléter un champ resté vide (jamais le nom).
+const CHAMPS_ECOLE = ['adresse', 'cp', 'ville', 'tel', 'email', 'siret', 'agrement', 'dateAgrement', 'exploitant', 'assureur', 'police', 'garantie', 'mediateur'];
+function ecoleDe(a) {
+  const ent = DB.entreprise;
+  const ec = { nom: a?.nom || ent.nom };
+  for (const k of CHAMPS_ECOLE) ec[k] = (a && a[k]) || ent[k] || '';
+  return ec;
+}
 const agenceBadge = (a) => (a ? `<span class="badge agence" style="--c:${esc(a.couleur)}">${esc(a.nom)}</span>` : '');
 
 function factureTotaux(f) {
@@ -1354,13 +1363,13 @@ function buildFacturePdf(f) {
 
   doc.setFillColor(249, 115, 22); doc.rect(0, 0, W, 6, 'F');
   doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
-  doc.text(pdfText(ent.nom), M, 20);
+  const ec = ecoleDe(ag);
+  doc.text(pdfText(ec.nom), M, 20);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
   const lignesEnt = [
-    ent.adresse, [ent.cp, ent.ville].filter(Boolean).join(' '),
-    [ent.tel && 'Tél. ' + ent.tel, ent.email].filter(Boolean).join(' - '),
-    ent.siret && 'SIRET ' + ent.siret, ent.agrement && 'Agrément ' + ent.agrement,
-    ag && 'Agence : ' + ag.nom,
+    ec.adresse, [ec.cp, ec.ville].filter(Boolean).join(' '),
+    [ec.tel && 'Tél. ' + ec.tel, ec.email].filter(Boolean).join(' - '),
+    ec.siret && 'SIRET ' + ec.siret, ec.agrement && 'Agrément ' + ec.agrement,
   ].filter(Boolean);
   lignesEnt.forEach((l, i) => doc.text(pdfText(l), M, 25 + i * 4.2));
 
@@ -1421,7 +1430,7 @@ function buildFacturePdf(f) {
   doc.setFontSize(7.5); doc.setTextColor(100, 116, 139); doc.setFont('helvetica', 'normal');
   const foot = doc.splitTextToSize(pdfText(DB.settings.mentionsFacture || ''), W - 2 * M);
   doc.text(foot, W / 2, 285 - foot.length * 3.5, { align: 'center' });
-  doc.text(pdfText([ent.nom, ent.siret && 'SIRET ' + ent.siret].filter(Boolean).join(' - ')), W / 2, 289, { align: 'center' });
+  doc.text(pdfText([ec.nom, ec.siret && 'SIRET ' + ec.siret].filter(Boolean).join(' - ')), W / 2, 289, { align: 'center' });
   return doc;
 }
 
@@ -1434,14 +1443,15 @@ function buildCarteRdvPdf(eleveId, seances) {
   const W = 148, H = 105, M = 8;
   const perPage = 7;
   const pages = Math.max(1, Math.ceil(seances.length / perPage));
-  const coord = [ag?.tel || ent.tel, [ag?.adresse || ent.adresse, ag?.cp || ent.cp, ag?.ville || ent.ville].filter(Boolean).join(' ')].filter(Boolean);
+  const ec = ecoleDe(ag);
+  const coord = [ec.tel, [ec.adresse, ec.cp, ec.ville].filter(Boolean).join(' ')].filter(Boolean);
   for (let pg = 0; pg < pages; pg++) {
     if (pg > 0) doc.addPage([148, 105], 'landscape');
     doc.setFillColor(30, 41, 59); doc.rect(0, 0, W, 20, 'F');
     doc.setFillColor(249, 115, 22); doc.rect(0, 20, W, 1.5, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
-    doc.text(pdfText(ent.nom + (ag && DB.agences.length > 1 ? ' - ' + ag.nom : '')), M, 9);
+    doc.text(pdfText(ec.nom), M, 9);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
     doc.text(pdfText(coord.join('  -  ')), M, 15);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
@@ -1486,7 +1496,8 @@ function texteCarteRdv(eleveId, seances) {
   const ent = DB.entreprise;
   const ag = agenceDe(e);
   const lignes = seances.map((s) => `- ${parseISO(s.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} de ${s.debut} à ${s.fin} : ${TYPES[s.type].label}${s.lieu ? ' (' + s.lieu + ')' : ''}`);
-  return `Bonjour ${e.prenom},\n\nVoici vos prochains rendez-vous moto :\n${lignes.join('\n') || '(aucun)'}\n\n${DB.settings.conditionsRdv}\n\n${ent.nom}${ag && DB.agences.length > 1 ? ' - ' + ag.nom : ''}${(ag?.tel || ent.tel) ? ' - ' + (ag?.tel || ent.tel) : ''}`;
+  const ec = ecoleDe(ag);
+  return `Bonjour ${e.prenom},\n\nVoici vos prochains rendez-vous moto :\n${lignes.join('\n') || '(aucun)'}\n\n${DB.settings.conditionsRdv}\n\n${ec.nom}${ec.tel ? ' - ' + ec.tel : ''}`;
 }
 
 /* ---------------------------------------------------------------------
@@ -1558,13 +1569,14 @@ function sendFacture(id) {
   const ent = DB.entreprise;
   const t = factureTotaux(f);
   const reste = Math.max(0, t.ttc - facturePaye(f));
-  const text = `Bonjour ${e?.prenom || ''},\n\nVeuillez trouver ci-joint votre facture n° ${f.numero} du ${fmtDate(f.date)} d'un montant de ${eur(t.ttc)}${reste === 0 ? ' (réglée, merci)' : reste < t.ttc ? ` (reste à payer : ${eur(reste)})` : ''}.\n\nCordialement,\n${ent.nom}${ent.tel ? '\n' + ent.tel : ''}`;
+  const ec = ecoleDe(byId('agences', f.agenceId) || agenceDe(e));
+  const text = `Bonjour ${e?.prenom || ''},\n\nVeuillez trouver ci-joint votre facture n° ${f.numero} du ${fmtDate(f.date)} d'un montant de ${eur(t.ttc)}${reste === 0 ? ' (réglée, merci)' : reste < t.ttc ? ` (reste à payer : ${eur(reste)})` : ''}.\n\nCordialement,\n${ec.nom}${ec.tel ? '\n' + ec.tel : ''}`;
   openSendDialog({
     title: `Envoyer la facture ${esc(f.numero)}`,
     doc: buildFacturePdf(f),
     filename: `Facture-${f.numero}.pdf`,
     eleve: e,
-    subject: `Facture ${f.numero} - ${ent.nom}`,
+    subject: `Facture ${f.numero} - ${ec.nom}`,
     text,
   });
 }
@@ -1577,7 +1589,7 @@ function sendCarteRdv(eleveId) {
     doc: buildCarteRdvPdf(eleveId, seances),
     filename: `Carte-RDV-${e.nom}-${e.prenom}.pdf`.replace(/\s+/g, '_'),
     eleve: e,
-    subject: `Vos rendez-vous moto - ${DB.entreprise.nom}`,
+    subject: `Vos rendez-vous moto - ${ecoleDe(agenceDe(e)).nom}`,
     text: texteCarteRdv(eleveId, seances),
     extraBody: seances.length
       ? `<div class="alert info">${seances.length} rendez-vous à venir sur la carte.</div>`
@@ -1596,15 +1608,18 @@ function viewParametres() {
   <div class="toolbar"><h1>Paramètres</h1></div>
   <div class="grid cols-2">
     <div class="card">
-      <h2>Mon auto-école</h2>
-      <p class="muted small">Apparaît sur les factures et les cartes de RDV.</p>
+      <h2>Facturation & infos communes</h2>
+      <p class="muted small">Numérotation des factures et TVA. Les autres informations ne servent qu'à compléter ce qu'une auto-école n'a pas renseigné.</p>
       ${ligne(`<span class="name">${esc(ent.nom)} <span class="muted small">· factures ${esc(ent.prefixe)}-AAAA-#### · TVA ${ent.tva}%</span></span>`, 'editEntreprise', '')}
     </div>
     <div class="card">
-      <h2>Agences</h2>
-      <p class="muted small">Chaque élève est rattaché à son agence d'inscription.</p>
-      ${DB.agences.map((a) => ligne(`<span class="dot" style="background:${esc(a.couleur)}"></span><span class="name">${esc(a.nom)} <span class="muted small">${esc(a.ville || '')}</span></span>`, 'editAgence', a.id)).join('')}
-      <button class="btn" data-action="editAgence">+ Ajouter une agence</button>
+      <h2>Auto-écoles (agences)</h2>
+      <p class="muted small">Chaque élève est inscrit dans une auto-école : son nom, son SIRET, sa signature et son tampon figurent sur les documents de l'élève.</p>
+      ${DB.agences.map((a) => {
+        const manque = ['siret', 'agrement', 'assureur', 'mediateur'].filter((k) => !a[k]).length;
+        return ligne(`<span class="dot" style="background:${esc(a.couleur)}"></span><span class="name">${esc(a.nom)} <span class="muted small">${esc(a.ville || '')}</span>${manque ? ' <span class="badge warn">infos à compléter</span>' : ''}</span>`, 'editAgence', a.id);
+      }).join('')}
+      <button class="btn" data-action="editAgence">+ Ajouter une auto-école</button>
     </div>
     <div class="card">
       <h2>Moniteurs</h2>
@@ -1694,9 +1709,9 @@ function demoData() {
   const db = defaultState();
   db.entreprise = { nom: 'Auto-école Démo', adresse: '12 rue de la République', cp: '69001', ville: 'Lyon', tel: '04 78 00 00 01', email: 'contact@exemple.fr', siret: '123 456 789 00011', agrement: 'E 01 069 0001 0', prefixe: 'F', compteur: 0, tva: 20 };
   db.agences = [
-    { id: 'ag1', nom: 'Agence Centre', adresse: '12 rue de la République', cp: '69001', ville: 'Lyon', tel: '04 78 00 00 01', couleur: COULEURS_AGENCE[0] },
-    { id: 'ag2', nom: 'Agence Gare', adresse: '3 place de la Gare', cp: '69003', ville: 'Lyon', tel: '04 78 00 00 02', couleur: COULEURS_AGENCE[1] },
-    { id: 'ag3', nom: 'Agence Nord', adresse: '8 av. du Parc', cp: '69009', ville: 'Lyon', tel: '04 78 00 00 03', couleur: COULEURS_AGENCE[2] },
+    { id: 'ag1', nom: 'Auto-école Centre', adresse: '12 rue de la République', cp: '69001', ville: 'Lyon', tel: '04 78 00 00 01', email: 'centre@exemple.fr', siret: '111 111 111 00011', agrement: 'E 01 069 0001 0', dateAgrement: '2015-03-02', exploitant: 'M. Exemple, gérant', assureur: 'Assureur Exemple', police: 'RC-0001', mediateur: 'Médiateur Exemple (www.mediateur-exemple.fr)', couleur: COULEURS_AGENCE[0] },
+    { id: 'ag2', nom: 'Auto-école Gare', adresse: '3 place de la Gare', cp: '69003', ville: 'Lyon', tel: '04 78 00 00 02', email: 'gare@exemple.fr', siret: '222 222 222 00022', agrement: 'E 02 069 0002 0', dateAgrement: '2018-06-11', exploitant: 'Mme Exemple, gérante', assureur: 'Assureur Exemple', police: 'RC-0002', mediateur: 'Médiateur Exemple (www.mediateur-exemple.fr)', couleur: COULEURS_AGENCE[1] },
+    { id: 'ag3', nom: 'Auto-école Nord', adresse: '8 av. du Parc', cp: '69009', ville: 'Lyon', tel: '04 78 00 00 03', email: 'nord@exemple.fr', siret: '333 333 333 00033', agrement: 'E 03 069 0003 0', dateAgrement: '2020-09-14', exploitant: 'M. Exemple, gérant', assureur: 'Assureur Exemple', police: 'RC-0003', mediateur: 'Médiateur Exemple (www.mediateur-exemple.fr)', couleur: COULEURS_AGENCE[2] },
   ];
   db.moniteurs = [
     { id: 'm1', prenom: 'Karim', nom: 'B.', tel: '', couleur: '#f97316' },
@@ -1973,13 +1988,19 @@ const ACTIONS = {
   editAgence(d) {
     const a = d.id ? byId('agences', d.id) : null;
     openSimpleForm({
-      title: a ? "Modifier l'agence" : 'Nouvelle agence',
+      title: a ? "Modifier l'auto-école" : 'Nouvelle auto-école',
       values: a || { couleur: COULEURS_AGENCE[DB.agences.length % COULEURS_AGENCE.length] },
       fields: [
-        { name: 'nom', label: 'Nom *', required: true, full: true },
+        { name: 'nom', label: "Nom de l'auto-école *", required: true, full: true },
         { name: 'adresse', label: 'Adresse', full: true },
         { name: 'cp', label: 'Code postal' }, { name: 'ville', label: 'Ville' },
-        { name: 'tel', label: 'Téléphone', type: 'tel' }, { name: 'couleur', label: 'Couleur', type: 'color' },
+        { name: 'tel', label: 'Téléphone', type: 'tel' }, { name: 'email', label: 'E-mail', type: 'email' },
+        { name: 'siret', label: 'SIRET' }, { name: 'exploitant', label: 'Représentée par (exploitant)' },
+        { name: 'agrement', label: "N° d'agrément" }, { name: 'dateAgrement', label: "Date de l'agrément", type: 'date' },
+        { name: 'assureur', label: 'Assureur (responsabilité civile)' }, { name: 'police', label: "N° de contrat d'assurance" },
+        { name: 'garantie', label: "Garantie financière (organisme et montant) — vide s'il n'y en a pas", full: true },
+        { name: 'mediateur', label: 'Médiateur de la consommation (nom, site internet)', full: true },
+        { name: 'couleur', label: 'Couleur dans le planning', type: 'color' },
       ],
       onSave: (data) => { if (a) Object.assign(a, data); else DB.agences.push({ id: uid(), ...data }); },
       onDelete: a && (() => {
