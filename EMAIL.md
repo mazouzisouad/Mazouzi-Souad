@@ -1,43 +1,31 @@
-# Envoi automatique des e-mails (≈ 20 minutes)
+# Envoi automatique des e-mails (≈ 10 minutes, gratuit)
 
-Avec ça, un seul bouton **« 📧 Envoyer par e-mail (PDF joint) »** : la carte de rendez-vous, la facture,
-le contrat ou le rappel d'examen part tout seul, avec le PDF en pièce jointe.
+Un seul bouton **« 📧 Envoyer par e-mail (PDF joint) »** : la carte de rendez-vous, la facture, le contrat ou le
+rappel d'examen part tout seul, avec le PDF en pièce jointe. L'élève voit le nom de **son** auto-école, et ses
+réponses arrivent sur l'e-mail de son auto-école.
 
-L'envoi passe par l'extension officielle de Firebase **« Trigger Email from Firestore »**
-et par la boîte **Gmail de l'auto-école**.
+L'envoi passe par un petit programme **Google Apps Script** installé sur une boîte Gmail dédiée
+(par exemple `rdvpermismoto@gmail.com`). Gratuit, environ **100 e-mails par jour**.
 
-## 1. Passer Firebase en formule « Blaze » (paiement à l'usage)
+## 1. Copier le programme
+Dans l'appli : **Paramètres → 📧 Envoi automatique des e-mails → « 📋 Copier le programme »**.
+(Le programme contient une clé secrète propre à votre appli.)
 
-Les extensions demandent cette formule. Pour une auto-école, l'usage reste dans la partie gratuite
-(ou quelques centimes par mois).
+## 2. Le coller dans Google Apps Script
+1. Connectez-vous avec la **boîte d'envoi** (ex. `rdvpermismoto@gmail.com`) et ouvrez **script.google.com**.
+2. **Nouveau projet** → effacez le texte présent → **collez** le programme → 💾 **Enregistrer**.
+3. En haut, choisissez la fonction **`autoriser`** → **▶ Exécuter** → **Examiner les autorisations** →
+   choisissez le compte → **Paramètres avancés** → **Accéder à … (non sécurisé)** → **Autoriser**.
+   (Ce message est normal : c'est votre propre programme.)
 
-1. Console Firebase → en bas à gauche **« Spark – Mettre à niveau »** → **Blaze** → ajoutez une carte bancaire.
-2. Conseillé : créez une **alerte de budget** (par exemple 5 €) pour être prévenu au moindre coût.
+## 3. Le publier
+1. **Déployer → Nouveau déploiement** → roue dentée → **Application Web**.
+2. **Exécuter en tant que : Moi** · **Qui a accès : Tout le monde** → **Déployer**.
+3. Copiez l'**URL de l'application Web** (elle se termine par `/exec`).
 
-## 2. Créer un « mot de passe d'application » Gmail
+## 4. L'activer dans l'appli
+**Paramètres → 📧 Envoi automatique** → collez l'URL → cochez **Activer** → **Enregistrer** →
+**« M'envoyer un e-mail de test »**.
 
-1. Sur **myaccount.google.com** (compte Gmail qui enverra les e-mails) → **Sécurité**.
-2. Activez la **Validation en deux étapes** si ce n'est pas déjà fait.
-3. Cherchez **« Mots de passe des applications »** → créez-en un nommé `Moto Planning`.
-4. Google affiche un mot de passe de 16 lettres : **gardez-le pour l'étape 3** (ne le donnez à personne).
-
-## 3. Installer l'extension
-
-1. Console Firebase → **Extensions** (dans la loupe, tapez « Extensions ») → cherchez **« Trigger Email from Firestore »** → **Installer**.
-2. Réglages à remplir :
-   - **Cloud Functions location** : `europe-west1`
-   - **Firestore Instance ID** : `(default)` · **Firestore location** : celle de votre base (`europe-west9`)
-   - **Authentication Type** : `UsernamePassword`
-   - **SMTP connection URI** : `smtps://VOTRE.ADRESSE@gmail.com@smtp.gmail.com:465`
-   - **SMTP password** : le mot de passe d'application de 16 lettres
-   - **Email documents collection** : `mail`
-   - **Default FROM address** : `VOTRE.ADRESSE@gmail.com`
-   - le reste : laissez les valeurs proposées
-3. **Installer l'extension** (quelques minutes).
-
-## 4. Activer dans l'appli
-
-**Paramètres → 📧 Envoi automatique des e-mails** → adresse : `VOTRE.ADRESSE@gmail.com` →
-cochez **Activer** → **Enregistrer** → **« M'envoyer un e-mail de test »**.
-
-Le nom affiché à l'élève est celui de **son** auto-école, et ses réponses arrivent sur l'e-mail de cette auto-école.
+> Si vous modifiez un jour le programme, refaites **Déployer → Gérer les déploiements → ✏️ → Nouvelle version**
+> pour que la modification soit prise en compte (l'URL ne change pas).

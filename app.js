@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-21 · envoi e-mail auto';
+const APP_VERSION = '2026-11-22 · envoi e-mail (Apps Script)';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
