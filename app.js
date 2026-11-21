@@ -319,6 +319,8 @@ function viewPlanning() {
     <button class="btn" data-action="navNext" aria-label="Suivant">▶</button>
     <input type="date" value="${UI.date}" data-on-change="navPick" style="width:auto">
     <h1 class="cap">${esc(titre)}</h1>
+    <div class="spacer"></div>
+    <button class="btn" data-action="importExamens" title="Coller l'e-mail RdvPermis pour placer les examens">📥 Importer des examens (RdvPermis)</button>
   </div>
   ${semaine ? `<div class="seg" style="margin-bottom:10px">
       ${DB.moniteurs.map((m) => `<button class="${UI.moniteurSemaine === m.id ? 'on' : ''}" data-action="setMonSemaine" data-id="${m.id}"><span class="dot" style="background:${esc(m.couleur)}"></span>${esc(moniteurNom(m))}</button>`).join('')}
@@ -387,6 +389,191 @@ function blocSeance(s, hMin) {
     <div class="ag-els">${noms}</div>
     ${isExam(s.type) && s.lieu ? `<div class="ag-lieu">📍 ${esc(s.lieu)}</div>` : ''}
   </div>`;
+}
+
+
+/* ---------------------------------------------------------------------
+   IMPORT DES DATES D'EXAMEN (copier-coller depuis RdvPermis)
+   On colle l'e-mail de confirmation / la liste des candidats :
+   l'appli retrouve les élèves connus, la date, l'heure, l'épreuve et
+   le centre, puis place les examens au planning après vérification.
+   --------------------------------------------------------------------- */
+const norm = (t) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const MOIS = { janvier: 1, fevrier: 2, mars: 3, avril: 4, mai: 5, juin: 6, juillet: 7, aout: 8, septembre: 9, octobre: 10, novembre: 11, decembre: 12 };
+
+function trouverDate(t) {
+  const n = norm(t);
+  let m = n.match(/\b(\d{4})-(\d{2})-(\d{2})\b/);
+  if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+  m = n.match(/\b(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})\b/);
+  if (m) { const y = m[3].length === 2 ? '20' + m[3] : m[3]; return `${y}-${pad(m[2])}-${pad(m[1])}`; }
+  m = n.match(/\b(\d{1,2})(?:er)?\s+(janvier|fevrier|mars|avril|mai|juin|juillet|aout|septembre|octobre|novembre|decembre)\s+(\d{4})\b/);
+  if (m) return `${m[3]}-${pad(MOIS[m[2]])}-${pad(m[1])}`;
+  return null;
+}
+function trouverHeure(t) {
+  const m = norm(t).match(/\b([01]?\d|2[0-3])\s*(?:h|:)\s*([0-5]\d)?(?!\s*(?:min|mn))/);
+  return m ? `${pad(m[1])}:${m[2] || '00'}` : null;
+}
+function trouverEpreuve(t) {
+  const n = norm(t);
+  if (/hors[\s-]+circulation|plateau|\bhc\b/.test(n)) return 'exam_plateau';
+  if (/circulation|\bcirc\b/.test(n)) return 'exam_circulation';
+  return null;
+}
+function trouverCentre(t) {
+  for (const ligne of String(t).split('\n')) {
+    const m = ligne.match(/(?:centre(?:\s+d['’]examen)?|site(?:\s+d['’]examen)?|lieu(?:\s+d['’]examen)?)\s*:\s*(.+)/i);
+    if (m && m[1].trim()) return m[1].trim();
+  }
+  for (const ligne of String(t).split('\n')) if (/centre d['’]examen/i.test(ligne)) return ligne.trim();
+  return null;
+}
+// Cherche une valeur dans la ligne de l'élève, puis de plus en plus loin autour.
+function chercherAutour(lignes, i, fn, rayon = 8) {
+  const v = fn(lignes[i]);
+  if (v) return v;
+  for (let d = 1; d <= rayon; d++) {
+    for (const j of [i - d, i + d]) {
+      if (j < 0 || j >= lignes.length) continue;
+      const x = fn(lignes[j]);
+      if (x) return x;
+    }
+  }
+  return null;
+}
+function analyserImport(texte) {
+  const lignes = texte.split(/\r?\n/);
+  const lignesN = lignes.map(norm);
+  const global = { date: trouverDate(texte), heure: trouverHeure(texte), type: trouverEpreuve(texte), lieu: trouverCentre(texte) };
+  // Liste en tableau (copiée depuis une page web ou un tableur) : repère la colonne « Centre / Lieu / Site »
+  const SEP = /\t|;|\||\s{2,}/;
+  let colCentre = -1;
+  for (const ln of lignesN) {
+    const cells = ln.split(SEP).map((c) => c.trim());
+    if (cells.length < 3) continue;
+    const k = cells.findIndex((c) => /^(centre|lieu|site)/.test(c));
+    if (k >= 0) { colCentre = k; break; }
+  }
+  const centreColonne = (i) => {
+    if (colCentre < 0) return null;
+    const cells = lignes[i].split(SEP).map((c) => c.trim());
+    return cells.length > colCentre && cells[colCentre] ? cells[colCentre] : null;
+  };
+  const mot = (txt, w) => w && new RegExp(`(^|[^a-z])${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([^a-z]|$)`).test(txt);
+  const rows = [];
+  for (const e of DB.eleves.filter((x) => x.statut !== 'abandon')) {
+    const nom = norm(e.nom).trim();
+    const prenom = norm(e.prenom).trim();
+    lignesN.forEach((ln, i) => {
+      // nom + prénom sur la même ligne, ou sur deux lignes qui se suivent (« Nom : … » / « Prénom : … »)
+      const ok = (mot(ln, nom) && mot(ln, prenom)) || (mot(ln, nom) && mot(lignesN[i + 1] || '', prenom));
+      if (!ok) return;
+      rows.push({
+        eleveId: e.id,
+        type: chercherAutour(lignes, i, trouverEpreuve) || global.type || 'exam_plateau',
+        date: chercherAutour(lignes, i, trouverDate) || global.date || '',
+        debut: chercherAutour(lignes, i, trouverHeure) || global.heure || '08:00',
+        lieu: centreColonne(i) || chercherAutour(lignes, i, trouverCentre, 12) || global.lieu || '',
+      });
+    });
+  }
+  // dédoublonne (même élève, même épreuve, même date)
+  const vus = new Set();
+  return rows.filter((r) => { const k = `${r.eleveId}|${r.type}|${r.date}`; if (vus.has(k)) return false; vus.add(k); return true; });
+}
+
+let importRows = [];
+let importTexte = '';
+
+function openImport() {
+  openModal({
+    title: '📥 Importer des dates d\'examen',
+    wide: true,
+    body: `
+      <div class="alert info small">
+        Copiez l'<strong>e-mail de confirmation RdvPermis</strong> (ou la liste des candidats affichée sur RdvPermis) et collez-le ci-dessous.
+        L'appli retrouve les élèves de vos agences, la date, l'heure, l'épreuve (plateau / circulation) et le centre d'examen.
+        Vous pourrez tout vérifier avant l'ajout au planning.
+      </div>
+      <textarea id="imp-texte" style="min-height:220px" placeholder="Collez ici le texte de l'e-mail ou de la liste…">${esc(importTexte)}</textarea>`,
+    foot: `<button class="btn" data-action="closeModal">Annuler</button>
+      <button class="btn primary" data-action="importAnalyser">Analyser</button>`,
+    onMount: () => setTimeout(() => $('#imp-texte')?.focus(), 50),
+  });
+}
+
+function openImportApercu() {
+  const optEleves = (sel) => `<option value="">— Élève —</option>` + DB.eleves.slice().sort(triNom).map((e) => `<option value="${e.id}" ${sel === e.id ? 'selected' : ''}>${esc(e.nom.toUpperCase())} ${esc(e.prenom)} (${esc(agenceDe(e)?.nom || '')})</option>`).join('');
+  openModal({
+    title: '📥 Vérifier avant d\'ajouter au planning',
+    wide: true,
+    body: `
+      ${importRows.length ? `<p class="small muted">${importRows.length} élève(s) trouvé(s). Corrigez si besoin, puis validez.</p>`
+        : '<div class="alert warn">Aucun élève reconnu dans le texte. Vérifiez que les élèves existent dans l\'appli, ou ajoutez les lignes à la main.</div>'}
+      <div class="row" style="margin-bottom:10px">
+        <span class="small"><strong>Moniteur accompagnateur :</strong></span>
+        <select id="imp-mon" style="width:auto">${DB.moniteurs.map((m) => `<option value="${m.id}" ${UI.importMon === m.id ? 'selected' : ''}>${esc(moniteurNom(m))}</option>`).join('')}</select>
+      </div>
+      <div class="table-wrap lines-table"><table>
+        <thead><tr><th>Élève</th><th>Épreuve</th><th>Date</th><th>Heure</th><th>Centre d'examen</th><th></th></tr></thead>
+        <tbody>${importRows.map((r, i) => `<tr>
+          <td><select data-on-change="impEdit" data-i="${i}" data-k="eleveId">${optEleves(r.eleveId)}</select></td>
+          <td><select data-on-change="impEdit" data-i="${i}" data-k="type">
+            <option value="exam_plateau" ${r.type === 'exam_plateau' ? 'selected' : ''}>Plateau</option>
+            <option value="exam_circulation" ${r.type === 'exam_circulation' ? 'selected' : ''}>Circulation</option></select></td>
+          <td><input type="date" data-on-change="impEdit" data-i="${i}" data-k="date" value="${esc(r.date)}"></td>
+          <td><input type="time" data-on-change="impEdit" data-i="${i}" data-k="debut" value="${esc(r.debut)}" step="900"></td>
+          <td><input data-on-change="impEdit" data-i="${i}" data-k="lieu" value="${esc(r.lieu)}"></td>
+          <td><button class="btn small ghost" data-action="impDel" data-i="${i}">✕</button></td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+      <button class="btn small" style="margin-top:8px" data-action="impAdd">+ Ajouter une ligne</button>`,
+    foot: `<div class="left"><button class="btn" data-action="importRetour">◀ Modifier le texte</button></div>
+      <button class="btn" data-action="closeModal">Annuler</button>
+      <button class="btn primary" data-action="importValider">Ajouter au planning</button>`,
+  });
+}
+
+function validerImport() {
+  const monId = $('#imp-mon').value;
+  UI.importMon = monId;
+  const rows = importRows.filter((r) => r.eleveId && r.date && r.debut);
+  if (!rows.length) return toast('Rien à ajouter : vérifiez les élèves et les dates', true);
+  let ajoutes = 0; let deja = 0; const erreurs = [];
+  for (const r of rows) {
+    // déjà au planning pour cette épreuve ce jour-là ?
+    if (DB.seances.some((s) => s.type === r.type && s.date === r.date && s.eleves.some((p) => p.eleveId === r.eleveId))) { deja++; continue; }
+    // examen existant au même moment → on y ajoute l'élève ; sinon on crée le créneau
+    let s = DB.seances.find((x) => x.type === r.type && x.date === r.date && x.debut === r.debut && (!r.lieu || !x.lieu || norm(x.lieu) === norm(r.lieu)));
+    const nouveau = !s;
+    if (nouveau) s = { id: uid(), type: r.type, date: r.date, debut: r.debut, fin: fromMin(toMin(r.debut) + (DB.settings.dureeDefaut[r.type] || 180)), moniteurId: monId, lieu: r.lieu, eleves: [] };
+    const essai = { ...s, eleves: [...s.eleves, { eleveId: r.eleveId, statut: 'prevu' }] };
+    const { errors } = seanceConflicts(essai);
+    if (errors.length) { erreurs.push(`${eleveNom(byId('eleves', r.eleveId))} : ${errors[0]}`); continue; }
+    s.eleves = essai.eleves;
+    if (!s.lieu && r.lieu) s.lieu = r.lieu;
+    if (nouveau) DB.seances.push(s);
+    ajoutes++;
+  }
+  save();
+  if (ajoutes) {
+    const premier = rows.map((r) => r.date).sort()[0];
+    UI.date = premier; UI.mode = 'jour';
+    go('planning');
+  }
+  if (erreurs.length) {
+    openModal({
+      title: 'Import terminé avec des alertes',
+      body: `<p>${ajoutes} élève(s) ajouté(s) au planning${deja ? `, ${deja} déjà présent(s)` : ''}.</p>
+        ${erreurs.map((e) => `<div class="alert bad">⛔ ${esc(e)}</div>`).join('')}`,
+      foot: '<button class="btn primary" data-action="closeModal">OK</button>',
+    });
+  } else {
+    closeModal();
+    toast(`${ajoutes} élève(s) ajouté(s) aux examens${deja ? ` · ${deja} déjà au planning` : ''}`);
+  }
+  importTexte = '';
 }
 
 /* ---------------------------------------------------------------------
@@ -575,6 +762,7 @@ function viewRepassages() {
   return list.length ? `<div class="table-wrap"><table>
     <thead><tr><th>Élève</th><th>Agence</th><th>Épreuve à repasser</th><th>Passage</th><th>Dernier examen</th><th></th></tr></thead>
     <tbody>${list.map(ligne).join('')}</tbody></table></div>
+    <p class="muted small" style="margin-top:8px"><button class="btn small" data-action="importExamens">📥 Importer des dates d'examen (RdvPermis)</button></p>
     <p class="muted small" style="margin-top:8px">Un élève apparaît ici dès qu'il est noté « Ajourné » ou « Absent » à un examen. Il disparaît quand il est admis au repassage.</p>`
     : '<div class="card empty">Aucun élève en attente de repassage 👍</div>';
 }
@@ -1521,6 +1709,23 @@ const ACTIONS = {
   filtreAgence(d, el) { UI.filtreAgence = el.value; render(); },
   voirAnciens(d, el) { UI.voirAnciens = el.checked; render(); },
   ongletEleves(d) { UI.ongletEleves = d.o; render(); },
+  importExamens() { if (!DB.moniteurs.length) return toast('Ajoutez d\'abord un moniteur', true); openImport(); },
+  importAnalyser() {
+    importTexte = $('#imp-texte').value;
+    if (!importTexte.trim()) return toast('Collez d\'abord le texte', true);
+    importRows = analyserImport(importTexte);
+    openImportApercu();
+  },
+  importRetour() { openImport(); },
+  impEdit(d, el) { importRows[+d.i][d.k] = el.value; },
+  impDel(d) { UI.importMon = $('#imp-mon').value; importRows.splice(+d.i, 1); openImportApercu(); },
+  impAdd() {
+    UI.importMon = $('#imp-mon').value;
+    const last = importRows[importRows.length - 1];
+    importRows.push({ eleveId: '', type: last?.type || 'exam_plateau', date: last?.date || '', debut: last?.debut || '08:00', lieu: last?.lieu || '' });
+    openImportApercu();
+  },
+  importValider: validerImport,
   placerRepassage(d, el, ev) {
     ev.stopPropagation();
     const date = todayISO() < UI.date ? UI.date : todayISO();

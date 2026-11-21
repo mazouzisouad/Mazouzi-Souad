@@ -12,6 +12,7 @@ de plusieurs auto-écoles avec deux moniteurs (ou plus).
 - Blocage automatique : leçon complète, moniteur ou élève déjà pris à la même heure.
 - **Examens** : « Examen plateau » et « Examen circulation » (accompagnement) avec les élèves présentés, le centre d'examen et le résultat (admis / ajourné / absent). Admis à la circulation → permis obtenu.
 - **En attente de repassage** (onglet dans Élèves) : élèves ajournés ou absents à un examen, avec l'épreuve à repasser (plateau ou circulation), le numéro de passage et un bouton pour programmer le repassage.
+- **Import RdvPermis** (bouton « 📥 Importer des examens » dans le planning) : coller l'e-mail de confirmation ou la liste des candidats RdvPermis → l'appli retrouve les élèves, la date, l'heure, l'épreuve et le centre, et place les examens au planning après vérification.
 - Chaque élève a une pastille de couleur selon son **agence d'inscription**.
 
 **👤 Élèves** — fiche simple (onglets Leçons / Compte / Infos), agence d'inscription, heures faites, reste dû.
