@@ -265,12 +265,14 @@ function preparation(eleveId, exam) {
   const base = baseDe(exam.type);
   const blanc = blancValide(eleveId, base, debutDe(exam));
   const depuis = blanc ? finDe(blanc) : '';
-  const res = { faites: 0, prevues: 0, total: 0 };
+  const res = { faites: 0, prevues: 0, total: 0, toutes: 0 };
   for (const s of eleveSeances(eleveId)) {
-    if (s.type !== base || !s.prepa || debutDe(s) < depuis || debutDe(s) >= debutDe(exam)) continue;
+    if (s.type !== base || debutDe(s) < depuis || debutDe(s) >= debutDe(exam)) continue;
     const st = statutDe(s, eleveId);
-    if (st === 'present') res.faites += durH(s);
-    else if (st === 'prevu') res.prevues += durH(s);
+    if (!['present', 'prevu'].includes(st)) continue;
+    res.toutes += durH(s); // toutes les leçons (normales + prépa)
+    if (!s.prepa) continue;
+    if (st === 'present') res.faites += durH(s); else res.prevues += durH(s);
   }
   res.total = res.faites + res.prevues;
   return res;
@@ -281,7 +283,9 @@ function prepBadge(p) {
   const cls = h < min ? 'bad' : h > max ? 'warn' : 'ok';
   const txt = h < min ? `il manque ${fmtH(min - h)}` : h > max ? `au-delà de ${max}h` : 'OK';
   const detail = p.prevues ? ` (${fmtH(p.faites)} faite${p.faites > 1 ? 's' : ''} + ${fmtH(p.prevues)} prévue${p.prevues > 1 ? 's' : ''})` : '';
-  return `<span class="badge ${cls}" title="Leçons « 🎯 prépa examen » depuis l'examen blanc (${min} à ${max}h)">🎯 Prépa ${fmtH(h)}${detail} · ${txt}</span>`;
+  const autres = p.toutes - p.total;
+  return `<span class="badge ${cls}" title="Leçons « 🎯 prépa examen » depuis l'examen blanc (${min} à ${max}h)">🎯 Prépa ${fmtH(h)}${detail} · ${txt}</span>`
+    + ` <span class="badge" title="Toutes les leçons (normales + prépa) depuis l'examen blanc">Total ${fmtH(p.toutes)}${autres > 0 ? ` (dont ${fmtH(autres)} normales)` : ''}</span>`;
 }
 // Prochain examen d'un élève pour une épreuve (pour la fiche et le planning)
 function prochainExamen(eleveId, base) {
