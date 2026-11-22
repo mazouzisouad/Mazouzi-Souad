@@ -478,7 +478,7 @@ export const QUESTIONS_PREMIUM = {
       "Vous relevez le motard pour l’asseoir",
       "Vous lui donnez à boire"
     ],
-    "e": "Retirer le casque peut aggraver une blessure à la nuque. On ne le fait que si la victime ne respire plus."
+    "e": "Le casque maintient la tête et la nuque : le retirer pourrait aggraver une lésion des vertèbres. Laissez-le en place, parlez au motard pour le rassurer et attendez l’arrivée des secours."
   },
   "59": {
     "t": "Accident et secours",
@@ -2161,7 +2161,7 @@ export const QUESTIONS_PREMIUM = {
       "10 mètres",
       "1 kilomètre"
     ],
-    "e": "Les feux de route éclairent au moins 100 mètres, les feux de croisement environ 30 mètres."
+    "e": "Les feux de route doivent éclairer au moins 100 mètres. Les feux de croisement, eux, doivent éclairer au moins 30 mètres, sans éblouir."
   },
   "212": {
     "t": "Véhicule et équipements",
