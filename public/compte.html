@@ -49,8 +49,8 @@
     <label class="case"><input type="checkbox" id="renonciation">
       <span>Je demande l’accès immédiat au contenu et je reconnais <b>perdre mon droit de rétractation</b> dès le début de l’accès (art. L221-28 13° du Code de la consommation).</span></label>
     <div id="msg-paiement" class="message" role="status"></div>
-    <button class="bouton" id="payer" type="button">Payer 9,90 € par carte</button>
-    <p class="doux" style="margin-top:8px">Paiement sécurisé par Stripe. Nous ne voyons jamais votre numéro de carte.</p>
+    <button class="bouton" id="payer" type="button">Payer 9,90 €</button>
+    <p class="doux" style="margin-top:8px">Carte bancaire, Apple Pay ou Google Pay. Paiement sécurisé par Stripe : nous ne voyons jamais votre numéro de carte.</p>
   </div>
 
   <div class="carte">
@@ -94,7 +94,7 @@
     $('detail-acces').textContent = actif ? 'Valable jusqu’au ' + Pages.dateFr(fin) + '.'
       : (fin ? 'Votre accès a pris fin le ' + Pages.dateFr(fin) + '.' : '');
     $('titre-offre').textContent = actif ? 'Prolonger de 3 mois' : 'Débloquer l’accès complet';
-    $('payer').textContent = actif ? 'Prolonger : 9,90 € par carte' : 'Payer 9,90 € par carte';
+    $('payer').textContent = actif ? 'Prolonger : 9,90 €' : 'Payer 9,90 €';
     CodeAcces.client.from('paiements').select('cree_le, montant_centimes, fin_periode')
       .order('cree_le', { ascending: false }).then(function (r) {
         if (!r.data || !r.data.length) return;

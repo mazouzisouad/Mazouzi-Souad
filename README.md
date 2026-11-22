@@ -77,7 +77,11 @@ version doivent le ressaisir une fois connectés (il est encore valable puisqu'i
    événements `checkout.session.completed` et `checkout.session.async_payment_succeeded`.
    Notez le *secret de signature* (`whsec_…`).
 3. **Paramètres → E-mails clients** : activez l'envoi du **reçu pour les paiements réussis**.
-4. **Paramètres → Informations publiques** : nom, e-mail du support, lien vers vos CGV.
+4. **Paramètres → Moyens de paiement** : vérifiez que **Cartes**, **Apple Pay** et **Google Pay** sont activés
+   (ils le sont en général par défaut). Aucun code à changer : la page de paiement Stripe les propose automatiquement.
+   Apple Pay n'apparaît que sur un appareil Apple (Safari) avec une carte enregistrée dans Wallet ;
+   Google Pay sur Chrome/Android avec une carte enregistrée.
+5. **Paramètres → Informations publiques** : nom, e-mail du support, lien vers vos CGV.
 
 ### 3. Vercel
 1. **Add New → Project** → importez ce dépôt GitHub (Framework : *Other*, laissez le reste par défaut).

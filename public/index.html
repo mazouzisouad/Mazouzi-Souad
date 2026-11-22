@@ -640,8 +640,8 @@ function vPremium(){
   } else {
     html += '<label class="chk"><input type="checkbox" id="cgv"'+(cgvOk?' checked':'')+'><span>J’ai lu et j’accepte les <a href="/cgv" target="_blank">conditions générales de vente</a>.</span></label>'+
       '<label class="chk"><input type="checkbox" id="ren"'+(renOk?' checked':'')+'><span>Je demande l’accès immédiat et je reconnais perdre mon droit de rétractation dès le début de l’accès (art. L221-28 13° du Code de la consommation).</span></label>'+
-      '<button class="btn green full" style="margin-top:6px" data-a="buy"'+(busy?' disabled':'')+'>'+(busy?'Redirection vers le paiement…':'Payer '+PRICE+' par carte')+'</button>'+
-      '<div class="muted" style="text-align:center;margin-top:8px">Paiement sécurisé par Stripe.</div>';
+      '<button class="btn green full" style="margin-top:6px" data-a="buy"'+(busy?' disabled':'')+'>'+(busy?'Redirection vers le paiement…':'Payer '+PRICE)+'</button>'+
+      '<div class="muted" style="text-align:center;margin-top:8px">Carte bancaire, Apple Pay ou Google Pay.<br>Paiement sécurisé par Stripe.</div>';
   }
   html += m('buy')+'</div>';
   html += '<div class="card"><div class="ctitle">Tu as déjà un code ?</div><input id="code" class="inp" placeholder="CODE-XXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">'+m('code')+'<button class="btn purple full" data-a="activate"'+(busy?' disabled':'')+'>Activer mon code</button></div>';
