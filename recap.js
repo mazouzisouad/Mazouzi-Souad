@@ -66,72 +66,95 @@ function recapMois(mois) {
   return { moniteurs, agences };
 }
 
+const nomCourtAg = (a) => String(a?.nom || '').replace(/^\s*(my\s+)?auto[\s-]*[ée]cole\s+|^\s*(familys|french)\s+permis\s+/i, '').trim() || a?.nom || '';
+function animerRecap() {
+  $$('.rcp-anneau circle.p').forEach((c) => { c.style.strokeDashoffset = c.dataset.off; });
+  $$('.rcp-heures .b span').forEach((x) => { x.style.width = x.dataset.w + '%'; });
+}
 function viewRecap() {
   if (!UI_RECAP.mois) UI_RECAP.mois = todayISO().slice(0, 7);
   const mois = UI_RECAP.mois;
   const { moniteurs, agences } = recapMois(mois);
+  const prec = (() => { const x = parseISO(mois + '-01'); x.setMonth(x.getMonth() - 1); return toISODate(x).slice(0, 7); })();
+  const hPrec = recapMois(prec).moniteurs.reduce((t, r) => t + r.faites, 0);
   const nomMois = parseISO(mois + '-01').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
   const totH = moniteurs.reduce((t, r) => t + r.faites, 0), totDu = moniteurs.reduce((t, r) => t + r.du, 0), totEnc = agences.reduce((t, A) => t + A.encaisse, 0);
-  const agNom = (id) => (id ? byId('agences', id)?.nom || '—' : 'Sans élève / sans auto-école');
+  const nonPayes = moniteurs.filter((r) => r.taux && r.faites && !r.paie).length;
+  const { total } = statsReussite();
+  const pres = total.plateau.pres + total.circulation.pres, adm = total.plateau.admis + total.circulation.admis;
+  const evol = hPrec ? Math.round(((totH - hPrec) / hPrec) * 100) : null;
+  requestAnimationFrame(() => requestAnimationFrame(animerRecap));
+
+  // moniteurs
+  const carteMon = (r) => {
+    const R = 50, C = 2 * Math.PI * R, pct = r.faites + r.prevues ? Math.min(1, r.faites / (r.faites + r.prevues)) : 0;
+    const parts = [...r.parAgence.entries()].sort((x, y) => y[1] - x[1]);
+    return `<div class="rcp-mon" style="--c:${esc(r.m.couleur || '#f97316')}">
+      <div class="rcp-mon-tete"><div class="rcp-av">${esc((moniteurNom(r.m)[0] || '?').toUpperCase())}</div>
+        <div><strong>${esc(moniteurNom(r.m))}</strong><span>${r.taux ? eur(r.taux) + " de l'heure" : `<button class="btn small" data-action="editMoniteur" data-id="${r.m.id}">Indiquer son taux horaire</button>`}</span></div></div>
+      <div class="rcp-mon-corps">
+        <div class="rcp-anneau"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="${R}" fill="none" stroke="var(--line)" stroke-width="12"/>
+          <circle class="p" cx="60" cy="60" r="${R}" fill="none" stroke="var(--c)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C}" data-off="${C * (1 - pct)}"/></svg>
+          <div class="txt"><div><b>${fmtH(r.faites)}</b><small>faites${r.prevues ? `<br>+ ${fmtH(r.prevues)} prévues` : ''}</small></div></div></div>
+        <div class="rcp-paie">
+          ${r.taux ? `<div class="calc">${fmtH(r.faites)} × ${eur(r.taux)}</div><div class="du ${r.paie ? 'ok' : ''}">${eur(r.du)}</div>` : '<div class="calc">Taux horaire à indiquer pour calculer sa paie</div>'}
+          ${r.paie ? `<span class="rcp-tampon">✅ PAYÉ ${eur(r.paie.montant)} le ${fmtDate(r.paie.date)}</span> <button class="btn small ghost" data-action="recapAnnulerPaie" data-id="${r.m.id}" title="Annuler le paiement">✕</button>`
+            : r.taux && r.faites ? `<button class="btn primary" data-action="recapPayer" data-id="${r.m.id}" data-montant="${r.du}">💶 Marquer payé</button>` : ''}
+        </div>
+      </div>
+      ${parts.length ? `<div class="rcp-repart"><div class="lbl">Ses heures par auto-école</div>
+        <div class="rcp-pile">${parts.map(([aid, h]) => `<span style="width:${(h / r.faites) * 100}%;background:${esc(byId('agences', aid)?.couleur || '#94a3b8')}" title="${esc(aid ? byId('agences', aid)?.nom : 'Sans élève')} : ${fmtH(h)}"></span>`).join('')}</div>
+        <div class="rcp-leg">${parts.map(([aid, h]) => `<span><i style="background:${esc(byId('agences', aid)?.couleur || '#94a3b8')}"></i>${esc(aid ? nomCourtAg(byId('agences', aid)) : 'Sans élève')} ${fmtH(h)}${r.taux ? ' · ' + eur(h * r.taux) : ''}</span>`).join('')}</div></div>` : ''}
+      <button class="btn small ghost" data-action="recapDetail" data-id="${r.m.id}">${UI_RECAP.ouvert === r.m.id ? '▲ Masquer les leçons' : `▼ Voir ses ${r.lecons.length} leçon${r.lecons.length > 1 ? 's' : ''}`}</button>
+      ${UI_RECAP.ouvert === r.m.id ? `<div class="recap-lecons">${r.lecons.map((x) => `<div class="small"><strong>${fmtDate(x.date)}</strong> ${x.debut}–${x.fin} · ${TYPES[x.type].short} · ${participants(x).length} élève${participants(x).length > 1 ? 's' : ''} · ${fmtH(durH(x))}</div>`).join('') || '<p class="muted">Aucune leçon faite.</p>'}</div>` : ''}
+    </div>`;
+  };
+
+  // auto-écoles
+  const ags = agences.filter((A) => A.a.id || A.nbEleves || A.encaisse);
+  const maxH = Math.max(1, ...ags.map((A) => A.hPlateau + A.hCirculation));
+  const classe = ags.filter((A) => A.a.id).map((A) => ({ A, h: A.hPlateau + A.hCirculation })).filter((x) => x.h > 0).sort((x, y) => y.h - x.h);
+  const ordre = [classe[1], classe[0], classe[2]], hs = [80, 110, 60], meds = ['🥈', '🥇', '🥉'], socles = ['#94a3b8', '#eab308', '#c2793f'];
+  const podium = classe.length ? `<div class="rcp-podbox"><div class="rcp-podtitre">🏆 Les auto-écoles qui ont fait le plus d'heures ce mois</div>
+    <div class="rcp-podium">${ordre.map((x, i) => x ? `<div class="marche"><span class="med">${meds[i]}</span><span class="nom">${esc(nomCourtAg(x.A.a))}</span><span class="tx">${fmtH(x.h)}</span>
+      <div class="socle" style="height:${hs[i]}px;background:linear-gradient(${esc(x.A.a.couleur || '#64748b')}, ${socles[i]})">${i === 1 ? 1 : i === 0 ? 2 : 3}</div></div>` : '<div></div>').join('')}</div></div>` : '';
+  const carteAg = (A) => `<div class="rcp-ag" style="--c:${esc(A.a.couleur || '#64748b')}">
+    <div class="rcp-ag-tete"><strong><span class="rcp-pastille"></span>${esc(A.a.nom)}</strong><span class="rcp-enc"><small>💰 encaissé</small>${eur(A.encaisse)}</span></div>
+    <div class="rcp-mini"><div><b>${A.nbEleves}</b><span>élèves vus</span></div><div><b>${fmtH(A.hMoniteur)}</b><span>temps moniteur</span></div><div><b>${eur(A.cout)}</b><span>coût moniteur</span></div></div>
+    <div class="rcp-heures">
+      <div class="rang"><span>🅿️ Plateau</span><div class="b"><span style="width:0;background:var(--plateau)" data-w="${(A.hPlateau / maxH) * 100}"></span></div><strong>${fmtH(A.hPlateau)}</strong></div>
+      <div class="rang"><span>🛣️ Circu</span><div class="b"><span style="width:0;background:var(--circu)" data-w="${(A.hCirculation / maxH) * 100}"></span></div><strong>${fmtH(A.hCirculation)}</strong></div>
+    </div>
+    <div class="rcp-badges"><span>🎓 ${A.examens} examen${A.examens > 1 ? 's' : ''}</span><span>📝 ${A.blancs} ex. blanc${A.blancs > 1 ? 's' : ''}</span><span>🧭 ${A.evaluations} évaluation${A.evaluations > 1 ? 's' : ''}</span></div>
+  </div>`;
+
   return `
   <div class="toolbar">
     <h1>📊 Récap du mois</h1>
-    <button class="btn" data-action="recapMois" data-d="-1" aria-label="Mois précédent">◀</button>
-    <input type="month" value="${mois}" data-on-change="recapMoisChoisi" style="width:auto">
-    <button class="btn" data-action="recapMois" data-d="1" aria-label="Mois suivant">▶</button>
+    <div class="rcp-mois"><button data-action="recapMois" data-d="-1" aria-label="Mois précédent">◀</button>
+      <input type="month" value="${mois}" data-on-change="recapMoisChoisi" aria-label="Mois"><button data-action="recapMois" data-d="1" aria-label="Mois suivant">▶</button></div>
     <div class="spacer"></div>
     <button class="btn" data-action="recapExport">⬇️ Export Excel</button>
   </div>
-  <div class="mini-stats card" style="margin-bottom:14px">
-    <div><span>Heures moniteurs (${esc(nomMois)})</span><strong>${fmtH(totH)}</strong></div>
-    <div><span>À payer aux moniteurs</span><strong style="color:var(--bad)">${eur(totDu)}</strong></div>
-    <div><span>Encaissé (toutes auto-écoles)</span><strong style="color:var(--ok)">${eur(totEnc)}</strong></div>
+  <div class="rcp-heros">
+    <div class="rcp-hero h1"><div class="ic">⏱️</div><div class="v">${fmtH(totH)}</div><div class="l">de conduite en ${esc(nomMois)}</div><div class="s">${evol == null ? 'moniteurs, leçons faites' : `${evol >= 0 ? '+' : ''}${evol} % par rapport au mois d'avant`}</div></div>
+    <div class="rcp-hero h2"><div class="ic">💶</div><div class="v">${eur(totDu)}</div><div class="l">à payer aux moniteurs</div><div class="s">${nonPayes ? `${nonPayes} moniteur${nonPayes > 1 ? 's' : ''} pas encore payé${nonPayes > 1 ? 's' : ''}` : 'tout le monde est payé ✅'}</div></div>
+    <div class="rcp-hero h3"><div class="ic">💰</div><div class="v">${eur(totEnc)}</div><div class="l">encaissés</div><div class="s">${DB.agences.length} auto-école${DB.agences.length > 1 ? 's' : ''}</div></div>
+    <div class="rcp-hero h4"><div class="ic">🎯</div><div class="v">${pres ? Math.round((adm / pres) * 100) + ' %' : '—'}</div><div class="l">de réussite aux examens</div><div class="s">${pres ? `${adm} admis sur ${pres} · ${esc(periodeStats().nom)}` : 'aucun résultat sur la période'}</div></div>
   </div>
 
-  <div class="card">
-    <h2>👨‍🏫 Moniteurs</h2>
-    ${moniteurs.length ? `<div class="table-wrap"><table>
-      <thead><tr><th>Moniteur</th><th class="num">Heures faites</th><th class="num">Encore prévues ce mois</th><th class="num">Taux horaire</th><th class="num">Montant dû</th><th>Paiement</th><th></th></tr></thead>
-      <tbody>${moniteurs.map((r) => `
-        <tr>
-          <td><span class="dot" style="background:${esc(r.m.couleur)}"></span><strong>${esc(moniteurNom(r.m))}</strong></td>
-          <td class="num"><strong>${fmtH(r.faites)}</strong></td>
-          <td class="num muted">${r.prevues ? fmtH(r.prevues) : '—'}</td>
-          <td class="num">${r.taux ? eur(r.taux) + ' /h' : `<button class="btn small" data-action="editMoniteur" data-id="${r.m.id}">Indiquer le taux</button>`}</td>
-          <td class="num"><strong class="${r.paie ? '' : 'txt-bad'}">${r.taux ? eur(r.du) : '—'}</strong></td>
-          <td>${r.paie ? `<span class="badge ok">✅ Payé ${eur(r.paie.montant)} le ${fmtDate(r.paie.date)}</span> <button class="btn small ghost" data-action="recapAnnulerPaie" data-id="${r.m.id}" title="Annuler">✕</button>`
-            : r.taux && r.faites ? `<button class="btn small primary" data-action="recapPayer" data-id="${r.m.id}" data-montant="${r.du}">Marquer payé</button>` : ''}</td>
-          <td><button class="btn small" data-action="recapDetail" data-id="${r.m.id}">${UI_RECAP.ouvert === r.m.id ? 'Masquer' : 'Détail'}</button></td>
-        </tr>
-        ${UI_RECAP.ouvert === r.m.id ? `<tr class="recap-detail"><td colspan="7">
-          <div class="recap-cols">
-            <div><div class="lbl">Temps par auto-école (au prorata des élèves)</div>
-              ${[...r.parAgence.entries()].sort((a, b) => b[1] - a[1]).map(([aid, h]) => `<div class="cpt-l"><span>${esc(agNom(aid))}</span><strong>${fmtH(h)}${r.taux ? ' · ' + eur(h * r.taux) : ''}</strong></div>`).join('') || '<p class="muted">Aucune heure.</p>'}</div>
-            <div><div class="lbl">Leçons faites (${r.lecons.length})</div>
-              <div class="recap-lecons">${r.lecons.map((s) => `<div class="small"><strong>${fmtDate(s.date)}</strong> ${s.debut}–${s.fin} · ${TYPES[s.type].short} · ${participants(s).length} élève${participants(s).length > 1 ? 's' : ''} · ${fmtH(durH(s))}</div>`).join('') || '<p class="muted">Aucune.</p>'}</div></div>
-          </div></td></tr>` : ''}`).join('')}</tbody>
-      <tfoot><tr><td><strong>Total</strong></td><td class="num"><strong>${fmtH(totH)}</strong></td><td></td><td></td><td class="num"><strong>${eur(totDu)}</strong></td><td colspan="2"></td></tr></tfoot>
-    </table></div>` : '<p class="muted">Ajoutez vos moniteurs dans Paramètres.</p>'}
-    <p class="small muted">Le moniteur est payé <strong>à l'heure</strong> : durée des leçons × son taux, quel que soit le nombre d'élèves (un plateau de 2 h avec 5 élèves = 2 h). Une leçon compte dès qu'elle est passée et qu'au moins un élève n'était pas excusé (un absent non excusé compte : le moniteur était là). Les accompagnements d'examen comptent pour leur durée.</p>
+  <div class="card rcp-carte"><h2>👨‍🏫 Moniteurs</h2>
+    ${moniteurs.length ? `<div class="rcp-mons">${moniteurs.map(carteMon).join('')}</div>` : '<p class="muted">Ajoutez vos moniteurs dans Paramètres.</p>'}
+    <p class="small muted">Le moniteur est payé <strong>à l'heure</strong> : durée des leçons × son taux, quel que soit le nombre d'élèves (un plateau de 2 h avec 5 élèves = 2 h). Une leçon compte dès qu'elle est passée et qu'au moins un élève n'était pas excusé. Les accompagnements d'examen comptent pour leur durée.</p>
   </div>
 
-  <div class="card" style="margin-top:14px">
-    <h2>🏢 Auto-écoles</h2>
-    <div class="table-wrap"><table>
-      <thead><tr><th>Auto-école</th><th class="num">Élèves vus</th><th class="num">Heures plateau</th><th class="num">Heures circu</th><th class="num">Temps moniteur</th><th class="num">Coût moniteur</th><th class="num">Examens</th><th class="num">Ex. blancs</th><th class="num">Évaluations</th><th class="num">Encaissé</th></tr></thead>
-      <tbody>${agences.map((A) => `<tr>
-        <td>${A.a.id ? agenceBadge(A.a) : esc(A.a.nom)}</td>
-        <td class="num">${A.nbEleves || '—'}</td>
-        <td class="num">${A.hPlateau ? fmtH(A.hPlateau) : '—'}</td><td class="num">${A.hCirculation ? fmtH(A.hCirculation) : '—'}</td>
-        <td class="num"><strong>${A.hMoniteur ? fmtH(A.hMoniteur) : '—'}</strong></td><td class="num">${A.cout ? eur(A.cout) : '—'}</td>
-        <td class="num">${A.examens || '—'}</td><td class="num">${A.blancs || '—'}</td><td class="num">${A.evaluations || '—'}</td>
-        <td class="num"><strong style="color:var(--ok)">${A.encaisse ? eur(A.encaisse) : '—'}</strong></td></tr>`).join('')}</tbody>
-    </table></div>
-    <p class="small muted">« Heures plateau / circu » : heures de leçon suivies par les élèves de l'auto-école (un élève = ses heures). « Temps moniteur » : les heures payées au moniteur, réparties entre les auto-écoles selon le nombre de leurs élèves dans chaque leçon (ex. : plateau de 2 h avec 3 élèves de Tremblay et 2 de Smile → Tremblay 1h12, Smile 0h48 ; le total fait toujours les 2 h payées). « Coût moniteur » = ce temps × le taux horaire, pour les comptes entre auto-écoles.</p>
+  <div class="card rcp-carte"><h2>🏢 Auto-écoles</h2>
+    ${podium}
+    <div class="rcp-ags">${ags.map(carteAg).join('')}</div>
+    <p class="small muted">Plateau / Circu : heures de leçon faites par les élèves de l'auto-école. Temps moniteur : les heures payées au moniteur, partagées selon le nombre d'élèves de chaque auto-école dans chaque leçon (ex. 2 h avec 3 élèves de Tremblay et 2 de Smile → Tremblay 1h12, Smile 0h48). Coût moniteur = ce temps × le taux horaire.</p>
   </div>
   ${blocReussite()}`;
 }
-
 
 /* ---------- Réussite aux examens (par auto-école et par moniteur accompagnateur) ---------- */
 function periodeStats() {
@@ -161,30 +184,39 @@ function statsReussite() {
   }
   return { parAg, parMon, total };
 }
-function cellTaux(x) {
-  if (!x.pres) return '<td class="num muted">—</td>';
+function jaugeReussite(titre, x) {
+  if (!x.pres) return `<div class="rcp-jauge"><svg viewBox="0 0 120 70"><path d="M12 62 A48 48 0 0 1 108 62" fill="none" stroke="var(--line)" stroke-width="12" stroke-linecap="round"/></svg><b class="muted">—</b><span>${titre} · aucun résultat</span></div>`;
+  const t = Math.round((x.admis / x.pres) * 100), ang = Math.PI * (1 - t / 100);
+  const ex = 60 + 48 * Math.cos(ang), ey = 62 - 48 * Math.sin(ang);
+  const col = t >= 70 ? 'var(--ok)' : t >= 50 ? 'var(--warn)' : 'var(--bad)';
+  return `<div class="rcp-jauge"><svg viewBox="0 0 120 70"><path d="M12 62 A48 48 0 0 1 108 62" fill="none" stroke="var(--line)" stroke-width="12" stroke-linecap="round"/>
+    ${t > 0 ? `<path d="M12 62 A48 48 0 0 1 ${ex.toFixed(1)} ${ey.toFixed(1)}" fill="none" stroke="${col}" stroke-width="12" stroke-linecap="round"/>` : ''}</svg>
+    <b style="color:${col}">${t} %</b><span>${titre} · ${x.admis}/${x.pres} admis${x.prem ? ` · 1er passage ${Math.round((x.premAdmis / x.prem) * 100)} %` : ''}</span></div>`;
+}
+function puceTaux(x) {
+  if (!x.pres) return '<span class="rcp-puce vide">—</span>';
   const t = Math.round((x.admis / x.pres) * 100);
-  return `<td class="num"><strong class="taux ${t >= 70 ? 'ok' : t >= 50 ? 'moyen' : 'bas'}">${t} %</strong><br><span class="small muted">${x.admis}/${x.pres}${x.prem ? ` · 1er passage ${Math.round((x.premAdmis / x.prem) * 100)} %` : ''}</span></td>`;
+  return `<span class="rcp-puce ${t >= 70 ? 'ok' : t >= 50 ? 'moyen' : 'bas'}" title="${x.admis}/${x.pres} admis">${t} %</span>`;
 }
 function blocReussite() {
   const { parAg, parMon, total } = statsReussite();
   const per = periodeStats();
-  const ligne = (nom, x) => `<tr><td>${nom}</td>${cellTaux(x.plateau)}${cellTaux(x.circulation)}<td class="num">${x.absents || '—'}</td></tr>`;
+  const ligne = (nom, couleur, x) => `<div class="rang"><span><span class="rcp-pastille" style="--c:${esc(couleur)}"></span>${nom}</span>${puceTaux(x.plateau)}${puceTaux(x.circulation)}<span class="muted small">${x.absents ? x.absents + ' abs.' : ''}</span></div>`;
   const ags = DB.agences.filter((a) => parAg.has(a.id));
   const mons = DB.moniteurs.filter((m) => parMon.has(m.id));
   return `
-  <div class="card" style="margin-top:14px">
-    <div class="row between"><h2 style="margin:0">🎯 Réussite aux examens</h2>
+  <div class="card rcp-carte">
+    <div class="row between"><h2 style="margin:0">🎯 Réussite aux examens <span class="small muted" style="font-weight:600">· ${esc(per.nom)}</span></h2>
       <div class="seg">${[['mois', 'Ce mois'], ['annee', 'Année'], ['12mois', '12 derniers mois']].map(([k, l]) => `<button class="${UI_RECAP.periodeStats === k ? 'on' : ''}" data-action="recapPeriode" data-p="${k}">${l}</button>`).join('')}</div></div>
-    <p class="small muted">${esc(per.nom)} · examens notés « Admis » ou « Ajourné ». Le moniteur est celui qui a accompagné l'élève à l'examen.</p>
-    ${total.plateau.pres || total.circulation.pres || total.absents ? `
-    <div class="table-wrap"><table>
-      <thead><tr><th></th><th class="num">Plateau</th><th class="num">Circulation</th><th class="num">Absents</th></tr></thead>
-      <tbody>
-        ${ligne('<strong>Toutes les auto-écoles</strong>', total)}
-        ${ags.map((a) => ligne(agenceBadge(a), parAg.get(a.id))).join('')}
-        ${mons.length ? `<tr class="sous-titre"><td colspan="4">Par moniteur</td></tr>${mons.map((m) => ligne(`<span class="dot" style="background:${esc(m.couleur)}"></span>${esc(moniteurNom(m))}`, parMon.get(m.id))).join('')}` : ''}
-      </tbody></table></div>` : '<p class="muted">Aucun résultat d\'examen sur cette période.</p>'}
+    <div class="rcp-reu">
+      <div class="rcp-jauges">${jaugeReussite('🅿️ Plateau', total.plateau)}${jaugeReussite('🛣️ Circulation', total.circulation)}</div>
+      <div class="rcp-liste">
+        <div class="rang tete"><span></span><span>🅿️ Plateau</span><span>🛣️ Circu</span><span></span></div>
+        ${ags.map((a) => ligne(esc(a.nom), a.couleur || '#64748b', parAg.get(a.id))).join('') || '<p class="muted small">Aucun résultat d\'examen sur cette période.</p>'}
+        ${mons.length ? `<div class="rang tete" style="margin-top:6px"><span>Par moniteur accompagnateur</span><span></span><span></span><span></span></div>${mons.map((m) => ligne(esc(moniteurNom(m)), m.couleur || '#64748b', parMon.get(m.id))).join('')}` : ''}
+      </div>
+    </div>
+    <p class="small muted">Examens notés « Admis » ou « Ajourné » ; les absents sont comptés à part. Le moniteur est celui qui a accompagné l'élève à l'examen.</p>
   </div>`;
 }
 

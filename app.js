@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · récap : explications paie à l’heure';
+const APP_VERSION = '2026-11-23 · récap du mois ludique';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
