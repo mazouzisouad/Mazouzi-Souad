@@ -1,0 +1,1838 @@
+[
+ {
+  "n": 0,
+  "verdict": "conforme",
+  "source": "IISR 3e partie, art. 43 (priorité à droite, R415-5)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation."
+ },
+ {
+  "n": 1,
+  "verdict": "conforme",
+  "source": "IISR 3e partie, art. 42-2 E (panneau AB4, art. R415-6 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "Le panneau « STOP » AB4 indique les intersections où les conducteurs doivent marquer un temps d’arrêt et céder le passage"
+ },
+ {
+  "n": 2,
+  "verdict": "conforme",
+  "source": "IISR 7e partie, art. 117-1 (art. R110-2 et R415-10 du Code de la route) ; IISR 3e partie, art. 42-10",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+  "extrait": "carrefour à sens giratoire, signalé comme tel, […] sur lequel tout conducteur qui l'aborde est tenu de céder le passage aux usagers circulant sur l’anneau"
+ },
+ {
+  "n": 3,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R415-12 (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006842412",
+  "extrait": "",
+  "probleme": "Règle (céder le passage / faciliter le passage aux véhicules d’intérêt général prioritaires) non lue sur une page accessible : la page securite-routiere.gouv.fr « Intersections et priorités » est rendue en JavaScript (curl ne renvoie que la coquille) et WebFetch ne résout pas le domaine. À confirmer sur R415-12."
+ },
+ {
+  "n": 4,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R415-11 (repris par la fiche Certu « Les traversées des piétons », securite-routiere.gouv.fr)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/fiche2_decret_12112010_traversepieton_cle298117.pdf",
+  "extrait": "Tout conducteur est tenu de céder le passage, au besoin en s'arrêtant, au piéton s'engageant régulièrement dans la traversée d'une chaussée"
+ },
+ {
+  "n": 5,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R412-31 (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006842310",
+  "extrait": "",
+  "probleme": "L’arrêté de 1967 (art. 7) renvoie à R412-30 à R412-33 sans reproduire le texte ; aucune page accessible ne cite l’exception « sauf si l’arrêt ne peut se faire dans des conditions de sécurité suffisantes ». À confirmer sur R412-31."
+ },
+ {
+  "n": 6,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R415-12 (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006842412",
+  "extrait": "",
+  "probleme": "Priorité des véhicules d’intérêt général prioritaires sur un feu vert non lue sur une source accessible. À confirmer sur R415-12 (et R432-1 pour les dérogations au feu)."
+ },
+ {
+  "n": 7,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R311-1 (définitions VIG prioritaires / à facilités de passage) et R415-12 ; arrêté du 30 octobre 1986 sur les avertisseurs spéciaux (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006841600",
+  "extrait": "",
+  "probleme": "Distinction « deux tons = prioritaire / trois tons = facilités de passage » et couleur du feu des véhicules à facilités de passage non confirmées par une page accessible. À vérifier aussi que la combinaison « gyrophare bleu + trois tons » est cohérente avec la réglementation des feux spéciaux en vigueur (réforme des listes de VIG annoncée en 2026)."
+ },
+ {
+  "n": 8,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F19460 « Vitesse au volant » (vérifié le 29/12/2025), reprenant Code de la route art. R413-2 et R413-5",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+  "extrait": "Tableau limitations de vitesse : Agglomération – 50 km/h (règle générale et jeune conducteur)."
+ },
+ {
+  "n": 9,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F19460 « Vitesse au volant » (vérifié le 29/12/2025), reprenant Code de la route art. R413-2 et R413-5",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+  "extrait": "Route à double-sens, sans séparateur central : 80 km/h ; l’autorité locale peut la fixer à 90 km/h."
+ },
+ {
+  "n": 10,
+  "verdict": "a_corriger",
+  "source": "service-public.gouv.fr F19460 « Vitesse au volant » (vérifié le 29/12/2025), reprenant Code de la route art. R413-2 et R413-5",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+  "extrait": "Jeune conducteur, autoroute : 110 km/h (100 km/h sur les sections d'autoroute où la vitesse maximale autorisée est inférieure à 130 km/h).",
+  "probleme": "Bonne réponse exacte, mais l’explication dit qu’un jeune conducteur « reste limité à 110 km/h dans tous les cas » : faux sur les sections d’autoroute limitées à moins de 130 km/h, où il est limité à 100 km/h."
+ },
+ {
+  "n": 11,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dépliant « La vitesse » (2020) et « Le guide du bon conducteur en voiture » (sept. 2026)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2026-07/nv_guide_bon_conducteur-exe_bd.pdf",
+  "extrait": "Sur route, laissez au moins 2 secondes entre vous et le véhicule qui vous précède, car la distance d’arrêt augmente avec la vitesse.",
+  "remarque": "L’ajout « l’augmenter quand la route est mouillée » est cohérent avec la Sécurité routière (distance de freinage pouvant doubler sur route mouillée, dépliant APR) ; un dossier de 2003 préfère « même distance mais 20 km/h de moins »."
+ },
+ {
+  "n": 12,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dépliant « La vitesse, connaissez-vous ses effets et ses risques ? » (2020)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2020-11/depliantvitesse2020_bd.pdf",
+  "extrait": "La distance d’arrêt […] correspond à la distance parcourue pendant le temps de réaction du conducteur ajoutée à la distance de freinage du véhicule."
+ },
+ {
+  "n": 13,
+  "verdict": "conforme",
+  "source": "Sécurité routière / Prévention routière, « Questions de conduite » (dépliant APR)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2021-05/prevention-routiere-apr_risques-2017.pdf",
+  "extrait": "Distance moyenne de freinage sur sol sec (elle peut être doublée sur route mouillée ou en cas de glissement)."
+ },
+ {
+  "n": 14,
+  "verdict": "non_verifie",
+  "source": "Sécurité routière, page « Conduire par temps de pluie » (à lire)",
+  "url": "https://www.securite-routiere.gouv.fr/chaque-situation-sa-conduite/conduire-selon-la-meteo/conduire-par-temps-de-pluie",
+  "extrait": "",
+  "probleme": "Conduite à tenir en aquaplanage non trouvée dans une source officielle lisible. Les pages HTML de securite-routiere.gouv.fr sont rendues en JavaScript (curl ne récupère que l’en-tête vide) et Légifrance est bloqué : aucune page officielle accessible ne confirme cette règle."
+ },
+ {
+  "n": 15,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F19460 « Vitesse au volant » (vérifié le 29/12/2025), reprenant Code de la route art. R413-2 et R413-5",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+  "extrait": "Visibilité inférieure à 50 m : 50 km/h sur autoroute, routes à chaussées séparées, routes à double sens et en agglomération."
+ },
+ {
+  "n": 16,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dépliant « La vitesse » (2020) et exemples de questions officielles de l’ETG",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2020-11/depliantvitesse2020_bd.pdf",
+  "extrait": "Sur autoroute, maintenez une distance au moins égale à deux lignes blanches de la bande d’arrêt d’urgence. 1 trait = danger, 2 traits = sécurité."
+ },
+ {
+  "n": 17,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dépliant « Les principaux panneaux » ; IISR 1re partie, art. 5-1",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2021-05/apr_panneaux2017.pdf",
+  "extrait": "Triangulaires et bordés de rouge, ces panneaux annoncent par un symbole le danger potentiel."
+ },
+ {
+  "n": 18,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dépliant « Les principaux panneaux » ; arrêté de 1967, art. 4",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2021-05/apr_panneaux2017.pdf",
+  "extrait": "Ronds et bordés de rouge, ces panneaux indiquent une interdiction."
+ },
+ {
+  "n": 19,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dépliant « Les principaux panneaux »",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2021-05/apr_panneaux2017.pdf",
+  "extrait": "Ronds à fond bleu, ces panneaux imposent à l’usager certains comportements."
+ },
+ {
+  "n": 20,
+  "verdict": "non_verifie",
+  "source": "IISR 7e partie, art. 113 (lignes continues) ; Code de la route, art. R412-19 et R414-4 IV (Légifrance, inaccessible)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+  "extrait": "",
+  "probleme": "Règle principale confirmée (IISR 7e partie : « continues infranchissables »). Seule l’exception de l’explication (chevauchement autorisé pour dépasser un cycliste, R414-4) n’a pu être lue sur une source accessible."
+ },
+ {
+  "n": 21,
+  "verdict": "conforme",
+  "source": "Arrêté du 24 novembre 1967 (version Légifrance au 29/07/2026, PDF publié par le Cerema), art. 7, 6 c (signal R24)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "Un feu rouge clignotant (R24) […] impose l'arrêt absolu à tous les véhicules et piétons […] Il est employé pour un passage à niveau"
+ },
+ {
+  "n": 22,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R234-1 ; securite-routiere.gouv.fr, Réglementation de l’alcool au volant",
+  "url": "https://www.securite-routiere.gouv.fr/reglementation-liee-aux-risques/reglementation-de-lalcool-au-volant",
+  "extrait": "Limite de 0,5 g d’alcool par litre de sang, soit 0,25 mg par litre d’air expiré."
+ },
+ {
+  "n": 23,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R234-1 ; service-public.gouv.fr F36485",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F36485/3",
+  "extrait": "Permis probatoire : conduite interdite dès 0,2 g/l (0,10 mg/l d’air expiré) ; même seuil en conduite accompagnée."
+ },
+ {
+  "n": 24,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr, Conseils aux conducteurs novices",
+  "url": "https://www.securite-routiere.gouv.fr/chacun-sa-conduite/conseils-aux-conducteurs-novices",
+  "extrait": "Taux d’alcool dans le sang supérieur à 0,2 g/l (= 0 verre d’alcool) ; limite pouvant être dépassée dès le premier verre."
+ },
+ {
+  "n": 25,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R234-1 ; securite-routiere.gouv.fr",
+  "url": "https://www.securite-routiere.gouv.fr/reglementation-liee-aux-risques/reglementation-de-lalcool-au-volant",
+  "extrait": "0,5 g d’alcool par litre de sang, soit 0,25 mg par litre d’air expiré ; 0,10 mg/l pour les permis probatoires."
+ },
+ {
+  "n": 26,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr, La fatigue et la conduite",
+  "url": "https://www.securite-routiere.gouv.fr/dangers-de-la-route/la-fatigue-et-la-conduite",
+  "extrait": "Faire une pause au moins toutes les deux heures lorsqu’on effectue un long trajet."
+ },
+ {
+  "n": 27,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr, Guide de bonne conduite (dépliant)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-01/sric_depliant_bonneconduite_2004_05_09_cle5aa11d.pdf",
+  "extrait": "Le temps de réaction passe d’environ 1 seconde reposé à environ 2 secondes après 2 heures de conduite."
+ },
+ {
+  "n": 28,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R412-6-1 ; securite-routiere.gouv.fr",
+  "url": "https://www.securite-routiere.gouv.fr/reglementation-liee-aux-risques/reglementation-du-telephone-au-volant",
+  "extrait": "L’usage d’un téléphone tenu en main par le conducteur d’un véhicule en circulation est interdit."
+ },
+ {
+  "n": 29,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R412-6-1 ; securite-routiere.gouv.fr",
+  "url": "https://www.securite-routiere.gouv.fr/reglementation-liee-aux-risques/reglementation-du-telephone-au-volant",
+  "extrait": "Amende forfaitaire de 135 € et retrait de 3 points du permis de conduire."
+ },
+ {
+  "n": 30,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R412-6-1 ; securite-routiere.gouv.fr",
+  "url": "https://www.securite-routiere.gouv.fr/reglementation-liee-aux-risques/reglementation-du-telephone-au-volant",
+  "extrait": "Interdit : port à l’oreille de tout dispositif susceptible d’émettre du son ; 135 € et 3 points."
+ },
+ {
+  "n": 31,
+  "verdict": "conforme",
+  "source": "Arrêté du 8 août 2008 (pictogrammes) ; ANSM, Médicaments et conduite",
+  "url": "https://ansm.sante.fr/dossiers-thematiques/medicaments-et-conduite",
+  "extrait": "Niveau 3 : « Attention, danger : ne pas conduire. Pour la reprise de la conduite, demandez l’avis d’un médecin. »"
+ },
+ {
+  "n": 32,
+  "verdict": "conforme",
+  "source": "Arrêté du 8 août 2008 (pictogrammes) ; ANSM",
+  "url": "https://www.legifrance.gouv.fr/loda/id/JORFTEXT000019563838",
+  "extrait": "Niveau 2 : médicaments pouvant remettre en cause l’aptitude à la conduite, nécessitant l’avis d’un professionnel de santé."
+ },
+ {
+  "n": 33,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R314-1 (à lire)",
+  "url": "https://www.legifrance.gouv.fr/codes/texte_lc/LEGITEXT000006074228/",
+  "extrait": "",
+  "probleme": "Aucune page officielle accessible ne donne le seuil de 1,6 mm : la fiche service-public F19459 interdit les pneus « en mauvais état » sans chiffre. securite-routiere.gouv.fr : pages rendues en JavaScript, contenu non lisible par curl ; Légifrance inaccessible."
+ },
+ {
+  "n": 34,
+  "verdict": "conforme",
+  "source": "Code de la route (repris par service-public.gouv.fr, fiche F628)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F628",
+  "extrait": "le port de la ceinture de sécurité est obligatoire à l'avant comme à l'arrière du véhicule dès lors que le siège en est équipé"
+ },
+ {
+  "n": 35,
+  "verdict": "conforme",
+  "source": "Code de la route (repris par service-public.gouv.fr, fiche F628)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F628",
+  "extrait": "un enfant de moins de 10 ans doit être installé à l'arrière du véhicule et être attaché dans un siège auto adapté à sa morphologie et à son poids"
+ },
+ {
+  "n": 36,
+  "verdict": "conforme",
+  "source": "Code de la route (repris par service-public.gouv.fr, fiche F628)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F628",
+  "extrait": "doit être installé à l'arrière […] siège auto adapté […] Exceptions : […] Le véhicule ne comporte pas de sièges arrière"
+ },
+ {
+  "n": 37,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R416-7 (à lire)",
+  "url": "https://www.legifrance.gouv.fr/codes/texte_lc/LEGITEXT000006074228/",
+  "extrait": "",
+  "probleme": "Règle non publiée sur une page officielle accessible (service-public n'a pas de fiche sur l'usage des feux). securite-routiere.gouv.fr : pages rendues en JavaScript, contenu non lisible par curl ; Légifrance inaccessible."
+ },
+ {
+  "n": 38,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R416-7 (à lire)",
+  "url": "https://www.legifrance.gouv.fr/codes/texte_lc/LEGITEXT000006074228/",
+  "extrait": "",
+  "probleme": "Non vérifiable. À contrôler en lisant R416-7 : de mémoire, l'article autorise aussi les feux de brouillard avant hors agglomération sur les routes étroites et sinueuses ; si c'est le cas, la bonne réponse « en cas de brouillard, de chute de neige ou de forte pluie » est incomplète (les mauvaises réponses restent fausses). securite-routiere.gouv.fr : pages rendues en JavaScript, contenu non lisible par curl ; Légifrance inaccessible."
+ },
+ {
+  "n": 39,
+  "verdict": "a_corriger",
+  "source": "Arrêté du 29 septembre 2008 relatif au gilet de haute visibilité (repris par service-public.gouv.fr, fiche F19459)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19459",
+  "extrait": "Le gilet de haute visibilité doit porter le marquage CE et être rangé à portée de main.",
+  "probleme": "La source dit seulement « rangé à portée de main » : « dans l’habitacle » et « du conducteur » ne figurent pas dans le texte lu."
+ },
+ {
+  "n": 40,
+  "verdict": "conforme",
+  "source": "Arrêtés des 29 et 30 septembre 2008 (repris par service-public.gouv.fr, fiche F19459)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19459",
+  "extrait": "Pour circuler en voiture, vous devez avoir dans votre voiture un gilet de haute visibilité (gilet jaune) et un triangle de présignalisation."
+ },
+ {
+  "n": 41,
+  "verdict": "conforme",
+  "source": "Code de la route (repris par service-public.gouv.fr, fiche F19459)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19459",
+  "extrait": "À la suite d'un arrêt d'urgence, vous devez revêtir le gilet de haute visibilité si vous êtes amené à quitter votre véhicule immobilisé sur la chaussée ou ses abords."
+ },
+ {
+  "n": 42,
+  "verdict": "conforme",
+  "source": "Arrêté du 18 juin 1991 (repris par service-public.gouv.fr, fiche F33354)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F33354",
+  "extrait": "Le 1er contrôle technique doit être réalisé au cours des 6 mois avant le 4e anniversaire de la 1re mise en circulation du véhicule."
+ },
+ {
+  "n": 43,
+  "verdict": "conforme",
+  "source": "Arrêté du 18 juin 1991 (repris par service-public.gouv.fr, fiche F33354)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F33354",
+  "extrait": "Dans les 2 cas, une contre-visite doit être réalisée dans le délai de 2 mois après le contrôle technique périodique."
+ },
+ {
+  "n": 44,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dossier « Une minute pour la sécurité routière » (2011) ; Code de la route art. R412-9",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/press-kits/3639-dp_pgscourts_090211-2_cle652132_2.pdf",
+  "extrait": "Une règle fondamentale de la conduite : on roule sur la droite et on dépasse par la gauche."
+ },
+ {
+  "n": 45,
+  "verdict": "conforme",
+  "source": "Instruction interministérielle sur la signalisation routière, 7e partie, art. 115-1 (Cerema)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/IISR_7ePARTIE_VC_20160215_cle217e65.pdf",
+  "extrait": "Zones de dépassement interdit aux points singuliers où la distance de visibilité est inférieure à un certain minimum."
+ },
+ {
+  "n": 46,
+  "verdict": "conforme",
+  "source": "Sécurité routière, « Le guide du bon conducteur en voiture » (sept. 2026) ; Code de la route art. R414-4",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2026-07/nv_guide_bon_conducteur-exe_bd.pdf",
+  "extrait": "Respectez une distance de 1 mètre entre votre véhicule et le cycliste que vous dépassez en agglomération (1,5 m hors agglomération)."
+ },
+ {
+  "n": 47,
+  "verdict": "conforme",
+  "source": "Sécurité routière, « Le guide du bon conducteur en voiture » (sept. 2026) ; Code de la route art. R414-4",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2026-07/nv_guide_bon_conducteur-exe_bd.pdf",
+  "extrait": "Respectez une distance de 1 mètre entre votre véhicule et le cycliste que vous dépassez en agglomération (1,5 m hors agglomération)."
+ },
+ {
+  "n": 48,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F34212 « Amende pour stationnement interdit », reprenant Code de la route art. R417-9 à R417-13 (R417-11)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F34212",
+  "extrait": "Très gênant : sur les passages piétons ; sur une distance de 5 mètres en amont des passages piétons dans le sens de la circulation, hors emplacements matérialisés.",
+  "remarque": "C’est bien une interdiction faite aux conducteurs (arrêt et stationnement très gênants, 135 €), distincte de l’obligation d’aménagement imposée aux collectivités par la loi LOM (page ONISR inaccessible). Précision facultative pour l’explication : « dans le sens de la circulation, hors emplacements matérialisés »."
+ },
+ {
+  "n": 49,
+  "verdict": "conforme",
+  "source": "Sécurité routière, « Le guide du bon conducteur en voiture » (sept. 2026)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2026-07/nv_guide_bon_conducteur-exe_bd.pdf",
+  "extrait": "Contrôlez régulièrement vos rétroviseurs. […] Contrôlez vos angles morts. […] Actionnez vos clignotants suffisamment à l’avance."
+ },
+ {
+  "n": 50,
+  "verdict": "conforme",
+  "source": "Code de la route, art. L223-1 ; service-public.gouv.fr F2390",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2390",
+  "extrait": "Le permis probatoire est doté de 6 points ; délai probatoire de trois ans, deux ans après apprentissage anticipé."
+ },
+ {
+  "n": 51,
+  "verdict": "a_corriger",
+  "source": "Code de la route, art. L223-1 et R223-1 ; securite-routiere.gouv.fr, stages post-permis",
+  "url": "https://www.securite-routiere.gouv.fr/passer-son-permis-de-conduire/permis-probatoire/les-stages-post-permis-et-reduction-de-la-periode",
+  "extrait": "Formation complémentaire entre le 6e et le 12e mois : période probatoire ramenée de trois ans à deux ans.",
+  "probleme": "La mauvaise réponse « 2 ans » est vraie pour un conducteur ayant suivi la formation complémentaire post-permis (décret 2018-715) : question ambiguë."
+ },
+ {
+  "n": 52,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F2826 (apprentissage anticipé de la conduite)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2826",
+  "extrait": "Conduite accompagnée possible dès 15 ans."
+ },
+ {
+  "n": 53,
+  "verdict": "conforme",
+  "source": "Arrêté du 20 avril 2012, art. 2 ; securite-routiere.gouv.fr",
+  "url": "https://www.securite-routiere.gouv.fr/passer-son-permis-de-conduire/preparation-de-lexamen-du-code-de-la-route/objectifs-et",
+  "extrait": "Les candidats sont reçus à l’examen à partir de 35 bonnes réponses sur 40 questions."
+ },
+ {
+  "n": 54,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr, Objectifs et réglementation de l’examen du code",
+  "url": "https://www.securite-routiere.gouv.fr/passer-son-permis-de-conduire/preparation-de-lexamen-du-code-de-la-route/objectifs-et",
+  "extrait": "La durée de validité de l’ETG, jusqu’à l’obtention de l’examen pratique, est de 5 ans."
+ },
+ {
+  "n": 55,
+  "verdict": "conforme",
+  "source": "Croix-Rouge française, « Les étapes pour porter secours »",
+  "url": "https://www.croix-rouge.fr/les-gestes-de-premiers-secours/4-etapes-pour-porter-secours",
+  "extrait": "Les étapes pour porter secours : protéger, alerter, secourir"
+ },
+ {
+  "n": 56,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr, fiche F33954 (numéros d'urgence)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F33954",
+  "extrait": "Dans tous les cas, vous pouvez aussi composer le 112. […] Le 112 est utilisable dans tous les pays de l'Union européenne."
+ },
+ {
+  "n": 57,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr, fiche F33954 (numéros d'urgence)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F33954",
+  "extrait": "Urgence médicale : le 15 (Samu) […] Situation de péril ou accident : le 18 (Pompiers)"
+ },
+ {
+  "n": 58,
+  "verdict": "non_verifie",
+  "source": "Gestes qui sauvent (interieur.gouv.fr / gouvernement.fr) ou référentiel PSC1",
+  "extrait": "",
+  "probleme": "Aucune page officielle accessible ne traite du casque du motard (Croix-Rouge : rien sur le casque ; interieur.gouv.fr bloqué). Vérifier aussi l'affirmation de l'explication « on ne le retire que si la victime ne respire plus »."
+ },
+ {
+  "n": 59,
+  "verdict": "non_verifie",
+  "source": "Gestes qui sauvent (interieur.gouv.fr / gouvernement.fr) ou référentiel PSC1",
+  "extrait": "",
+  "probleme": "Ouverture de la visière non confirmée par une page officielle accessible."
+ },
+ {
+  "n": 60,
+  "verdict": "conforme",
+  "source": "Croix-Rouge française, « Les étapes pour porter secours »",
+  "url": "https://www.croix-rouge.fr/les-gestes-de-premiers-secours/4-etapes-pour-porter-secours",
+  "extrait": "informations essentielles […] la localisation précise de l'événement, le nombre de personnes concernées, l'état de chaque victime"
+ },
+ {
+  "n": 61,
+  "verdict": "non_verifie",
+  "source": "Gestes qui sauvent (interieur.gouv.fr) ou Croix-Rouge",
+  "extrait": "",
+  "probleme": "Consigne « ne rien donner à boire » absente des pages Croix-Rouge lues ; interieur.gouv.fr bloqué."
+ },
+ {
+  "n": 62,
+  "verdict": "conforme",
+  "source": "Croix-Rouge française, « Position latérale de sécurité »",
+  "url": "https://www.croix-rouge.fr/les-gestes-de-premiers-secours/position-laterale-de-securite-comment-mettre-en-pls",
+  "extrait": "En cas de suspicion de traumatisme, notamment après une chute ou un accident, demandez d’abord l’avis des secours et limitez les mouvements autant que possible.",
+  "probleme": "Bonne réponse confirmée ; l’exception « sauf danger immédiat (incendie, explosion) » de l’explication n’est pas dans la page lue."
+ },
+ {
+  "n": 63,
+  "verdict": "conforme",
+  "source": "Arrêté du 24 novembre 1967 (version Légifrance au 29/07/2026, PDF publié par le Cerema), art. 3-1 ; IISR 3e partie, art. 42-3 (AB6)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "Panneau AB 6 : Indication du caractère prioritaire d'une route. […] carré dont une diagonale est placée verticalement […] carré jaune"
+ },
+ {
+  "n": 64,
+  "verdict": "conforme",
+  "source": "IISR 3e partie, art. 42-3 B (AB7)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "Le panneau AB7 sans panonceau de distance annonce la perte de priorité au prochain carrefour rencontré."
+ },
+ {
+  "n": 65,
+  "verdict": "conforme",
+  "source": "Arrêté du 24 novembre 1967 (version Légifrance au 29/07/2026, PDF publié par le Cerema), art. 3-1 ; catalogue des panneaux IISR (AB1, croix noire)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "Panneau AB 1 : Intersection où le conducteur est tenu de céder le passage aux véhicules débouchant de la ou des routes situées à sa droite."
+ },
+ {
+  "n": 66,
+  "verdict": "conforme",
+  "source": "IISR 3e partie, art. 42-2 B (AB2, priorité ponctuelle) ; catalogue des panneaux IISR",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "Panneau AB2. priorité ponctuelle. C'est un signal avancé indiquant une intersection avec une route dont les usagers doivent céder le passage"
+ },
+ {
+  "n": 67,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R415-9 (repris par la fiche Certu « Le trottoir », securite-routiere.gouv.fr)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/fiche3_decret_12112010_usagestrottoirs_cle5c3e471.pdf",
+  "extrait": "Tout conducteur qui débouche sur une route […] d'une aire de stationnement […] doit céder le passage à tout autre véhicule."
+ },
+ {
+  "n": 68,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R413-18 et R415-9 (repris par la fiche Certu « Le trottoir », securite-routiere.gouv.fr)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/fiche3_decret_12112010_usagestrottoirs_cle5c3e471.pdf",
+  "extrait": "qui franchit un trottoir […] ne doit y rouler qu'à l'allure du pas […] afin de ne pas constituer un danger pour les piétons."
+ },
+ {
+  "n": 69,
+  "verdict": "conforme",
+  "source": "IISR 3e partie, art. 43 A ; art. 42-2 A (R415-5)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation."
+ },
+ {
+  "n": 70,
+  "verdict": "a_corriger",
+  "source": "IISR 7e partie, art. 117-1 (art. R110-2 et R415-10) ; IISR 3e partie, art. 42-10",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+  "extrait": "carrefour à sens giratoire, signalé comme tel, […] tout conducteur qui l'aborde est tenu de céder le passage aux usagers circulant sur l’anneau",
+  "probleme": "La question parle d’un « carrefour à sens giratoire » : par définition (R110-2, R415-10) il est signalé comme tel et ceux qui entrent cèdent le passage à l’anneau ; sa signalisation (AB25, ligne « cédez le passage ») est obligatoire (IISR art. 42-10). La bonne réponse proposée est donc fausse pour un giratoire. La règle visée (priorité à droite) ne vaut que pour un simple rond-point non signalé comme giratoire."
+ },
+ {
+  "n": 71,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R415-4 (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006842398",
+  "extrait": "",
+  "probleme": "Obligation de céder le passage aux véhicules venant en sens inverse en tournant à gauche non lue sur une page accessible. À confirmer sur R415-4."
+ },
+ {
+  "n": 72,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R415-11 (repris par la fiche Certu « Les traversées des piétons », securite-routiere.gouv.fr)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/fiche2_decret_12112010_traversepieton_cle298117.pdf",
+  "extrait": "Tout conducteur est tenu de céder le passage, au besoin en s'arrêtant, au piéton s'engageant régulièrement dans la traversée d'une chaussée"
+ },
+ {
+  "n": 73,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R415-11 (repris par la fiche Certu « Les traversées des piétons », securite-routiere.gouv.fr)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/fiche2_decret_12112010_traversepieton_cle298117.pdf",
+  "extrait": "au piéton s'engageant régulièrement dans la traversée d'une chaussée ou manifestant clairement l'intention de le faire"
+ },
+ {
+  "n": 74,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R415-11 (repris par la fiche Certu « Les traversées des piétons », securite-routiere.gouv.fr)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/fiche2_decret_12112010_traversepieton_cle298117.pdf",
+  "extrait": "Tout conducteur est tenu de céder le passage, au besoin en s'arrêtant, au piéton s'engageant régulièrement dans la traversée d'une chaussée"
+ },
+ {
+  "n": 75,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R415-11 (repris par la fiche Certu « Les traversées des piétons », securite-routiere.gouv.fr)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/fiche2_decret_12112010_traversepieton_cle298117.pdf",
+  "extrait": "Tout conducteur est tenu de céder le passage, au besoin en s'arrêtant, au piéton […] manifestant clairement l'intention de le faire"
+ },
+ {
+  "n": 76,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dépliant piétons (règle de l’art. R412-36)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2024-09/depliant_pietons.pdf",
+  "extrait": "En dehors de la ville : je me place à gauche de la chaussée, face aux véhicules qui circulent (sauf si c’est dangereux ou impossible)"
+ },
+ {
+  "n": 77,
+  "verdict": "non_verifie",
+  "source": "Code de la route, article sur les véhicules de transport en commun quittant un arrêt en agglomération (R414-3, Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074228/LEGISCTA000006159543/",
+  "extrait": "",
+  "probleme": "Obligation de ralentir et au besoin s’arrêter pour laisser un bus quitter un arrêt signalé en agglomération non lue sur une page accessible. À confirmer sur Légifrance."
+ },
+ {
+  "n": 78,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R413-17 (repris par service-public.gouv.fr, fiche Vitesse au volant)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+  "extrait": "Vous devez réduire votre vitesse […] Lors du croisement ou du dépassement […] de véhicules affectés au transport d'enfants"
+ },
+ {
+  "n": 79,
+  "verdict": "conforme",
+  "source": "IISR 3e partie, art. 42-9 (art. R422-3 du Code de la route) ; IISR 6e partie",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "L'article R.422-3 du code de la route indique que la priorité de passage appartient aux tramways."
+ },
+ {
+  "n": 80,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R415-4 (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006842398",
+  "extrait": "",
+  "probleme": "Obligation, en quittant une route, de céder le passage aux cycles circulant dans les deux sens sur une piste cyclable non lue sur une page accessible. À confirmer sur R415-4."
+ },
+ {
+  "n": 81,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R415-4 (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006842398",
+  "extrait": "",
+  "probleme": "Obligation de céder le passage aux cycles et EDPM circulant sur une bande cyclable (même sens) en tournant non lue sur une page accessible. À confirmer sur R415-4."
+ },
+ {
+  "n": 82,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R110-2 (repris par la fiche technique « La zone de rencontre », securite-routiere.gouv.fr)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/guide_techn_fiche3_technique_zone_rencontre_cle0262fe.pdf",
+  "extrait": "les piétons sont autorisés à circuler sur la chaussée […] et bénéficient de la priorité sur les véhicules. La vitesse […] limitée à 20 km/h."
+ },
+ {
+  "n": 83,
+  "verdict": "conforme",
+  "source": "Sécurité routière, tableau de synthèse des zones de circulation apaisée (art. R110-2, R431-9)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/guide_techn_fiche6_tableau_synthese_cle2ea6af.pdf",
+  "extrait": "Aire piétonne […] Piéton prioritaire sur tous les véhicules […] Limitation de vitesse pour les véhicules : Allure du pas"
+ },
+ {
+  "n": 84,
+  "verdict": "conforme",
+  "source": "IISR 3e partie, art. 42-3 et 43-1 E (art. R421-3 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "Par application de l’article R.421-3 du code de la route, les autoroutes sont des voies prioritaires."
+ },
+ {
+  "n": 85,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R415-2 (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006842393",
+  "extrait": "",
+  "probleme": "Interdiction de s’engager dans une intersection si l’on risque d’y être immobilisé non lue sur une page accessible. À confirmer sur R415-2."
+ },
+ {
+  "n": 86,
+  "verdict": "conforme",
+  "source": "Arrêté du 24 novembre 1967 (version Légifrance au 29/07/2026, PDF publié par le Cerema), art. 4 (B15) ; catalogue des panneaux IISR (pictogramme : flèche rouge montante, flèche noire descendante)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "Panneau B 15 Cédez le passage à la circulation venant en sens inverse."
+ },
+ {
+  "n": 87,
+  "verdict": "conforme",
+  "source": "Arrêté du 24 novembre 1967 (version Légifrance au 29/07/2026, PDF publié par le Cerema), art. 5 (C18) ; catalogue des panneaux IISR (carré bleu, flèche blanche montante, flèche rouge descendante)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "Panneau C18. Priorité par rapport à la circulation venant en sens inverse."
+ },
+ {
+  "n": 88,
+  "verdict": "conforme",
+  "source": "Arrêté du 24 novembre 1967 (version Légifrance au 29/07/2026, PDF publié par le Cerema), art. 7, 5 k (art. R412-32 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "appliquer les règles de priorité établies par le code de la route […] si aucun panneau de type AB n'est présent"
+ },
+ {
+  "n": 89,
+  "verdict": "conforme",
+  "source": "Arrêté du 24 novembre 1967 (version Légifrance au 29/07/2026, PDF publié par le Cerema), art. 7, 5 k (signal d’anticipation R16)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "ils peuvent franchir la ligne d'arrêt du signal tricolore circulaire R11 associé, bien que celui-ci soit au rouge, mais en toute prudence"
+ },
+ {
+  "n": 90,
+  "verdict": "conforme",
+  "source": "Arrêté du 24 novembre 1967 (version Légifrance au 29/07/2026, PDF publié par le Cerema), art. 2-1 (panonceau M12)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "un panonceau de type M12 autorise les cyclistes […] à franchir la ligne d'effet du feu […] en cédant le passage aux piétons"
+ },
+ {
+  "n": 91,
+  "verdict": "conforme",
+  "source": "Arrêté du 24 novembre 1967 (version Légifrance au 29/07/2026, PDF publié par le Cerema), art. 7 (signaux R17)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "Ils se composent de trois feux blancs sur fond noir […] Ils s'adressent exclusivement aux véhicules des services réguliers de transport en commun."
+ },
+ {
+  "n": 92,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R411-28 (et texte réglementaire sur les gestes des agents) (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006842125",
+  "extrait": "",
+  "probleme": "Signification du bras levé verticalement non trouvée dans l’IISR ni sur une page accessible. À confirmer sur Légifrance."
+ },
+ {
+  "n": 93,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R411-28 (et texte réglementaire sur les gestes des agents) (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006842125",
+  "extrait": "",
+  "probleme": "Signification des bras tendus horizontalement non trouvée sur une page accessible. À confirmer sur Légifrance."
+ },
+ {
+  "n": 94,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R411-28 (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006842125",
+  "extrait": "",
+  "probleme": "Primauté des injonctions des agents sur les feux et panneaux non lue sur une page accessible (page securite-routiere « Intersections et priorités » rendue en JavaScript, illisible par curl). À confirmer sur R411-28."
+ },
+ {
+  "n": 95,
+  "verdict": "conforme",
+  "source": "IISR 7e partie, art. 113 A (lignes mixtes)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+  "extrait": "mixtes […] qui ne peuvent être franchies que si, au début de la manœuvre de dépassement la ligne discontinue se trouve la plus proche"
+ },
+ {
+  "n": 96,
+  "verdict": "a_corriger",
+  "source": "IISR 7e partie, art. 113 A, 113-2 et 117-4 (lignes transversales)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+  "extrait": "ligne continue « STOP », ligne discontinue « CÉDEZ LE PASSAGE », d'effet des feux de signalisation",
+  "probleme": "L’explication est fausse pour les feux : la ligne d’effet des feux est une ligne transversale discontinue (type T’2, 15 cm), pas continue. Seul le STOP a une ligne continue. Par ailleurs, une ligne transversale discontinue peut aussi être une ligne de feu : il faut préciser qu’il n’y a pas de feu et que la ligne est large. (IISR art. 117-4 C : « Ligne d'effet des feux de circulation : La ligne transversale est de type T'2 »)."
+ },
+ {
+  "n": 97,
+  "verdict": "conforme",
+  "source": "IISR 7e partie, art. 115-3 B (flèches de rabattement)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+  "extrait": "Les flèches de rabattement annoncent le marquage qui fait obligation aux usagers […] d'emprunter la voie ou les voies situées du côté indiqué"
+ },
+ {
+  "n": 98,
+  "verdict": "conforme",
+  "source": "IISR 8e partie, art. 122 B (marquage temporaire) ; arrêté de 1967, art. 8",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_8epartie_vc_20250904_partie_modif_par_arrete_avril2025etsept2025_relu_dsr.pdf",
+  "extrait": "Le marquage réalisé à titre temporaire […] est de couleur jaune. […] le marquage permanent doit être effacé ou masqué"
+ },
+ {
+  "n": 99,
+  "verdict": "conforme",
+  "source": "IISR 7e partie, art. 118-2 B",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+  "extrait": "ligne jaune […] discontinue de type T’2 pour le stationnement gênant ou très gênant ; continue pour l’arrêt gênant ou très gênant."
+ },
+ {
+  "n": 100,
+  "verdict": "conforme",
+  "source": "IISR 7e partie, art. 118-3 C (lignes zigzag)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+  "extrait": "la ligne zigzag. Cette ligne signifie qu'il est interdit de stationner ou de s'arrêter sur toute la zone marquée"
+ },
+ {
+  "n": 101,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dépliant « Circuler à vélo en toute sécurité » (2026) ; IISR 7e partie, art. 118-1 D",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2026-04/depliant_velo.pdf",
+  "extrait": "le sas vélo est un espace réservé aux cyclistes […] Il est situé entre la ligne d’arrêt destinée aux autres véhicules et le passage piéton."
+ },
+ {
+  "n": 102,
+  "verdict": "conforme",
+  "source": "Arrêté du 24 novembre 1967 (version Légifrance au 29/07/2026, PDF publié par le Cerema), art. 4 (B1)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "Panneau B 1 Sens interdit à tout véhicule. […] Le signal B1 est à fond rouge avec un pictogramme de couleur blanche."
+ },
+ {
+  "n": 103,
+  "verdict": "conforme",
+  "source": "Arrêté du 24 novembre 1967 (version Légifrance au 29/07/2026, PDF publié par le Cerema), art. 4 (B0) ; catalogue des panneaux IISR",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "Panneau B 0 Circulation interdite à tout véhicule dans les deux sens."
+ },
+ {
+  "n": 104,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dépliant « Les principaux panneaux » ; dépliant vélo 2026 (double sens cyclable)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2021-05/apr_panneaux2017.pdf",
+  "extrait": "Sens interdit sauf aux cyclistes"
+ },
+ {
+  "n": 105,
+  "verdict": "conforme",
+  "source": "Arrêté du 24 novembre 1967 (version Légifrance au 29/07/2026, PDF publié par le Cerema), art. 4 B (B22a)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "Panneau B22a. Piste ou bande obligatoire pour les cycles […] interdit […] aux conducteurs des autres véhicules d'emprunter la piste ou bande cyclable"
+ },
+ {
+  "n": 106,
+  "verdict": "conforme",
+  "source": "Arrêté du 24 novembre 1967 (version Légifrance au 29/07/2026, PDF publié par le Cerema), art. 4 (B6d, B6a1)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "Panneau B 6 d Arrêt et stationnement interdit. […] à fond bleu avec une bordure rouge […] La ou les barres obliques sont rouges."
+ },
+ {
+  "n": 107,
+  "verdict": "conforme",
+  "source": "IISR 2e partie, art. 25 B",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_2epartie_vc_20220613_cle253d8c.pdf",
+  "extrait": "Hors agglomération […] aussi proche que possible de 150 m sur route […] En agglomération […] aussi proche que possible de 50 m."
+ },
+ {
+  "n": 108,
+  "verdict": "conforme",
+  "source": "IISR 2e partie, art. 39 (A13a)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_2epartie_vc_20220613_cle253d8c.pdf",
+  "extrait": "La signalisation avancée d'endroits fréquentés par les enfants tels que écoles, colonies de vacances, terrains de jeux, se fait à l'aide de panneaux A13a."
+ },
+ {
+  "n": 109,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dépliant « Les principaux panneaux » ; IISR 8e partie, art. 121 B (cohérence)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2021-05/apr_panneaux2017.pdf",
+  "extrait": "A fond jaune, ces panneaux signalent un fait temporaire (travaux, obstacles, déviation…)."
+ },
+ {
+  "n": 110,
+  "verdict": "conforme",
+  "source": "IISR 4e partie (limitations de vitesse, d) ; arrêté de 1967, art. 5-8 (EB10)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+  "extrait": "lorsque le plafond de vitesse de 50 km/h […] n'est pas modifié […] le panneau EB10 d'entrée d'agglomération suffit."
+ },
+ {
+  "n": 111,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R110-2 (repris par la fiche technique « La zone 30 », securite-routiere.gouv.fr)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/guide_techn_fiche4_technique_zone30_cle29ec98.pdf",
+  "extrait": "Dans cette zone, la vitesse des véhicules est limitée à 30km/h."
+ },
+ {
+  "n": 112,
+  "verdict": "conforme",
+  "source": "Arrêté du 24 novembre 1967 (version Légifrance au 29/07/2026, PDF publié par le Cerema), art. 5 (C12) ; catalogue des panneaux IISR",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "Panneau C12. Circulation à sens unique."
+ },
+ {
+  "n": 113,
+  "verdict": "a_corriger",
+  "source": "service-public.gouv.fr F19460 « Vitesse au volant » (vérifié le 29/12/2025), reprenant Code de la route art. R413-2 et R413-5",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+  "extrait": "Jeune conducteur, autoroute : 110 km/h (100 km/h sur les sections d'autoroute où la vitesse maximale autorisée est inférieure à 130 km/h).",
+  "probleme": "Bonne réponse exacte en règle générale, mais la mauvaise réponse « 100 km/h » est vraie sur les sections d’autoroute limitées à moins de 130 km/h : ambiguïté à lever."
+ },
+ {
+  "n": 114,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F19460 « Vitesse au volant » (vérifié le 29/12/2025), reprenant Code de la route art. R413-2 et R413-5",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+  "extrait": "Route à 2 chaussées séparées par 1 terre-plein central : règle générale 110 km/h ; jeune conducteur 100 km/h."
+ },
+ {
+  "n": 115,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F19460 « Vitesse au volant » (vérifié le 29/12/2025), reprenant Code de la route art. R413-2 et R413-5 ; Sécurité routière, exemples de questions officielles de l’ETG",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2020-04/reponsesquestionspermisauto_v1604.pdf",
+  "extrait": "Je peux reprendre une allure réglementaire (80 ou 90 km/h selon mon statut de jeune conducteur ou non).",
+  "remarque": "Confirmé aussi par le tableau service-public (jeune conducteur, route à double sens : 80 km/h) et le dépliant jeune conducteur 2026 (« 80 km/h sur route »)."
+ },
+ {
+  "n": 116,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F19460 « Vitesse au volant » (vérifié le 29/12/2025), reprenant Code de la route art. R413-2 et R413-5",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+  "extrait": "Route à 2 chaussées séparées par 1 terre-plein central : 110 km/h ; par temps de pluie : 100 km/h."
+ },
+ {
+  "n": 117,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F19460 « Vitesse au volant » (vérifié le 29/12/2025), reprenant Code de la route art. R413-2 et R413-5",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+  "extrait": "Par temps de pluie : route à 2 chaussées séparées par 1 terre-plein central – 100 km/h."
+ },
+ {
+  "n": 118,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F19460 « Vitesse au volant » (vérifié le 29/12/2025), reprenant Code de la route art. R413-2 et R413-5",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+  "extrait": "Autoroute : 130 km/h (règle générale) ; par temps de pluie : 110 km/h."
+ },
+ {
+  "n": 119,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F19460 « Vitesse au volant » (vérifié le 29/12/2025), reprenant Code de la route art. R413-2 et R413-5",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+  "extrait": "Par temps de pluie : route à double-sens, sans séparateur central – 80 km/h ; section à 2 voies dans le même sens : 90 → 80 km/h."
+ },
+ {
+  "n": 120,
+  "verdict": "conforme",
+  "source": "Sécurité routière, « Guide de bonne conduite » et dossier « Vitesse et distances de sécurité » (2003)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-01/sric_depliant_bonneconduite_2004_05_09_cle5aa11d.pdf",
+  "extrait": "La fatigue augmente le temps de réaction : il passe de 1 seconde en état reposé à 2 secondes après 2 heures de conduite."
+ },
+ {
+  "n": 121,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dépliant « La vitesse » (tableau des distances)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/dep-vitesse_cle63cd7d.pdf",
+  "extrait": "Distance parcourue pendant le temps de réaction (1 seconde) : 90 km/h – 25 m."
+ },
+ {
+  "n": 122,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dossier « Une minute pour la sécurité routière » et dépliant « La vitesse »",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/press-kits/3639-dp_pgscourts_090211-2_cle652132_2.pdf",
+  "extrait": "Énergie cinétique […] (la moitié de la masse du véhicule multipliée par la vitesse au carré).",
+  "remarque": "Le tableau officiel (freinage 14 m à 50 km/h, 45 m à 90 km/h) suit bien cette loi du carré."
+ },
+ {
+  "n": 123,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dépliant « La vitesse » (tableau des distances)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/dep-vitesse_cle63cd7d.pdf",
+  "extrait": "Temps de réaction (1 seconde) à 90 km/h : 25 m ; laissez au moins 2 secondes, soit environ 50 m."
+ },
+ {
+  "n": 124,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F34212, définition de la zone de rencontre (Code de la route art. R110-2)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F34212",
+  "extrait": "Les piétons […] bénéficient de la priorité sur les véhicules. La vitesse des véhicules y est limitée à 20 km/h."
+ },
+ {
+  "n": 125,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R413-19 (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006842193",
+  "extrait": "",
+  "probleme": "Vitesse minimale de 80 km/h sur la voie de gauche et ses conditions exactes (circulation fluide, bonne visibilité, chaussée sèche, de jour…) non confirmées : seule une chronologie ONISR (hôte inaccessible) mentionne la règle sans ses conditions. Les pages HTML de securite-routiere.gouv.fr sont rendues en JavaScript (curl ne récupère que l’en-tête vide) et Légifrance est bloqué : aucune page officielle accessible ne confirme cette règle."
+ },
+ {
+  "n": 126,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R413-19 (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006842193",
+  "extrait": "",
+  "probleme": "Interdiction de gêner en roulant à une vitesse anormalement réduite : article non lisible. Les pages HTML de securite-routiere.gouv.fr sont rendues en JavaScript (curl ne récupère que l’en-tête vide) et Légifrance est bloqué : aucune page officielle accessible ne confirme cette règle."
+ },
+ {
+  "n": 127,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dossier « Une minute pour la sécurité routière » (2011)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/press-kits/3639-dp_pgscourts_090211-2_cle652132_2.pdf",
+  "extrait": "Plus le virage est serré et la vitesse élevée, plus la force centrifuge pousse à une sortie de route. D’où la nécessité de ralentir avant de s’engager dans un virage."
+ },
+ {
+  "n": 128,
+  "verdict": "conforme",
+  "source": "Sécurité routière, « Le guide du bon conducteur en voiture » (sept. 2026)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2026-07/nv_guide_bon_conducteur-exe_bd.pdf",
+  "extrait": "Plus la vitesse augmente, plus votre champ visuel est réduit."
+ },
+ {
+  "n": 129,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dépliant « Jeunes conducteurs » (mars 2026)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2026-03/nv_depliant_jeune_conducteur-exe_hd.pdf",
+  "extrait": "Un choc à 50 km/h = une chute de 3 étages."
+ },
+ {
+  "n": 130,
+  "verdict": "conforme",
+  "source": "Sécurité routière / Prévention routière, « Questions de conduite » (dépliant APR)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2021-05/prevention-routiere-apr_risques-2017.pdf",
+  "extrait": "Limiteur volontaire de vitesse : vous permettra de ne pas dépasser la limitation de vitesse que vous aurez fixée préalablement.",
+  "remarque": "La définition du régulateur (explication) n’est pas reprise par la source, mais n’est pas contestée."
+ },
+ {
+  "n": 131,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dossier « Une minute pour la sécurité routière » (2011)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/press-kits/3639-dp_pgscourts_090211-2_cle652132_2.pdf",
+  "extrait": "En cas d’utilisation continue de la pédale de frein, le système de freinage risque […] de surchauffer. Le frein moteur permet d’éviter ce risque."
+ },
+ {
+  "n": 132,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dépliant « La vitesse » (2020) et « Guide de bonne conduite »",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2020-11/depliantvitesse2020_bd.pdf",
+  "extrait": "Le temps de réaction varie de 1 à 2 secondes. La distance parcourue pendant ce délai augmente avec la vitesse."
+ },
+ {
+  "n": 133,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dossier « Vitesse et distances de sécurité » (2003) et exemples de questions de l’ETG",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/press-kits/3728-distances_de_securite_23-06-03_2.pdf",
+  "extrait": "Le coefficient d’adhérence a une influence directe sur les distances de freinage ; le sous-gonflage des pneus augmente les distances de freinage."
+ },
+ {
+  "n": 134,
+  "verdict": "conforme",
+  "source": "Arrêté du 24 novembre 1967, art. 8 (panneaux C4a et B25), texte Légifrance du 29/07/2026 sur le site du Cerema",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "Panneau C4a. Vitesse conseillée. […] Panneau B 25 Vitesse minimale obligatoire."
+ },
+ {
+  "n": 135,
+  "verdict": "conforme",
+  "source": "Sécurité routière, « Le guide du bon conducteur en voiture » (sept. 2026)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2026-07/nv_guide_bon_conducteur-exe_bd.pdf",
+  "extrait": "Les feux de croisement n’éclairent qu’à 30 mètres. […] dès 70 km/h, la collision devient impossible à éviter en raison de la distance d’arrêt."
+ },
+ {
+  "n": 136,
+  "verdict": "non_verifie",
+  "source": "Sécurité routière, rubrique « Conduire selon la météo » (à lire)",
+  "url": "https://www.securite-routiere.gouv.fr/chaque-situation-sa-conduite",
+  "extrait": "",
+  "probleme": "Aucun conseil officiel lisible sur le vent latéral. Les pages HTML de securite-routiere.gouv.fr sont rendues en JavaScript (curl ne récupère que l’en-tête vide) et Légifrance est bloqué : aucune page officielle accessible ne confirme cette règle."
+ },
+ {
+  "n": 137,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R414-6 (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074228/LEGISCTA000006159548/",
+  "extrait": "",
+  "probleme": "Dépassement par la droite du véhicule qui tourne à gauche : article non lisible ; seule la règle générale « on dépasse par la gauche » est confirmée. Les pages HTML de securite-routiere.gouv.fr sont rendues en JavaScript (curl ne récupère que l’en-tête vide) et Légifrance est bloqué : aucune page officielle accessible ne confirme cette règle."
+ },
+ {
+  "n": 138,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R414-16 (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074228/LEGISCTA000006159548/",
+  "extrait": "",
+  "probleme": "Obligation du conducteur dépassé (serrer à droite, ne pas accélérer) non confirmée par une page lisible. Les pages HTML de securite-routiere.gouv.fr sont rendues en JavaScript (curl ne récupère que l’en-tête vide) et Légifrance est bloqué : aucune page officielle accessible ne confirme cette règle."
+ },
+ {
+  "n": 139,
+  "verdict": "conforme",
+  "source": "Sécurité routière, exemples de questions officielles de l’ETG (Q1) ; Code de la route art. R414-1",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2020-04/reponsesquestionspermisauto_v1604.pdf",
+  "extrait": "Le conducteur doit être capable d’adapter l’allure de son véhicule avant de serrer à droite […] afin de garantir la sécurité pendant le croisement."
+ },
+ {
+  "n": 140,
+  "verdict": "non_verifie",
+  "source": "Sécurité routière, page « Autoroute » ; Code de la route art. R421-6 (inaccessibles)",
+  "url": "https://www.securite-routiere.gouv.fr/reglementation-liee-la-route/autoroute",
+  "extrait": "",
+  "probleme": "Interdiction de la marche arrière et du demi-tour sur autoroute non confirmée par une page lisible. Les pages HTML de securite-routiere.gouv.fr sont rendues en JavaScript (curl ne récupère que l’en-tête vide) et Légifrance est bloqué : aucune page officielle accessible ne confirme cette règle."
+ },
+ {
+  "n": 141,
+  "verdict": "non_verifie",
+  "source": "Sécurité routière, page « Conduire sur autoroute » (inaccessible)",
+  "url": "https://www.securite-routiere.gouv.fr/chaque-situation-sa-conduite/conduire-sur-routes-specifiques/conduire-sur-autoroute",
+  "extrait": "",
+  "probleme": "Ralentissement sur la voie de décélération non confirmé par une page lisible. Les pages HTML de securite-routiere.gouv.fr sont rendues en JavaScript (curl ne récupère que l’en-tête vide) et Légifrance est bloqué : aucune page officielle accessible ne confirme cette règle."
+ },
+ {
+  "n": 142,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F34212 « Amende pour stationnement interdit », reprenant Code de la route art. R417-9 à R417-13 et R421-7",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F34212",
+  "extrait": "Arrêt ou stationnement gênant : sur les bandes d'arrêt d'urgence, sauf cas de nécessité absolue."
+ },
+ {
+  "n": 143,
+  "verdict": "conforme",
+  "source": "Arrêté du 24 novembre 1967, panneau C111 (Cerema) ; Sécurité routière, dossier « Une minute pour la sécurité routière »",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "Panneau C111. Entrée d'un tunnel […] où l'allumage des feux de croisement est obligatoire.",
+  "remarque": "L’obligation réglementaire est attachée aux tunnels signalés par le panneau C111 ; elle vaut même si le tunnel est éclairé."
+ },
+ {
+  "n": 144,
+  "verdict": "conforme",
+  "source": "Sécurité routière, dossier « Une minute pour la sécurité routière » (2011)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/press-kits/3639-dp_pgscourts_090211-2_cle652132_2.pdf",
+  "extrait": "Sous un tunnel, l’apparition de fumée est le premier danger. […] couper le contact, quitter son véhicule et emprunter l’issue de secours la plus proche.",
+  "remarque": "Le détail « laisser la clé » (page SR « Conduire dans un tunnel ») n’a pas pu être lu sur une page officielle accessible."
+ },
+ {
+  "n": 145,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R415-4 (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074228/LEGISCTA000006159552/",
+  "extrait": "",
+  "probleme": "Placement près de l’axe médian pour tourner à gauche non confirmé par une page lisible. Les pages HTML de securite-routiere.gouv.fr sont rendues en JavaScript (curl ne récupère que l’en-tête vide) et Légifrance est bloqué : aucune page officielle accessible ne confirme cette règle."
+ },
+ {
+  "n": 146,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F34212 « Amende pour stationnement interdit », reprenant Code de la route art. R417-9 à R417-13 (R417-9)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F34212",
+  "extrait": "Considérés comme dangereux, lorsque la visibilité est insuffisante : à proximité des intersections, des virages, des sommets de côte, des passages à niveau."
+ },
+ {
+  "n": 147,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F34212 « Amende pour stationnement interdit », reprenant Code de la route art. R417-9 à R417-13 (R417-12)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F34212",
+  "extrait": "Le stationnement est considéré comme abusif lorsque le véhicule stationne […] au même endroit pendant plus de 7 jours. Une durée inférieure peut être fixée par arrêté municipal."
+ },
+ {
+  "n": 148,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R110-2 (définitions de l’arrêt et du stationnement, Légifrance inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006841528",
+  "extrait": "",
+  "probleme": "Définition de l’arrêt non lue sur une page accessible. Les pages HTML de securite-routiere.gouv.fr sont rendues en JavaScript (curl ne récupère que l’en-tête vide) et Légifrance est bloqué : aucune page officielle accessible ne confirme cette règle."
+ },
+ {
+  "n": 149,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F34212 « Amende pour stationnement interdit », reprenant Code de la route art. R417-9 à R417-13 (R417-10)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F34212",
+  "extrait": "Les stationnements suivants sont considérés comme gênant : […] En double file."
+ },
+ {
+  "n": 150,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F34212 « Amende pour stationnement interdit », reprenant Code de la route art. R417-9 à R417-13 (R417-11)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F34212",
+  "extrait": "Très gênant : sur les emplacements réservés aux véhicules portant une carte mobilité inclusion stationnement ou l'ancienne carte de stationnement."
+ },
+ {
+  "n": 151,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R417-7 (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006842352",
+  "extrait": "",
+  "probleme": "Interdiction d’ouvrir une portière en créant un danger : article non lisible ; seuls des documents ONISR (inaccessibles) le citent. Les pages HTML de securite-routiere.gouv.fr sont rendues en JavaScript (curl ne récupère que l’en-tête vide) et Légifrance est bloqué : aucune page officielle accessible ne confirme cette règle."
+ },
+ {
+  "n": 152,
+  "verdict": "non_verifie",
+  "source": "Sécurité routière, page « Conduire la nuit » ; Code de la route art. R416-7 (inaccessibles)",
+  "url": "https://www.securite-routiere.gouv.fr/chaque-situation-sa-conduite/conduire-la-nuit",
+  "extrait": "",
+  "probleme": "Les sources lisibles confirment les feux de croisement pour croiser un véhicule, pas explicitement pour suivre un véhicule de près. Les pages HTML de securite-routiere.gouv.fr sont rendues en JavaScript (curl ne récupère que l’en-tête vide) et Légifrance est bloqué : aucune page officielle accessible ne confirme cette règle."
+ },
+ {
+  "n": 153,
+  "verdict": "a_corriger",
+  "source": "service-public.gouv.fr F34212 « Amende pour stationnement interdit », reprenant Code de la route art. R417-9 à R417-13 ; arrêté du 24 novembre 1967, panneau C6",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F34212",
+  "extrait": "Gênant : emplacements réservés aux véhicules de transport public de voyageurs […]. Toutefois, des horaires […] peuvent être fixés par arrêté municipal.",
+  "probleme": "La mauvaise réponse « Oui, en dehors des heures de passage » peut être vraie lorsqu’un arrêté municipal autorise le stationnement à certaines heures : réponse ambiguë."
+ },
+ {
+  "n": 154,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R417-1 (Légifrance, inaccessible)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006842346",
+  "extrait": "",
+  "probleme": "Obligation de se placer hors chaussée hors agglomération non lue sur une page accessible. Les pages HTML de securite-routiere.gouv.fr sont rendues en JavaScript (curl ne récupère que l’en-tête vide) et Légifrance est bloqué : aucune page officielle accessible ne confirme cette règle."
+ },
+ {
+  "n": 155,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr, dépliant « L’alcool et la conduite »",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2024-03/depliant_alcool-conduite-070823.pdf",
+  "extrait": "L’organisme (principalement le foie) élimine entre 0,10 et 0,15 g/l par heure."
+ },
+ {
+  "n": 156,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr (dépliants alcool)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2024-03/depliant_alcool-conduite-070823.pdf",
+  "extrait": "Cela ne sert à rien de prendre un grand café noir, de prendre une douche froide ou de sortir prendre l’air."
+ },
+ {
+  "n": 157,
+  "verdict": "conforme",
+  "source": "Santé publique France, « Alcool, vous en savez quoi ? »",
+  "url": "https://www.santepubliquefrance.fr/sites/default/files/cadic_files/documents/spf00006000.pdf",
+  "extrait": "Un verre standard, servi dans un bar ou un restaurant, contient approximativement 10 grammes d’alcool pur quel que soit le type de boisson."
+ },
+ {
+  "n": 158,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr, dépliant « L’alcool et la conduite »",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2024-03/depliant_alcool-conduite-070823.pdf",
+  "extrait": "½ heure environ si on est à jeun, 1 heure environ si la boisson est prise au cours d’un repas."
+ },
+ {
+  "n": 159,
+  "verdict": "conforme",
+  "source": "Code de la route, art. L234-1 ; service-public.gouv.fr F36485",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F36485/3",
+  "extrait": "Conduire avec un taux égal ou supérieur à 0,8 g/l de sang est un délit. Cela revient à 0,40 mg/l d’air expiré."
+ },
+ {
+  "n": 160,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R234-1 ; service-public.gouv.fr F36485",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F36485/3",
+  "extrait": "Entre 0,5 et 0,8 g/l : contravention, amende forfaitaire de 135 €, 6 points retirés."
+ },
+ {
+  "n": 161,
+  "verdict": "conforme",
+  "source": "Code de la route, art. L235-1 ; securite-routiere.gouv.fr, Réglementation de la drogue au volant",
+  "url": "https://www.securite-routiere.gouv.fr/reglementation-liee-aux-risques/reglementation-de-la-drogue-au-volant",
+  "extrait": "Toute sanction pénale pour ce délit entraîne une perte automatique de 6 points."
+ },
+ {
+  "n": 162,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr, Réglementation de la drogue au volant",
+  "url": "https://www.securite-routiere.gouv.fr/reglementation-liee-aux-risques/reglementation-de-la-drogue-au-volant",
+  "extrait": "Le test salivaire détecte cannabis, cocaïne, opiacés, ecstasy et amphétamines en quelques minutes."
+ },
+ {
+  "n": 163,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr, La drogue et la conduite",
+  "url": "https://www.securite-routiere.gouv.fr/dangers-de-la-route/la-drogue-et-la-conduite",
+  "extrait": "Le cannabis allonge le temps de réaction et modifie la perception des formes, des distances et des volumes."
+ },
+ {
+  "n": 164,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr, dépliant stupéfiants",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-05/dscr_stupefiants_depliant_30x60.pdf",
+  "extrait": "Le risque d’être responsable d’un accident mortel est multiplié par 15 si le cannabis est mélangé avec de l’alcool."
+ },
+ {
+  "n": 165,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr, La fatigue et la conduite",
+  "url": "https://www.securite-routiere.gouv.fr/dangers-de-la-route/la-fatigue-et-la-conduite",
+  "extrait": "Somnolence : bâillements, paupières lourdes, périodes d’absence ; fatigue : raideurs de nuque, douleurs de dos."
+ },
+ {
+  "n": 166,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr, La fatigue et la conduite",
+  "url": "https://www.securite-routiere.gouv.fr/dangers-de-la-route/la-fatigue-et-la-conduite",
+  "extrait": "S’arrêter dans un endroit sécurisé ; sieste en se faisant réveiller 15 à 20 minutes plus tard."
+ },
+ {
+  "n": 167,
+  "verdict": "conforme",
+  "source": "Calcul (90 km/h = 25 m/s) ; securite-routiere.gouv.fr (micro-sommeils de 1 à 4 secondes)",
+  "url": "https://www.securite-routiere.gouv.fr/dangers-de-la-route/la-fatigue-et-la-conduite",
+  "extrait": "La somnolence peut provoquer des micro-sommeils de 1 à 4 secondes."
+ },
+ {
+  "n": 168,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr, checklist voiture ; Code de la route, art. R412-6",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2022-05/checklist-voiture-2022_pdf_planche.pdf",
+  "extrait": "Réglez le GPS avant de démarrer, pour éviter les égarements, source fréquente de distraction."
+ },
+ {
+  "n": 169,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R412-6-2",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000025111520",
+  "extrait": "Interdit : dans le champ de vision du conducteur, un appareil à écran ne constituant pas une aide à la conduite ou à la navigation."
+ },
+ {
+  "n": 170,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr, FAQ dispositifs audio autorisés",
+  "url": "https://validation.securite-routiere.gouv.fr/les-medias/les-faq/faq-radar/quels-sont-les-dispositifs-audios-autorises-pour-les-voitures",
+  "extrait": "Seuls les dispositifs audios intégrés au véhicule sont autorisés pour les voitures (kits intégrés autorisés mais déconseillés)."
+ },
+ {
+  "n": 171,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R412-6-1 et R421-7",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006842319",
+  "extrait": "Sauf nécessité absolue, ne pas arrêter ou stationner sur les bandes d’arrêt d’urgence des autoroutes."
+ },
+ {
+  "n": 172,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F32927 ; securite-routiere.gouv.fr, Santé et conduite",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F32927",
+  "extrait": "Code 01 : vous devez porter des lunettes ou des lentilles pour conduire ; le non-respect des mentions est sanctionné."
+ },
+ {
+  "n": 173,
+  "verdict": "conforme",
+  "source": "ONISR (securite-routiere.gouv.fr), L’agressivité et la colère au volant",
+  "url": "https://www.onisr.securite-routiere.gouv.fr/sites/default/files/2024-06/Agressivite_et_colere_au_volant_0.pdf",
+  "extrait": "La colère peut entraîner une vitesse plus élevée et ralentit la détection des éléments d’une scène routière."
+ },
+ {
+  "n": 174,
+  "verdict": "conforme",
+  "source": "Arrêté du 8 août 2008 (pictogrammes) ; ANSM",
+  "url": "https://ansm.sante.fr/dossiers-thematiques/medicaments-et-conduite",
+  "extrait": "Niveau 1 : « Soyez prudent. Ne pas conduire sans avoir lu la notice. »"
+ },
+ {
+  "n": 175,
+  "verdict": "conforme",
+  "source": "ANSM, Médicaments et conduite ; securite-routiere.gouv.fr, Santé et conduite",
+  "url": "https://ansm.sante.fr/dossiers-thematiques/medicaments-et-conduite",
+  "extrait": "Ne pas consommer d’alcool, dont les effets potentialisent fréquemment ceux des médicaments."
+ },
+ {
+  "n": 176,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr, « Ne laissons pas une personne qui a bu reprendre le volant »",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/press-kits/3653-dp_alcool_conduite_09_12_09_cle2ab9eb_2.pdf",
+  "extrait": "Ne laissons pas une personne qui a bu reprendre le volant ; le conducteur sous-évalue les risques et surestime ses capacités."
+ },
+ {
+  "n": 177,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr, L’alcool et la conduite",
+  "url": "https://www.securite-routiere.gouv.fr/dangers-de-la-route/lalcool-et-la-conduite",
+  "extrait": "Le conducteur sous-évalue les risques et surestime ses capacités ; à partir de 0,5 g/l, le champ visuel est rétréci."
+ },
+ {
+  "n": 178,
+  "verdict": "conforme",
+  "source": "Décret n° 2023-1214 du 20 décembre 2023 ; service-public.gouv.fr F2828",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2828",
+  "extrait": "Le permis B s’obtient à partir de 17 ans (âge abaissé par le décret du 20 décembre 2023)."
+ },
+ {
+  "n": 179,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R221-4 ; service-public.gouv.fr F2827",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2827",
+  "extrait": "Le permis B couvre un véhicule d’un PTAC n’excédant pas 3,5 t."
+ },
+ {
+  "n": 180,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R221-4 ; service-public.gouv.fr F2827",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2827",
+  "extrait": "Remorque de 750 kg ou moins autorisée ; au-delà, si la somme des PTAC ne dépasse pas 3 500 kg."
+ },
+ {
+  "n": 181,
+  "verdict": "conforme",
+  "source": "Arrêté du 17 janvier 2013 ; service-public.gouv.fr F2827",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2827",
+  "extrait": "Mention B96 : remorque de plus de 750 kg, somme des PTAC entre 3 500 et 4 250 kg ; formation de 7 heures."
+ },
+ {
+  "n": 182,
+  "verdict": "conforme",
+  "source": "Arrêté du 17 décembre 2010 ; service-public.gouv.fr F45",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F45",
+  "extrait": "Avoir le permis B depuis au moins 2 ans et avoir suivi une formation de 7 heures."
+ },
+ {
+  "n": 183,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R223-1 ; service-public.gouv.fr F2390",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2390",
+  "extrait": "Majoration de trois points par an pour les conducteurs dont la période probatoire est réduite à deux ans."
+ },
+ {
+  "n": 184,
+  "verdict": "conforme",
+  "source": "Code de la route, art. L223-6 et R223-8 ; service-public.gouv.fr F14208",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F14208",
+  "extrait": "Vous pouvez récupérer jusqu’à 4 points dans la limite du plafond de votre permis. 1 stage maximum par an."
+ },
+ {
+  "n": 185,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R223-4 ; service-public.gouv.fr F14208",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F14208",
+  "extrait": "Période probatoire et retrait d’au moins 3 points : lettre 48N, obligation de suivre un stage dans un délai de 4 mois."
+ },
+ {
+  "n": 186,
+  "verdict": "conforme",
+  "source": "Code de la route, art. L223-6 ; service-public.gouv.fr F1685",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F1685",
+  "extrait": "Si vous perdez 1 seul point, vous le récupérez au bout de 6 mois, sans nouvelle infraction."
+ },
+ {
+  "n": 187,
+  "verdict": "conforme",
+  "source": "Code de la route, art. L223-5 ; service-public.gouv.fr F1704",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F1704",
+  "extrait": "Solde nul : le permis perd sa validité ; remise en préfecture sous 10 jours ; attendre 6 mois (1 an en récidive)."
+ },
+ {
+  "n": 188,
+  "verdict": "conforme",
+  "source": "Code de la route, art. L223-2 ; service-public.gouv.fr F1685",
+  "url": "https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074228/LEGISCTA000006159515/",
+  "extrait": "Si plusieurs infractions sont constatées simultanément, 8 points peuvent être retirés au maximum."
+ },
+ {
+  "n": 189,
+  "verdict": "conforme",
+  "source": "securite-routiere.gouv.fr, Conseils aux conducteurs novices ; service-public.gouv.fr F2390",
+  "url": "https://www.securite-routiere.gouv.fr/chacun-sa-conduite/conseils-aux-conducteurs-novices",
+  "extrait": "Apposer sur votre véhicule, de préférence à l’arrière, à la vue des autres conducteurs, un disque indiquant votre statut."
+ },
+ {
+  "n": 190,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F2826",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2826",
+  "extrait": "Au moins 3 000 km parcourus et 1 an minimum à compter du rendez-vous préalable."
+ },
+ {
+  "n": 191,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F2826",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2826",
+  "extrait": "Deux rendez-vous pédagogiques obligatoires (4 à 6 mois après la formation initiale, puis à 3 000 km)."
+ },
+ {
+  "n": 192,
+  "verdict": "conforme",
+  "source": "Décret n° 2009-1590 ; Code de la route, art. R211-5 ; service-public.gouv.fr F2826",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2826",
+  "extrait": "Accompagnateur titulaire depuis au moins cinq ans sans interruption du permis de la catégorie B."
+ },
+ {
+  "n": 193,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F2826 ; arrêté du 29 juillet 2013 (livret d’apprentissage)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2826",
+  "extrait": "L’école de conduite ouvre un livret d’apprentissage (numérique) qui suit la progression de l’élève."
+ },
+ {
+  "n": 194,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R233-1 (version en vigueur au 2 janvier 2026)",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000053304279",
+  "extrait": "Présenter, sur réquisition, un titre de conduite numérique ou physique et le certificat d’immatriculation du véhicule."
+ },
+ {
+  "n": 195,
+  "verdict": "conforme",
+  "source": "Décret n° 2023-1152 ; securite-routiere.gouv.fr",
+  "url": "https://www.securite-routiere.gouv.fr/actualites/compter-du-1er-avril-2024-la-carte-verte-et-la-vignette-disparaissent-des-vehicules",
+  "extrait": "À compter du 1er avril 2024, la carte verte et la vignette disparaissent ; contrôle via le Fichier des véhicules assurés."
+ },
+ {
+  "n": 196,
+  "verdict": "conforme",
+  "source": "Code des assurances, art. L211-1",
+  "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000048523650",
+  "extrait": "Doit, pour faire circuler celui-ci, être couverte par une assurance garantissant cette responsabilité (dommages causés aux tiers)."
+ },
+ {
+  "n": 197,
+  "verdict": "a_corriger",
+  "source": "service-public.gouv.fr, fiche F33694 « Permis de conduire : comment passer le code »",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F33694",
+  "extrait": "Avant de commencer l’épreuve, vous devez présenter votre convocation et un justificatif d’identité.",
+  "probleme": "La durée de 20 secondes par question n’est confirmée par aucune source officielle accessible : question remplacée."
+ },
+ {
+  "n": 198,
+  "verdict": "a_corriger",
+  "source": "Arrêté du 19 février 2010, art. 26",
+  "url": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000021901121",
+  "extrait": "Pour être reçu, le candidat doit obtenir un minimum de vingt points et ne pas commettre d’erreur éliminatoire.",
+  "probleme": "Le total « sur 31 » n’est confirmé par aucune source officielle accessible : retiré."
+ },
+ {
+  "n": 199,
+  "verdict": "conforme",
+  "source": "Arrêté du 22 décembre 2009, art. 4",
+  "url": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000038934028",
+  "extrait": "20 heures minimum dont 15 sur voies ouvertes ; boîte automatique : 13 heures minimum dont 10 sur voies ouvertes."
+ },
+ {
+  "n": 200,
+  "verdict": "a_corriger",
+  "source": "Arrêté du 14 octobre 2016 modifié (arrêté du 15 février 2024) ; securite-routiere.gouv.fr",
+  "url": "https://www.securite-routiere.gouv.fr/actualites/acces-immediat-la-formation-boite-manuelle-pour-un-titulaire-du-permis-boite-automatique",
+  "extrait": "Accès immédiat à la formation « boîte manuelle » pour un titulaire du permis « boîte automatique » à partir du 1er mars 2024.",
+  "probleme": "Le délai de 3 mois après l’obtention du permis a été supprimé le 1er mars 2024 ; la formation dure désormais au moins 7 heures."
+ },
+ {
+  "n": 201,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr F31133 ; arrêté du 20 avril 2012",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F31133",
+  "extrait": "Le permis au format carte bancaire est valable 15 ans en général ; renouvellement sans examen."
+ },
+ {
+  "n": 202,
+  "verdict": "non_verifie",
+  "source": "Règlement ONU n° 121 / notice constructeur",
+  "extrait": "",
+  "probleme": "Signification générale des couleurs des voyants : aucune source officielle accessible. securite-routiere.gouv.fr : pages rendues en JavaScript, contenu non lisible par curl ; Légifrance inaccessible."
+ },
+ {
+  "n": 203,
+  "verdict": "non_verifie",
+  "source": "Règlement ONU n° 121",
+  "extrait": "",
+  "probleme": "Symbole du voyant de feux de route : aucune source officielle accessible."
+ },
+ {
+  "n": 204,
+  "verdict": "non_verifie",
+  "source": "Aucune source officielle identifiée",
+  "extrait": "",
+  "probleme": "Conseil mécanique (voyant de pression d’huile) non couvert par une page officielle accessible."
+ },
+ {
+  "n": 205,
+  "verdict": "non_verifie",
+  "source": "Aucune source officielle identifiée",
+  "extrait": "",
+  "probleme": "Conseil mécanique (bouchon du circuit de refroidissement) non couvert par une page officielle accessible."
+ },
+ {
+  "n": 206,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R416-4 et R416-7 (à lire)",
+  "url": "https://www.legifrance.gouv.fr/codes/texte_lc/LEGITEXT000006074228/",
+  "extrait": "",
+  "probleme": "Usage des feux de croisement de jour par mauvaise visibilité non confirmé par une page accessible. securite-routiere.gouv.fr : pages rendues en JavaScript, contenu non lisible par curl ; Légifrance inaccessible."
+ },
+ {
+  "n": 207,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R416-5 (à lire)",
+  "url": "https://www.legifrance.gouv.fr/codes/texte_lc/LEGITEXT000006074228/",
+  "extrait": "",
+  "probleme": "Passage en feux de croisement lors d’un croisement non confirmé par une page accessible. securite-routiere.gouv.fr : pages rendues en JavaScript, contenu non lisible par curl ; Légifrance inaccessible."
+ },
+ {
+  "n": 208,
+  "verdict": "conforme",
+  "source": "Code de la route (repris par service-public.gouv.fr, fiche F19459)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19459",
+  "extrait": "lorsque l'immobilisation de votre voiture est un danger pour la circulation […] placer le triangle à 30 mètres ou plus […] et allumer vos feux de détresse",
+  "probleme": "Bonne réponse confirmée ; la mention « ralentissement brutal » de l’explication relève de R416-18, non lu (Légifrance inaccessible)."
+ },
+ {
+  "n": 209,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R416-18 (à lire)",
+  "url": "https://www.legifrance.gouv.fr/codes/texte_lc/LEGITEXT000006074228/",
+  "extrait": "",
+  "probleme": "Usage des feux de détresse pour signaler un fort ralentissement non confirmé par une page accessible. securite-routiere.gouv.fr : pages rendues en JavaScript, contenu non lisible par curl ; Légifrance inaccessible."
+ },
+ {
+  "n": 210,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R313-4 et R416-1 (à lire)",
+  "url": "https://www.legifrance.gouv.fr/codes/texte_lc/LEGITEXT000006074228/",
+  "extrait": "",
+  "probleme": "Rôle des feux de position non confirmé par une page accessible. securite-routiere.gouv.fr : pages rendues en JavaScript, contenu non lisible par curl ; Légifrance inaccessible."
+ },
+ {
+  "n": 211,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R313-2 et R313-3 (à lire)",
+  "url": "https://www.legifrance.gouv.fr/codes/texte_lc/LEGITEXT000006074228/",
+  "extrait": "",
+  "probleme": "Portées non confirmées par une page accessible. À vérifier dans R313-3 : si l’article dit « distance minimale de 30 mètres » pour les feux de croisement, remplacer « environ 30 mètres » par « au moins 30 mètres » dans l’explication. securite-routiere.gouv.fr : pages rendues en JavaScript, contenu non lisible par curl ; Légifrance inaccessible."
+ },
+ {
+  "n": 212,
+  "verdict": "non_verifie",
+  "source": "Aucune source officielle accessible",
+  "extrait": "",
+  "probleme": "Conseil de conduite (éblouissement) non couvert par une page officielle accessible. securite-routiere.gouv.fr : pages rendues en JavaScript, contenu non lisible par curl ; Légifrance inaccessible."
+ },
+ {
+  "n": 213,
+  "verdict": "non_verifie",
+  "source": "securite-routiere.gouv.fr (actualité « pneus gonflés, sécurité »)",
+  "url": "https://www.securite-routiere.gouv.fr/actualites/pneus-gonfles-securite",
+  "extrait": "",
+  "probleme": "Page officielle trouvée mais non lisible (contenu chargé en JavaScript)."
+ },
+ {
+  "n": 214,
+  "verdict": "non_verifie",
+  "source": "securite-routiere.gouv.fr (actualité « pneus gonflés, sécurité »)",
+  "url": "https://www.securite-routiere.gouv.fr/actualites/pneus-gonfles-securite",
+  "extrait": "",
+  "probleme": "Page officielle trouvée mais non lisible (contenu chargé en JavaScript)."
+ },
+ {
+  "n": 215,
+  "verdict": "non_verifie",
+  "source": "securite-routiere.gouv.fr (actualité « pneus gonflés, sécurité »)",
+  "url": "https://www.securite-routiere.gouv.fr/actualites/pneus-gonfles-securite",
+  "extrait": "",
+  "probleme": "Page officielle trouvée mais non lisible (contenu chargé en JavaScript)."
+ },
+ {
+  "n": 216,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R313-3 (à lire)",
+  "url": "https://www.legifrance.gouv.fr/codes/texte_lc/LEGITEXT000006074228/",
+  "extrait": "",
+  "probleme": "Réglage de la hauteur des feux selon la charge non confirmé par une page accessible. securite-routiere.gouv.fr : pages rendues en JavaScript, contenu non lisible par curl ; Légifrance inaccessible."
+ },
+ {
+  "n": 217,
+  "verdict": "non_verifie",
+  "source": "Aucune source officielle accessible",
+  "extrait": "",
+  "probleme": "Conseil de conduite (réglage des rétroviseurs) non couvert par une page officielle accessible."
+ },
+ {
+  "n": 218,
+  "verdict": "non_verifie",
+  "source": "Aucune source officielle accessible",
+  "extrait": "",
+  "probleme": "Définition de l’angle mort non trouvée sur une page officielle accessible. securite-routiere.gouv.fr : pages rendues en JavaScript, contenu non lisible par curl ; Légifrance inaccessible."
+ },
+ {
+  "n": 219,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R314-1 / arrêté du 24 octobre 1994 relatif aux pneumatiques (à lire)",
+  "url": "https://www.legifrance.gouv.fr/codes/texte_lc/LEGITEXT000006074228/",
+  "extrait": "",
+  "probleme": "Règle des pneus identiques sur un même essieu non confirmée par une page accessible."
+ },
+ {
+  "n": 220,
+  "verdict": "a_corriger",
+  "source": "Code de la route (repris par service-public.gouv.fr, fiche F2828 « Permis B »)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2828",
+  "extrait": "Une remorque peut être attelée à ce véhicule si […] Le PTAC de la remorque est inférieur ou égal à 750 kg",
+  "probleme": "Le seuil de 750 kg est confirmé, mais l’expression « remorque légère » (définie à R311-1, non lu) n’apparaît pas dans la source accessible. De plus, 500 kg (une des mauvaises réponses) est aussi un seuil réglementaire pour les remorques (immatriculation), ce qui peut troubler. Reformulation vérifiable proposée."
+ },
+ {
+  "n": 221,
+  "verdict": "non_verifie",
+  "source": "Code de la route, art. R313-… (feux des remorques) (à lire)",
+  "url": "https://www.legifrance.gouv.fr/codes/texte_lc/LEGITEXT000006074228/",
+  "extrait": "",
+  "probleme": "Équipements arrière obligatoires d’une remorque non confirmés par une page accessible."
+ },
+ {
+  "n": 222,
+  "verdict": "non_verifie",
+  "source": "Aucune source officielle accessible",
+  "extrait": "",
+  "probleme": "Conseil (arrimage des objets) non couvert par une page officielle accessible. securite-routiere.gouv.fr : pages rendues en JavaScript, contenu non lisible par curl ; Légifrance inaccessible."
+ },
+ {
+  "n": 223,
+  "verdict": "non_verifie",
+  "source": "ADEME / securite-routiere.gouv.fr (éco-conduite)",
+  "url": "https://www.securite-routiere.gouv.fr/chacun-son-mode-de-deplacement/dangers-de-la-route-en-voiture/mieux-conduire-en-voiture/eco",
+  "extrait": "",
+  "probleme": "Page éco-conduite officielle trouvée mais non lisible (JavaScript) ; ADEME inaccessible."
+ },
+ {
+  "n": 224,
+  "verdict": "non_verifie",
+  "source": "ADEME / securite-routiere.gouv.fr (éco-conduite)",
+  "url": "https://www.securite-routiere.gouv.fr/chacun-son-mode-de-deplacement/dangers-de-la-route-en-voiture/mieux-conduire-en-voiture/eco",
+  "extrait": "",
+  "probleme": "Page éco-conduite officielle trouvée mais non lisible (JavaScript) ; ADEME inaccessible."
+ },
+ {
+  "n": 225,
+  "verdict": "non_verifie",
+  "source": "ADEME / securite-routiere.gouv.fr (éco-conduite)",
+  "url": "https://www.securite-routiere.gouv.fr/chacun-son-mode-de-deplacement/dangers-de-la-route-en-voiture/mieux-conduire-en-voiture/eco",
+  "extrait": "",
+  "probleme": "Page éco-conduite officielle trouvée mais non lisible (JavaScript) ; ADEME inaccessible."
+ },
+ {
+  "n": 226,
+  "verdict": "non_verifie",
+  "source": "ADEME / securite-routiere.gouv.fr (éco-conduite)",
+  "url": "https://www.securite-routiere.gouv.fr/chacun-son-mode-de-deplacement/dangers-de-la-route-en-voiture/mieux-conduire-en-voiture/eco",
+  "extrait": "",
+  "probleme": "Page éco-conduite officielle trouvée mais non lisible (JavaScript) ; ADEME inaccessible."
+ },
+ {
+  "n": 227,
+  "verdict": "conforme",
+  "source": "Croix-Rouge française, « Les étapes pour porter secours »",
+  "url": "https://www.croix-rouge.fr/les-gestes-de-premiers-secours/4-etapes-pour-porter-secours",
+  "extrait": "si vous êtes sur une route, allumez vos feux de détresse […] assurez la sécurité des victimes et des autres personnes présentes afin d'éviter le suraccident"
+ },
+ {
+  "n": 228,
+  "verdict": "conforme",
+  "source": "Code de la route (repris par service-public.gouv.fr, fiche F19459)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19459",
+  "extrait": "Vous devez placer le triangle à 30 mètres ou plus de votre voiture pour la signaler aux autres conducteurs",
+  "probleme": "Remarque : la Croix-Rouge parle d’un triangle « visible à 100 mètres » (visibilité, pas distance de pose) ; pas de contradiction."
+ },
+ {
+  "n": 229,
+  "verdict": "non_verifie",
+  "source": "securite-routiere.gouv.fr, « Véhicule en panne : conseils pratiques »",
+  "url": "https://www.securite-routiere.gouv.fr/chaque-situation-sa-conduite/vehicule-en-panne-conseils-pratiques",
+  "extrait": "",
+  "probleme": "Page officielle trouvée mais non lisible (JavaScript). La fiche service-public F11056 dit seulement de dégager la chaussée et d’assurer la présignalisation."
+ },
+ {
+  "n": 230,
+  "verdict": "non_verifie",
+  "source": "securite-routiere.gouv.fr, « Véhicule en panne : conseils pratiques »",
+  "url": "https://www.securite-routiere.gouv.fr/chaque-situation-sa-conduite/vehicule-en-panne-conseils-pratiques",
+  "extrait": "",
+  "probleme": "Page officielle trouvée mais non lisible (JavaScript)."
+ },
+ {
+  "n": 231,
+  "verdict": "non_verifie",
+  "source": "service-public.gouv.fr, fiche F11056 (dépannage sur autoroute)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F11056",
+  "extrait": "",
+  "probleme": "La fiche confirme l’usage de la borne (« Vous pouvez utiliser une borne d'urgence pour l'appeler ») mais pas la localisation automatique de l’appelant ; la page sécurité routière n’est pas lisible."
+ },
+ {
+  "n": 232,
+  "verdict": "conforme",
+  "source": "Code de la route, art. R421-1 à R421-10 ; circulaire du 25 avril 2013 (repris par service-public.gouv.fr, fiche F11056)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F11056",
+  "extrait": "Sur une autoroute concédée, seule une entreprise de dépannage agréée est autorisée à intervenir."
+ },
+ {
+  "n": 233,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr, fiche F33954 (numéros d'urgence)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F33954",
+  "extrait": "Pompiers, par exemple en cas d'incendie ou d'accident de la route, en composant le 18"
+ },
+ {
+  "n": 234,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr, fiche F33954 (numéros d'urgence)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F33954",
+  "extrait": "Pour les personnes sourdes, sourdaveugles, malentendantes et aphasiques : le 114 […] accessible par visio, tchat, images […] SMS"
+ },
+ {
+  "n": 235,
+  "verdict": "non_verifie",
+  "source": "Gestes qui sauvent (interieur.gouv.fr) ou Croix-Rouge",
+  "extrait": "",
+  "probleme": "La consigne « ne raccrocher que sur demande » n’est pas dans les pages lues (Croix-Rouge dit seulement de répondre aux questions des secours) ; interieur.gouv.fr bloqué."
+ },
+ {
+  "n": 236,
+  "verdict": "conforme",
+  "source": "Croix-Rouge française, « L'hémorragie »",
+  "url": "https://www.croix-rouge.fr/les-gestes-de-premiers-secours/hemorragie",
+  "extrait": "exercez une pression directement sur la plaie avec vos mains protégées […] Poursuivez la compression sur la plaie jusqu'à l'arrivée des secours"
+ },
+ {
+  "n": 237,
+  "verdict": "non_verifie",
+  "source": "Gestes qui sauvent (interieur.gouv.fr) ou référentiel PSC1",
+  "extrait": "",
+  "probleme": "Consigne de ne pas retirer un objet planté absente des pages officielles accessibles (la page Croix-Rouge « plaie » dit seulement de consulter pour un corps étranger planté en profondeur)."
+ },
+ {
+  "n": 238,
+  "verdict": "a_corriger",
+  "source": "Croix-Rouge française, « Position latérale de sécurité »",
+  "url": "https://www.croix-rouge.fr/les-gestes-de-premiers-secours/position-laterale-de-securite-comment-mettre-en-pls",
+  "extrait": "Une personne peut être mise en PLS si : […] Il s’agit d’une situation sans traumatisme évident. En cas de suspicion de traumatisme, notamment après […] un accident, demandez d’abord l’avis des secours",
+  "probleme": "Bonne réponse exacte en général, mais la Croix-Rouge réserve la PLS d’emblée aux situations sans traumatisme évident ; après un accident de la route, il faut d’abord demander l’avis des secours. L’explication doit le signaler."
+ },
+ {
+  "n": 239,
+  "verdict": "conforme",
+  "source": "Croix-Rouge française, « Position latérale de sécurité »",
+  "url": "https://www.croix-rouge.fr/les-gestes-de-premiers-secours/position-laterale-de-securite-comment-mettre-en-pls",
+  "extrait": "En plaçant la victime […] sur le côté, les voies respiratoires restent dégagées et la bouche est orientée vers le sol pour faciliter l’évacuation naturelle de tout liquide"
+ },
+ {
+  "n": 240,
+  "verdict": "conforme",
+  "source": "Croix-Rouge française, « Les étapes pour porter secours »",
+  "url": "https://www.croix-rouge.fr/les-gestes-de-premiers-secours/4-etapes-pour-porter-secours",
+  "extrait": "Si la victime est inconsciente, c'est-à-dire qu'elle ne parle pas et ne réagit pas mais respire",
+  "probleme": "Principe confirmé (parler / réagir) ; le geste précis « serrer la main » n’est pas dans la page lue."
+ },
+ {
+  "n": 241,
+  "verdict": "conforme",
+  "source": "Croix-Rouge française, « L'arrêt cardiaque »",
+  "url": "https://www.croix-rouge.fr/les-gestes-de-premiers-secours/arret-cardiaque",
+  "extrait": "prévenir les secours d'urgence (le 15 ou le 18) et d'apporter immédiatement un défibrillateur […] Alternez 30 compressions thoraciques et 2 insufflations"
+ },
+ {
+  "n": 242,
+  "verdict": "conforme",
+  "source": "ANSM, « S’équiper et se former à l’utilisation du DAE »",
+  "url": "https://ansm.sante.fr/dossiers-thematiques/defibrillateurs-cardiaques-externes/sequiper-et-se-former-a-lutilisation-du-dae",
+  "extrait": "Toute personne, médecin ou non, est habilitée à l’utiliser"
+ },
+ {
+  "n": 243,
+  "verdict": "conforme",
+  "source": "Croix-Rouge française, « L'arrêt cardiaque »",
+  "url": "https://www.croix-rouge.fr/les-gestes-de-premiers-secours/arret-cardiaque",
+  "extrait": "Effectuez 30 compressions thoraciques à une fréquence de 100 par minute […] poursuivez les compressions thoraciques à un rythme de 120 / minutes"
+ },
+ {
+  "n": 244,
+  "verdict": "conforme",
+  "source": "Croix-Rouge française, « Les étapes pour porter secours » et « PLS »",
+  "url": "https://www.croix-rouge.fr/les-gestes-de-premiers-secours/4-etapes-pour-porter-secours",
+  "extrait": "présentez-vous et expliquez à la victime ce que vous allez faire afin de la rassurer […] Couvrez-la ou protégez-la du froid (page PLS)"
+ },
+ {
+  "n": 245,
+  "verdict": "conforme",
+  "source": "Croix-Rouge française, « Position latérale de sécurité »",
+  "url": "https://www.croix-rouge.fr/les-gestes-de-premiers-secours/position-laterale-de-securite-comment-mettre-en-pls",
+  "extrait": "En cas de suspicion de traumatisme, notamment après une chute ou un accident, […] limitez les mouvements autant que possible."
+ },
+ {
+  "n": 246,
+  "verdict": "non_verifie",
+  "source": "securite-routiere.gouv.fr, « Accident de la route »",
+  "url": "https://www.securite-routiere.gouv.fr/chaque-situation-sa-conduite/accident-de-la-route",
+  "extrait": "",
+  "probleme": "Page officielle trouvée mais non lisible (JavaScript) ; consigne « couper le contact » absente des pages Croix-Rouge lues."
+ },
+ {
+  "n": 247,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr, fiche F2149 (constat amiable)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2149",
+  "extrait": "Une fois que le recto a été complété et signé par les 2 parties, vous ne devez plus rien y écrire."
+ },
+ {
+  "n": 248,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr, fiche F2149 (constat amiable)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2149",
+  "extrait": "Chaque partie conserve un exemplaire du constat […] vous devez le faire parvenir à votre assureur"
+ },
+ {
+  "n": 249,
+  "verdict": "conforme",
+  "source": "Code des assurances, art. L113-2 (repris par service-public.gouv.fr, fiche F2149)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2149",
+  "extrait": "dans le délai prévu par le contrat. Ce délai ne peut pas être inférieur à 5 jours ouvrés suivant l'accident."
+ },
+ {
+  "n": 250,
+  "verdict": "conforme",
+  "source": "service-public.gouv.fr, fiche F2149 (constat amiable)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2149",
+  "extrait": "Bien qu'il ne soit pas obligatoire légalement […] remplir complètement le constat en signalant le refus de l'autre conducteur dans la partie \"Observations\""
+ },
+ {
+  "n": 251,
+  "verdict": "non_verifie",
+  "source": "service-public.gouv.fr, fiche F2149 (constat amiable)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2149",
+  "extrait": "",
+  "probleme": "La fiche ne parle pas du nombre de cases cochées ; aucune autre source officielle accessible (France Assureurs / mode d’emploi du constat non officiels)."
+ }
+]

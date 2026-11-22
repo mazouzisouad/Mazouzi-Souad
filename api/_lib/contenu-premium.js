@@ -264,12 +264,12 @@ export const QUESTIONS_PREMIUM = {
     "t": "Véhicule et équipements",
     "q": "Où doit se trouver le gilet de haute visibilité dans votre voiture ?",
     "o": [
-      "Dans l’habitacle, à portée de main du conducteur",
+      "À portée de main, pour l’enfiler avant de sortir du véhicule",
       "Dans le coffre",
       "Sous le siège passager arrière",
       "Il n’est pas obligatoire"
     ],
-    "e": "Il doit être rangé à portée de main, pour pouvoir l’enfiler sans sortir du véhicule."
+    "e": "Le gilet doit être rangé à portée de main : vous l’enfilez avant de quitter le véhicule immobilisé sur la chaussée ou ses abords. Rangé dans le coffre, il n’est en général pas accessible depuis votre siège."
   },
   "40": {
     "t": "Véhicule et équipements",
@@ -394,14 +394,14 @@ export const QUESTIONS_PREMIUM = {
   },
   "51": {
     "t": "Permis et examen",
-    "q": "Quelle est la durée de la période probatoire après un apprentissage classique ?",
+    "q": "Sans formation complémentaire, quelle est la durée de la période probatoire après un apprentissage classique ?",
     "o": [
       "3 ans",
       "1 an",
       "2 ans",
       "5 ans"
     ],
-    "e": "Elle dure 3 ans, ou 2 ans après une conduite accompagnée."
+    "e": "Elle dure 3 ans, ou 2 ans après une conduite accompagnée. Une formation complémentaire suivie entre le 6e et le 12e mois peut la réduire d’un an (de 6 mois après une conduite accompagnée)."
   },
   "52": {
     "t": "Permis et examen",
@@ -603,14 +603,14 @@ export const QUESTIONS_PREMIUM = {
   },
   "70": {
     "t": "Priorités",
-    "q": "Vous arrivez à un carrefour à sens giratoire sans aucun panneau ni marquage à l’entrée. Qui est prioritaire ?",
+    "q": "Vous arrivez sur une place à îlot central (rond-point) qui n’est pas signalée comme carrefour à sens giratoire : aucun panneau ni marquage « cédez le passage » à l’entrée. Qui est prioritaire ?",
     "o": [
       "Les véhicules qui entrent sur l’anneau, car ils viennent de la droite",
       "Les véhicules déjà engagés sur l’anneau",
       "Les véhicules les plus gros",
       "Celui qui arrive en premier sur l’anneau"
     ],
-    "e": "Sans « cédez le passage » à l’entrée, c’est la priorité à droite qui s’applique : ceux qui entrent sont prioritaires sur ceux qui circulent sur l’anneau."
+    "e": "Seul un carrefour à sens giratoire signalé comme tel donne la priorité aux véhicules qui circulent sur l’anneau. Sur un simple rond-point sans signalisation, la priorité à droite s’applique : ceux qui entrent sont prioritaires."
   },
   "71": {
     "t": "Priorités",
@@ -889,14 +889,14 @@ export const QUESTIONS_PREMIUM = {
   },
   "96": {
     "t": "Panneaux et feux",
-    "q": "Une ligne blanche transversale discontinue est tracée au sol à l’entrée d’une intersection. Que vous indique-t-elle ?",
+    "q": "À l’entrée d’une intersection sans feu, une large ligne blanche transversale discontinue est tracée au sol. Que vous indique-t-elle ?",
     "o": [
       "Vous devez céder le passage",
       "Vous devez marquer l’arrêt complet",
       "Vous êtes prioritaire",
       "Vous devez stationner derrière la ligne"
     ],
-    "e": "La ligne transversale discontinue matérialise un « cédez le passage ». Le STOP et les feux utilisent une ligne transversale continue."
+    "e": "Cette large ligne transversale discontinue complète le « cédez le passage ». Le STOP est complété par une ligne transversale continue. Aux feux, la ligne d’arrêt est aussi discontinue, mais plus fine."
   },
   "97": {
     "t": "Panneaux et feux",
@@ -1080,10 +1080,10 @@ export const QUESTIONS_PREMIUM = {
     "o": [
       "110 km/h",
       "130 km/h",
-      "100 km/h",
+      "120 km/h",
       "90 km/h"
     ],
-    "e": "Pendant la période probatoire, la vitesse est limitée à 110 km/h sur autoroute, même par temps sec."
+    "e": "Pendant la période probatoire, la vitesse est limitée à 110 km/h sur autoroute, même par temps sec (100 km/h sur les sections d’autoroute limitées à moins de 130 km/h)."
   },
   "114": {
     "t": "Vitesse et distances",
@@ -1519,7 +1519,7 @@ export const QUESTIONS_PREMIUM = {
     "q": "Pouvez-vous stationner sur un emplacement réservé à l’arrêt des bus ?",
     "o": [
       "Non, c’est interdit",
-      "Oui, en dehors des heures de passage",
+      "Oui, si vous allumez vos feux de détresse",
       "Oui, si vous restez moins de 10 minutes",
       "Oui, le dimanche"
     ],
@@ -2000,25 +2000,25 @@ export const QUESTIONS_PREMIUM = {
   },
   "197": {
     "t": "Permis et examen",
-    "q": "À l’examen du code, de combien de temps disposez-vous pour répondre à chaque question ?",
+    "q": "Le jour de l’examen du code, que devez-vous présenter avant de commencer l’épreuve ?",
     "o": [
-      "20 secondes",
-      "5 secondes",
-      "1 minute",
-      "2 minutes"
+      "Votre convocation et un justificatif d’identité",
+      "Votre livret d’apprentissage seulement",
+      "La carte grise d’une voiture",
+      "Rien, votre nom suffit"
     ],
-    "e": "Chaque question de l’examen du code doit être traitée en 20 secondes."
+    "e": "Avant de commencer l’épreuve, vous présentez votre convocation et un justificatif d’identité. Vous répondez ensuite à 40 questions : il faut au moins 35 bonnes réponses."
   },
   "198": {
     "t": "Permis et examen",
     "q": "À l’épreuve pratique du permis B, quel score minimal faut-il obtenir ?",
     "o": [
-      "20 points sur 31, sans faute éliminatoire",
-      "15 points sur 31",
-      "31 points sur 31",
-      "35 points sur 40"
+      "Au moins 20 points, sans erreur éliminatoire",
+      "Au moins 15 points, même avec une erreur éliminatoire",
+      "Un sans-faute, sans aucun point perdu",
+      "35 bonnes réponses sur 40"
     ],
-    "e": "L’inspecteur évalue la conduite sur 31 points : il faut au moins 20 points et aucune erreur éliminatoire."
+    "e": "Pour être reçu à l’épreuve pratique, il faut obtenir au moins 20 points et ne commettre aucune erreur éliminatoire."
   },
   "199": {
     "t": "Permis et examen",
@@ -2035,12 +2035,12 @@ export const QUESTIONS_PREMIUM = {
     "t": "Permis et examen",
     "q": "Vous avez obtenu le permis B sur boîte automatique. Comment pouvoir conduire une voiture à boîte manuelle ?",
     "o": [
-      "Suivre une formation de 7 heures en école de conduite, au moins 3 mois après l’obtention du permis",
+      "Suivre une formation d’au moins 7 heures en école de conduite",
       "Repasser entièrement l’examen pratique",
       "Attendre la fin de la période probatoire, sans formation",
       "Rien, le permis B autorise directement la boîte manuelle"
     ],
-    "e": "Le permis obtenu sur boîte automatique porte la mention 78. Une formation de 7 heures, au moins 3 mois après le permis, permet de lever cette restriction."
+    "e": "Le permis obtenu sur boîte automatique porte la mention 78. Depuis le 1er mars 2024, une formation d’au moins 7 heures, possible dès l’obtention du permis, permet de lever cette restriction."
   },
   "201": {
     "t": "Permis et examen",
@@ -2253,14 +2253,14 @@ export const QUESTIONS_PREMIUM = {
   },
   "220": {
     "t": "Véhicule et équipements",
-    "q": "Une remorque est dite « légère » quand son PTAC ne dépasse pas…",
+    "q": "Avec le permis B, quel PTAC maximal peut avoir une remorque pour être attelée sans autre condition ?",
     "o": [
       "750 kg",
       "500 kg",
       "1 000 kg",
       "3 500 kg"
     ],
-    "e": "Le PTAC est le poids total autorisé en charge. Une remorque légère ne dépasse pas 750 kg."
+    "e": "Avec le permis B, une remorque de 750 kg de PTAC au plus peut être attelée. Au-delà, la somme des PTAC de la voiture et de la remorque ne doit pas dépasser 3 500 kg."
   },
   "221": {
     "t": "Véhicule et équipements",
@@ -2458,7 +2458,7 @@ export const QUESTIONS_PREMIUM = {
       "Vous lui faites un massage cardiaque",
       "Vous la faites asseoir"
     ],
-    "e": "La PLS évite qu’une victime inconsciente ne s’étouffe avec sa langue ou ses vomissements."
+    "e": "La PLS évite qu’une victime inconsciente ne s’étouffe avec sa langue ou ses vomissements. Après un accident, si un traumatisme est possible, alertez d’abord les secours et suivez leurs consignes."
   },
   "239": {
     "t": "Accident et secours",
@@ -2617,7 +2617,7 @@ export const FICHES_PREMIUM = {
   "f3": [
     "En agglomération : 50 km/h, sauf indication contraire.",
     "Route à double sens sans séparateur central, hors agglomération : 80 km/h.",
-    "Autoroute : 130 km/h par temps sec, 110 km/h par temps de pluie. Un jeune conducteur reste à 110 km/h.",
+    "Autoroute : 130 km/h par temps sec, 110 km/h par temps de pluie. Un jeune conducteur est limité à 110 km/h sur autoroute, même par temps sec (100 km/h sur les sections limitées à moins de 130 km/h).",
     "Visibilité inférieure à 50 mètres (brouillard) : 50 km/h sur toutes les routes."
   ],
   "f5": [
