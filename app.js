@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · garage des motos';
+const APP_VERSION = '2026-11-23 · garage des motos (tuiles)';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },

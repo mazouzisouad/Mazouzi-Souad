@@ -71,7 +71,7 @@ et ajoute un commentaire. Depuis le planning (bouton « 📋 Suivi » à côté 
 ## 🏍️ Motos — le garage
 
 Onglet « 🏍️ Motos » :
-- **Une carte par moto** : dessin animé à sa couleur (ou sa photo : ✏️ → 📷), plaque, auto-école
+- **Une tuile par moto** (ou grandes cartes, bouton « Affichage ») : toucher le dessin la fait rouler, toucher le nom ouvre sa grande carte. Dessin animé à sa couleur (ou sa photo : ✏️ → 📷), plaque, auto-école
   à qui elle appartient (🏷️), lieu où elle est (avec « ↩︎ à rendre » si elle est garée dans une autre
   auto-école), jauge d'essence, compteur, consommation. Touchez la moto : le pilote monte et elle part.
 - **Boutons par auto-école** pour n'afficher que ses motos.

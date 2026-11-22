@@ -232,7 +232,7 @@ function lieuSVG(z) {
 const visuelMoto = (m) => (m.photo ? `<img class="moto-photo" src="${m.photo}" alt="${esc(nomMoto(m))}">` : motoSVG(m.couleur || '#3b82f6'));
 
 /* ---------- Vue ---------- */
-const UI_MOTOS = { filtre: '', mois: '', agence: '', choisie: null, garee: null };
+const UI_MOTOS = { filtre: '', mois: '', agence: '', choisie: null, garee: null, vue: (() => { try { return localStorage.getItem('motos_vue') || 'tuiles'; } catch (e) { return 'tuiles'; } })() };
 
 function viewMotos() {
   const tout = motosActives();
@@ -265,7 +265,8 @@ function viewMotos() {
 
   ${tout.length && DB.agences.length > 1 ? `<div class="filtres-motos">${[{ id: '', nom: 'Toutes', couleur: '#64748b' }, ...DB.agences].map((a) => `<button class="filtre-moto ${UI_MOTOS.agence === a.id ? 'on' : ''}" data-action="motosAgence" data-id="${a.id}" style="--fc:${esc(a.couleur || '#64748b')}">${a.id ? '🏷️ ' + esc(nomCourt(a)) : 'Toutes'} <b>${a.id ? tout.filter((m) => m.proprio === a.id).length : tout.length}</b></button>`).join('')}</div>` : ''}
 
-  ${tout.length ? `<div class="motos-grid">${motos.map(carteMoto).join('') || '<div class="card empty">Aucune moto pour cette auto-école.</div>'}</div>
+  ${tout.length ? `<div class="vue-motos"><span class="small muted">Affichage :</span><button class="${UI_MOTOS.vue === 'tuiles' ? 'on' : ''}" data-action="motosVue" data-vue="tuiles">▦ Tuiles</button><button class="${UI_MOTOS.vue === 'cartes' ? 'on' : ''}" data-action="motosVue" data-vue="cartes">▭ Grandes cartes</button></div>
+    <div class="${UI_MOTOS.vue === 'cartes' ? 'motos-grid' : 'motos-tuiles'}">${motos.map(UI_MOTOS.vue === 'cartes' ? carteMoto : tuileMoto).join('') || '<div class="card empty">Aucune moto pour cette auto-école.</div>'}</div>
     <div class="card plan-card"><div class="plan-tete"><h2>📍 Où sont les motos ?</h2><span class="small muted" id="plan-aide">Touchez une moto, puis l'endroit où elle va.</span></div><div id="plan-motos">${planMotos()}</div></div>`
     : `<div class="card empty">Aucune moto pour l'instant.${estMoniteur() ? '' : '<br><br><button class="btn primary" data-action="editMoto">+ Ajouter votre première moto</button>'}</div>`}
 
@@ -332,6 +333,28 @@ function carteMoto(m) {
     <div class="moto-actions">
       <button class="btn primary" data-action="nouveauPlein" data-moto="${m.id}">⛽ Plein</button>
       <button class="btn" data-action="ouEstElle" data-id="${m.id}">📍 Où est-elle ?</button>
+    </div>
+  </div>`;
+}
+
+// Tuile : la moto roule quand on touche le dessin ; le nom ouvre la grande carte
+function tuileMoto(m) {
+  const l = lieuMoto(m), niv = niveauEssence(m), a = byId('agences', m.proprio);
+  return `
+  <div class="tuile" style="--mc:${esc(m.couleur || '#3b82f6')}">
+    ${a ? `<span class="tu-ae" style="--pc:${esc(a.couleur || '#64748b')}" title="Appartient à ${esc(a.nom)}">${esc(nomCourt(a))}</span>` : ''}
+    <button class="scene mini ${m.photo ? 'photo' : ''}" data-action="vroum" aria-label="Faire rouler ${esc(nomMoto(m))}">
+      ${m.photo ? `<img src="${m.photo}" alt="${esc(nomMoto(m))}">` : `<div class="soleil"></div>${decor()}<div class="route"></div>${motoSVG(m.couleur || '#3b82f6')}`}
+      <span class="vroum">VROUM !</span>
+    </button>
+    <button class="tu-info" data-action="ficheMoto" data-id="${m.id}" title="Voir la fiche de ${esc(nomMoto(m))}">
+      <b class="tu-nom">${esc(nomMoto(m))}</b>
+      <span class="plaque mini"><span class="plaque-f">F</span><span class="plaque-n">${esc(fmtPlaque(m.plaque))}</span><span class="plaque-d"></span></span>
+      <span class="tu-lieu ${aRendre(m) ? 'loin' : ''}">${l.emoji} ${esc(emplacementDe(m).type === 'agence' ? nomCourt(byId('agences', emplacementDe(m).ref)) || l.txt : l.txt)}${aRendre(m) ? ' ↩︎' : ''}</span>
+    </button>
+    <div class="tu-bas">
+      <span class="tu-jauge" title="${texteNiveau(niv)}"><span class="mj"><b style="width:${niv == null ? 0 : Math.round(niv * 100)}%;background:${couleurEssence(niv)}"></b></span><span class="mj-txt ${niv != null && niv < 0.2 ? 'bas' : ''}">${niv == null ? '?' : (niv < 0.2 ? '⚠️ ' : '') + Math.round(niv * 100) + ' %'}</span></span>
+      <button class="btn primary tu-plein" data-action="nouveauPlein" data-moto="${m.id}" aria-label="Faire le plein de ${esc(nomMoto(m))}">⛽</button>
     </div>
   </div>`;
 }
@@ -620,6 +643,11 @@ const MOTO_ACTIONS = {
   motosFiltre(d, el) { UI_MOTOS.filtre = el.value; render(); },
   motosMois(d, el) { if (el.value) { UI_MOTOS.mois = el.value; render(); } },
   motosAgence(d) { UI_MOTOS.agence = d.id || ''; render(); },
+  motosVue(d) { UI_MOTOS.vue = d.vue; try { localStorage.setItem('motos_vue', d.vue); } catch (e) { /* */ } render(); },
+  ficheMoto(d) {
+    const m = byId('motos', d.id); if (!m) return;
+    openModal({ title: `🏍️ ${esc(nomMoto(m))}`, body: `<div class="fiche-moto">${carteMoto(m)}</div>`, onMount: () => requestAnimationFrame(animerMotos) });
+  },
   vroum(d, el) { if (el.classList.contains('roule')) return; el.classList.add('roule'); setTimeout(() => el.classList.remove('roule'), 2400); },
 
   // plan
@@ -638,6 +666,7 @@ const MOTO_ACTIONS = {
     garerMoto(m, { type, ref: ref || '' });
   },
   ouEstElle(d) {
+    if ($('.fiche-moto')) closeModal();
     UI_MOTOS.choisie = d.id; majPlan();
     const plan = $('#plan-motos'); if (plan) plan.scrollIntoView({ behavior: 'smooth', block: 'center' });
     const aide = $('#plan-aide'); if (aide) aide.textContent = `${nomMoto(byId('motos', d.id))} : touchez l'endroit où elle va.`;

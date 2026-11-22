@@ -551,6 +551,39 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
 .barre-val { font-size: 11px; color: var(--muted); }
 .barre-lbl { font-size: 12px; color: var(--muted); text-transform: capitalize; }
 
+/* tuiles */
+.vue-motos { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+.vue-motos button { font-weight: 800; font-size: 12.5px; padding: 6px 11px; border-radius: 10px; border: 2px solid var(--line); background: var(--card); color: var(--muted); cursor: pointer; }
+.vue-motos button.on { background: var(--accent); border-color: transparent; color: var(--accent-ink); }
+.motos-tuiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 14px; }
+@media (max-width: 480px) { .motos-tuiles { grid-template-columns: 1fr 1fr; gap: 10px; } }
+.tuile { --mc: #3b82f6; position: relative; display: grid; gap: 7px; padding: 12px; border-radius: 22px; background: var(--card);
+  border: 2px solid color-mix(in srgb, var(--mc) 30%, var(--line)); box-shadow: 0 5px 0 -1px color-mix(in srgb, var(--mc) 30%, var(--line)); transition: transform .15s; min-width: 0; }
+.tuile:hover { transform: translateY(-3px); }
+.tu-ae { position: absolute; top: 8px; right: 8px; z-index: 3; transform: rotate(3deg); font-weight: 800; font-size: 11.5px; padding: 2px 8px; border-radius: 8px; border: 2px solid var(--pc); background: color-mix(in srgb, var(--pc) 22%, #fff); color: #0f172a; white-space: nowrap; max-width: 60%; overflow: hidden; text-overflow: ellipsis; }
+.scene.mini { height: 118px; border-radius: 14px; }
+.scene.mini .soleil { width: 22px; height: 22px; right: auto; left: 12px; top: 10px; box-shadow: 0 0 0 5px rgba(253,224,71,.3); }
+.scene.mini .decor { bottom: 24px; height: 46px; }
+.scene.mini .route { height: 26px; }
+.scene.mini .route::before { height: 4px; }
+.scene.mini .route::after { top: 13px; height: 3px; background: repeating-linear-gradient(90deg, #fff 0 18px, transparent 18px 34px); }
+.scene.mini .moto-svg { width: 170px; bottom: 3px; }
+.scene.mini .vroum { font-size: 20px; top: 26px; left: 10px; }
+.tu-info { display: grid; justify-items: center; gap: 5px; padding: 0; border: 0; background: none; color: var(--ink); cursor: pointer; font: inherit; min-width: 0; }
+.tu-nom { font-weight: 800; font-size: 18px; }
+.plaque.mini .plaque-n { font-size: 14px; padding: 1px 6px; }
+.plaque.mini .plaque-f, .plaque.mini .plaque-d { width: 12px; font-size: 8px; }
+.tu-lieu { font-weight: 700; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.tu-lieu.loin { color: var(--bad); }
+.tu-bas { display: flex; align-items: center; gap: 8px; }
+.tu-jauge { flex: 1; display: flex; align-items: center; gap: 6px; min-width: 0; }
+.mj { flex: 1; min-width: 30px; height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.mj b { display: block; height: 100%; border-radius: 4px; }
+.mj-txt { font-weight: 800; font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.mj-txt.bas { color: var(--bad); }
+.tu-plein { padding: 6px 10px; font-size: 15px; }
+@media (max-width: 480px) { .scene.mini { height: 92px; } .scene.mini .moto-svg { width: 130px; } .tu-nom { font-size: 16px; } }
+.fiche-moto .moto-card { box-shadow: none; }
 @media (prefers-reduced-motion: reduce) {
   .scene *, .pm *, .tlieux *, .jauge-bloc strong, .radar::after { animation: none !important; }
   .pm, .pm .corps, .jauge .aiguille { transition: none !important; }
