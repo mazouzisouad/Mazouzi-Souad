@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · semaine du lundi au samedi';
+const APP_VERSION = '2026-11-23 · forfait et reste à payer sur la fiche';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -161,6 +161,14 @@ function migrate(db) {
   db.settings.rappel.documents = Object.assign({}, def.settings.rappel.documents, db.settings.rappel.documents || {});
   db.entreprise = Object.assign({}, def.entreprise, db.entreprise || {});
   for (const k of ['agences', 'moniteurs', 'prestations', 'eleves', 'seances', 'factures', 'paiements', 'contrats', 'suivi', 'motos', 'pleins']) db[k] = db[k] || [];
+  // Forfaits : heures incluses lues dans le libellé (« Forfait 20h A2 » → 20 h), une seule fois
+  if (db.settings && !db.settings.forfaitHeures1) {
+    for (const p of db.prestations || []) {
+      const m = /forfait/i.test(p.libelle || '') && String(p.libelle).match(/(\d+(?:[.,]\d+)?)\s*h\b/i);
+      if (m && !p.heures) p.heures = Number(m[1].replace(',', '.'));
+    }
+    db.settings.forfaitHeures1 = true;
+  }
   // Couleurs demandées pour les auto-écoles (appliquées une seule fois ; modifiables ensuite dans Paramètres)
   if (db.settings && !db.settings.couleursAuto1 && Array.isArray(db.agences)) {
     for (const a of db.agences) {
@@ -1222,14 +1230,14 @@ function viewEleves() {
     <thead><tr><th>Élève</th><th>Agence</th><th>Téléphone</th><th>Prochaine leçon</th><th class="num">Reste dû</th></tr></thead>
     <tbody>
     ${list.map((e) => {
-      const fin = eleveFinances(e.id);
+      const cpt = compteEleve(e.id);
       const next = rdvAVenir(e.id)[0];
       return `<tr class="clickable" data-action="openFiche" data-id="${e.id}">
         <td><strong>${esc(e.nom.toUpperCase())}</strong> ${esc(e.prenom)}${e.statut !== 'en_cours' ? ` <span class="badge">${esc(STATUTS_ELEVE[e.statut])}</span>` : ''}</td>
         <td>${agenceBadge(agenceDe(e))}</td>
         <td>${esc(e.tel || '')}</td>
         <td>${next ? `${fmtDate(next.date)} ${next.debut} · ${TYPES[next.type].short}` : '<span class="muted">—</span>'}</td>
-        <td class="num">${fin.solde > 0 ? `<span class="badge bad">${eur(fin.solde)}</span>` : '<span class="muted">—</span>'}</td>
+        <td class="num">${cpt.reste > 0.005 ? `<span class="badge ${cpt.retard > 0 ? 'bad' : 'warn'}" title="${cpt.retard > 0 ? 'En retard de ' + eur(cpt.retard) : ''}">${cpt.retard > 0 ? '⚠️ ' : ''}${eur(cpt.reste)}</span>` : '<span class="muted">—</span>'}${!cpt.forfait && e.statut === 'en_cours' ? ' <span class="badge" title="Aucun forfait choisi">sans forfait</span>' : ''}</td>
       </tr>`;
     }).join('')}
     </tbody></table></div>` : `<div class="card empty">Aucun élève. <br><br><button class="btn primary" data-action="newEleve">+ Ajouter un élève</button></div>`}
@@ -1271,9 +1279,10 @@ function viewFiche(id) {
     const factures = DB.factures.filter((f) => f.eleveId === id).sort((x, y) => y.date.localeCompare(x.date));
     const paiements = DB.paiements.filter((p) => p.eleveId === id).sort((x, y) => y.date.localeCompare(x.date));
     contenu = `
-      <div class="row" style="margin-bottom:10px">
+      ${blocCompte(id)}
+      <div class="row" style="margin:14px 0 10px">
         <button class="btn" data-action="newFacture" data-eleve="${id}">🧾 Faire une facture</button>
-        <button class="btn" data-action="newPaiement" data-eleve="${id}">💶 Encaisser</button>
+        <button class="btn" data-action="newPaiement" data-eleve="${id}">💶 Encaisser un autre montant</button>
       </div>
       <h3>Factures</h3>${factures.length ? facturesTable(factures, false) : '<p class="muted">Aucune facture.</p>'}
       <h3 style="margin-top:14px">Paiements</h3>${paiements.length ? paiementsTable(paiements, false) : '<p class="muted">Aucun paiement.</p>'}`;
@@ -1321,7 +1330,7 @@ function viewFiche(id) {
       <div><span>Examen plateau</span><strong class="exam-res ${ex.exam_plateau.cls}">${ex.exam_plateau.txt}</strong></div>
       <div><span>Examen circulation</span><strong class="exam-res ${ex.exam_circulation.cls}">${ex.exam_circulation.txt}</strong></div>
       ${['plateau', 'circulation'].map((b) => { const ex = prochainExamen(id, b); return ex ? `<div><span>Prépa examen ${b} (le ${fmtDate(ex.date)})</span><strong>${prepBadge(preparation(id, ex))}</strong></div>` : ''; }).join('')}
-      <div><span>Reste dû</span><strong style="color:${fin.solde > 0 ? 'var(--bad)' : 'var(--ok)'}">${eur(Math.max(0, fin.solde))}</strong></div>
+      ${(() => { const c = compteEleve(id); return `<div class="clickable" data-action="ongletFiche" data-o="compte"><span>${c.forfait ? '📦 ' + esc(c.forfait.libelle) : 'Sans forfait'}</span><strong style="color:${c.retard > 0 ? 'var(--bad)' : c.reste > 0.005 ? 'var(--warn)' : 'var(--ok)'}">${c.reste > 0.005 ? 'Reste ' + eur(c.reste) : 'À jour ✅'}${c.retard > 0 ? ` <span class="small">(⚠️ ${eur(c.retard)} en retard)</span>` : ''}</strong></div>`; })()}
     </div>
     <div class="seg" style="margin:14px 0 12px">
       <button class="${o === 'lecons' ? 'on' : ''}" data-action="ongletFiche" data-o="lecons">Leçons</button>
@@ -1349,6 +1358,9 @@ function openEleve(eleve, { onSaved, onCancel } = {}) {
         <select name="formation">${FORMATIONS.map((x) => `<option ${e.formation === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></label>
       <label class="field"><span>Téléphone</span><input name="tel" type="tel" value="${esc(e.tel || '')}"></label>
       <label class="field"><span>E-mail</span><input name="email" type="email" value="${esc(e.email || '')}"></label>
+      ${isNew ? `<label class="field"><span>📦 Forfait choisi</span>
+        <select name="forfaitId"><option value="">— À choisir plus tard —</option>${DB.prestations.filter((x) => heuresDuForfait(x) > 0 || /forfait/i.test(x.libelle)).map((x) => `<option value="${x.id}">${esc(x.libelle)} — ${eur(x.prix)}</option>`).join('')}</select></label>
+      <label class="field"><span>Payé en</span><select name="forfaitFois">${[1, 2, 3, 4, 5, 6, 8, 10, 12].map((n) => `<option value="${n}">${n === 1 ? '1 fois' : n + ' fois'}</option>`).join('')}</select></label>` : ''}
       <details class="full" ${isNew ? '' : 'open'}>
         <summary class="muted">Plus d'informations (adresse, NEPH, code…)</summary>
         <div class="form-grid" style="margin-top:10px">
@@ -1375,8 +1387,13 @@ function openEleve(eleve, { onSaved, onCancel } = {}) {
         const form = $('#eleve-form');
         if (!form.reportValidity()) return;
         const data = formData(form);
+        const { forfaitId, forfaitFois } = data; delete data.forfaitId; delete data.forfaitFois;
         let target;
-        if (isNew) { target = { id: uid(), inscription: todayISO(), ...data }; DB.eleves.push(target); }
+        if (isNew) {
+          target = { id: uid(), inscription: todayISO(), ...data }; DB.eleves.push(target);
+          const pr = forfaitId && byId('prestations', forfaitId);
+          if (pr) target.forfait = { prestationId: pr.id, libelle: pr.libelle, prix: round2(pr.prix), heures: heuresDuForfait(pr), nbFois: parseInt(forfaitFois, 10) || 1, date: todayISO() };
+        }
         else { target = byId('eleves', e.id); Object.assign(target, data); }
         save();
         closeModal();
@@ -1424,7 +1441,9 @@ function viewPaiements() {
   const factures = DB.factures.filter((f) => okAgence(f.eleveId)).sort((a, b) => (b.date + b.numero).localeCompare(a.date + a.numero));
   const paiements = DB.paiements.filter((p) => okAgence(p.eleveId)).sort((a, b) => b.date.localeCompare(a.date));
   const encMois = paiements.filter((p) => p.date.startsWith(todayISO().slice(0, 7))).reduce((s, p) => s + Number(p.montant || 0), 0);
-  const impayes = factures.reduce((s, f) => s + Math.max(0, factureTotaux(f).ttc - facturePaye(f)), 0);
+  const comptes = DB.eleves.filter((e) => !UI.filtreAgence || e.agenceId === UI.filtreAgence).map((e) => ({ e, c: compteEleve(e.id) }));
+  const impayes = comptes.reduce((s, r) => s + Math.max(0, r.c.reste), 0);
+  const enRetard = comptes.reduce((s, r) => s + r.c.retard, 0);
   const o = UI.ongletPaiements;
 
   let contenu = '';
@@ -1441,18 +1460,17 @@ function viewPaiements() {
       </div>
       ${duMois.length ? paiementsTable(duMois) : '<div class="card empty">Aucun paiement ce mois-ci.</div>'}`;
   } else {
-    const rows = DB.eleves.filter((e) => !UI.filtreAgence || e.agenceId === UI.filtreAgence)
-      .map((e) => ({ e, f: eleveFinances(e.id), nf: nonFactures(e.id).filter((x) => x.part.statut !== 'prevu').length }))
-      .filter((r) => r.f.solde > 0 || r.nf > 0)
-      .sort((a, b) => b.f.solde - a.f.solde);
+    const rows = comptes.filter((r) => r.c.reste > 0.005).sort((a, b) => (b.c.retard - a.c.retard) || (b.c.reste - a.c.reste));
     contenu = rows.length ? `<div class="table-wrap"><table>
-      <thead><tr><th>Élève</th><th>Agence</th><th class="num">Reste dû</th><th class="num">Leçons pas encore facturées</th></tr></thead>
-      <tbody>${rows.map(({ e, f, nf }) => `
+      <thead><tr><th>Élève</th><th>Agence</th><th>Forfait</th><th class="num">Reste à payer</th><th class="num">En retard</th><th>Prochaine échéance</th></tr></thead>
+      <tbody>${rows.map(({ e, c }) => `
         <tr class="clickable" data-action="openFicheCompte" data-id="${e.id}">
           <td><strong>${esc(e.nom.toUpperCase())}</strong> ${esc(e.prenom)}</td>
           <td>${agenceBadge(agenceDe(e))}</td>
-          <td class="num">${f.solde > 0 ? `<span class="badge bad">${eur(f.solde)}</span>` : '—'}</td>
-          <td class="num">${nf || '—'}</td>
+          <td class="small">${c.forfait ? esc(c.forfait.libelle) : '<span class="badge">sans forfait</span>'}</td>
+          <td class="num"><strong>${eur(c.reste)}</strong></td>
+          <td class="num">${c.retard > 0 ? `<span class="badge bad">⚠️ ${eur(c.retard)}</span>` : '—'}</td>
+          <td class="small">${c.prochaine ? `${fmtDate(c.prochaine.date)} · ${eur(c.prochaine.montant - c.prochaine.couvert)}` : '—'}</td>
         </tr>`).join('')}</tbody></table></div>` : '<div class="card empty">Tout est à jour 👍</div>';
   }
 
@@ -1466,7 +1484,8 @@ function viewPaiements() {
   </div>
   <div class="mini-stats card" style="margin-bottom:14px">
     <div><span>Encaissé ce mois</span><strong>${eur(encMois)}</strong></div>
-    <div><span>Reste à encaisser</span><strong style="color:var(--bad)">${eur(impayes)}</strong></div>
+    <div><span>Reste à encaisser</span><strong style="color:var(--warn)">${eur(impayes)}</strong></div>
+    <div><span>Dont en retard</span><strong style="color:var(--bad)">${eur(enRetard)}</strong></div>
   </div>
   <div class="seg" style="margin-bottom:12px">
     <button class="${o === 'factures' ? 'on' : ''}" data-action="ongletPaiements" data-o="factures">Factures</button>
@@ -1918,7 +1937,8 @@ function viewParametres() {
     ${viewParamContrats()}
     <div class="card">
       <h2>Prestations (pour les factures)</h2>
-      ${DB.prestations.map((p) => ligne(`<span class="name">${esc(p.libelle)}</span><strong>${eur(p.prix)}</strong>`, 'editPrestation', p.id)).join('')}
+      <p class="muted small" style="margin-top:-4px">Pour un forfait, indiquez les heures de conduite incluses : il pourra être choisi sur la fiche de l'élève.</p>
+      ${DB.prestations.map((p) => ligne(`<span class="name">${heuresDuForfait(p) ? '📦 ' : ''}${esc(p.libelle)}${heuresDuForfait(p) ? ` <span class="muted small">· ${fmtH(heuresDuForfait(p))} incluses</span>` : ''}</span><strong>${eur(p.prix)}</strong>`, 'editPrestation', p.id)).join('')}
       <button class="btn" data-action="editPrestation">+ Ajouter</button>
     </div>
     ${viewAcces()}
@@ -2461,8 +2481,9 @@ const ACTIONS = {
     openSimpleForm({
       title: p ? 'Modifier la prestation' : 'Nouvelle prestation',
       values: p || {},
-      fields: [{ name: 'libelle', label: 'Libellé *', required: true, full: true }, { name: 'prix', label: 'Prix TTC (€)', type: 'number', step: '0.01', required: true }],
-      onSave: (data) => { data.prix = Number(data.prix) || 0; if (p) Object.assign(p, data); else DB.prestations.push({ id: uid(), ...data }); },
+      fields: [{ name: 'libelle', label: 'Libellé *', required: true, full: true }, { name: 'prix', label: 'Prix TTC (€)', type: 'number', step: '0.01', required: true },
+        { name: 'heures', label: 'Heures de conduite incluses (si c\'est un forfait)', type: 'number', step: '0.5' }],
+      onSave: (data) => { data.prix = Number(data.prix) || 0; data.heures = Number(data.heures) || 0; if (p) Object.assign(p, data); else DB.prestations.push({ id: uid(), ...data }); },
       onDelete: p && (() => { if (!confirm('Supprimer cette prestation ?')) return false; DB.prestations = DB.prestations.filter((x) => x.id !== p.id); return true; }),
     });
   },
@@ -2565,7 +2586,7 @@ const ACTIONS = {
   },
 };
 
-Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS, SUIVI_ACTIONS, EMAIL_ACTIONS, MOTO_ACTIONS);
+Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS, SUIVI_ACTIONS, EMAIL_ACTIONS, MOTO_ACTIONS, COMPTE_ACTIONS);
 
 /* ---------------------------------------------------------------------
    Synchronisation en ligne

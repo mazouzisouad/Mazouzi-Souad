@@ -73,6 +73,18 @@ des élèves en leçon normale, d'autres en examen blanc (Validé / Non validé)
 Les examens blancs validés comptent pour « Prêts pour l'examen », les heures de prépa pour le compteur de prépa,
 et la facture indique « Examen blanc » ou « (préparation examen) » pour l'élève concerné.
 
+## Forfait et reste à payer (fiche élève → Compte)
+
+- Chaque élève peut avoir un **forfait** (ex. « Forfait 20h A2 », 950 €, 20 h incluses), choisi à l'inscription
+  ou dans l'onglet Compte, **payé en 1 à 12 fois** à partir d'une date.
+- Les heures de leçon faites sont déduites du forfait (barre des heures : faites / prévues / restantes) ;
+  au-delà, elles sont comptées au tarif horaire. Sans forfait, tout est compté à l'heure.
+- S'ajoutent : examens (accompagnement / repassage) et lignes ajoutées à la main sur une facture.
+- Tous les encaissements de l'élève se déduisent ; l'échéancier montre chaque mensualité
+  (✅ payée, ⚠️ en retard, ⏳ à venir) et le bouton « Encaisser l'échéance » pré-remplit le montant.
+- « Reste à payer » et les retards apparaissent sur la fiche, dans la liste des élèves et dans Paiements → À régler.
+- Paramètres → Prestations : indiquez les heures incluses pour chaque forfait.
+
 ## Fiche de suivi
 
 Pour chaque élève, un historique de suivi pédagogique : après une leçon, le moniteur (ou la direction) choisit

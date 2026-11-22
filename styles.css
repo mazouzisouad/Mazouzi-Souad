@@ -634,3 +634,29 @@ body.glisse-en-cours, body.glisse-en-cours * { cursor: grabbing !important; user
 .agenda.groupes .ag-bloc { line-height: 1.18; }
 .tag-blancs { display: inline-block; font-size: 10px; font-weight: 800; background: #fffbeb; color: #b45309; border: 1px dashed #f59e0b; border-radius: 6px; padding: 0 4px; margin-left: 4px; }
 @media (max-width: 600px) { .chip-row { flex-wrap: wrap; } .mode-el { order: 5; } }
+
+/* ---------- Compte de l'élève : forfait, échéances, reste à payer ---------- */
+.cpt { border: 2px solid var(--line); border-radius: 14px; padding: 14px; background: #fff; }
+.cpt.du { border-color: #fcd34d; }
+.cpt.en-retard { border-color: #fca5a5; background: #fffafa; }
+.cpt.ok { border-color: #86efac; }
+.cpt-tete { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+.cpt-titre { font-weight: 800; font-size: 17px; }
+.cpt-heures { margin: 12px 0 4px; display: grid; gap: 5px; }
+.cpt-barre { height: 12px; border-radius: 6px; background: #e5e7eb; overflow: hidden; display: flex; }
+.cpt-barre .fait { background: #22c55e; }
+.cpt-barre .prevu { background: repeating-linear-gradient(135deg, #86efac 0 6px, #bbf7d0 6px 12px); }
+.txt-bad { color: var(--bad); font-weight: 700; }
+.txt-warn { color: var(--warn); font-weight: 700; }
+.cpt-recap { margin-top: 12px; border-top: 1px solid var(--line); }
+.cpt-l { display: flex; justify-content: space-between; gap: 10px; padding: 6px 2px; border-bottom: 1px dashed #eef2f6; font-size: 14px; }
+.cpt-l.total { font-weight: 700; border-bottom-style: solid; }
+.cpt-l.paye strong { color: var(--ok); }
+.cpt-l.reste { font-size: 16px; } .cpt-l.reste strong { color: var(--bad); }
+.cpt-l.solde strong { color: var(--ok); }
+.cpt-ech { margin-top: 12px; }
+.cpt-ech table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.cpt-ech td { padding: 5px 6px; border-bottom: 1px solid #f1f5f9; }
+.cpt-ech tr.payee td { color: var(--muted); }
+.cpt-ech tr.retard td { color: var(--bad); font-weight: 600; }
+.mini-stats .clickable { cursor: pointer; }
