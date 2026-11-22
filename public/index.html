@@ -910,7 +910,7 @@ function toastSuivant(){
   var b = toasts.shift(); if(!b){ toastEnCours = false; return; }
   toastEnCours = true;
   var el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role','status');
-  el.innerHTML = b.i+'<div><small>Nouveau badge !</small><b>'+b.n+'</b></div>';
+  el.innerHTML = b.i+'<div><small>'+(b.sur || 'Nouveau badge !')+'</small><b>'+b.n+'</b></div>';
   document.body.appendChild(el);
   setTimeout(function(){ el.classList.add('on'); }, 30);
   setTimeout(function(){ el.classList.remove('on'); setTimeout(function(){ el.remove(); toastSuivant(); }, 350); }, 3200);
@@ -1036,6 +1036,26 @@ function vExamen(){
     (store.examDate?'<button class="btn ghost full" style="margin-top:8px" data-a="nodateexam">Effacer la date</button>':'')+
     (j!==null && j>=0?'<div class="msg ok" style="margin-top:10px">Examen '+(j===0?'aujourd’hui':'le '+dateExamFr())+'.</div>':'')+'</div>';
   return html+'</div>';
+}
+
+/* ---------- défier un ami (partage du score, avec le lien de parrainage) ---------- */
+var codeParrainMemo = null;
+function monCodeParrain(){
+  if(codeParrainMemo || !connecte() || !CodeAcces.client) return Promise.resolve(codeParrainMemo);
+  return CodeAcces.client.rpc('obtenir_code_parrainage').then(function(r){ codeParrainMemo = r && r.data || null; return codeParrainMemo; }).catch(function(){ return null; });
+}
+function defier(){
+  var n = run.results.length, good = run.results.filter(function(r){ return r.ok; }).length;
+  var quoi = run.mode==='exam' ? 'à l’examen blanc' : 'en « '+modeLabel()+' »';
+  return monCodeParrain().then(function(code){
+    var url = location.origin + '/code/test-gratuit?defi=' + good + '-' + n + (code ? '&parrain=' + code : '');
+    var texte = 'J’ai eu ' + good + '/' + n + ' ' + quoi + ' sur Code Ludique. Tu fais mieux ? 🚗';
+    if(navigator.share) return navigator.share({title:'Code Ludique : défi code de la route', text:texte, url:url}).catch(function(){});
+    var tout = texte + ' ' + url;
+    return (navigator.clipboard ? navigator.clipboard.writeText(tout) : Promise.reject()).then(function(){
+      toast({i:I_STAR.replace('width="18" height="18"','width="40" height="40"'), sur:'Défi', n:'Lien copié : colle-le à ton ami'});
+    }).catch(function(){ window.prompt('Copie ce message pour ton ami :', tout); });
+  });
 }
 
 /* ---------- appli installable ---------- */
@@ -1363,7 +1383,7 @@ function vResult(){
     bub = errs ? 'Tu progresses !' : 'Parfait !';
   }
   var h = hero('<div class="lab">'+modeLabel()+'</div><div class="big">'+good+' / '+n+'</div><span class="chip">'+verdict+'</span>', good*2>=n?'trophy':'thumb', bub);
-  var html = h+'<div class="sheet"><div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px"><button class="btn green full" data-a="again">Rejouer</button><button class="btn ghost full" data-a="home">Retour à l’accueil</button></div>';
+  var html = h+'<div class="sheet"><div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px"><button class="btn green full" data-a="again">Rejouer</button><button class="btn purple full" data-a="defi">Défier un ami</button><button class="btn ghost full" data-a="home">Retour à l’accueil</button></div>';
   var wr = run.results.filter(function(r){ return !r.ok; });
   if(wr.length){
     html += '<div class="sec"><h2>À revoir</h2></div><div class="card" style="padding:6px 14px">';
@@ -1484,6 +1504,7 @@ $app.addEventListener('click', function(e){
   else if(a==='home'){ go('home'); }
   else if(a==='backprem'){ go('home'); }
   else if(a==='examen'){ go('examen'); }
+  else if(a==='defi'){ defier(); }
   else if(a==='confort'){ if(screen!=='confort') ecranAvantConfort = screen; go('confort'); }
   else if(a==='finconfort'){ if(voixOk){ speechSynthesis.cancel(); lectureEnCours = null; } go(ecranAvantConfort==='quiz' && !run ? 'home' : ecranAvantConfort); }
   else if(a==='ecoute'){

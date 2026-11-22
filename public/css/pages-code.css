@@ -31,3 +31,5 @@ h1 { font-size: 28px; line-height: 1.2; }
 .mq-e { margin-top: 10px; padding: 12px 14px; border-radius: 14px; background: #f3f6ff; font-weight: 600; }
 .mq-score { text-align: center; font-size: 20px; font-weight: 900; }
 @media (max-width: 480px) { .liens { columns: 1; } h1 { font-size: 24px; } }
+.defi { background: #fff3c4; border-color: #f0d36b; font-size: 17px; text-align: center; }
+.mq-score .bouton { margin-top: 10px; }
