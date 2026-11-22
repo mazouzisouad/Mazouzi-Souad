@@ -61,8 +61,8 @@ modifiables pour chaque examen.
 
 - Dans le planning : « 📝 Examen blanc plateau / circulation », résultat **Validé ✅** (aucune faute éliminatoire) ou **Non validé ❌**.
 - **Élèves → Prêts pour l'examen** : les élèves qui ont validé leur examen blanc, avec un bouton pour les inscrire à l'examen.
-- Leçons **« 🎯 Prépa examen »** : à choisir en plaçant une leçon plateau ou circulation ; visibles dans le planning
-  et sur la fiche de l'élève.
+- **« 🎯 Prépa examen »** : à choisir élève par élève dans la leçon (sans choix, l'élève est en leçon normale) ;
+  l'étiquette s'affiche à côté de son nom dans le planning et sur sa fiche.
 - Pour chaque élève inscrit : ses **heures de préparation** (leçons 🎯 faites + prévues entre l'examen blanc et l'examen,
   4 à 6 h, réglable), en rouge s'il en manque.
 - Après un échec à l'examen, la liste des repassages indique si l'examen blanc est à refaire.
