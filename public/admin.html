@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="fr" data-ca-sans-badge>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tableau de bord – Code Ludique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<script src="/api/config"></script>
+<script src="/vendor/supabase.js"></script>
+<script src="/js/acces.js"></script>
+<script src="/js/pages.js"></script>
+<style>
+  main { max-width: 960px; }
+  .entete { max-width: 960px; }
+  .tuiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin: 16px 0; }
+  .tuile { background: var(--carte); border: 1px solid var(--bord); border-radius: 18px; padding: 14px 16px; box-shadow: 0 4px 18px rgba(60,50,40,.07); }
+  .tuile .lib { font-size: 13px; font-weight: 800; color: var(--doux); }
+  .tuile .val { font-size: 28px; font-weight: 900; line-height: 1.15; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .tuile .det { font-size: 12.5px; font-weight: 700; color: var(--doux); margin-top: 2px; }
+  .tuile.principale { grid-column: span 2; }
+  .tuile.principale .val { font-size: 40px; }
+  @media (max-width: 560px) {
+    .tuiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .tuile { padding: 12px; }
+    .tuile .val { font-size: 24px; }
+    .tuile.principale .val { font-size: 34px; }
+  }
+  .graphe { position: relative; }
+  .graphe svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .graphe .axe { font: 700 11px Nunito, sans-serif; fill: var(--doux); }
+  .graphe .grille { stroke: var(--bord); stroke-width: 1; }
+  .graphe .barre { fill: var(--principal); pointer-events: none; }
+  .graphe .cible { fill: transparent; cursor: pointer; }
+  .graphe .cible:hover + .barre, .graphe .barre.active { fill: var(--principal-ombre); }
+  .bulle { position: absolute; pointer-events: none; background: var(--texte); color: #fff; font-size: 13px; font-weight: 700;
+    padding: 6px 10px; border-radius: 10px; white-space: nowrap; transform: translate(-50%, -110%); display: none; }
+  .bulle b { font-weight: 900; }
+  table td.n, table th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  .rembourse { color: var(--erreur); font-weight: 800; }
+  details summary { cursor: pointer; font-weight: 800; color: var(--lien); margin-top: 12px; }
+  .tableau { overflow-x: auto; }
+  .tableau table { min-width: 0; }
+  #derniers td:nth-child(2) { word-break: break-word; }
+</style>
+</head>
+<body>
+<header class="entete">
+  <a class="logo" href="/">Code Ludique</a>
+  <a href="/compte">Mon compte</a>
+</header>
+<main>
+  <div id="refus" class="carte etroit" hidden>
+    <h1>Accès réservé</h1>
+    <p id="refus-texte">Cette page est réservée à l’équipe Code Ludique.</p>
+    <a class="bouton" id="refus-lien" href="/connexion?suite=/admin">Se connecter</a>
+  </div>
+
+  <div id="tableau" hidden>
+    <h1 style="margin-top:16px">Tableau de bord</h1>
+    <p class="doux">Montants TTC, hors paiements remboursés. Mis à jour à <span id="maj"></span>.</p>
+
+    <div class="tuiles">
+      <div class="tuile principale"><div class="lib">Total encaissé</div><div class="val" id="t-total">–</div>
+        <div class="det" id="t-net"></div></div>
+      <div class="tuile"><div class="lib">Ce mois-ci</div><div class="val" id="t-mois">–</div><div class="det" id="t-mois-n"></div></div>
+      <div class="tuile"><div class="lib">Paiements</div><div class="val" id="t-paiements">–</div><div class="det" id="t-panier"></div></div>
+      <div class="tuile"><div class="lib">Élèves ayant payé</div><div class="val" id="t-payeurs">–</div><div class="det" id="t-conversion"></div></div>
+      <div class="tuile"><div class="lib">Accès complets en cours</div><div class="val" id="t-actifs">–</div><div class="det">paiement ou code</div></div>
+      <div class="tuile"><div class="lib">Codes utilisés</div><div class="val" id="t-codes">–</div><div class="det" id="t-codes-det"></div></div>
+      <div class="tuile"><div class="lib">Comptes élèves</div><div class="val" id="t-comptes">–</div><div class="det" id="t-comptes-30"></div></div>
+      <div class="tuile"><div class="lib">Élèves actifs (7 jours)</div><div class="val" id="t-actifs7">–</div><div class="det">se sont entraînés</div></div>
+      <div class="tuile"><div class="lib">Remboursements</div><div class="val" id="t-remb">–</div><div class="det" id="t-remb-det"></div></div>
+    </div>
+
+    <div class="carte">
+      <h2 style="margin-top:0">Ventes par mois</h2>
+      <p class="doux" style="margin-bottom:8px">12 derniers mois, montant encaissé</p>
+      <div class="graphe" id="graphe"><div class="bulle" id="bulle"></div></div>
+      <details>
+        <summary>Voir les chiffres</summary>
+        <div class="tableau"><table id="table-mois" style="margin-top:8px"></table></div>
+      </details>
+    </div>
+
+    <div class="carte">
+      <h2 style="margin-top:0">Derniers paiements</h2>
+      <div class="tableau"><table id="derniers"></table></div>
+      <p class="doux" style="margin-top:12px">Le détail exact des frais, des virements vers votre banque et les exports comptables
+        se trouvent dans le tableau de bord Stripe.</p>
+    </div>
+  </div>
+</main>
+<script>
+(function () {
+  // Frais Stripe estimés pour une carte européenne standard (à ajuster si votre tarif Stripe est différent)
+  var FRAIS_POURCENT = 0.015, FRAIS_FIXE_CENTIMES = 25;
+
+  var $ = function (id) { return document.getElementById(id); };
+  var euros = function (c) { return (c / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }); };
+  var nb = function (n) { return Number(n).toLocaleString('fr-FR'); };
+  var pluriel = function (n, s) { return nb(n) + ' ' + s + (n > 1 ? 's' : ''); };
+  var MOIS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+  var libMois = function (m, annee) { var p = m.split('-'); return MOIS[+p[1] - 1] + (annee ? ' ' + p[0] : ''); };
+
+  function refus(texte, lien) {
+    $('refus').hidden = false;
+    $('refus-texte').textContent = texte;
+    if (!lien) $('refus-lien').hidden = true;
+  }
+
+  CodeAcces.pret.then(function () {
+    if (!CodeAcces.utilisateur) return refus('Connectez-vous avec un compte administrateur.', true);
+    return CodeAcces.jeton().then(function (t) {
+      return fetch('/api/admin-stats', { headers: { Authorization: 'Bearer ' + t } });
+    }).then(function (r) {
+      if (r.status === 403) return refus('Ce compte n’a pas accès au tableau de bord.');
+      if (!r.ok) return refus('Statistiques indisponibles pour le moment.');
+      return r.json().then(afficher);
+    });
+  }).catch(function () { refus('Statistiques indisponibles pour le moment.'); });
+
+  function afficher(s) {
+    $('tableau').hidden = false;
+    $('maj').textContent = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    var frais = s.nb_paiements * FRAIS_FIXE_CENTIMES + s.total_centimes * FRAIS_POURCENT;
+    $('t-total').textContent = euros(s.total_centimes);
+    $('t-net').textContent = 'environ ' + euros(s.total_centimes - frais) + ' après frais Stripe (estimation)';
+    $('t-mois').textContent = euros(s.mois_centimes);
+    $('t-mois-n').textContent = pluriel(s.mois_paiements, 'paiement');
+    $('t-paiements').textContent = nb(s.nb_paiements);
+    $('t-panier').textContent = s.nb_paiements ? 'panier moyen ' + euros(s.total_centimes / s.nb_paiements) : '';
+    $('t-payeurs').textContent = nb(s.nb_payeurs);
+    $('t-conversion').textContent = s.nb_comptes ? Math.round(100 * s.nb_payeurs / s.nb_comptes) + ' % des comptes' : '';
+    $('t-actifs').textContent = nb(s.acces_actifs);
+    $('t-codes').textContent = nb(s.codes_utilises);
+    $('t-codes-det').textContent = 'sur ' + s.codes_total + ' · ' + pluriel(Math.max(0, s.codes_total - s.codes_utilises), 'restant');
+    $('t-comptes').textContent = nb(s.nb_comptes);
+    $('t-comptes-30').textContent = '+' + nb(s.comptes_30j) + ' ces 30 derniers jours';
+    $('t-actifs7').textContent = nb(s.actifs_7j);
+    $('t-remb').textContent = nb(s.nb_rembourses);
+    $('t-remb-det').textContent = s.nb_rembourses ? euros(s.total_rembourse_centimes) + ' remboursés' : 'aucun';
+    graphe(s.par_mois);
+    tableMois(s.par_mois);
+    derniers(s.derniers);
+  }
+
+  var dernierMois = null, minuterie = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(minuterie);
+    minuterie = setTimeout(function () { if (dernierMois) graphe(dernierMois); }, 150);
+  });
+  function graphe(mois) {
+    dernierMois = mois;
+    var zone = $('graphe');
+    var ancien = zone.querySelector('svg'); if (ancien) ancien.remove();
+    // dessiné à la largeur réelle : textes lisibles sur téléphone comme sur ordinateur
+    var W = Math.max(280, zone.clientWidth), H = W < 500 ? 200 : 240, g = 40, d = 8, h = 12, b = 26;
+    var max = Math.max.apply(null, mois.map(function (m) { return m.centimes; }));
+    var pas = echelle(max);
+    var haut = pas * 4 || 1000;
+    var larg = (W - g - d) / mois.length;
+    var y = function (v) { return H - b - (H - b - h) * v / haut; };
+    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Montant encaissé par mois sur 12 mois">';
+    for (var k = 0; k <= 4; k++) {
+      var v = pas * k, yy = y(v);
+      svg += '<line class="grille" x1="' + g + '" x2="' + (W - d) + '" y1="' + yy + '" y2="' + yy + '"/>' +
+        '<text class="axe" x="' + (g - 6) + '" y="' + (yy + 4) + '" text-anchor="end">' + Math.round(v / 100) + ' €</text>';
+    }
+    mois.forEach(function (m, i) {
+      var x = g + i * larg, w = Math.max(4, Math.min(36, larg - 10)), cx = x + larg / 2;
+      var top = y(m.centimes), hb = H - b - top;
+      svg += '<rect class="cible" data-i="' + i + '" x="' + x + '" y="' + h + '" width="' + larg + '" height="' + (H - b - h) + '"/>';
+      if (hb > 0) {
+        var r = Math.min(4, hb, w / 2);
+        // coins arrondis en haut seulement, base posée sur l'axe
+        svg += '<path class="barre" data-i="' + i + '" d="M' + (cx - w / 2) + ' ' + (H - b) + 'V' + (top + r) +
+          'Q' + (cx - w / 2) + ' ' + top + ' ' + (cx - w / 2 + r) + ' ' + top + 'H' + (cx + w / 2 - r) +
+          'Q' + (cx + w / 2) + ' ' + top + ' ' + (cx + w / 2) + ' ' + (top + r) + 'V' + (H - b) + 'Z"/>';
+      } else {
+        svg += '<path class="barre" data-i="' + i + '" d=""/>';
+      }
+      // une étiquette sur deux si la place manque ; l'année seulement en janvier
+      if (larg >= 42 || (mois.length - 1 - i) % 2 === 0) {
+        svg += '<text class="axe" x="' + cx + '" y="' + (H - 8) + '" text-anchor="middle">' + libMois(m.mois, m.mois.slice(5) === '01' && larg >= 60) + '</text>';
+      }
+      if (i === mois.length - 1 && m.centimes > 0) {
+        svg += '<text x="' + cx + '" y="' + (top - 6) + '" text-anchor="middle" style="font:900 12px Nunito,sans-serif;fill:var(--texte)">' + euros(m.centimes) + '</text>';
+      }
+    });
+    svg += '<line x1="' + g + '" x2="' + (W - d) + '" y1="' + (H - b) + '" y2="' + (H - b) + '" stroke="var(--doux)" stroke-width="1"/></svg>';
+    zone.insertAdjacentHTML('beforeend', svg);
+    var bulle = $('bulle');
+    zone.querySelectorAll('.cible').forEach(function (c) {
+      c.addEventListener('mouseenter', montrer); c.addEventListener('click', montrer);
+      c.addEventListener('mouseleave', function () { bulle.style.display = 'none'; marquer(-1); });
+    });
+    function marquer(i) {
+      zone.querySelectorAll('.barre').forEach(function (p) { p.classList.toggle('active', +p.getAttribute('data-i') === i); });
+    }
+    function montrer(e) {
+      var i = +e.target.getAttribute('data-i'), m = mois[i];
+      var boite = zone.getBoundingClientRect(), cb = e.target.getBoundingClientRect();
+      var echY = boite.width / W; // = 1 : le graphique est dessiné à sa taille réelle
+      bulle.innerHTML = libMois(m.mois, true) + ' : <b>' + euros(m.centimes) + '</b> · ' + pluriel(m.paiements, 'paiement');
+      bulle.style.display = 'block';
+      // la bulle reste dans le cadre du graphique
+      var demi = bulle.offsetWidth / 2, x = cb.left - boite.left + cb.width / 2;
+      bulle.style.left = Math.min(Math.max(x, demi), boite.width - demi) + 'px';
+      bulle.style.top = (y(m.centimes) * echY) + 'px';
+      bulle.style.display = 'block';
+      marquer(i);
+    }
+  }
+  function echelle(max) { // pas « rond » pour 4 graduations
+    if (!max) return 2500;
+    var brut = max / 4, p = Math.pow(10, Math.floor(Math.log10(brut)));
+    var n = brut / p;
+    return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p;
+  }
+
+  function cellule(tr, texte, classe) { var td = document.createElement('td'); td.textContent = texte; if (classe) td.className = classe; tr.appendChild(td); return td; }
+  function tableMois(mois) {
+    var t = $('table-mois');
+    t.innerHTML = '<tr><th>Mois</th><th class="n">Paiements</th><th class="n">Montant</th></tr>';
+    mois.slice().reverse().forEach(function (m) {
+      var tr = document.createElement('tr');
+      cellule(tr, libMois(m.mois, true)); cellule(tr, nb(m.paiements), 'n'); cellule(tr, euros(m.centimes), 'n');
+      t.appendChild(tr);
+    });
+  }
+  function derniers(liste) {
+    var t = $('derniers');
+    if (!liste.length) { t.outerHTML = '<p class="doux">Aucun paiement pour l’instant.</p>'; return; }
+    t.innerHTML = '<tr><th>Date</th><th>Élève</th><th class="n">Montant</th></tr>';
+    liste.forEach(function (p) {
+      var tr = document.createElement('tr');
+      cellule(tr, new Date(p.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }));
+      cellule(tr, p.email || 'compte supprimé');
+      var td = cellule(tr, euros(p.centimes), 'n');
+      if (p.rembourse) { td.textContent += ' · remboursé'; td.classList.add('rembourse'); }
+      t.appendChild(tr);
+    });
+  }
+})();
+</script>
+</body>
+</html>

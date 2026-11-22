@@ -184,6 +184,20 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
 .chk a,.foot a,.muted a{color:#4a5bd6}
 a.btn{text-decoration:none}
 .legal{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin-top:8px}
+/* séries d'affilée + badges */
+.flame{background:#fff1e6}
+.badges{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.bdg{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;padding:10px 4px;border-radius:16px;background:#fff;border:1px solid var(--line)}
+.bdg svg{width:48px;height:48px}
+.bdg b{font-weight:900;font-size:12.5px;line-height:1.15}
+.bdg span{font-size:11px;font-weight:700;color:var(--muted);line-height:1.25}
+.bdg.off svg{filter:grayscale(1);opacity:.35}
+.bdg.off b{color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:110px;transform:translate(-50%,20px);opacity:0;z-index:30;display:flex;align-items:center;gap:10px;background:#1f2a44;color:#fff;border-radius:18px;padding:10px 16px 10px 10px;box-shadow:0 8px 28px rgba(40,50,80,.3);transition:opacity .3s,transform .3s;max-width:calc(100% - 32px)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast svg{width:40px;height:40px;flex:none}
+.toast small{display:block;font-size:11.5px;font-weight:800;color:#ffd54a;text-transform:uppercase;letter-spacing:.5px}
+.toast b{font-weight:900;font-size:15px}
 </style>
 </head>
 <body>
@@ -292,7 +306,197 @@ var Q = [
     {t:'Accident et secours', p:1}, // n°59 : accès complet
     {t:'Accident et secours', p:1}, // n°60 : accès complet
     {t:'Accident et secours', p:1}, // n°61 : accès complet
-    {t:'Accident et secours', p:1} // n°62 : accès complet
+    {t:'Accident et secours', p:1}, // n°62 : accès complet
+    // Questions ajoutées (accès complet)
+    {t:'Priorités', p:1}, // n°63 : accès complet
+    {t:'Priorités', p:1}, // n°64 : accès complet
+    {t:'Priorités', p:1}, // n°65 : accès complet
+    {t:'Priorités', p:1}, // n°66 : accès complet
+    {t:'Priorités', p:1}, // n°67 : accès complet
+    {t:'Priorités', p:1}, // n°68 : accès complet
+    {t:'Priorités', p:1}, // n°69 : accès complet
+    {t:'Priorités', p:1}, // n°70 : accès complet
+    {t:'Priorités', p:1}, // n°71 : accès complet
+    {t:'Priorités', p:1}, // n°72 : accès complet
+    {t:'Priorités', p:1}, // n°73 : accès complet
+    {t:'Priorités', p:1}, // n°74 : accès complet
+    {t:'Priorités', p:1}, // n°75 : accès complet
+    {t:'Priorités', p:1}, // n°76 : accès complet
+    {t:'Priorités', p:1}, // n°77 : accès complet
+    {t:'Priorités', p:1}, // n°78 : accès complet
+    {t:'Priorités', p:1}, // n°79 : accès complet
+    {t:'Priorités', p:1}, // n°80 : accès complet
+    {t:'Priorités', p:1}, // n°81 : accès complet
+    {t:'Priorités', p:1}, // n°82 : accès complet
+    {t:'Priorités', p:1}, // n°83 : accès complet
+    {t:'Priorités', p:1}, // n°84 : accès complet
+    {t:'Priorités', p:1}, // n°85 : accès complet
+    {t:'Priorités', p:1}, // n°86 : accès complet
+    {t:'Priorités', p:1}, // n°87 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°88 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°89 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°90 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°91 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°92 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°93 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°94 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°95 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°96 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°97 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°98 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°99 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°100 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°101 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°102 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°103 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°104 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°105 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°106 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°107 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°108 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°109 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°110 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°111 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°112 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°113 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°114 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°115 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°116 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°117 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°118 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°119 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°120 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°121 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°122 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°123 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°124 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°125 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°126 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°127 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°128 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°129 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°130 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°131 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°132 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°133 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°134 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°135 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°136 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°137 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°138 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°139 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°140 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°141 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°142 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°143 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°144 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°145 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°146 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°147 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°148 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°149 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°150 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°151 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°152 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°153 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°154 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°155 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°156 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°157 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°158 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°159 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°160 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°161 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°162 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°163 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°164 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°165 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°166 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°167 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°168 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°169 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°170 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°171 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°172 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°173 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°174 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°175 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°176 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°177 : accès complet
+    {t:'Permis et examen', p:1}, // n°178 : accès complet
+    {t:'Permis et examen', p:1}, // n°179 : accès complet
+    {t:'Permis et examen', p:1}, // n°180 : accès complet
+    {t:'Permis et examen', p:1}, // n°181 : accès complet
+    {t:'Permis et examen', p:1}, // n°182 : accès complet
+    {t:'Permis et examen', p:1}, // n°183 : accès complet
+    {t:'Permis et examen', p:1}, // n°184 : accès complet
+    {t:'Permis et examen', p:1}, // n°185 : accès complet
+    {t:'Permis et examen', p:1}, // n°186 : accès complet
+    {t:'Permis et examen', p:1}, // n°187 : accès complet
+    {t:'Permis et examen', p:1}, // n°188 : accès complet
+    {t:'Permis et examen', p:1}, // n°189 : accès complet
+    {t:'Permis et examen', p:1}, // n°190 : accès complet
+    {t:'Permis et examen', p:1}, // n°191 : accès complet
+    {t:'Permis et examen', p:1}, // n°192 : accès complet
+    {t:'Permis et examen', p:1}, // n°193 : accès complet
+    {t:'Permis et examen', p:1}, // n°194 : accès complet
+    {t:'Permis et examen', p:1}, // n°195 : accès complet
+    {t:'Permis et examen', p:1}, // n°196 : accès complet
+    {t:'Permis et examen', p:1}, // n°197 : accès complet
+    {t:'Permis et examen', p:1}, // n°198 : accès complet
+    {t:'Permis et examen', p:1}, // n°199 : accès complet
+    {t:'Permis et examen', p:1}, // n°200 : accès complet
+    {t:'Permis et examen', p:1}, // n°201 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°202 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°203 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°204 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°205 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°206 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°207 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°208 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°209 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°210 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°211 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°212 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°213 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°214 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°215 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°216 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°217 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°218 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°219 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°220 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°221 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°222 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°223 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°224 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°225 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°226 : accès complet
+    {t:'Accident et secours', p:1}, // n°227 : accès complet
+    {t:'Accident et secours', p:1}, // n°228 : accès complet
+    {t:'Accident et secours', p:1}, // n°229 : accès complet
+    {t:'Accident et secours', p:1}, // n°230 : accès complet
+    {t:'Accident et secours', p:1}, // n°231 : accès complet
+    {t:'Accident et secours', p:1}, // n°232 : accès complet
+    {t:'Accident et secours', p:1}, // n°233 : accès complet
+    {t:'Accident et secours', p:1}, // n°234 : accès complet
+    {t:'Accident et secours', p:1}, // n°235 : accès complet
+    {t:'Accident et secours', p:1}, // n°236 : accès complet
+    {t:'Accident et secours', p:1}, // n°237 : accès complet
+    {t:'Accident et secours', p:1}, // n°238 : accès complet
+    {t:'Accident et secours', p:1}, // n°239 : accès complet
+    {t:'Accident et secours', p:1}, // n°240 : accès complet
+    {t:'Accident et secours', p:1}, // n°241 : accès complet
+    {t:'Accident et secours', p:1}, // n°242 : accès complet
+    {t:'Accident et secours', p:1}, // n°243 : accès complet
+    {t:'Accident et secours', p:1}, // n°244 : accès complet
+    {t:'Accident et secours', p:1}, // n°245 : accès complet
+    {t:'Accident et secours', p:1}, // n°246 : accès complet
+    {t:'Accident et secours', p:1}, // n°247 : accès complet
+    {t:'Accident et secours', p:1}, // n°248 : accès complet
+    {t:'Accident et secours', p:1}, // n°249 : accès complet
+    {t:'Accident et secours', p:1}, // n°250 : accès complet
+    {t:'Accident et secours', p:1} // n°251 : accès complet
   ];
 
 
@@ -415,10 +619,98 @@ function loadStore(){
   if(s.best === undefined) s.best = null;
   if(s.resume === undefined) s.resume = null;
   if(s.prem === undefined) s.prem = null;
+  // séries d'affilée et badges
+  if(!s.jours){ var js = {}; s.log.forEach(function(x){ js[jour(x.ts)] = 1; }); s.done.forEach(function(t){ js[jour(t)] = 1; }); s.jours = Object.keys(js); }
+  s.jours = s.jours.filter(function(j, i, a){ return a.indexOf(j)===i; }).sort();
+  s.badges = s.badges || {};
+  if(s.nbOk === undefined) s.nbOk = s.log.filter(function(x){ return x.ok; }).length;
+  s.sansFaute = s.sansFaute || 0;
   return s;
 }
+function jour(ts){ var d = new Date(ts); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+function dateJour(j){ var p = j.split('-'); return new Date(+p[0], +p[1]-1, +p[2], 12); }
 function save(){ mem = store; try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e){} }
 store = loadStore();
+
+/* ---------- séries d'affilée ---------- */
+function marquerJour(){
+  var j = jour(Date.now());
+  if(store.jours[store.jours.length-1] !== j){ store.jours.push(j); if(store.jours.length>400) store.jours = store.jours.slice(-400); }
+}
+function joueAujourdhui(){ return store.jours[store.jours.length-1] === jour(Date.now()); }
+function serieJours(){ // jours d'affilée jusqu'à aujourd'hui (ou hier, si pas encore joué aujourd'hui)
+  var set = {}; store.jours.forEach(function(j){ set[j] = 1; });
+  var d = new Date(); d.setHours(12,0,0,0);
+  if(!set[jour(d)]) d.setDate(d.getDate()-1);
+  var n = 0; while(set[jour(d)]){ n++; d.setDate(d.getDate()-1); }
+  return n;
+}
+function recordJours(){
+  var best = 0, cur = 0, prev = null;
+  store.jours.forEach(function(j){
+    var d = dateJour(j);
+    cur = (prev && Math.round((d - prev)/864e5) === 1) ? cur+1 : 1;
+    if(cur > best) best = cur; prev = d;
+  });
+  return best;
+}
+
+/* ---------- badges ---------- */
+function bIcon(fond, motif){ return '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="'+fond+'"/><circle cx="24" cy="24" r="18" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/>'+motif+'</svg>'; }
+var G_FLAME = function(n){ return '<path d="M24 9c1.5 6 9 9 9 18a9 9 0 0 1-18 0c0-4.500 2.200-6.800 4.500-9 0 3 1.500 4.500 3 4.500-1.500-4.500 0-9 1.500-13.500z" fill="#fff"/><text x="24" y="33" text-anchor="middle" font-size="'+(n>9?9:11)+'" font-weight="900" fill="#ff7a2f" font-family="Nunito,sans-serif">'+n+'</text>'; };
+var G_STAR = '<path d="M24 11l3.800 7.800 8.600 1.200-6.200 6 1.500 8.500L24 30.500l-7.700 4 1.500-8.500-6.200-6 8.600-1.200z" fill="#fff"/>';
+var G_CHECK = '<path d="M14 25l7 7 13-14" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>';
+var G_CUP = '<path d="M17 12h14v8a7 7 0 0 1-14 0z" fill="#fff"/><path d="M17 14h-4q0 7 5 8M31 14h4q0 7-5 8" stroke="#fff" stroke-width="2.500" fill="none"/><rect x="22" y="27" width="4" height="5" fill="#fff"/><rect x="17" y="32" width="14" height="4" rx="2" fill="#fff"/>';
+var G_BOOK = '<path d="M12 15h9a3 3 0 0 1 3 3v15a3 3 0 0 0-3-3h-9zM36 15h-9a3 3 0 0 0-3 3v15a3 3 0 0 1 3-3h9z" fill="#fff"/>';
+var G_TARGET = '<circle cx="24" cy="24" r="11" fill="none" stroke="#fff" stroke-width="3.500"/><circle cx="24" cy="24" r="4.500" fill="#fff"/>';
+var G_TXT = function(t){ return '<text x="24" y="29.500" text-anchor="middle" font-size="'+(t.length>2?13:16)+'" font-weight="900" fill="#fff" font-family="Nunito,sans-serif">'+t+'</text>'; };
+var BADGES = [
+  {id:'premiere', n:'Premiers pas', d:'Termine ta première série', i:bIcon('#4aa03e',G_STAR), ok:function(){ return store.done.length>=1; }},
+  {id:'serie3', n:'En route', d:'3 jours d’affilée', i:bIcon('#ff8a3d',G_FLAME(3)), ok:function(){ return recordJours()>=3; }},
+  {id:'serie7', n:'Inarrêtable', d:'7 jours d’affilée', i:bIcon('#f26a1b',G_FLAME(7)), ok:function(){ return recordJours()>=7; }},
+  {id:'serie14', n:'Rythme de croisière', d:'14 jours d’affilée', i:bIcon('#d9480f',G_FLAME(14)), ok:function(){ return recordJours()>=14; }},
+  {id:'series10', n:'Régulier', d:'10 séries terminées', i:bIcon('#4a8be6',G_TXT('10')), ok:function(){ return store.done.length>=10; }},
+  {id:'sansfaute', n:'Sans faute', d:'Une série sans erreur', i:bIcon('#2f9e6e',G_CHECK), ok:function(){ return store.sansFaute>=1; }},
+  {id:'centurion', n:'Centurion', d:'100 bonnes réponses', i:bIcon('#6a4bd0',G_TXT('100')), ok:function(){ return store.nbOk>=100; }},
+  {id:'examen', n:'Prêt pour l’examen', d:'Examen blanc réussi (35/40)', i:bIcon('#e0a21b',G_CUP), ok:function(){ return store.best!==null && store.best>=35; }},
+  {id:'specialiste', n:'Spécialiste', d:'Un thème maîtrisé à 100 %', i:bIcon('#d93a2f',G_TARGET), ok:function(){ return CAT.some(function(c){ return mastery(c.ids)===100; }); }},
+  {id:'curieux', n:'Curieux', d:'5 fiches de cours lues', i:bIcon('#3d78d8',G_BOOK), ok:function(){ return Object.keys(store.read).length>=5; }},
+  {id:'biblio', n:'Rat de bibliothèque', d:'Toutes les fiches lues', i:bIcon('#1f56b8',G_BOOK), ok:function(){ return FICHES.every(function(f){ return store.read[f.id]; }); }}
+];
+var I_FLAME = '<svg viewBox="0 0 48 48"><path d="M24 4c2 8 12 12 12 24a12 12 0 0 1-24 0c0-6 3-9 6-12 0 4 2 6 4 6-2-6 0-12 2-18z" fill="#ff8a3d"/><path d="M24 26c1 4 6 5 6 11a6 6 0 0 1-12 0c0-3 2-5 3-6 0 2 1 3 2 3-1-3 0-5 1-8z" fill="#ffd54a"/></svg>';
+// Débloque les badges atteints ; annonce les nouveaux (sauf au chargement de la page)
+function verifierBadges(annoncer){
+  var nouveaux = [];
+  BADGES.forEach(function(b){ if(!store.badges[b.id] && b.ok()){ store.badges[b.id] = Date.now(); nouveaux.push(b); } });
+  if(nouveaux.length){ save(); if(annoncer) nouveaux.forEach(toast); }
+}
+var toasts = [], toastEnCours = false;
+function toast(b){ toasts.push(b); if(!toastEnCours) toastSuivant(); }
+function toastSuivant(){
+  var b = toasts.shift(); if(!b){ toastEnCours = false; return; }
+  toastEnCours = true;
+  var el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role','status');
+  el.innerHTML = b.i+'<div><small>Nouveau badge !</small><b>'+b.n+'</b></div>';
+  document.body.appendChild(el);
+  setTimeout(function(){ el.classList.add('on'); }, 30);
+  setTimeout(function(){ el.classList.remove('on'); setTimeout(function(){ el.remove(); toastSuivant(); }, 350); }, 3200);
+}
+function carteSerie(){
+  var n = serieJours(), rec = recordJours(), today = joueAujourdhui();
+  var titre = n ? n+' jour'+(n>1?'s':'')+' d’affilée' : 'Lance ta série de jours !';
+  var txt = !n ? 'Entraîne-toi aujourd’hui pour démarrer une série.' :
+    (today ? 'Bravo, ta série continue ! Reviens demain.' : 'Entraîne-toi aujourd’hui pour ne pas perdre ta série !');
+  if(rec>1) txt += ' Record : '+rec+' jours.';
+  return '<div class="note flame">'+I_FLAME+'<div><b>'+titre+'</b><span>'+txt+'</span></div></div>';
+}
+function carteBadges(){
+  var nb = BADGES.filter(function(b){ return store.badges[b.id]; }).length;
+  var html = '<div class="card"><div class="ctitle">'+I_STAR.replace('width="18" height="18"','')+'Tes badges<span class="date" style="color:var(--muted)">'+nb+' / '+BADGES.length+'</span></div><div class="badges">';
+  BADGES.forEach(function(b){
+    html += '<div class="bdg'+(store.badges[b.id]?'':' off')+'">'+b.i+'<b>'+b.n+'</b><span>'+b.d+'</span></div>';
+  });
+  return html+'</div></div>';
+}
 
 var screen = 'home', lastScreen = null, run = null, coursCat = null, ficheId = null, payMsg = null;
 var $app = document.getElementById('app');
@@ -527,6 +819,7 @@ function vHome(){
   html += '</div>';
   var qi = dailyQ(), qc = catOf(qi);
   html += '<div class="daily"><div class="tx"><div class="kick">'+I_STAR+' La question du jour</div><h3>'+cut(Q[qi].q,84)+'</h3><button class="btn purple sm" data-a="daily">Répondre '+CHEV+'</button></div><div class="pic">'+icon(qc)+'</div></div>';
+  html += carteSerie();
   html += promo();
   var wk = doneSince(Date.now()-7*864e5);
   html += '<div class="note">'+I_TROPHY+'<div><b>'+(wk?'Bravo !':'C’est parti !')+'</b><span>'+(wk?('Tu as validé '+wk+' série'+(wk>1?'s':'')+' cette semaine'):'Termine ta première série de la semaine')+'</span></div></div>';
@@ -587,6 +880,7 @@ function vStats(){
   html += '</div>';
   var wk = doneSince(Date.now()-7*864e5);
   html += '<div class="note">'+I_TROPHY+'<div><b>'+(seen?'Bravo !':'À toi de jouer !')+'</b><span>'+(wk?('Tu as validé '+wk+' série'+(wk>1?'s':'')+' cette semaine'):'Tes progrès apparaîtront ici')+'</span></div></div>';
+  html += carteSerie() + carteBadges();
   return html+'</div>';
 }
 
@@ -720,6 +1014,8 @@ function startRun(mode, ids, cat, resume){
 function record(id, ok, pick){
   store.ans[id] = {ok:ok, ts:Date.now()};
   store.log.push({id:id, ok:ok, ts:Date.now()});
+  if(ok) store.nbOk++;
+  marquerJour();
   if(store.log.length>400) store.log = store.log.slice(-400);
   run.results.push({id:id, ok:ok, pick:pick});
 }
@@ -730,11 +1026,13 @@ function validate(){
 }
 function finish(){
   if(run.mode==='serie'){ store.done.push(Date.now()); store.resume = null; }
+  if(run.mode==='serie' && run.results.length>=4 && run.results.every(function(r){ return r.ok; })) store.sansFaute++;
   if(run.mode==='exam'){
     var g = run.results.filter(function(r){ return r.ok; }).length;
     if(store.best===null || g>store.best) store.best = g;
   }
   save(); go('result');
+  verifierBadges(true);
 }
 function nextQ(){
   if(run.i>=run.ids.length-1){ finish(); return; }
@@ -814,7 +1112,7 @@ $app.addEventListener('click', function(e){
     }).catch(function(err){ payMsg={w:'code',k:'ko',t:(err && err.message) || 'Activation impossible pour le moment.'}; })
       .then(function(){ busy = false; render(); });
   }
-  else if(a==='read'){ store.read[d('f')] = 1; save(); go('cours'); }
+  else if(a==='read'){ store.read[d('f')] = 1; marquerJour(); save(); go('cours'); verifierBadges(true); }
 });
 $app.addEventListener('change', function(e){
   if(e.target.id==='cgv') cgvOk = e.target.checked;
@@ -829,6 +1127,7 @@ $app.addEventListener('change', function(e){
     try{ history.replaceState(null, '', location.pathname); }catch(e){}
   }
 })();
+verifierBadges(false);
 render();
 // Mise à jour quand le compte ou l'accès change (connexion, paiement, fin d'accès)
 if(window.CodeAcces) CodeAcces.surChangement(function(){ chargerContenu(); if(screen!=='quiz') render(); });

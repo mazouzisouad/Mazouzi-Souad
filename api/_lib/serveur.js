@@ -78,5 +78,9 @@ export async function traiterSessionPayee(session) {
     p_renonciation: renonciation,
   });
   if (error) throw new Error(`accorder_acces : ${error.message}`);
+  if (session.payment_intent) {
+    const pi = typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent.id;
+    await supabaseAdmin().rpc('lier_payment_intent', { p_session_id: session.id, p_payment_intent: pi });
+  }
   return data; // date de fin d'accès
 }

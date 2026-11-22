@@ -36,6 +36,10 @@
       <input type="checkbox" id="cgu">
       <span>J’ai lu la <a href="/confidentialite" target="_blank">politique de confidentialité</a>.</span>
     </label>
+    <label class="case" id="bloc-rappels" hidden>
+      <input type="checkbox" id="rappels">
+      <span>M’envoyer des rappels par e-mail pour m’entraîner (désactivables à tout moment).</span>
+    </label>
     <div id="msg" class="message" role="status"></div>
     <button class="bouton" id="valider" type="submit">Se connecter</button>
   </form>
@@ -64,6 +68,7 @@
     $('valider').textContent = m === 'connexion' ? 'Se connecter' : 'Créer mon compte';
     $('mdp').autocomplete = m === 'connexion' ? 'current-password' : 'new-password';
     $('bloc-cgu').hidden = m !== 'inscription';
+    $('bloc-rappels').hidden = m !== 'inscription';
     Pages.message('msg', '');
   }
   $('t-connexion').onclick = function () { choisir('connexion'); };
@@ -89,7 +94,7 @@
         location.replace(suite);
       });
     } else {
-      req = sb.auth.signUp({ email: email, password: mdp, options: { emailRedirectTo: location.origin + suite } })
+      req = sb.auth.signUp({ email: email, password: mdp, options: { emailRedirectTo: location.origin + suite, data: { rappels: $('rappels').checked } } })
         .then(function (r) {
           if (r.error) throw r.error;
           if (r.data.session) return location.replace(suite);

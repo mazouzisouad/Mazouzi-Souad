@@ -15,9 +15,26 @@ before(async () => {
       appels.push({ url: req.url, corps: corps ? JSON.parse(corps) : null, auth: req.headers.authorization });
       res.setHeader('Content-Type', 'application/json');
       if (req.url.startsWith('/auth/v1/user')) {
-        if (req.headers.authorization === 'Bearer bon-jeton') return res.end(JSON.stringify({ id: 'u-123', email: 'eleve@example.com' }));
+        if (req.headers.authorization === 'Bearer bon-jeton') return res.end(JSON.stringify({ id: 'u-123', email: 'eleve@example.com', email_confirmed_at: '2026-01-01' }));
+        if (req.headers.authorization === 'Bearer jeton-admin') return res.end(JSON.stringify({ id: 'u-adm', email: 'Gerant@AutoEcole.fr', email_confirmed_at: '2026-01-01' }));
         res.statusCode = 401; return res.end(JSON.stringify({ msg: 'invalid' }));
       }
+      if (req.url.startsWith('/brevo')) {
+        globalThis.EMAILS = (globalThis.EMAILS || []).concat([{ cle: req.headers['api-key'], corps: JSON.parse(corps) }]);
+        if (globalThis.BREVO_EN_PANNE) { res.statusCode = 500; return res.end('{}'); }
+        res.statusCode = 201; return res.end('{"messageId":"1"}');
+      }
+      if (req.url.startsWith('/rest/v1/rpc/rappels_a_envoyer')) return res.end(JSON.stringify(globalThis.CANDIDATS || []));
+      if (req.url.startsWith('/rest/v1/rappels_envoyes')) {
+        globalThis.RESERVES = globalThis.RESERVES || new Set();
+        if (req.method === 'DELETE') { globalThis.SUPPRIMES = (globalThis.SUPPRIMES || 0) + 1; res.statusCode = 204; return res.end(); }
+        const r = JSON.parse(corps), k = r.user_id + r.type + r.cle;
+        if (globalThis.RESERVES.has(k)) { res.statusCode = 409; return res.end(JSON.stringify({ code: '23505', message: 'duplicate key' })); }
+        globalThis.RESERVES.add(k); res.statusCode = 201; return res.end();
+      }
+      if (req.url.startsWith('/rest/v1/rpc/desinscrire')) return res.end(JSON.stringify(JSON.parse(corps).p_jeton === '11111111-2222-3333-4444-555555555555'));
+      if (req.url.startsWith('/rest/v1/rpc/stats_admin')) return res.end(JSON.stringify({ total_centimes: 1980, nb_paiements: 2 }));
+      if (req.url.startsWith('/rest/v1/rpc/rembourser') || req.url.startsWith('/rest/v1/rpc/lier_payment_intent')) return res.end('true');
       if (req.url.startsWith('/rest/v1/acces')) {
         const ligne = globalThis.EXPIRE_LE ? { expire_le: globalThis.EXPIRE_LE } : null;
         const objet = (req.headers.accept || '').includes('vnd.pgrst.object');
@@ -40,6 +57,12 @@ before(async () => {
   process.env.SUPABASE_ANON_KEY = 'cle-anon';
   process.env.STRIPE_SECRET_KEY = 'sk_test_faux';
   process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test_secret';
+  process.env.CRON_SECRET = 'secret-cron';
+  process.env.BREVO_API_KEY = 'cle-brevo';
+  process.env.BREVO_API_URL = `${process.env.SUPABASE_URL}/brevo`;
+  process.env.EMAIL_EXPEDITEUR = 'bonjour@code-ludique.fr';
+  process.env.SITE_URL = 'https://code-ludique.fr';
+  process.env.ADMIN_EMAILS = 'gerant@autoecole.fr, autre@x.fr';
 });
 after(() => faux.close());
 
@@ -59,6 +82,10 @@ function evenementSigne(session) {
   const charge = JSON.stringify({ id: 'evt_1', object: 'event', type: 'checkout.session.completed', data: { object: session } });
   const sig = Stripe.webhooks.generateTestHeaderString({ payload: charge, secret: process.env.STRIPE_WEBHOOK_SECRET });
   return { charge, sig };
+}
+function evenementType(type, objet) {
+  const charge = JSON.stringify({ id: 'evt_2', object: 'event', type, data: { object: objet } });
+  return { charge, sig: Stripe.webhooks.generateTestHeaderString({ payload: charge, secret: process.env.STRIPE_WEBHOOK_SECRET }) };
 }
 const sessionPayee = {
   id: 'cs_test_abc', object: 'checkout.session', mode: 'payment', payment_status: 'paid',
@@ -214,7 +241,131 @@ test('contenu : accès actif → questions et fiches payantes, jamais en cache',
   await contenu(requete({ method: 'GET', headers: { authorization: 'Bearer bon-jeton' } }), res);
   assert.equal(res.statusCode, 200, res.corps);
   const d = JSON.parse(res.corps);
-  assert.equal(Object.keys(d.questions).length, 47);
+  const { QUESTIONS_PREMIUM } = await import('../api/_lib/contenu-premium.js');
+  assert.equal(Object.keys(d.questions).length, Object.keys(QUESTIONS_PREMIUM).length);
+  assert.ok(Object.keys(d.questions).length >= 200);
   assert.equal(Object.keys(d.fiches).length, 8);
   assert.equal(res.entetes['cache-control'], 'no-store');
+});
+
+test('webhook : paiement → payment_intent lié (pour les remboursements)', async () => {
+  const { default: webhook } = await import('../api/stripe-webhook.js');
+  const { charge, sig } = evenementSigne({ ...sessionPayee, payment_intent: 'pi_123' });
+  appels.length = 0;
+  const res = reponse();
+  await webhook(requete({ headers: { 'stripe-signature': sig }, corps: charge }), res);
+  assert.equal(res.statusCode, 200);
+  assert.deepEqual(appels.find((a) => a.url.includes('lier_payment_intent')).corps, { p_session_id: 'cs_test_abc', p_payment_intent: 'pi_123' });
+});
+
+test('webhook : remboursement total → accès retiré ; partiel → ignoré', async () => {
+  const { default: webhook } = await import('../api/stripe-webhook.js');
+  for (const [refunded, attendu] of [[true, 1], [false, 0]]) {
+    const { charge, sig } = evenementType('charge.refunded', { id: 'ch_1', object: 'charge', refunded, payment_intent: 'pi_123' });
+    appels.length = 0;
+    const res = reponse();
+    await webhook(requete({ headers: { 'stripe-signature': sig }, corps: charge }), res);
+    assert.equal(res.statusCode, 200);
+    const r = appels.filter((a) => a.url.includes('rpc/rembourser'));
+    assert.equal(r.length, attendu);
+    if (attendu) assert.deepEqual(r[0].corps, { p_payment_intent: 'pi_123' });
+  }
+});
+
+test('rappels : sans le secret du cron → 401, aucun e-mail', async () => {
+  const { default: rappels } = await import('../api/rappels.js');
+  globalThis.EMAILS = [];
+  const res = reponse();
+  await rappels(requete({ method: 'GET', headers: { authorization: 'Bearer faux' } }), res);
+  assert.equal(res.statusCode, 401);
+  assert.equal(globalThis.EMAILS.length, 0);
+});
+
+test('rappels : envoie chaque rappel une seule fois, avec lien de désinscription', async () => {
+  const { default: rappels } = await import('../api/rappels.js');
+  globalThis.EMAILS = []; globalThis.RESERVES = new Set();
+  globalThis.CANDIDATS = [
+    { user_id: 'u1', email: 'a@x.fr', type: 'inactivite', cle: '2026-11-18', jeton: '11111111-2222-3333-4444-555555555555', date_ref: new Date(Date.now() - 4 * 864e5).toISOString() },
+    { user_id: 'u2', email: 'b@x.fr', type: 'fin_acces', cle: '2026-11-27', jeton: '66666666-2222-3333-4444-555555555555', date_ref: '2026-11-27T10:00:00Z' },
+    { user_id: 'u3', email: 'c@x.fr', type: 'acces_termine', cle: '2026-11-20', jeton: '77777777-2222-3333-4444-555555555555', date_ref: '2026-11-20T10:00:00Z' },
+  ];
+  let res = reponse();
+  await rappels(requete({ method: 'GET', headers: { authorization: 'Bearer secret-cron' } }), res);
+  assert.equal(res.statusCode, 200, res.corps);
+  assert.deepEqual(JSON.parse(res.corps), { envoyes: 3, deja: 0, erreurs: 0 });
+  const [e1, e2, e3] = globalThis.EMAILS.map((e) => e.corps);
+  assert.equal(globalThis.EMAILS[0].cle, 'cle-brevo');
+  assert.equal(e1.to[0].email, 'a@x.fr');
+  assert.match(e1.subject, /t’attend/);
+  assert.match(e1.htmlContent, /4 jours/);
+  assert.match(e1.htmlContent, /https:\/\/code-ludique\.fr\/api\/desinscription\?jeton=11111111/);
+  assert.equal(e1.headers['List-Unsubscribe'], '<https://code-ludique.fr/api/desinscription?jeton=11111111-2222-3333-4444-555555555555>');
+  assert.match(e2.subject, /se termine le 27 novembre/);
+  assert.match(e3.subject, /est terminé/);
+  assert.match(e3.textContent, /https:\/\/code-ludique\.fr\/compte/);
+  // 2e passage le même jour : rien n'est renvoyé
+  globalThis.EMAILS = [];
+  res = reponse();
+  await rappels(requete({ method: 'GET', headers: { authorization: 'Bearer secret-cron' } }), res);
+  assert.deepEqual(JSON.parse(res.corps), { envoyes: 0, deja: 3, erreurs: 0 });
+  assert.equal(globalThis.EMAILS.length, 0);
+});
+
+test('rappels : si Brevo échoue, la réservation est annulée (nouvel essai le lendemain)', async () => {
+  const { default: rappels } = await import('../api/rappels.js');
+  globalThis.RESERVES = new Set(); globalThis.SUPPRIMES = 0; globalThis.BREVO_EN_PANNE = true;
+  globalThis.CANDIDATS = [{ user_id: 'u9', email: 'z@x.fr', type: 'inactivite', cle: 'k', jeton: '11111111-2222-3333-4444-555555555555', date_ref: new Date().toISOString() }];
+  const res = reponse();
+  await rappels(requete({ method: 'GET', headers: { authorization: 'Bearer secret-cron' } }), res);
+  globalThis.BREVO_EN_PANNE = false;
+  assert.deepEqual(JSON.parse(res.corps), { envoyes: 0, deja: 0, erreurs: 1 });
+  assert.equal(globalThis.SUPPRIMES, 1);
+});
+
+test('rappels : contenu HTML échappé', async () => {
+  const { htmlRappel } = await import('../api/_lib/emails.js');
+  const h = htmlRappel({ titre: '<script>x</script>', texte: 'a & b', bouton: 'Go', lien: 'https://x.fr/?a=1&b=2' }, 'https://x.fr/d');
+  assert.doesNotMatch(h, /<script>/);
+  assert.match(h, /a &amp; b/);
+});
+
+test('désinscription : jeton valide → page de confirmation ; invalide → 400/404', async () => {
+  const { default: des } = await import('../api/desinscription.js');
+  let res = reponse();
+  await des(requete({ method: 'GET', url: '/api/desinscription?jeton=11111111-2222-3333-4444-555555555555' }), res);
+  assert.equal(res.statusCode, 200); assert.match(res.corps, /ne recevras plus/);
+  res = reponse();
+  await des(requete({ method: 'POST', url: '/api/desinscription?jeton=11111111-2222-3333-4444-555555555555' }), res);
+  assert.equal(res.statusCode, 200); assert.equal(res.corps, 'OK');
+  res = reponse();
+  await des(requete({ method: 'GET', url: '/api/desinscription?jeton=99999999-2222-3333-4444-555555555555' }), res);
+  assert.equal(res.statusCode, 404);
+  res = reponse();
+  await des(requete({ method: 'GET', url: '/api/desinscription?jeton=<script>' }), res);
+  assert.equal(res.statusCode, 400);
+});
+
+test('tableau de bord : élève → 403 ; administrateur (casse ignorée) → statistiques', async () => {
+  const { default: stats } = await import('../api/admin-stats.js');
+  let res = reponse();
+  await stats(requete({ method: 'GET', headers: { authorization: 'Bearer bon-jeton' } }), res);
+  assert.equal(res.statusCode, 403);
+  assert.doesNotMatch(res.corps, /total_centimes/);
+  res = reponse();
+  await stats(requete({ method: 'GET', headers: {} }), res);
+  assert.equal(res.statusCode, 401);
+  res = reponse();
+  await stats(requete({ method: 'GET', headers: { authorization: 'Bearer jeton-admin' } }), res);
+  assert.equal(res.statusCode, 200, res.corps);
+  const d = JSON.parse(res.corps);
+  assert.equal(d.total_centimes, 1980);
+  const { EMPREINTES_CODES } = await import('../api/_lib/codes.js');
+  assert.equal(d.codes_total, EMPREINTES_CODES.length);
+});
+
+test('tableau de bord : e-mail non confirmé → refusé', async () => {
+  const { estAdmin } = await import('../api/admin-stats.js');
+  assert.equal(estAdmin({ email: 'gerant@autoecole.fr' }), false);
+  assert.equal(estAdmin({ email: 'gerant@autoecole.fr', email_confirmed_at: 'x' }), true);
+  assert.equal(estAdmin({ email: 'intrus@autoecole.fr', email_confirmed_at: 'x' }), false);
 });

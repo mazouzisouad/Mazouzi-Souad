@@ -59,6 +59,15 @@
   </div>
 
   <div class="carte">
+    <h2 style="margin-top:0">Rappels par e-mail</h2>
+    <label class="case"><input type="checkbox" id="pref-entrainement">
+      <span>Me rappeler de m’entraîner quand je n’ai pas joué depuis 3 jours</span></label>
+    <label class="case"><input type="checkbox" id="pref-acces">
+      <span>Me prévenir avant la fin de mon accès complet</span></label>
+    <div id="msg-pref" class="message" role="status"></div>
+  </div>
+
+  <div class="carte">
     <h2 style="margin-top:0">Mes données</h2>
     <p class="doux">Votre progression est enregistrée automatiquement.</p>
     <button class="bouton secondaire" id="exporter" type="button">Télécharger mes données</button>
@@ -110,6 +119,26 @@
         $('paiements').appendChild(t);
       });
   }
+  function chargerPreferences() {
+    if (!CodeAcces.utilisateur) return;
+    CodeAcces.client.from('preferences').select('rappels_entrainement, rappels_acces').maybeSingle().then(function (r) {
+      if (!r.data) return;
+      $('pref-entrainement').checked = r.data.rappels_entrainement;
+      $('pref-acces').checked = r.data.rappels_acces;
+    });
+  }
+  ['pref-entrainement', 'pref-acces'].forEach(function (id) {
+    $(id).addEventListener('change', function () {
+      CodeAcces.client.from('preferences').update({
+        rappels_entrainement: $('pref-entrainement').checked,
+        rappels_acces: $('pref-acces').checked,
+        mis_a_jour: new Date().toISOString(),
+      }).eq('user_id', CodeAcces.utilisateur.id).then(function (r) {
+        Pages.message('msg-pref', r.error ? 'Enregistrement impossible, réessaie.' : 'Choix enregistré.', r.error ? 'erreur' : 'ok');
+      });
+    });
+  });
+  CodeAcces.pret.then(chargerPreferences);
   CodeAcces.pret.then(afficher);
   CodeAcces.surChangement(afficher);
 
@@ -138,9 +167,10 @@
       sb.from('progression').select('*').maybeSingle(),
       sb.from('acces').select('*').maybeSingle(),
       sb.from('paiements').select('*'),
+      sb.from('preferences').select('rappels_entrainement, rappels_acces').maybeSingle(),
     ]).then(function (r) {
       var donnees = { compte: { id: CodeAcces.utilisateur.id, email: CodeAcces.utilisateur.email, cree_le: CodeAcces.utilisateur.created_at },
-        progression: r[0].data, acces: r[1].data, paiements: r[2].data, exporte_le: new Date().toISOString() };
+        progression: r[0].data, acces: r[1].data, paiements: r[2].data, rappels: r[3].data, exporte_le: new Date().toISOString() };
       var a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([JSON.stringify(donnees, null, 2)], { type: 'application/json' }));
       a.download = 'mes-donnees-code-de-la-route.json';

@@ -5,6 +5,10 @@ Site d'entraînement au code de la route avec :
 - **comptes élèves** par e-mail et mot de passe (confirmation par e-mail, mot de passe oublié) ;
 - **paiement Stripe de 9,90 € pour 3 mois**, paiement unique sans abonnement ;
 - **codes d'accès** remis par l'auto-école (3 mois, usage unique, liés au compte) ;
+- **252 questions** (16 gratuites) et 10 fiches de cours ;
+- **séries de jours d'affilée et 11 badges** à débloquer ;
+- **rappels par e-mail** : inactivité depuis 3 jours (si l'élève l'a accepté), fin d'accès dans 7 jours, accès terminé ;
+- **tableau de bord interne** (`/admin`) : total encaissé, paiements, élèves ayant payé, ventes par mois, codes, remboursements ;
 - **déblocage automatique** de l'accès complet dès que le paiement est confirmé ;
 - **progression sauvegardée en ligne** et retrouvée sur tous les appareils ;
 - **conditions générales de vente**, **politique de confidentialité** et **mentions légales** ;
@@ -25,6 +29,9 @@ Technologies : Supabase (comptes + base de données), Stripe (paiement), Vercel 
 | `api/verifier-paiement.js` | Débloque l'accès tout de suite au retour du paiement |
 | `api/activer-code.js` + `api/_lib/codes.js` | Activation des codes d'accès |
 | `api/contenu.js` + `api/_lib/contenu-premium.js` | Questions et fiches payantes, envoyées aux seuls élèves dont l'accès est actif |
+| `api/rappels.js` + `api/_lib/emails.js` | Rappels par e-mail, envoyés chaque jour à 16 h UTC (Vercel Cron) |
+| `api/desinscription.js` | Lien « Ne plus recevoir de rappels » des e-mails |
+| `api/admin-stats.js` + `public/admin.html` | Tableau de bord interne |
 | `api/supprimer-compte.js` | Suppression du compte |
 | `supabase/schema.sql` | Tables et règles de sécurité |
 | `supabase/nettoyage.sql` | Suppression des comptes inactifs depuis 3 ans |
@@ -74,7 +81,8 @@ version doivent le ressaisir une fois connectés (il est encore valable puisqu'i
 ### 2. Stripe
 1. **Développeurs → Clés API** : notez la clé secrète (`sk_test_…` pour les essais, `sk_live_…` ensuite).
 2. **Développeurs → Webhooks → Ajouter un endpoint** : `https://votre-site.fr/api/stripe-webhook`,
-   événements `checkout.session.completed` et `checkout.session.async_payment_succeeded`.
+   événements `checkout.session.completed`, `checkout.session.async_payment_succeeded` et `charge.refunded`
+   (un remboursement total fait depuis Stripe retire automatiquement les 3 mois et apparaît dans le tableau de bord).
    Notez le *secret de signature* (`whsec_…`).
 3. **Paramètres → E-mails clients** : activez l'envoi du **reçu pour les paiements réussis**.
 4. **Paramètres → Moyens de paiement** : vérifiez que **Cartes**, **Apple Pay** et **Google Pay** sont activés
@@ -83,17 +91,30 @@ version doivent le ressaisir une fois connectés (il est encore valable puisqu'i
    Google Pay sur Chrome/Android avec une carte enregistrée.
 5. **Paramètres → Informations publiques** : nom, e-mail du support, lien vers vos CGV.
 
-### 3. Vercel
+### 3. Brevo (rappels par e-mail)
+1. Créez un compte gratuit sur brevo.com (300 e-mails par jour).
+2. **Expéditeurs et domaines** : ajoutez votre nom de domaine et suivez les instructions (enregistrements DNS)
+   pour que les e-mails ne tombent pas dans les spams. Vous pouvez utiliser le même service pour les e-mails
+   de Supabase (Authentication → SMTP Settings).
+3. **SMTP et API → Clés API** : créez une clé (`BREVO_API_KEY`).
+
+### 4. Vercel
 1. **Add New → Project** → importez ce dépôt GitHub (Framework : *Other*, laissez le reste par défaut).
-2. **Settings → Environment Variables** : ajoutez les 6 variables de `.env.example`.
+2. **Settings → Environment Variables** : ajoutez toutes les variables de `.env.example`
+   (dont `CRON_SECRET`, une longue chaîne au hasard, et `ADMIN_EMAILS`, votre adresse).
+   L'envoi quotidien des rappels est déclaré dans `vercel.json` : Vercel le lance tout seul.
 3. Déployez. Branchez votre nom de domaine dans **Settings → Domains**, puis mettez à jour `SITE_URL`,
    l'URL Supabase et le webhook Stripe avec ce domaine.
 
-### 4. Essai complet
+### 5. Essai complet
 Avec les clés de test Stripe : créez un compte, ouvrez l'écran « Accès complet », payez avec la carte `4242 4242 4242 4242`
 (date future, n'importe quel code), vérifiez que l'accès est débloqué, puis passez aux clés *live*.
 
-### 5. Pages légales
+### 6. Tableau de bord
+Créez votre compte élève sur le site avec l'adresse mise dans `ADMIN_EMAILS`, confirmez-la, puis ouvrez
+`https://votre-site.fr/admin`. Les autres comptes voient « Accès réservé ».
+
+### 7. Pages légales
 Remplacez tous les passages surlignés en jaune `[…]` dans `public/cgv.html`, `public/confidentialite.html`
 et `public/mentions-legales.html` (nom, adresse, SIRET, TVA, **médiateur de la consommation**, qui est obligatoire).
 Ces textes sont un modèle sérieux mais ne remplacent pas l'avis d'un juriste.
