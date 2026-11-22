@@ -3,8 +3,8 @@
    - Fichiers du site (scripts, styles, icônes) : copie locale, mise à jour en arrière-plan.
    - /api/* (paiement, contenu payant, compte…) : jamais mis en cache, sauf /api/config (public).
    - Supabase, Stripe : non concernés (autres domaines). */
-var VERSION = 'code-ludique-v1';
-var ESSENTIELS = ['/', '/js/acces.js', '/vendor/supabase.js', '/css/site.css', '/api/config',
+var VERSION = 'code-ludique-v2';
+var ESSENTIELS = ['/', '/js/acces.js', '/js/illustrations.js', '/vendor/supabase.js', '/css/site.css', '/api/config',
   '/manifest.webmanifest', '/icons/icone-192.png', '/icons/icone.svg'];
 
 self.addEventListener('install', function (e) {
