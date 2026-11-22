@@ -75,14 +75,15 @@ et la facture indique « Examen blanc » ou « (préparation examen) » pour l'�
 
 ## Forfait et reste à payer (fiche élève → Compte)
 
-- Chaque élève peut avoir un **forfait** (ex. « Forfait 20h A2 », 950 €, 20 h incluses), choisi à l'inscription
-  ou dans l'onglet Compte, **payé en 1 à 12 fois** à partir d'une date.
-- Les heures de leçon faites sont déduites du forfait (barre des heures : faites / prévues / restantes) ;
-  au-delà, elles sont comptées au tarif horaire. Sans forfait, tout est compté à l'heure.
-- S'ajoutent : examens (accompagnement / repassage) et lignes ajoutées à la main sur une facture.
-- Tous les encaissements de l'élève se déduisent ; l'échéancier montre chaque mensualité
-  (✅ payée, ⚠️ en retard, ⏳ à venir) et le bouton « Encaisser l'échéance » pré-remplit le montant.
-- « Reste à payer » et les retards apparaissent sur la fiche, dans la liste des élèves et dans Paiements → À régler.
+- Chaque élève peut avoir un **forfait** (ex. « Forfait 20h A2 », 950 € pour 20 h, soit 47,50 € l'heure),
+  choisi à l'inscription ou dans l'onglet Compte.
+- **Paiement libre** : l'élève règle quand il veut, du montant qu'il veut. Chaque règlement lui donne droit à
+  des heures (prix du forfait ÷ heures incluses) ; on lui pose des leçons à hauteur de ce qu'il a payé.
+- La fiche montre les heures **payées et posées**, les heures **posées non payées** (montant à encaisser),
+  celles **payées mais pas encore posées**, et le **reste à payer sur le forfait**.
+- En plaçant une leçon, un message prévient si l'élève n'a pas payé assez pour ces heures (sans bloquer).
+- Au-delà des heures du forfait : tarif horaire. Sans forfait : tout au tarif horaire.
+- Examens (accompagnement / repassage) et lignes ajoutées à la main sur une facture s'ajoutent.
 - Paramètres → Prestations : indiquez les heures incluses pour chaque forfait.
 
 ## Fiche de suivi

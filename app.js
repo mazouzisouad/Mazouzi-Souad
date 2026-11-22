@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · forfait et reste à payer sur la fiche';
+const APP_VERSION = '2026-11-23 · forfait payé librement, heures payées / posées';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -1080,7 +1080,8 @@ function refreshDraft() {
   renderResults();
 
   const { errors } = seanceConflicts(draft);
-  $('#s-errors').innerHTML = errors.map((e) => `<div class="alert bad">⛔ ${esc(e)}</div>`).join('');
+  $('#s-errors').innerHTML = errors.map((e) => `<div class="alert bad">⛔ ${esc(e)}</div>`).join('')
+    + alertesPaiementSeance(draft).map((a) => `<div class="alert warn">💶 ${esc(a)}</div>`).join('');
   const pris = errors.find((e) => e.includes("qu'une chose à la fois"));
   $('#s-errors-haut').innerHTML = pris ? `<div class="alert bad" style="margin-bottom:10px">⛔ ${esc(pris)}</div>` : '';
 }
@@ -1227,7 +1228,7 @@ function viewEleves() {
   ${UI.ongletEleves === 'repassage' ? viewRepassages() : UI.ongletEleves === 'prets' ? viewPrets() : UI.ongletEleves === 'examens' ? viewExamens() : `
   ${list.length ? `
   <div class="table-wrap"><table>
-    <thead><tr><th>Élève</th><th>Agence</th><th>Téléphone</th><th>Prochaine leçon</th><th class="num">Reste dû</th></tr></thead>
+    <thead><tr><th>Élève</th><th>Agence</th><th>Téléphone</th><th>Prochaine leçon</th><th class="num">À encaisser / reste</th></tr></thead>
     <tbody>
     ${list.map((e) => {
       const cpt = compteEleve(e.id);
@@ -1237,7 +1238,7 @@ function viewEleves() {
         <td>${agenceBadge(agenceDe(e))}</td>
         <td>${esc(e.tel || '')}</td>
         <td>${next ? `${fmtDate(next.date)} ${next.debut} · ${TYPES[next.type].short}` : '<span class="muted">—</span>'}</td>
-        <td class="num">${cpt.reste > 0.005 ? `<span class="badge ${cpt.retard > 0 ? 'bad' : 'warn'}" title="${cpt.retard > 0 ? 'En retard de ' + eur(cpt.retard) : ''}">${cpt.retard > 0 ? '⚠️ ' : ''}${eur(cpt.reste)}</span>` : '<span class="muted">—</span>'}${!cpt.forfait && e.statut === 'en_cours' ? ' <span class="badge" title="Aucun forfait choisi">sans forfait</span>' : ''}</td>
+        <td class="num">${cpt.montantNonPaye > 0.005 ? `<span class="badge ${cpt.nonPayeFait > 0 ? 'bad' : 'warn'}" title="Heures posées non payées">⚠️ ${eur(cpt.montantNonPaye)} à encaisser</span>` : cpt.reste > 0.005 ? `<span class="muted small" title="Reste à payer sur le forfait">${eur(cpt.reste)}</span>` : '<span class="muted">—</span>'}${!cpt.forfait && e.statut === 'en_cours' ? ' <span class="badge" title="Aucun forfait choisi">sans forfait</span>' : ''}</td>
       </tr>`;
     }).join('')}
     </tbody></table></div>` : `<div class="card empty">Aucun élève. <br><br><button class="btn primary" data-action="newEleve">+ Ajouter un élève</button></div>`}
@@ -1330,7 +1331,7 @@ function viewFiche(id) {
       <div><span>Examen plateau</span><strong class="exam-res ${ex.exam_plateau.cls}">${ex.exam_plateau.txt}</strong></div>
       <div><span>Examen circulation</span><strong class="exam-res ${ex.exam_circulation.cls}">${ex.exam_circulation.txt}</strong></div>
       ${['plateau', 'circulation'].map((b) => { const ex = prochainExamen(id, b); return ex ? `<div><span>Prépa examen ${b} (le ${fmtDate(ex.date)})</span><strong>${prepBadge(preparation(id, ex))}</strong></div>` : ''; }).join('')}
-      ${(() => { const c = compteEleve(id); return `<div class="clickable" data-action="ongletFiche" data-o="compte"><span>${c.forfait ? '📦 ' + esc(c.forfait.libelle) : 'Sans forfait'}</span><strong style="color:${c.retard > 0 ? 'var(--bad)' : c.reste > 0.005 ? 'var(--warn)' : 'var(--ok)'}">${c.reste > 0.005 ? 'Reste ' + eur(c.reste) : 'À jour ✅'}${c.retard > 0 ? ` <span class="small">(⚠️ ${eur(c.retard)} en retard)</span>` : ''}</strong></div>`; })()}
+      ${(() => { const c = compteEleve(id); return `<div class="clickable" data-action="ongletFiche" data-o="compte"><span>${c.forfait ? '📦 ' + esc(c.forfait.libelle) : 'Sans forfait'}</span><strong style="color:${c.nonPayeFait > 0 ? 'var(--bad)' : c.montantNonPaye > 0 ? 'var(--warn)' : c.reste > 0.005 ? 'var(--ink)' : 'var(--ok)'}">${c.montantNonPaye > 0.005 ? '⚠️ ' + eur(c.montantNonPaye) + ' à encaisser' : c.reste > 0.005 ? 'Reste ' + eur(c.reste) : 'À jour ✅'}</strong></div>`; })()}
     </div>
     <div class="seg" style="margin:14px 0 12px">
       <button class="${o === 'lecons' ? 'on' : ''}" data-action="ongletFiche" data-o="lecons">Leçons</button>
@@ -1360,7 +1361,7 @@ function openEleve(eleve, { onSaved, onCancel } = {}) {
       <label class="field"><span>E-mail</span><input name="email" type="email" value="${esc(e.email || '')}"></label>
       ${isNew ? `<label class="field"><span>📦 Forfait choisi</span>
         <select name="forfaitId"><option value="">— À choisir plus tard —</option>${DB.prestations.filter((x) => heuresDuForfait(x) > 0 || /forfait/i.test(x.libelle)).map((x) => `<option value="${x.id}">${esc(x.libelle)} — ${eur(x.prix)}</option>`).join('')}</select></label>
-      <label class="field"><span>Payé en</span><select name="forfaitFois">${[1, 2, 3, 4, 5, 6, 8, 10, 12].map((n) => `<option value="${n}">${n === 1 ? '1 fois' : n + ' fois'}</option>`).join('')}</select></label>` : ''}
+` : ''}
       <details class="full" ${isNew ? '' : 'open'}>
         <summary class="muted">Plus d'informations (adresse, NEPH, code…)</summary>
         <div class="form-grid" style="margin-top:10px">
@@ -1387,12 +1388,12 @@ function openEleve(eleve, { onSaved, onCancel } = {}) {
         const form = $('#eleve-form');
         if (!form.reportValidity()) return;
         const data = formData(form);
-        const { forfaitId, forfaitFois } = data; delete data.forfaitId; delete data.forfaitFois;
+        const { forfaitId } = data; delete data.forfaitId;
         let target;
         if (isNew) {
           target = { id: uid(), inscription: todayISO(), ...data }; DB.eleves.push(target);
           const pr = forfaitId && byId('prestations', forfaitId);
-          if (pr) target.forfait = { prestationId: pr.id, libelle: pr.libelle, prix: round2(pr.prix), heures: heuresDuForfait(pr), nbFois: parseInt(forfaitFois, 10) || 1, date: todayISO() };
+          if (pr) target.forfait = { prestationId: pr.id, libelle: pr.libelle, prix: round2(pr.prix), heures: heuresDuForfait(pr), date: todayISO() };
         }
         else { target = byId('eleves', e.id); Object.assign(target, data); }
         save();
@@ -1443,7 +1444,7 @@ function viewPaiements() {
   const encMois = paiements.filter((p) => p.date.startsWith(todayISO().slice(0, 7))).reduce((s, p) => s + Number(p.montant || 0), 0);
   const comptes = DB.eleves.filter((e) => !UI.filtreAgence || e.agenceId === UI.filtreAgence).map((e) => ({ e, c: compteEleve(e.id) }));
   const impayes = comptes.reduce((s, r) => s + Math.max(0, r.c.reste), 0);
-  const enRetard = comptes.reduce((s, r) => s + r.c.retard, 0);
+  const nonPayees = comptes.reduce((s, r) => s + r.c.montantNonPaye, 0);
   const o = UI.ongletPaiements;
 
   let contenu = '';
@@ -1460,17 +1461,17 @@ function viewPaiements() {
       </div>
       ${duMois.length ? paiementsTable(duMois) : '<div class="card empty">Aucun paiement ce mois-ci.</div>'}`;
   } else {
-    const rows = comptes.filter((r) => r.c.reste > 0.005).sort((a, b) => (b.c.retard - a.c.retard) || (b.c.reste - a.c.reste));
+    const rows = comptes.filter((r) => r.c.reste > 0.005 || r.c.montantNonPaye > 0.005).sort((a, b) => (b.c.nonPayeFait - a.c.nonPayeFait) || (b.c.montantNonPaye - a.c.montantNonPaye) || (b.c.reste - a.c.reste));
     contenu = rows.length ? `<div class="table-wrap"><table>
-      <thead><tr><th>Élève</th><th>Agence</th><th>Forfait</th><th class="num">Reste à payer</th><th class="num">En retard</th><th>Prochaine échéance</th></tr></thead>
+      <thead><tr><th>Élève</th><th>Agence</th><th>Forfait</th><th class="num">Heures posées non payées</th><th class="num">Déjà payé</th><th class="num">Reste à payer</th></tr></thead>
       <tbody>${rows.map(({ e, c }) => `
         <tr class="clickable" data-action="openFicheCompte" data-id="${e.id}">
           <td><strong>${esc(e.nom.toUpperCase())}</strong> ${esc(e.prenom)}</td>
           <td>${agenceBadge(agenceDe(e))}</td>
           <td class="small">${c.forfait ? esc(c.forfait.libelle) : '<span class="badge">sans forfait</span>'}</td>
-          <td class="num"><strong>${eur(c.reste)}</strong></td>
-          <td class="num">${c.retard > 0 ? `<span class="badge bad">⚠️ ${eur(c.retard)}</span>` : '—'}</td>
-          <td class="small">${c.prochaine ? `${fmtDate(c.prochaine.date)} · ${eur(c.prochaine.montant - c.prochaine.couvert)}` : '—'}</td>
+          <td class="num">${c.montantNonPaye > 0.005 ? `<span class="badge ${c.nonPayeFait > 0 ? 'bad' : 'warn'}">⚠️ ${fmtH(c.heuresNonPayees)} · ${eur(c.montantNonPaye)}</span>` : '—'}</td>
+          <td class="num">${eur(c.paye)}</td>
+          <td class="num"><strong>${eur(Math.max(0, c.reste))}</strong></td>
         </tr>`).join('')}</tbody></table></div>` : '<div class="card empty">Tout est à jour 👍</div>';
   }
 
@@ -1485,7 +1486,7 @@ function viewPaiements() {
   <div class="mini-stats card" style="margin-bottom:14px">
     <div><span>Encaissé ce mois</span><strong>${eur(encMois)}</strong></div>
     <div><span>Reste à encaisser</span><strong style="color:var(--warn)">${eur(impayes)}</strong></div>
-    <div><span>Dont en retard</span><strong style="color:var(--bad)">${eur(enRetard)}</strong></div>
+    <div><span>Heures posées non payées</span><strong style="color:var(--bad)">${eur(nonPayees)}</strong></div>
   </div>
   <div class="seg" style="margin-bottom:12px">
     <button class="${o === 'factures' ? 'on' : ''}" data-action="ongletPaiements" data-o="factures">Factures</button>

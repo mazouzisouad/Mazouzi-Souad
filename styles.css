@@ -643,9 +643,13 @@ body.glisse-en-cours, body.glisse-en-cours * { cursor: grabbing !important; user
 .cpt-tete { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
 .cpt-titre { font-weight: 800; font-size: 17px; }
 .cpt-heures { margin: 12px 0 4px; display: grid; gap: 5px; }
-.cpt-barre { height: 12px; border-radius: 6px; background: #e5e7eb; overflow: hidden; display: flex; }
-.cpt-barre .fait { background: #22c55e; }
-.cpt-barre .prevu { background: repeating-linear-gradient(135deg, #86efac 0 6px, #bbf7d0 6px 12px); }
+.cpt-barre { height: 14px; border-radius: 7px; background: #e5e7eb; overflow: hidden; display: flex; }
+.cpt-barre .payee, .cpt-legende i.payee { background: #22c55e; }
+.cpt-barre .nonpayee, .cpt-legende i.nonpayee { background: #ef4444; }
+.cpt-barre .credit, .cpt-legende i.credit { background: repeating-linear-gradient(135deg, #86efac 0 6px, #dcfce7 6px 12px); }
+.cpt-legende { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.cpt-legende i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.alert.ok-msg { background: #dcfce7; color: #166534; }
 .txt-bad { color: var(--bad); font-weight: 700; }
 .txt-warn { color: var(--warn); font-weight: 700; }
 .cpt-recap { margin-top: 12px; border-top: 1px solid var(--line); }
