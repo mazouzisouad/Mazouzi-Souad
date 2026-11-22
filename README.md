@@ -97,6 +97,20 @@ et la facture indique « Examen blanc » ou « (préparation examen) » pour l'�
 On choisit l'auto-école des élèves, on vérifie le tableau ; les élèves déjà présents (même NEPH, téléphone,
 e-mail ou nom) sont repérés et décochés. Le lecteur de PDF (pdf.js, licence Apache 2.0) est dans vendor/pdfjs.
 
+## Importer un planning Google Agenda
+
+Planning → « 📥 Importer Google Agenda ». Dans Google Agenda (ordinateur) : ⚙️ Paramètres → Importer et exporter
+→ Exporter, puis déposer le .zip (ou le .ics). On choisit le moniteur (ex. Jean-Yves) et la période.
+- 1 rendez-vous = 1 élève ; même horaire + même type = une seule leçon avec plusieurs élèves.
+- Le titre donne l'élève (retrouvé parmi les élèves importés d'AGX), le type (plateau, circu, prépa, exam blanc,
+  évaluation) et l'auto-école (family's/épinay, creil, compiègne, french, smile, tremblay).
+- « Off », « NE PAS REMPLIR », journées entières et rendez-vous sans mot de leçon sont mis de côté.
+- Tableau de vérification : élève reconnu, à créer (avec son auto-école) ou à ne pas importer ; type modifiable.
+- Réimporter le même fichier ne crée rien en double.
+
+**Évaluation de départ** : dans une leçon, bouton « 🧭 Évaluation » par élève ; hors forfait, prix fixe
+(50 € par défaut, Paramètres → Leçons & tarifs).
+
 ## Fiche de suivi
 
 Pour chaque élève, un historique de suivi pédagogique : après une leçon, le moniteur (ou la direction) choisit

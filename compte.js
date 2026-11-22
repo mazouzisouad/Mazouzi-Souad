@@ -27,7 +27,7 @@ function compteEleve(eid, ajout) {
   const res = {
     forfait: f, inclus: f ? heuresDuForfait(f) : 0, tauxForfait: tauxF,
     heuresFaites: 0, heuresPrevues: 0, heuresPosees: 0, heuresSup: 0, montantHeuresSup: 0,
-    valeurPosee: 0, examens: 0, autres: 0, paye: 0,
+    valeurPosee: 0, examens: 0, evaluations: 0, autres: 0, paye: 0,
     heuresPayees: 0, heuresNonPayees: 0, montantNonPaye: 0, nonPayeFait: 0, nonPayePrevu: 0,
     heuresPossibles: 0, total: 0, reste: 0, resteForfait: 0,
   };
@@ -48,6 +48,8 @@ function compteEleve(eid, ajout) {
       continue;
     }
     const fait = STATUTS_FAITS.includes(p.statut);
+    // évaluation de départ : hors forfait, prix fixe
+    if (modeDe(s, eid) === 'evaluation') { if (fait) { res.evaluations += DB.settings.tarifEvaluation ?? 50; } continue; }
     const prevu = p.statut === 'prevu' && (s.date >= auj || s.id === ajout?.id);
     if (!fait && !prevu) continue;
     const h = durH(s);
@@ -69,7 +71,7 @@ function compteEleve(eid, ajout) {
       res.autres += round2(Number(l.qte || 0) * Number(l.pu || 0));
     }
   }
-  res.examens = round2(res.examens); res.autres = round2(res.autres);
+  res.examens = round2(res.examens + res.evaluations); res.evaluations = round2(res.evaluations); res.autres = round2(res.autres);
   // 3) paiements : d'abord les frais (examens, autres), puis les heures dans l'ordre
   res.paye = round2(DB.paiements.filter((x) => x.eleveId === eid).reduce((t, x) => t + Number(x.montant || 0), 0));
   let dispo = Math.max(0, res.paye - res.examens - res.autres);
@@ -83,6 +85,10 @@ function compteEleve(eid, ajout) {
       if (l.fait) res.nonPayeFait += manque; else res.nonPayePrevu += manque;
     }
   }
+  // frais déjà faits (évaluation, examens, autres) pas encore couverts par les paiements
+  const fraisNonPayes = Math.max(0, res.examens + res.autres - res.paye);
+  res.fraisNonPayes = round2(fraisNonPayes);
+  res.montantNonPaye += fraisNonPayes; res.nonPayeFait += fraisNonPayes;
   res.montantNonPaye = round2(res.montantNonPaye); res.nonPayeFait = round2(res.nonPayeFait); res.nonPayePrevu = round2(res.nonPayePrevu);
   // ce qu'il a payé en plus permet de poser encore des heures
   if (dispo > 0.005) {
@@ -133,13 +139,14 @@ function blocCompte(eid) {
     </div>
 
     ${c.montantNonPaye > 0.005
-      ? `<div class="alert ${c.nonPayeFait > 0 ? 'bad' : 'warn'}" style="margin:10px 0 0">⚠️ <strong>${fmtH(c.heuresNonPayees)}</strong> posée${c.heuresNonPayees > 1 ? 's' : ''} pas encore payée${c.heuresNonPayees > 1 ? 's' : ''} : <strong>${eur(c.montantNonPaye)}</strong> à encaisser${c.nonPayeFait > 0 ? ` (dont ${eur(c.nonPayeFait)} pour des leçons déjà faites)` : ' avant ces leçons'}.</div>`
+      ? `<div class="alert ${c.nonPayeFait > 0 ? 'bad' : 'warn'}" style="margin:10px 0 0">⚠️ ${c.heuresNonPayees > 0.01 ? `<strong>${fmtH(c.heuresNonPayees)}</strong> posée${c.heuresNonPayees > 1 ? 's' : ''} pas encore payée${c.heuresNonPayees > 1 ? 's' : ''}${c.fraisNonPayes ? ' + ' : ''}` : ''}${c.fraisNonPayes ? `${c.evaluations ? 'évaluation / ' : ''}frais non payés` : ''} : <strong>${eur(c.montantNonPaye)}</strong> à encaisser${c.nonPayeFait > 0 ? ` (dont ${eur(c.nonPayeFait)} pour ce qui est déjà fait)` : ' avant ces leçons'}.</div>`
       : c.heuresPosees > 0 || c.paye > 0 ? `<div class="alert ok-msg" style="margin:10px 0 0">✅ Toutes les heures posées sont payées${c.heuresPossibles > 0.01 ? ` · il peut encore poser <strong>${fmtH(c.heuresPossibles)}</strong> avec ce qu'il a réglé` : ''}.</div>` : ''}
 
     <div class="cpt-recap">
       ${f ? ligne(esc(f.libelle || 'Forfait'), Number(f.prix) || 0) : ligne(`Leçons faites (${fmtH(c.heuresFaites)})`, round2(c.total - c.examens - c.autres))}
       ${f && c.montantHeuresSup ? ligne(`Heures en plus du forfait (${fmtH(c.heuresSup)})`, c.montantHeuresSup) : ''}
-      ${c.examens ? ligne('Examens (accompagnement / repassage)', c.examens) : ''}
+      ${c.evaluations ? ligne('Évaluation de départ', c.evaluations) : ''}
+      ${c.examens - c.evaluations > 0.005 ? ligne('Examens (accompagnement / repassage)', round2(c.examens - c.evaluations)) : ''}
       ${c.autres ? ligne('Autres (ajoutés sur les factures)', c.autres) : ''}
       ${ligne('Déjà payé', c.paye, 'paye')}
       ${f ? ligne('Reste à payer sur le forfait', c.resteForfait, c.resteForfait > 0.005 ? 'reste' : 'solde') : ''}

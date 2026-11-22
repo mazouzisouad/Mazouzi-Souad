@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · import des élèves actifs / inactifs';
+const APP_VERSION = '2026-11-23 · import Google Agenda, évaluation de départ';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -33,7 +33,7 @@ const statutsPour = (type) => (isExam(type) ? STATUTS_EXAMEN : isBlanc(type) ? S
 const statutLabel = (type, st) => statutsPour(type)[st] || st;
 // Dans une leçon plateau / circulation, chaque élève peut être en leçon normale,
 // en 📝 examen blanc ou en 🎯 préparation à l'examen (« mode » de l'élève).
-const MODES_ELEVE = { lecon: 'Leçon', blanc: '📝 Examen blanc', prepa: '🎯 Prépa' };
+const MODES_ELEVE = { lecon: 'Leçon', blanc: '📝 Examen blanc', prepa: '🎯 Prépa', evaluation: '🧭 Évaluation' };
 function modeDe(s, eleveId) {
   if (categorie(s.type) !== 'lecon') return isBlanc(s.type) ? 'blanc' : 'exam';
   const p = s.eleves.find((x) => x.eleveId === eleveId);
@@ -96,6 +96,7 @@ function defaultState() {
       capacite: { circulation: 3, plateau: 5, exam_plateau: 8, exam_circulation: 3 },
       tarifHeure: { plateau: 45, circulation: 50 },
       tarifExamen: { exam_plateau: 0, exam_circulation: 0 }, // 1er accompagnement (0 = offert)
+      tarifEvaluation: 50, // évaluation de départ (hors forfait)
       fraisRepassage: { exam_plateau: 100, exam_circulation: 150 },
       heuresPrepa: { min: 4, max: 6 },
       rappel: JSON.parse(JSON.stringify(RAPPEL_DEFAUT)),
@@ -179,6 +180,8 @@ function migrate(db) {
     }
     db.settings.couleursAuto1 = true;
   }
+  // French Permis (Argenteuil) : documents en vert, tant qu'aucune couleur n'a été choisie
+  for (const a of db.agences || []) if (!a.couleursPdf && /french|argenteuil/i.test(String(a.nom || ''))) a.couleursPdf = 'vert';
   // Style moderne par défaut pour tout le monde (une fois ; « classique » reste possible ensuite)
   if (db.settings && !db.settings.designAuto1) { db.settings.designPdf = 'moderne'; db.settings.designAuto1 = true; }
   if (!Array.isArray(db.modeles)) db.modeles = modelesParDefaut();
@@ -305,7 +308,7 @@ function preparation(eleveId, exam) {
     const st = statutDe(s, eleveId);
     if (!['present', 'prevu'].includes(st)) continue;
     const mode = modeDe(s, eleveId);
-    if (mode === 'blanc') continue;
+    if (mode === 'blanc' || mode === 'evaluation') continue;
     res.toutes += durH(s); // toutes les leçons (normales + prépa)
     if (mode !== 'prepa') continue;
     if (st === 'present') res.faites += durH(s); else res.prevues += durH(s);
@@ -518,7 +521,8 @@ function viewPlanning() {
     <input type="date" value="${UI.date}" data-on-change="navPick" style="width:auto">
     <h1 class="cap">${esc(titre)}</h1>
     <div class="spacer"></div>
-    ${moni ? '' : `<button class="btn" data-action="importExamens" title="Coller l'e-mail RdvPermis pour placer les examens">📥 Importer des examens (RdvPermis)</button>`}
+    ${moni ? '' : `<button class="btn" data-action="importExamens" title="Coller l'e-mail RdvPermis pour placer les examens">📥 Importer des examens (RdvPermis)</button>
+      <button class="btn" data-action="importAgenda" title="Reprendre un planning Google Agenda (fichier exporté)">📥 Importer Google Agenda</button>`}
   </div>
   ${moni ? '' : bandeauRappels()}
   ${semaine && !moni ? `<div class="seg" style="margin-bottom:10px">
@@ -587,16 +591,18 @@ function blocSeance(s, hMin) {
     const res = ['admis', 'valide'].includes(p.statut) ? ' ✅' : ['ajourne', 'nonvalide'].includes(p.statut) ? ' ❌' : '';
     const m = categorie(s.type) === 'lecon' ? modeP(s, p) : '';
     const tag = m === 'blanc' ? '<span class="tag-el blanc"><span class="long">📝 Examen blanc</span><span class="court">📝 Ex. blanc</span></span>'
-      : m === 'prepa' && !s.prepa ? '<span class="tag-el prepa"><span class="long">🎯 Prépa examen</span><span class="court">🎯 Prépa ex.</span></span>' : '';
+      : m === 'prepa' && !s.prepa ? '<span class="tag-el prepa"><span class="long">🎯 Prépa examen</span><span class="court">🎯 Prépa ex.</span></span>'
+      : m === 'evaluation' ? '<span class="tag-el evaluation"><span class="long">🧭 Évaluation de départ</span><span class="court">🧭 Évaluation</span></span>' : '';
     return `<div class="ag-el ${barre ? 'abs' : ''}"><span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}"></span>${esc(eleveCourt(e))}${res}${tag}</div>`;
   }).join('');
   const nbBlancs = categorie(s.type) === 'lecon' ? s.eleves.filter((p) => modeP(s, p) === 'blanc').length : 0;
   const nbPrepa = categorie(s.type) === 'lecon' && !s.prepa ? s.eleves.filter((p) => modeP(s, p) === 'prepa').length : 0;
+  const nbEval = categorie(s.type) === 'lecon' ? s.eleves.filter((p) => modeP(s, p) === 'evaluation').length : 0;
   const resume = (nbBlancs ? ` <span class="tag-blancs resume-mode">📝 ${nbBlancs} blanc${nbBlancs > 1 ? 's' : ''}</span>` : '') + (nbPrepa ? ` <span class="tag-prepa resume-mode">🎯 ${nbPrepa} prépa</span>` : '');
   return `
   <div class="ag-bloc ${s.type}${s.prepa ? ' prepa' : ''}" style="top:${top + 1}px;height:${height}px" data-action="editSeance" data-id="${s.id}">
     <div class="ag-bloc-top"><span>${s.debut} ${TYPES[s.type].short}${s.prepa ? ' <span class="tag-prepa">🎯 Prépa exam</span>' : ''}${resume}</span><span class="fill ${n >= cap ? 'full' : 'free'}">${n}/${cap}</span></div>
-    <div class="ag-els ${nbBlancs || nbPrepa ? 'en-lignes' : ''}">${noms}</div>
+    <div class="ag-els ${nbBlancs || nbPrepa || nbEval ? 'en-lignes' : ''}">${noms}</div>
     ${isExam(s.type) && n < cap ? `<div class="ag-libre">${cap - n} place${cap - n > 1 ? 's' : ''} à attribuer</div>` : ''}
     ${isExam(s.type) && s.lieu ? `<div class="ag-lieu">📍 ${esc(s.lieu)}</div>` : ''}
   </div>`;
@@ -1067,7 +1073,7 @@ function refreshDraft() {
     return `<div class="chip-row">
       <span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}"></span>
       <span class="name">${esc(eleveNom(e))} <span class="muted small">${esc(a?.nom || '')}</span></span>
-      ${categorie(draft.type) === 'lecon' ? `<span class="mode-el">${Object.entries(MODES_ELEVE).map(([k, l]) => `<button class="${modeP(draft, p) === k ? 'on' : ''} ${k}" data-action="setModeEleve" data-i="${i}" data-m="${k}" title="${k === 'lecon' ? 'Leçon normale' : k === 'blanc' ? 'Examen blanc pendant la leçon' : 'Préparation à l\'examen'}">${l}</button>`).join('')}</span>` : ''}
+      ${categorie(draft.type) === 'lecon' ? `<span class="mode-el">${Object.entries(MODES_ELEVE).map(([k, l]) => `<button class="${modeP(draft, p) === k ? 'on' : ''} ${k}" data-action="setModeEleve" data-i="${i}" data-m="${k}" title="${k === 'lecon' ? 'Leçon normale' : k === 'blanc' ? 'Examen blanc pendant la leçon' : k === 'evaluation' ? 'Évaluation de départ (hors forfait)' : 'Préparation à l\'examen'}">${l}</button>`).join('')}</span>` : ''}
       <select data-on-change="setPresence" data-i="${i}" class="presence ${p.statut}">
         ${Object.entries(statutsEleve(draft, p)).map(([k, l]) => `<option value="${k}" ${p.statut === k ? 'selected' : ''}>${l}</option>`).join('')}
       </select>
@@ -1273,7 +1279,7 @@ function viewFiche(id) {
         const cls = { present: 'ok', admis: 'ok', valide: 'ok', absent: 'bad', ajourne: 'bad', nonvalide: 'bad', excuse: 'warn', prevu: '' }[p.statut];
         return `<tr class="clickable" data-action="editSeance" data-id="${s.id}">
           <td>${fmtDate(s.date)}</td><td>${s.debut}–${s.fin}</td>
-          <td><span class="badge ${s.type}">${TYPES[s.type].short}</span>${modeDe(s, id) === 'prepa' ? ' <span class="badge prepa">🎯 Prépa exam</span>' : ''}${categorie(s.type) === 'lecon' && modeDe(s, id) === 'blanc' ? ' <span class="badge blanc_plateau">📝 Examen blanc</span>' : ''}</td>
+          <td><span class="badge ${s.type}">${TYPES[s.type].short}</span>${modeDe(s, id) === 'prepa' ? ' <span class="badge prepa">🎯 Prépa exam</span>' : ''}${categorie(s.type) === 'lecon' && modeDe(s, id) === 'blanc' ? ' <span class="badge blanc_plateau">📝 Examen blanc</span>' : ''}${modeDe(s, id) === 'evaluation' ? ' <span class="badge">🧭 Évaluation</span>' : ''}</td>
           <td>${esc(moniteurNom(byId('moniteurs', s.moniteurId)))}</td>
           <td><span class="badge ${cls}">${statutLabelEleve(s, p)}</span></td></tr>`;
       }).join('')}</tbody></table></div>` : '<div class="empty">Aucune leçon. Placez-la depuis le planning.</div>';
@@ -1521,6 +1527,9 @@ function ligneSeance(s, eleveId) {
     }
     return { libelle: `Frais de repassage ${epreuve} du ${fmtDate(s.date)}${lieu} (${n}e passage)`, qte: 1, pu: DB.settings.fraisRepassage[s.type] || 0, seanceId: s.id };
   }
+  if (modeDe(s, eleveId) === 'evaluation') {
+    return { libelle: `Évaluation de départ du ${fmtDate(s.date)} ${s.debut}-${s.fin}${p?.statut === 'absent' ? ' (absence non excusée)' : ''}`, qte: 1, pu: DB.settings.tarifEvaluation ?? 50, seanceId: s.id };
+  }
   return {
     libelle: `${modeDe(s, eleveId) === 'blanc' ? 'Examen blanc ' + baseDe(s.type) : 'Leçon ' + TYPES[s.type].label.toLowerCase() + (modeDe(s, eleveId) === 'prepa' ? ' (préparation examen)' : '')} du ${fmtDate(s.date)} ${s.debut}-${s.fin}${p?.statut === 'absent' ? ' (absence non excusée)' : ''}`,
     qte: round2(durH(s)),
@@ -1722,6 +1731,7 @@ const PALETTES = {
   rouge: { nom: 'Rouge & gris', fonce: [31, 41, 55], accent: [220, 38, 38], clair: [254, 226, 226] },
   gris: { nom: 'Sobre (gris)', fonce: [55, 65, 81], accent: [107, 114, 128], clair: [243, 244, 246] },
   bleuRose: { nom: 'Bleu clair & rose', fonce: [14, 165, 233], accent: [236, 72, 153], clair: [252, 231, 243], encre: [3, 105, 161] },
+  vert: { nom: 'Vert', fonce: [20, 83, 45], accent: [34, 197, 94], clair: [220, 252, 231], encre: [21, 128, 61] },
   vertGris: { nom: 'Vert & gris', fonce: [75, 85, 99], accent: [22, 163, 74], clair: [220, 252, 231], encre: [21, 128, 61] },
   jaune: { nom: 'Jaune', fonce: [250, 204, 21], accent: [234, 179, 8], clair: [254, 249, 195], encre: [133, 77, 14], surFonce: [41, 37, 36], sousFonce: [87, 83, 78], surAccent: [41, 37, 36] },
 };
@@ -1895,6 +1905,7 @@ function viewParametres() {
         <label class="field"><span>Max élèves plateau</span><input type="number" min="1" name="capPlateau" value="${s.capacite.plateau}"></label>
         <label class="field"><span>Prix heure circulation (€)</span><input type="number" step="0.01" name="tarifCirc" value="${s.tarifHeure.circulation}"></label>
         <label class="field"><span>Prix heure plateau (€)</span><input type="number" step="0.01" name="tarifPlateau" value="${s.tarifHeure.plateau}"></label>
+        <label class="field"><span>Évaluation de départ (€, hors forfait)</span><input type="number" step="0.01" min="0" name="tarifEval" value="${s.tarifEvaluation ?? 50}"></label>
         <label class="field"><span>Max élèves examen plateau</span><input type="number" min="1" name="capExP" value="${s.capacite.exam_plateau}"></label>
         <label class="field"><span>Max élèves examen circulation</span><input type="number" min="1" name="capExC" value="${s.capacite.exam_circulation}"></label>
         <label class="field"><span>1er accompagnement examen plateau (€, 0 = offert)</span><input type="number" step="0.01" min="0" name="tarifExP" value="${s.tarifExamen.exam_plateau}"></label>
@@ -2399,6 +2410,7 @@ const ACTIONS = {
     s.capacite.circulation = Math.max(1, parseInt(f.capCirc, 10) || 3);
     s.capacite.plateau = Math.max(1, parseInt(f.capPlateau, 10) || 5);
     s.tarifHeure.circulation = Number(f.tarifCirc) || 0;
+    s.tarifEvaluation = f.tarifEval === '' || f.tarifEval == null ? 50 : Number(f.tarifEval) || 0;
     s.tarifHeure.plateau = Number(f.tarifPlateau) || 0;
     s.capacite.exam_plateau = Math.max(1, parseInt(f.capExP, 10) || 8);
     s.capacite.exam_circulation = Math.max(1, parseInt(f.capExC, 10) || 3);
@@ -2588,7 +2600,7 @@ const ACTIONS = {
   },
 };
 
-Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS, SUIVI_ACTIONS, EMAIL_ACTIONS, MOTO_ACTIONS, COMPTE_ACTIONS, IMPORT_ELEVES_ACTIONS);
+Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS, SUIVI_ACTIONS, EMAIL_ACTIONS, MOTO_ACTIONS, COMPTE_ACTIONS, IMPORT_ELEVES_ACTIONS, IMPORT_AGENDA_ACTIONS);
 
 /* ---------------------------------------------------------------------
    Synchronisation en ligne
