@@ -8,6 +8,7 @@ Site d'entraînement au code de la route avec :
 - **252 questions** (16 gratuites) et 10 fiches de cours ;
 - **séries de jours d'affilée et 11 badges** à débloquer ;
 - **rappels par e-mail** : inactivité depuis 3 jours (si l'élève l'a accepté), fin d'accès dans 7 jours, accès terminé ;
+- **appli installable** sur téléphone (icône sur l'écran d'accueil, plein écran, questions gratuites utilisables hors connexion) ;
 - **tableau de bord interne** (`/admin`) : total encaissé, paiements, élèves ayant payé, ventes par mois, codes, remboursements ;
 - **déblocage automatique** de l'accès complet dès que le paiement est confirmé ;
 - **progression sauvegardée en ligne** et retrouvée sur tous les appareils ;
@@ -33,6 +34,7 @@ Technologies : Supabase (comptes + base de données), Stripe (paiement), Vercel 
 | `api/desinscription.js` | Lien « Ne plus recevoir de rappels » des e-mails |
 | `api/admin-stats.js` + `public/admin.html` | Tableau de bord interne |
 | `api/supprimer-compte.js` | Suppression du compte |
+| `public/manifest.webmanifest`, `public/sw.js`, `public/icons/` | Appli installable (nom, icônes, fonctionnement hors connexion) |
 | `supabase/schema.sql` | Tables et règles de sécurité |
 | `supabase/nettoyage.sql` | Suppression des comptes inactifs depuis 3 ans |
 
@@ -131,3 +133,12 @@ npm test
 - **Protection du contenu** : la page ne contient que le contenu gratuit. Le contenu payant est envoyé par le serveur
   après vérification de l'accès. Un élève qui a payé peut évidemment voir les questions qu'il a débloquées.
 - La clé `service_role` et les clés Stripe restent côté serveur : elles ne sont jamais envoyées au navigateur.
+
+## Appli installable
+
+- **Android (Chrome)** : une carte « Installer l'appli » apparaît sur l'accueil ; un appui suffit.
+- **iPhone (Safari)** : la carte explique « Partager → Sur l'écran d'accueil » (Apple ne permet pas de bouton d'installation).
+- Hors connexion : l'appli s'ouvre, les questions gratuites et la progression restent disponibles ; la progression
+  est envoyée en ligne au retour du réseau. Le contenu payant, le paiement et le compte demandent une connexion.
+- Après une grosse mise à jour, changez `VERSION` en haut de `public/sw.js` pour forcer le renouvellement des fichiers
+  gardés sur les téléphones.

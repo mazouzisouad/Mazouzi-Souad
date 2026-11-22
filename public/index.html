@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#4f8fe0">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icone.svg" type="image/svg+xml">
+<link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Code Ludique">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Code Ludique : entraînement au code de la route</title>
 <!-- Comptes élèves, accès payant et sauvegarde en ligne de la progression -->
 <script src="/api/config"></script>
@@ -193,6 +201,10 @@ a.btn{text-decoration:none}
 .bdg span{font-size:11px;font-weight:700;color:var(--muted);line-height:1.25}
 .bdg.off svg{filter:grayscale(1);opacity:.35}
 .bdg.off b{color:var(--muted)}
+.install{background:#e6efff}
+.install .x{margin-left:auto;align-self:flex-start;color:var(--muted);font-size:20px;line-height:1;padding:0 2px}
+.install .btn{margin-top:8px}
+.horsligne{position:fixed;top:0;left:0;right:0;z-index:40;pointer-events:none;background:#1f2a44;color:#fff;font-weight:800;font-size:13px;text-align:center;padding:calc(6px + env(safe-area-inset-top)) 12px 6px}
 .toast{position:fixed;left:50%;bottom:110px;transform:translate(-50%,20px);opacity:0;z-index:30;display:flex;align-items:center;gap:10px;background:#1f2a44;color:#fff;border-radius:18px;padding:10px 16px 10px 10px;box-shadow:0 8px 28px rgba(40,50,80,.3);transition:opacity .3s,transform .3s;max-width:calc(100% - 32px)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .toast svg{width:40px;height:40px;flex:none}
@@ -695,6 +707,34 @@ function toastSuivant(){
   setTimeout(function(){ el.classList.add('on'); }, 30);
   setTimeout(function(){ el.classList.remove('on'); setTimeout(function(){ el.remove(); toastSuivant(); }, 350); }, 3200);
 }
+/* ---------- appli installable ---------- */
+var invite = null, CLE_INSTALL = '__ca_install_masque';
+function estInstallee(){ try { return matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; } catch(e){ return false; } }
+function estIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); }
+function installMasquee(){ try { var t = +localStorage.getItem(CLE_INSTALL); return t && Date.now() - t < 30*864e5; } catch(e){ return false; } }
+var I_PHONE = '<svg viewBox="0 0 48 48"><rect x="13" y="4" width="22" height="40" rx="5" fill="#2f6fd6"/><rect x="16" y="9" width="16" height="27" rx="2" fill="#cfe4ff"/><circle cx="24" cy="40" r="2" fill="#fff"/><path d="M24 15v13M19 23l5 5 5-5" stroke="#2f6fd6" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var I_PARTAGE = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#2f6fd6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M12 3v12M8 7l4-4 4 4M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>';
+function carteInstall(){
+  if(estInstallee() || installMasquee()) return '';
+  var x = '<button class="x" data-a="noinstall" aria-label="Masquer">×</button>';
+  if(invite) return '<div class="note install">'+I_PHONE+'<div><b>Installe Code Ludique</b><span>L’appli sur ton écran d’accueil, même sans connexion.</span><br><button class="btn green sm" data-a="install">Installer l’appli</button></div>'+x+'</div>';
+  if(estIOS()) return '<div class="note install">'+I_PHONE+'<div><b>Ajoute Code Ludique à ton écran d’accueil</b><span>Touche '+I_PARTAGE+' <b style="display:inline;font-size:13px">Partager</b>, puis « Sur l’écran d’accueil ».</span></div>'+x+'</div>';
+  return '';
+}
+window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); invite = e; if(screen==='home') render(); });
+window.addEventListener('appinstalled', function(){ invite = null; if(screen==='home') render(); });
+function majHorsLigne(){
+  var el = document.getElementById('horsligne');
+  if(navigator.onLine){ if(el) el.remove(); document.body.style.paddingTop = ''; return; }
+  if(el) return;
+  el = document.createElement('div'); el.id = 'horsligne'; el.className = 'horsligne'; el.setAttribute('role','status');
+  el.textContent = 'Hors connexion : ta progression sera enregistrée en ligne dès le retour du réseau.';
+  document.body.appendChild(el);
+  document.body.style.paddingTop = el.offsetHeight + 'px'; // le bandeau ne cache aucun bouton
+}
+window.addEventListener('online', majHorsLigne);
+window.addEventListener('offline', majHorsLigne);
+
 function carteSerie(){
   var n = serieJours(), rec = recordJours(), today = joueAujourdhui();
   var titre = n ? n+' jour'+(n>1?'s':'')+' d’affilée' : 'Lance ta série de jours !';
@@ -820,6 +860,7 @@ function vHome(){
   var qi = dailyQ(), qc = catOf(qi);
   html += '<div class="daily"><div class="tx"><div class="kick">'+I_STAR+' La question du jour</div><h3>'+cut(Q[qi].q,84)+'</h3><button class="btn purple sm" data-a="daily">Répondre '+CHEV+'</button></div><div class="pic">'+icon(qc)+'</div></div>';
   html += carteSerie();
+  html += carteInstall();
   html += promo();
   var wk = doneSince(Date.now()-7*864e5);
   html += '<div class="note">'+I_TROPHY+'<div><b>'+(wk?'Bravo !':'C’est parti !')+'</b><span>'+(wk?('Tu as validé '+wk+' série'+(wk>1?'s':'')+' cette semaine'):'Termine ta première série de la semaine')+'</span></div></div>';
@@ -1112,6 +1153,12 @@ $app.addEventListener('click', function(e){
     }).catch(function(err){ payMsg={w:'code',k:'ko',t:(err && err.message) || 'Activation impossible pour le moment.'}; })
       .then(function(){ busy = false; render(); });
   }
+  else if(a==='install'){
+    if(!invite) return;
+    invite.prompt();
+    invite.userChoice.then(function(){ invite = null; render(); });
+  }
+  else if(a==='noinstall'){ try { localStorage.setItem(CLE_INSTALL, String(Date.now())); } catch(e){} render(); }
   else if(a==='read'){ store.read[d('f')] = 1; marquerJour(); save(); go('cours'); verifierBadges(true); }
 });
 $app.addEventListener('change', function(e){
@@ -1129,6 +1176,10 @@ $app.addEventListener('change', function(e){
 })();
 verifierBadges(false);
 render();
+majHorsLigne();
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){ navigator.serviceWorker.register('/sw.js').catch(function(){}); });
+}
 // Mise à jour quand le compte ou l'accès change (connexion, paiement, fin d'accès)
 if(window.CodeAcces) CodeAcces.surChangement(function(){ chargerContenu(); if(screen!=='quiz') render(); });
 </script>
