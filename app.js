@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · un moniteur : plateau OU circulation';
+const APP_VERSION = '2026-11-23 · planning aux lignes légères';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -546,7 +546,7 @@ function agendaGrid(cols) {
           .map((s) => blocSeance(s, hMin)).join('');
         const line = c.date === todayISO() && nowMin >= hMin && nowMin <= hMax
           ? `<div class="ag-now" style="top:${((nowMin - hMin) / 30) * ROW_H}px"></div>` : '';
-        return `<div class="ag-col ${c.debutJour ? 'debut-jour' : ''}" style="height:${H}px" data-date="${c.date}" data-mon="${c.mon}">${slots}${blocks}${line}</div>`;
+        return `<div class="ag-col ${c.debutJour ? 'debut-jour' : ''} ${c.today ? 'today' : ''}" style="height:${H}px" data-date="${c.date}" data-mon="${c.mon}">${slots}${blocks}${line}</div>`;
       }).join('')}
     </div>
   </div>`;
