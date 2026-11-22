@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · « Examen blanc » / « Prépa examen » écrits sur le planning';
+const APP_VERSION = '2026-11-23 · semaine du lundi au samedi';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -484,7 +484,7 @@ function viewPlanning() {
   if (semaine) {
     const vus = UI.moniteurSemaine === 'tous' ? moniteursVus : moniteursVus.filter((m) => m.id === UI.moniteurSemaine);
     cols = [];
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 6; i++) { // du lundi au samedi (pas de dimanche)
       const d = addDays(lundi, i);
       vus.forEach((m, j) => cols.push(vus.length > 1
         ? { date: d, mon: m.id, titre: moniteurNom(m), couleur: m.couleur, jour: fmtDayHead(d), debutJour: j === 0, nbJour: vus.length, today: d === todayISO() }
@@ -495,7 +495,7 @@ function viewPlanning() {
   }
 
   const titre = semaine
-    ? `Semaine du ${parseISO(lundi).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} au ${parseISO(addDays(lundi, 6)).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
+    ? `Semaine du ${parseISO(lundi).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })} au ${parseISO(addDays(lundi, 5)).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`
     : fmtDayLong(UI.date);
 
   return `
@@ -517,6 +517,7 @@ function viewPlanning() {
       ${DB.moniteurs.length > 1 ? `<button class="${UI.moniteurSemaine === 'tous' ? 'on' : ''}" data-action="setMonSemaine" data-id="tous">👥 Tous les moniteurs</button>` : ''}
       ${DB.moniteurs.map((m) => `<button class="${UI.moniteurSemaine === m.id ? 'on' : ''}" data-action="setMonSemaine" data-id="${m.id}"><span class="dot" style="background:${esc(m.couleur)}"></span>${esc(moniteurNom(m))}</button>`).join('')}
     </div>` : ''}
+  ${semaine && DB.seances.some((x) => x.date === addDays(lundi, 6) && (!moni || x.moniteurId === Cloud.monId)) ? `<div class="alert warn" style="margin-bottom:8px">⚠️ Il y a des leçons le dimanche ${esc(fmtDayHead(addDays(lundi, 6)))} : <button class="btn small" data-action="voirDimanche" data-d="${addDays(lundi, 6)}">Voir en vue Jour</button></div>` : ''}
   ${cols.length ? agendaGrid(cols) : `<div class="card empty">${moni ? "Votre compte n'est relié à aucun moniteur : contactez la direction." : 'Ajoutez vos moniteurs dans Paramètres.'}</div>`}
   <p class="muted small" style="margin-top:8px">${moni ? 'Cliquez sur une leçon ou un examen pour voir les élèves et noter les présences ou les résultats.' : 'Cliquez sur une case vide pour placer une leçon ou un examen · Cliquez dessus pour ajouter un élève, noter les présences ou les résultats · Faites-la glisser pour la déplacer (sur tablette : appuyez un instant puis glissez).'}
   &nbsp; ${DB.agences.length > 1 ? DB.agences.map((a) => `<span class="dot" style="background:${esc(a.couleur)}"></span>${esc(a.nom)}`).join(' &nbsp; ') : ''}</p>`;
@@ -2117,6 +2118,7 @@ const ACTIONS = {
   /* Navigation planning */
   setMode(d) { UI.mode = d.m; render(); },
   setMonSemaine(d) { UI.moniteurSemaine = d.id; render(); },
+  voirDimanche(d) { UI.date = d.d; UI.mode = 'jour'; render(); },
   annulerDeplacement() {
     const a = GLISSE.annuler; if (!a) return;
     const s = byId('seances', a.id); if (!s) return;
