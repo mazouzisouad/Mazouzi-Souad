@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · prépa examen choisie élève par élève';
+const APP_VERSION = '2026-11-22 · élèves d’une leçon : poubelle et lignes qui tiennent dans le cadre';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -1087,15 +1087,17 @@ function refreshDraft() {
   $('#s-eleves').innerHTML = n ? draft.eleves.map((p, i) => {
     const e = byId('eleves', p.eleveId);
     const a = agenceDe(e);
-    return `<div class="chip-row">
-      <span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}"></span>
-      <span class="name">${esc(eleveNom(e))} <span class="muted small">${esc(a?.nom || '')}</span></span>
+    return `<div class="chip-row el-seance">
+      <div class="es-tete"><span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}"></span>
+        <span class="name">${esc(eleveNom(e))} <span class="muted small">${esc(a?.nom || '')}</span></span>
+        <button class="btn small ghost es-suppr" data-action="removeEleve" data-i="${i}" title="Retirer de la leçon" aria-label="Retirer ${esc(eleveNom(e))} de la leçon">🗑️</button></div>
+      <div class="es-actions">
       ${categorie(draft.type) === 'lecon' ? `<span class="mode-el">${Object.entries(MODES_ELEVE).map(([k, l]) => `<button class="${modeP(draft, p) === k ? 'on' : ''} ${k}" data-action="setModeEleve" data-i="${i}" data-m="${k}" title="${k === 'lecon' ? 'Leçon normale' : k === 'blanc' ? 'Examen blanc pendant la leçon' : k === 'evaluation' ? 'Évaluation de départ (hors forfait)' : 'Préparation à l\'examen'}">${l}</button>`).join('')}</span>` : ''}
       <select data-on-change="setPresence" data-i="${i}" class="presence ${p.statut}">
         ${Object.entries(statutsEleve(draft, p)).map(([k, l]) => `<option value="${k}" ${p.statut === k ? 'selected' : ''}>${l}</option>`).join('')}
       </select>
       ${draft.id ? `<button class="btn small" data-action="suiviDepuisSeance" data-eleve="${p.eleveId}" title="Fiche de suivi">📋 Suivi</button>` : ''}
-      <button class="btn small ghost" data-action="removeEleve" data-i="${i}" title="Retirer">✕</button>
+      </div>
     </div>`;
   }).join('') : '<div class="muted small">Aucun élève pour l\'instant.</div>';
 

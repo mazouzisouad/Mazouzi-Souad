@@ -829,3 +829,12 @@ tr.sous-titre td { background: #f8fafc; font-weight: 700; font-size: 12.5px; col
 .ligne-logo { width: 34px; height: 24px; object-fit: contain; margin-right: 6px; vertical-align: middle; background: #fff; border-radius: 4px; }
 .badge-logo { height: 14px; max-width: 34px; object-fit: contain; margin-right: 4px; vertical-align: -3px; background: #fff; border-radius: 3px; }
 .contrat-logo { display: block; max-height: 60px; max-width: 180px; object-fit: contain; margin: 0 0 10px; }
+
+/* ---------- Élèves dans la fenêtre d'une leçon : tout tient dans le cadre ---------- */
+.chip-row.el-seance { display: grid; gap: 6px; align-items: stretch; min-width: 0; }
+.es-tete { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.es-tete .name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.es-suppr { flex: none; font-size: 16px; padding: 2px 8px; }
+.es-suppr:hover { background: #fee2e2; }
+.es-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; }
+.es-actions .mode-el { flex: 0 1 auto; flex-wrap: wrap; max-width: 100%; }
