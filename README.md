@@ -68,14 +68,21 @@ un avis en 1 clic (😊 Bien / 😐 Moyen / 😟 À revoir), coche les points tr
 et ajoute un commentaire. Depuis le planning (bouton « 📋 Suivi » à côté de chaque élève) ou la fiche élève
 (onglet « 📋 Suivi »). Les moniteurs lisent tout le suivi et modifient seulement leurs propres commentaires.
 
-## 🏍️ Motos & essence
+## 🏍️ Motos — le garage
 
-Onglet « 🏍️ Motos » : une carte par moto (surnom, modèle, plaque, où elle se trouve, dernier plein,
-compteur, consommation). « ⛽ Plein » : choisir la moto, litres + montant (le prix au litre se calcule),
-compteur facultatif pour la consommation. « 📍 Où est-elle ? » : agence, piste, avec un moniteur,
-garage, autre. En bas : dépenses des 6 derniers mois et liste des pleins par mois / par moto.
-Les moniteurs voient la flotte, notent leurs pleins et déplacent les motos ; seule la direction
-ajoute, modifie ou retire une moto.
+Onglet « 🏍️ Motos » :
+- **Une carte par moto** : dessin animé à sa couleur (ou sa photo : ✏️ → 📷), plaque, auto-école
+  à qui elle appartient (🏷️), lieu où elle est (avec « ↩︎ à rendre » si elle est garée dans une autre
+  auto-école), jauge d'essence, compteur, consommation. Touchez la moto : le pilote monte et elle part.
+- **Boutons par auto-école** pour n'afficher que ses motos.
+- **Plan « Où sont les motos ? »** : chaque lieu (auto-écoles, piste, moniteurs, garage, ailleurs) a ses
+  places ; touchez une moto puis un lieu, elle s'y gare. Mini-jauge d'essence sur chaque moto garée.
+- **⛽ Plein** : « Chercher les stations autour de moi » (position du téléphone + prix officiels du jour,
+  data.economie.gouv.fr), le moniteur choisit la station, tape le montant, les litres se calculent ;
+  il peut les corriger. Case « Plein complet » quand le réservoir est rempli jusqu'au bout.
+- **Jauge** : estimation à partir des pleins (litres ajoutés, plein complet = 100 %), de la taille du
+  réservoir et des km notés. Elle est d'autant plus juste que les moniteurs notent le compteur.
+- Les moniteurs notent leurs pleins et déplacent les motos ; seule la direction ajoute ou modifie une moto.
 
 ## Places d'examen réservées
 

@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · motos & essence';
+const APP_VERSION = '2026-11-23 · garage des motos';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -1928,16 +1928,30 @@ function demoData() {
   db.seances[db.seances.length - 1].eleves = [{ eleveId: 'el0', statut: 'valide' }, { eleveId: 'el3', statut: 'valide' }];
   // Motos & pleins (démo)
   const ilya = (j) => { const d = new Date(); d.setDate(d.getDate() - j); return toISODate(d); };
+  const em = (type, ref = '') => ({ type, ref, texte: '', majLe: new Date().toISOString() });
+  const mo = (id, surnom, modele, plaque, couleur, proprio, carburant, reservoir, km, emplacement) => ({ id, surnom, modele, plaque, categorie: 'A2', couleur, proprio, carburant, reservoir, km, emplacement });
   db.motos = [
-    { id: 'mo1', surnom: 'La Bleue', modele: 'Yamaha MT-07', plaque: 'GH-482-KL', categorie: 'A2', couleur: '#2563eb', km: 18420, emplacement: { type: 'agence', ref: 'ag1', texte: '', majLe: new Date().toISOString() } },
-    { id: 'mo2', surnom: 'Flash', modele: 'Kawasaki Z650', plaque: 'FT-219-BN', categorie: 'A2', couleur: '#16a34a', km: 23110, emplacement: { type: 'piste', ref: '', texte: '', majLe: new Date().toISOString() } },
-    { id: 'mo3', surnom: 'Titan', modele: 'Honda CB650R', plaque: 'EZ-731-QR', categorie: 'A2', couleur: '#dc2626', km: 9870, emplacement: { type: 'moniteur', ref: 'm2', texte: '', majLe: new Date().toISOString() } },
+    mo('mo1', 'La Bleue', 'Yamaha MT-07', 'GH-482-KL', '#3b82f6', 'ag1', 'SP98', 14, 18560, em('agence', 'ag1')),
+    mo('mo2', 'Rosa', 'Honda CB500F', 'FK-905-TR', '#ec4899', 'ag1', 'E10', 17.1, 14230, em('agence', 'ag1')),
+    mo('mo3', 'Orage', 'Suzuki SV650', 'GA-318-PV', '#6366f1', 'ag1', 'SP98', 13.8, 27450, em('piste')),
+    mo('mo4', 'Flash', 'Kawasaki Z650', 'FT-219-BN', '#22c55e', 'ag2', 'SP98', 15, 23110, em('piste')),
+    mo('mo5', 'Kiwi', 'Kawasaki Z650', 'FW-664-LC', '#84cc16', 'ag2', 'E10', 15, 19870, em('agence', 'ag2')),
+    mo('mo6', 'Grizzly', 'Yamaha XSR700', 'EY-142-MD', '#78716c', 'ag2', 'SP98', 13, 31020, em('agence', 'ag1')),
+    mo('mo7', 'Titan', 'Honda CB650R', 'EZ-731-QR', '#ef4444', 'ag3', 'SP98', 15.4, 10080, em('moniteur', 'm2')),
+    mo('mo8', 'Soleil', 'Yamaha MT-07', 'GL-207-SN', '#eab308', 'ag3', 'E10', 14, 8640, em('agence', 'ag3')),
+    mo('mo9', 'Nuit', 'Honda CB500F', 'FB-873-XA', '#334155', 'ag3', 'SP95', 17.1, 22310, em('garage')),
   ];
-  const pl = (motoId, j, litres, montant, km, station) => db.pleins.push({ id: uid(), motoId, date: ilya(j), litres, montant, km, station, auteur: 'local', auteurNom: 'Karim B.', creeLe: new Date().toISOString() });
+  const pl = (motoId, j, litres, montant, km, station, complet = false) => db.pleins.push({ id: uid(), motoId, date: ilya(j), litres, montant, km, station, complet, auteur: 'local', auteurNom: j % 2 ? 'Karim B.' : 'Julie D.', creeLe: new Date().toISOString() });
   db.pleins = [];
-  pl('mo1', 70, 12.1, 22.4, 17940, 'Total'); pl('mo1', 40, 11.8, 21.9, 18180, 'Total'); pl('mo1', 12, 12.4, 23.1, 18420, 'Leclerc');
-  pl('mo2', 55, 13.0, 24.2, 22610, 'Esso'); pl('mo2', 20, 13.5, 25.0, 22860, 'Total'); pl('mo2', 3, 12.9, 24.6, 23100, 'Total');
-  pl('mo3', 33, 11.0, 20.5, 9620, 'Leclerc'); pl('mo3', 6, 11.6, 21.8, 9850, 'Esso');
+  pl('mo1', 40, 12.6, 23.3, 18180, 'Avenue des Tilleuls', true); pl('mo1', 12, 7.0, 13.0, 18420, 'Centre commercial');
+  pl('mo2', 30, 15.5, 27.4, 13900, 'Route de Roissy', true); pl('mo2', 4, 6.1, 10.8, 14100, 'Centre commercial');
+  pl('mo3', 25, 12.9, 24.4, 27150, 'Avenue des Tilleuls', true); pl('mo3', 9, 5.2, 9.8, 27300, 'Avenue des Tilleuls');
+  pl('mo4', 20, 13.5, 25.0, 22860, 'Route de Roissy', true); pl('mo4', 3, 12.9, 24.6, 23100, 'Centre commercial', true);
+  pl('mo5', 18, 14.2, 24.8, 19500, 'Centre commercial', true); pl('mo5', 6, 7.4, 12.9, 19700, 'Rond-point de la Gare');
+  pl('mo6', 35, 12.4, 23.7, 30500, 'Route de Roissy', true); pl('mo6', 11, 6.0, 11.4, 30800, 'Avenue des Tilleuls');
+  pl('mo7', 33, 14.8, 27.6, 9620, 'Centre commercial', true); pl('mo7', 6, 3.0, 5.6, 9850, 'Rond-point de la Gare');
+  pl('mo8', 14, 13.1, 22.9, 8300, 'Centre commercial', true); pl('mo8', 1, 8.9, 15.6, 8560, 'Avenue des Tilleuls');
+  pl('mo9', 40, 16.4, 29.9, 21600, 'Route de Roissy', true); pl('mo9', 15, 3.5, 6.4, 22000, 'Rond-point de la Gare');
   return db;
 }
 
