@@ -225,6 +225,27 @@ a.item{text-decoration:none;color:inherit}
 .illus-clignote{animation:clig 1s steps(1) infinite}
 @keyframes clig{50%{opacity:.12}}
 @media (prefers-reduced-motion:reduce){.illus-clignote{animation:none}}
+/* confort de lecture et accessibilité */
+:focus-visible{outline:3px solid #2f6fd6;outline-offset:2px;border-radius:10px}
+.confort-btn{position:absolute;top:12px;left:14px;z-index:3;display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:30px;padding:0 10px;background:rgba(255,255,255,.92);color:#2f6fd6;font-weight:900;font-size:14px;border-radius:999px;box-shadow:0 2px 8px rgba(30,60,120,.15)}
+.ecoute{display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:#e6efff;color:#2f6fd6;font-weight:900;font-size:13.5px;padding:8px 14px;border-radius:999px}
+.ecoute svg{width:16px;height:16px}
+.ecoute.on{background:#2f6fd6;color:#fff}
+.fb .ecoute{margin-top:10px;background:rgba(255,255,255,.7)}
+.reglage{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line);cursor:pointer}
+.reglage:last-child{border-bottom:0}
+.reglage span{flex:1}
+.reglage b{display:block;font-weight:900;font-size:15px}
+.reglage small{display:block;font-size:13px;font-weight:600;color:var(--muted)}
+.reglage input{width:24px;height:24px;flex:none;accent-color:var(--green)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+body.facile{font-size:112%}
+body.facile .app{letter-spacing:.02em;word-spacing:.08em}
+body.facile .qcard h2{font-size:23px;line-height:1.45}
+body.facile .opt{font-size:17.5px;line-height:1.5;padding:15px 16px}
+body.facile .fb,body.facile .fiche li{font-size:16.5px;line-height:1.6}
+body.facile .muted,body.facile .item .ss,body.facile .note span{font-size:14.5px;color:#4a5368}
+body.facile .item .tt{font-size:16px}
 .toast{position:fixed;left:50%;bottom:110px;transform:translate(-50%,20px);opacity:0;z-index:30;display:flex;align-items:center;gap:10px;background:#1f2a44;color:#fff;border-radius:18px;padding:10px 16px 10px 10px;box-shadow:0 8px 28px rgba(40,50,80,.3);transition:opacity .3s,transform .3s;max-width:calc(100% - 32px)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .toast svg{width:40px;height:40px;flex:none}
@@ -738,6 +759,62 @@ function toastSuivant(){
   setTimeout(function(){ el.classList.add('on'); }, 30);
   setTimeout(function(){ el.classList.remove('on'); setTimeout(function(){ el.remove(); toastSuivant(); }, 350); }, 3200);
 }
+/* ---------- confort de lecture : voix et lecture facile ---------- */
+var CLE_CONFORT = '__ca_confort', confort = {facile:false, auto:false, lent:false}, ecranAvantConfort = 'home', dernierLu = null, lectureEnCours = null;
+try { var cc = JSON.parse(localStorage.getItem(CLE_CONFORT) || 'null'); if(cc) confort = Object.assign(confort, cc); } catch(e){}
+function appliquerConfort(){ document.body.classList.toggle('facile', !!confort.facile); }
+function sauverConfort(){ try { localStorage.setItem(CLE_CONFORT, JSON.stringify(confort)); } catch(e){} appliquerConfort(); }
+var voixOk = typeof window.speechSynthesis !== 'undefined' && typeof window.SpeechSynthesisUtterance !== 'undefined';
+function voixFr(){ var v = speechSynthesis.getVoices() || []; return v.filter(function(x){ return /^fr(-|_|$)/i.test(x.lang); })[0] || null; }
+function pourLaVoix(t){
+  return String(t).replace(/<[^>]+>/g, ' ')
+    .replace(/(\d) ?km\/h/g, '$1 kilomètres-heure').replace(/(\d) ?g\/L/g, '$1 grammes par litre').replace(/(\d) ?mg\/L/g, '$1 milligrammes par litre')
+    .replace(/(\d) ?m\b/g, '$1 mètres').replace(/(\d),(\d)/g, '$1 virgule $2').replace(/\s+/g, ' ').trim();
+}
+function lire(texte, cle){
+  if(!voixOk) return;
+  speechSynthesis.cancel();
+  if(lectureEnCours === cle){ lectureEnCours = null; majEcoute(); return; } // second appui : stop
+  var u = new SpeechSynthesisUtterance(pourLaVoix(texte));
+  u.lang = 'fr-FR'; var v = voixFr(); if(v) u.voice = v; u.rate = confort.lent ? 0.82 : 1;
+  u.onend = u.onerror = function(){ if(lectureEnCours === cle){ lectureEnCours = null; majEcoute(); } };
+  lectureEnCours = cle; speechSynthesis.speak(u); majEcoute();
+}
+// met à jour les boutons « Écouter » sans redessiner l'écran (le focus du clavier reste en place)
+function majEcoute(){
+  var bs = document.querySelectorAll('[data-a="ecoute"]');
+  for(var i=0;i<bs.length;i++){
+    var b = bs[i], on = b.getAttribute('data-c') === lectureEnCours;
+    b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
+    b.innerHTML = I_SON + (on ? 'Arrêter la lecture' : b.getAttribute('data-libelle'));
+  }
+}
+function texteQuestion(){
+  var q = Q[run.ids[run.i]];
+  return q.q + ' ' + run.opts.map(function(o,k){ return 'Réponse ' + String.fromCharCode(65+k) + ' : ' + o.t + '.'; }).join(' ');
+}
+var I_SON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.400" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.500 8.500 0 0 1 0 12"/></svg>';
+function boutonEcoute(cle, libelle){
+  if(!voixOk) return '';
+  var on = lectureEnCours === cle;
+  return '<button class="ecoute'+(on?' on':'')+'" data-a="ecoute" data-c="'+cle+'" data-libelle="'+libelle+'" aria-pressed="'+on+'">'+I_SON+(on?'Arrêter la lecture':libelle)+'</button>';
+}
+function vConfort(){
+  var html = '<div class="hero" style="height:188px;padding-top:50px">'+hills()+'<button class="back" data-a="finconfort">'+BACK+' Retour</button><h1 style="font-size:26px;max-width:58%">Confort de lecture</h1>'+mascot('book','mascot')+'</div><div class="sheet">';
+  function ligne(cle, titre, detail, dispo){
+    if(dispo === false) return '';
+    return '<label class="reglage"><span><b>'+titre+'</b><small>'+detail+'</small></span><input type="checkbox" data-confort="'+cle+'"'+(confort[cle]?' checked':'')+'></label>';
+  }
+  html += '<div class="card" style="padding:4px 14px">'+
+    ligne('facile','Lecture facile','Texte plus grand, plus espacé et plus contrasté')+
+    ligne('auto','Lire les questions automatiquement','Chaque question et ses réponses sont lues à voix haute', voixOk)+
+    ligne('lent','Voix plus lente','Pour bien comprendre chaque mot', voixOk)+'</div>';
+  if(voixOk) html += '<div class="card"><div class="ctitle">Essayer la voix</div><div class="muted">Le téléphone lit le texte avec sa propre voix française, même sans connexion.</div>'+boutonEcoute('essai','Écouter un exemple')+'</div>';
+  else html += '<div class="note"><div><b>Lecture à voix haute indisponible</b><span>Ce navigateur ne sait pas lire le texte à voix haute. Essayez Chrome, Safari ou Edge à jour.</span></div></div>';
+  html += '<div class="foot">Ces réglages sont gardés sur cet appareil.</div>';
+  return html+'</div>';
+}
+
 /* ---------- passer l'examen du code ---------- */
 // Centres d'examen agréés et liens d'inscription officiels, tels que listés par service-public.gouv.fr
 var CENTRES = [
@@ -886,7 +963,8 @@ function isPrem(){ return !!(window.CodeAcces && CodeAcces.premium); }
 function premDays(){ var f = window.CodeAcces && CodeAcces.expireLe; return f ? Math.max(0, Math.ceil((f - Date.now())/864e5)) : 0; }
 function premEnd(){ return new Date(CodeAcces.expireLe).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}); }
 var I_USER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.5-6 8-6s7 1.5 8 6"/></svg>';
-function acct(){ return '<a class="acct" href="/compte">'+I_USER+(connecte()?'Mon compte':'Se connecter')+'</a>'; }
+function confortBtn(){ return '<button class="confort-btn" data-a="confort" aria-label="Confort de lecture : texte plus grand, lecture à voix haute">Aa</button>'; }
+function acct(){ return confortBtn()+'<a class="acct" href="/compte">'+I_USER+(connecte()?'Mon compte':'Se connecter')+'</a>'; }
 function legal(){ return '<div class="legal"><a href="/compte">Mon compte</a><a href="/cgv">Conditions de vente</a><a href="/confidentialite">Confidentialité</a><a href="/mentions-legales">Mentions légales</a></div>'; }
 // Contenu payant : absent de la page, chargé depuis le serveur quand l'accès complet est actif
 var complet = false, chargement = null;
@@ -1091,8 +1169,8 @@ function modeLabel(){ return run.mode==='exam'?'Examen blanc':run.mode==='errors
 function vQuiz(){
   var id = run.ids[run.i], q = Q[id], c = catOf(id), n = run.ids.length, exam = run.mode==='exam';
   var last = run.i===n-1;
-  var html = '<div class="qwrap"><div class="qtop"><button class="x" data-a="close" aria-label="Quitter">×</button><div class="qbar"><i style="width:'+Math.round(100*(run.i+(run.done?1:0))/n)+'%"></i></div><span class="cnt">'+(run.i+1)+'/'+n+'</span></div>';
-  html += '<div class="qcard">'+(q.img && window.Illus ? Illus.rendre(q.img) : '')+'<span class="qtheme '+c.cls+'">'+icon(c)+' '+q.t+'</span><h2>'+q.q+'</h2></div><div class="opts">';
+  var html = '<div class="qwrap"><div class="qtop"><button class="x" data-a="close" aria-label="Quitter">×</button><div class="qbar"><i style="width:'+Math.round(100*(run.i+(run.done?1:0))/n)+'%"></i></div><span class="cnt">'+(run.i+1)+'/'+n+'</span><button class="x" data-a="confort" aria-label="Confort de lecture" style="font-size:14px;font-weight:900;color:#2f6fd6">Aa</button></div>';
+  html += '<div class="qcard">'+(q.img && window.Illus ? Illus.rendre(q.img) : '')+'<span class="qtheme '+c.cls+'">'+icon(c)+' '+q.t+'</span><h2 id="question" tabindex="-1">'+q.q+'</h2>'+boutonEcoute('q','Écouter la question')+'</div><div class="opts" role="group" aria-labelledby="question">';
   run.opts.forEach(function(o,k){
     var cl = 'opt';
     if(run.done){ if(o.ok) cl+=' ok'; else if(k===run.sel) cl+=' ko'; else cl+=' dim'; }
@@ -1102,7 +1180,7 @@ function vQuiz(){
   html += '</div>';
   if(run.done && !exam){
     var good = run.opts[run.sel].ok;
-    html += '<div class="fb '+(good?'ok':'ko')+'"><b>'+(good?'Bonne réponse !':'Pas tout à fait')+'</b>'+q.e+'</div>';
+    html += '<div class="fb '+(good?'ok':'ko')+'" role="status"><b>'+(good?'Bonne réponse !':'Pas tout à fait')+'</b>'+q.e+'<br>'+boutonEcoute('e','Écouter l’explication')+'</div>';
   }
   var ready = exam ? run.sel!==null : run.done;
   html += '<button class="btn green full" data-a="next"'+(ready?'':' disabled')+'>'+(last?'Voir le résultat':(exam?'Valider et continuer':'Question suivante'))+'</button></div>';
@@ -1141,11 +1219,20 @@ function render(){
   else if(screen==='fiche') html = vFiche();
   else if(screen==='premium') html = vPremium();
   else if(screen==='examen') html = vExamen();
+  else if(screen==='confort') html = vConfort();
   else if(screen==='quiz') html = vQuiz();
   else html = vResult();
   $app.className = 'app'+(withNav?'':' noNav');
   $app.innerHTML = html + (withNav?nav():'');
   if(screen!==lastScreen){ try{ window.scrollTo(0,0); }catch(e){} lastScreen = screen; }
+  if(screen==='quiz'){
+    var cleQ = run.ids.join(',')+'|'+run.i;
+    if(cleQ !== dernierLu){ // nouvelle question : le lecteur d'écran s'y place, lecture auto si demandée
+      dernierLu = cleQ;
+      var h = document.getElementById('question'); if(h) try{ h.focus({preventScroll:true}); }catch(e){}
+      if(voixOk){ speechSynthesis.cancel(); lectureEnCours = null; if(confort.auto) setTimeout(function(){ if(screen==='quiz') lire(texteQuestion(), 'q'); }, 250); }
+    }
+  } else if(voixOk && lectureEnCours && screen!=='confort'){ speechSynthesis.cancel(); lectureEnCours = null; dernierLu = null; }
 }
 function go(s){ screen = s; render(); }
 
@@ -1233,6 +1320,14 @@ $app.addEventListener('click', function(e){
   else if(a==='home'){ go('home'); }
   else if(a==='backprem'){ go('home'); }
   else if(a==='examen'){ go('examen'); }
+  else if(a==='confort'){ if(screen!=='confort') ecranAvantConfort = screen; go('confort'); }
+  else if(a==='finconfort'){ if(voixOk){ speechSynthesis.cancel(); lectureEnCours = null; } go(ecranAvantConfort==='quiz' && !run ? 'home' : ecranAvantConfort); }
+  else if(a==='ecoute'){
+    var cle = d('c');
+    if(cle==='q') lire(texteQuestion(), 'q');
+    else if(cle==='e') lire(Q[run.ids[run.i]].e, 'e');
+    else lire('Bonjour ! Voici comment les questions vous seront lues. Que signifie un panneau rond à bordure rouge ? Réponse A : une interdiction.', 'essai');
+  }
   else if(a==='dateexam'){
     var v = (document.getElementById('dateExam')||{}).value || '';
     if(/^\d{4}-\d{2}-\d{2}$/.test(v)){ store.examDate = v; save(); }
@@ -1275,6 +1370,8 @@ $app.addEventListener('click', function(e){
   else if(a==='read'){ store.read[d('f')] = 1; marquerJour(); save(); go('cours'); verifierBadges(true); }
 });
 $app.addEventListener('change', function(e){
+  var k = e.target.getAttribute && e.target.getAttribute('data-confort');
+  if(k){ confort[k] = e.target.checked; sauverConfort(); return; }
   if(e.target.id==='cgv') cgvOk = e.target.checked;
   if(e.target.id==='ren') renOk = e.target.checked;
 });
@@ -1288,6 +1385,8 @@ $app.addEventListener('change', function(e){
   }
 })();
 verifierBadges(false);
+appliquerConfort();
+if(voixOk && speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = function(){};
 render();
 majHorsLigne();
 if('serviceWorker' in navigator){
