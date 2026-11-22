@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · logos des auto-écoles';
+const APP_VERSION = '2026-11-22 · planning sans « placer une leçon » au survol';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
