@@ -112,7 +112,7 @@ function viewRecap() {
           </div></td></tr>` : ''}`).join('')}</tbody>
       <tfoot><tr><td><strong>Total</strong></td><td class="num"><strong>${fmtH(totH)}</strong></td><td></td><td></td><td class="num"><strong>${eur(totDu)}</strong></td><td colspan="2"></td></tr></tfoot>
     </table></div>` : '<p class="muted">Ajoutez vos moniteurs dans Paramètres.</p>'}
-    <p class="small muted">Une leçon compte dès qu'elle est passée et qu'au moins un élève n'était pas excusé (un absent non excusé compte : le moniteur était là). Les accompagnements d'examen comptent pour leur durée.</p>
+    <p class="small muted">Le moniteur est payé <strong>à l'heure</strong> : durée des leçons × son taux, quel que soit le nombre d'élèves (un plateau de 2 h avec 5 élèves = 2 h). Une leçon compte dès qu'elle est passée et qu'au moins un élève n'était pas excusé (un absent non excusé compte : le moniteur était là). Les accompagnements d'examen comptent pour leur durée.</p>
   </div>
 
   <div class="card" style="margin-top:14px">
@@ -127,7 +127,7 @@ function viewRecap() {
         <td class="num">${A.examens || '—'}</td><td class="num">${A.blancs || '—'}</td><td class="num">${A.evaluations || '—'}</td>
         <td class="num"><strong style="color:var(--ok)">${A.encaisse ? eur(A.encaisse) : '—'}</strong></td></tr>`).join('')}</tbody>
     </table></div>
-    <p class="small muted">« Heures plateau / circu » : heures de leçon suivies par les élèves de l'auto-école (un élève = ses heures). « Temps moniteur » : la durée de chaque leçon partagée entre les auto-écoles selon le nombre de leurs élèves présents ; « Coût moniteur » = ce temps × le taux horaire du moniteur, pour les comptes entre auto-écoles.</p>
+    <p class="small muted">« Heures plateau / circu » : heures de leçon suivies par les élèves de l'auto-école (un élève = ses heures). « Temps moniteur » : les heures payées au moniteur, réparties entre les auto-écoles selon le nombre de leurs élèves dans chaque leçon (ex. : plateau de 2 h avec 3 élèves de Tremblay et 2 de Smile → Tremblay 1h12, Smile 0h48 ; le total fait toujours les 2 h payées). « Coût moniteur » = ce temps × le taux horaire, pour les comptes entre auto-écoles.</p>
   </div>
   ${blocReussite()}`;
 }
