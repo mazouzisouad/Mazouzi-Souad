@@ -337,15 +337,14 @@ function carteMoto(m) {
   </div>`;
 }
 
-// Tuile : la moto roule quand on touche le dessin ; le nom ouvre la grande carte
+// Tuile : toucher la moto ouvre sa grande carte
 function tuileMoto(m) {
   const l = lieuMoto(m), niv = niveauEssence(m), a = byId('agences', m.proprio);
   return `
   <div class="tuile" style="--mc:${esc(m.couleur || '#3b82f6')}">
     ${a ? `<span class="tu-ae" style="--pc:${esc(a.couleur || '#64748b')}" title="Appartient à ${esc(a.nom)}">${esc(nomCourt(a))}</span>` : ''}
-    <button class="scene mini ${m.photo ? 'photo' : ''}" data-action="vroum" aria-label="Faire rouler ${esc(nomMoto(m))}">
+    <button class="scene mini ${m.photo ? 'photo' : ''}" data-action="ficheMoto" data-id="${m.id}" aria-label="Voir la fiche de ${esc(nomMoto(m))}">
       ${m.photo ? `<img src="${m.photo}" alt="${esc(nomMoto(m))}">` : `<div class="soleil"></div>${decor()}<div class="route"></div>${motoSVG(m.couleur || '#3b82f6')}`}
-      <span class="vroum">VROUM !</span>
     </button>
     <button class="tu-info" data-action="ficheMoto" data-id="${m.id}" title="Voir la fiche de ${esc(nomMoto(m))}">
       <b class="tu-nom">${esc(nomMoto(m))}</b>
@@ -417,8 +416,11 @@ function planMotos() {
 }
 function majPlan() { const el = $('#plan-motos'); if (el) el.innerHTML = planMotos(); }
 
-// la moto glisse de son ancienne place à la nouvelle
+// la moto roule de son ancienne place à la nouvelle
+let finAnimation = 0;
+const motosOccupe = () => Date.now() < finAnimation; // l'appli attend la fin avant de se rafraîchir
 function garerMoto(m, emplacement) {
+  finAnimation = Date.now() + 1700;
   const avant = {};
   $$('#plan-motos [data-id].pm').forEach((el) => { avant[el.dataset.id] = el.getBoundingClientRect(); });
   m.emplacement = Object.assign({ texte: '' }, emplacement, { majLe: new Date().toISOString() });
@@ -433,9 +435,13 @@ function garerMoto(m, emplacement) {
     if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
     el.style.transition = 'none'; el.style.transform = `translate(${dx}px, ${dy}px)`;
     el.getBoundingClientRect();
-    el.style.transition = 'transform 1.2s cubic-bezier(.45,.05,.3,1)'; el.style.transform = '';
-    if (el.dataset.id === m.id) el.classList.add('roule');
-    setTimeout(() => { el.classList.remove('roule'); el.style.transition = ''; }, 1250);
+    el.style.transition = 'transform 1.4s cubic-bezier(.45,.05,.3,1)'; el.style.transform = '';
+    if (el.dataset.id === m.id) {
+      // la moto (dessinée vers le haut) se tourne dans le sens du trajet
+      el.style.setProperty('--dir', Math.round((Math.atan2(-dx, dy) * 180) / Math.PI) + 'deg');
+      el.classList.add('roule');
+    }
+    setTimeout(() => { el.classList.remove('roule'); el.style.transition = ''; }, 1450);
   });
   const l = lieuMoto(m);
   const aide = $('#plan-aide'); if (aide) aide.textContent = `${l.emoji} ${nomMoto(m)} : ${l.txt}`;
@@ -734,12 +740,22 @@ const MOTO_ACTIONS = {
     const m = byId('motos', motoId);
     const texte = $('#lieu-texte').value.trim();
     if (o.type === 'autre' && !texte) { $('#lieu-texte').focus(); return toast("Précisez l'endroit dans la case ci-dessous, puis touchez à nouveau « Autre endroit »", true); }
-    m.emplacement = { type: o.type, ref: o.ref || '', texte: ['garage', 'autre'].includes(o.type) ? texte : '', majLe: new Date().toISOString() };
+    const empl = { type: o.type, ref: o.ref || '', texte: ['garage', 'autre'].includes(o.type) ? texte : '' };
     const km = Number($('#lieu-km').value);
     if (km > 0) m.km = km;
-    m.majLe = new Date().toISOString(); m.majPar = nomAuteurMoi();
-    save(); closeModal(); render();
-    toast(`${o.emoji} ${nomMoto(m)} : ${lieuMoto(m).txt}`);
+    closeModal();
+    const plan = $('#plan-motos');
+    if (UI.view === 'motos' && plan) {
+      // on montre le plan, puis la moto roule jusqu'à sa nouvelle place
+      plan.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      finAnimation = Date.now() + 2300;
+      setTimeout(() => { garerMoto(m, empl); toast(`${o.emoji} ${nomMoto(m)} : ${lieuMoto(m).txt}`); }, 550);
+    } else {
+      m.emplacement = Object.assign(empl, { majLe: new Date().toISOString() });
+      m.majLe = new Date().toISOString(); m.majPar = nomAuteurMoi();
+      save(); render();
+      toast(`${o.emoji} ${nomMoto(m)} : ${lieuMoto(m).txt}`);
+    }
   },
 
   // fiche moto (direction)

@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · garage des motos (tuiles)';
+const APP_VERSION = '2026-11-23 · les motos roulent jusqu’à leur place';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -2392,6 +2392,7 @@ function renderPlusTard() {
   renderTimer = setTimeout(() => {
     const a = document.activeElement;
     if (a && $('#view').contains(a) && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) return renderPlusTard();
+    if (typeof motosOccupe === 'function' && motosOccupe()) return renderPlusTard(); // une moto est en train de rouler
     render();
   }, 250);
 }

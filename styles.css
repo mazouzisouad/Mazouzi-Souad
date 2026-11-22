@@ -463,7 +463,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
 .pm.estompe { opacity: .25; }
 .pm .corps { display: block; transform: rotate(var(--r)); transition: transform .3s; }
 .pm:hover .corps { transform: rotate(0) scale(1.06); }
-.pm.roule .corps, .pm.choisie .corps { transform: rotate(0); }
+.pm.choisie .corps { transform: rotate(0); }
+.pm.roule .corps { transform: rotate(var(--dir, 0deg)); transition: transform .25s; }
 .pm.choisie .corps { animation: sautille .3s ease-in-out infinite alternate; }
 .pm.roule .corps { animation: sautille .18s ease-in-out infinite alternate; }
 @keyframes sautille { to { translate: 0 -4px; } }
