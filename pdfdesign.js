@@ -152,7 +152,8 @@ function buildCarteRdvPdfModerne(eleveId, seances) {
       f.semi(); doc.setFontSize(6.5); doc.text(d.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '').toUpperCase(), M + 11, y + 18, { align: 'center' });
       // horaire + type
       doc.setTextColor(...ENCRE); f.bold(); doc.setFontSize(12);
-      doc.text(`${s.debut} – ${s.fin}`, M + 26, y + 8);
+      const hz = horaireDe(s, eleveId);
+      doc.text(`${hz.debut} – ${hz.fin}`, M + 26, y + 8);
       const ct = couleurType(s.type);
       let px = M + w - 3;
       const modeEl = modeDe(s, eleveId);
@@ -549,7 +550,8 @@ function buildCarteRdvPdfClassique(eleveId, seances) {
       const d = parseISO(s.date).toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
       doc.setFont('helvetica', 'bold'); doc.text(pdfText(d), M + 2, y);
       doc.setFont('helvetica', 'normal');
-      doc.text(`${s.debut} - ${s.fin}`, M + 52, y);
+      const hz = horaireDe(s, eleveId);
+      doc.text(`${hz.debut} - ${hz.fin}`, M + 52, y);
       doc.text(pdfText(isExam(s.type) ? 'Examen ' + (s.type === 'exam_plateau' ? 'plateau' : 'circu') : TYPES[s.type].label), M + 75, y);
       doc.text(pdfText(moniteurNom(byId('moniteurs', s.moniteurId))), M + 96, y);
       doc.setDrawColor(226, 232, 240); doc.line(M, y + 2, W - M, y + 2);

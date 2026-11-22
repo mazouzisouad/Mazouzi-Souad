@@ -49,13 +49,13 @@ function compteEleve(eid, ajout) {
     }
     // leçon passée encore « prévue » (présence pas notée) : elle compte comme faite
     const aNoter = p.statut === 'prevu' && s.date < auj && s.id !== ajout?.id;
-    if (aNoter) res.aNoter = (res.aNoter || 0) + durH(s);
+    if (aNoter) res.aNoter = (res.aNoter || 0) + durP(s, p);
     const fait = STATUTS_FAITS.includes(p.statut) || aNoter;
     // évaluation de départ : hors forfait, prix fixe
     if (modeDe(s, eid) === 'evaluation') { if (fait) { res.evaluations += DB.settings.tarifEvaluation ?? 50; } continue; }
     const prevu = p.statut === 'prevu' && (s.date >= auj || s.id === ajout?.id);
     if (!fait && !prevu) continue;
-    const h = durH(s);
+    const h = durP(s, p);
     if (fait) res.heuresFaites += h; else res.heuresPrevues += h;
     const dans = Math.min(resteForfait, h); resteForfait -= dans;
     const enPlus = h - dans;

@@ -67,6 +67,11 @@ modifiables pour chaque examen.
   4 à 6 h, réglable), en rouge s'il en manque.
 - Après un échec à l'examen, la liste des repassages indique si l'examen blanc est à refaire.
 
+**Horaire par élève** : dans une leçon plus longue qu'1h, chaque élève a un menu ⏱ « Toute la leçon » ou un créneau
+(ex. 9h → 10h). Un élève mis en 🧭 Évaluation passe tout seul sur la 1re heure. Le planning affiche l'icône et l'heure
+courte à côté du nom (« 🧭 9-10 ») ; la carte de RDV, la facture et le compte d'heures suivent cet horaire, et l'élève
+est libre en dehors (on peut le placer dans une autre leçon). Le moniteur reste payé pour toute la leçon.
+
 **Examen blanc et prépa par élève dans une leçon** : dans une leçon plateau ou circulation, chaque élève a
 3 boutons « Leçon / 📝 Examen blanc / 🎯 Prépa ». On peut donc avoir, avec le même moniteur et à la même heure,
 des élèves en leçon normale, d'autres en examen blanc (Validé / Non validé) et d'autres en préparation.

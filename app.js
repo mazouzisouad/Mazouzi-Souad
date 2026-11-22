@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · élèves d’une leçon : poubelle et lignes qui tiennent dans le cadre';
+const APP_VERSION = '2026-11-22 · horaire par élève dans une leçon (évaluation 1h)';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -76,6 +76,19 @@ function fromMin(m) { return `${pad(Math.floor(m / 60) % 24)}:${pad(m % 60)}`; }
 function durH(s) { return Math.max(0, (toMin(s.fin) - toMin(s.debut)) / 60); }
 function fmtH(h) { const hh = Math.floor(h); const mm = Math.round((h - hh) * 60); return mm ? `${hh}h${pad(mm)}` : `${hh}h`; }
 function overlaps(a, b) { return a.date === b.date && toMin(a.debut) < toMin(b.fin) && toMin(b.debut) < toMin(a.fin); }
+/* Horaire propre à un élève dans une leçon (ex. évaluation d'1h pendant un plateau de 2h).
+   p.dec = minutes après le début de la leçon, p.dur = durée en minutes (absent = toute la leçon). */
+function horaireP(s, p) {
+  const d0 = toMin(s.debut), d1 = toMin(s.fin);
+  if (!p || p.dur == null || categorie(s.type) !== 'lecon') return { debut: s.debut, fin: s.fin, partiel: false };
+  const a = Math.max(d0, Math.min(d1, d0 + (Number(p.dec) || 0)));
+  const b = Math.min(d1, a + (Number(p.dur) || 0));
+  if (b - a <= 0 || (a === d0 && b === d1)) return { debut: s.debut, fin: s.fin, partiel: false };
+  return { debut: fromMin(a), fin: fromMin(b), partiel: true };
+}
+const durP = (s, p) => { const h = horaireP(s, p); return Math.max(0, (toMin(h.fin) - toMin(h.debut)) / 60); };
+const horaireDe = (s, eleveId) => horaireP(s, s.eleves.find((x) => x.eleveId === eleveId));
+const heureCourte = (t) => { const [h, m] = String(t).split(':'); return `${+h}${m && m !== '00' ? 'h' + m : ''}`; };
 
 function toast(msg, bad = false) {
   const t = $('#toast');
@@ -256,9 +269,10 @@ function eleveHeures(eid) {
   const now = todayISO();
   for (const s of eleveSeances(eid)) {
     const p = s.eleves.find((x) => x.eleveId === eid);
-    if (['present', 'valide', 'nonvalide'].includes(p.statut) && !isExam(s.type)) res[baseDe(s.type)] += durH(s);
-    else if (p.statut === 'prevu' && s.date >= now) res.aVenir += durH(s);
-    else if (p.statut === 'prevu' && !isExam(s.type)) { res[baseDe(s.type)] += durH(s); res.aNoter += durH(s); }
+    const h = durP(s, p);
+    if (['present', 'valide', 'nonvalide'].includes(p.statut) && !isExam(s.type)) res[baseDe(s.type)] += h;
+    else if (p.statut === 'prevu' && s.date >= now) res.aVenir += h;
+    else if (p.statut === 'prevu' && !isExam(s.type)) { res[baseDe(s.type)] += h; res.aNoter += h; }
   }
   return res;
 }
@@ -323,9 +337,10 @@ function preparation(eleveId, exam) {
     if (!['present', 'prevu'].includes(st)) continue;
     const mode = modeDe(s, eleveId);
     if (mode === 'blanc' || mode === 'evaluation') continue;
-    res.toutes += durH(s); // toutes les leçons (normales + prépa)
+    const h = durH(horaireDe(s, eleveId));
+    res.toutes += h; // toutes les leçons (normales + prépa)
     if (mode !== 'prepa') continue;
-    if (st === 'present') res.faites += durH(s); else res.prevues += durH(s);
+    if (st === 'present') res.faites += h; else res.prevues += h;
   }
   res.total = res.faites + res.prevues;
   return res;
@@ -604,6 +619,19 @@ function placesRonds(n, cap) {
   const ronds = Array.from({ length: cap }, (_, i) => `<span class="${i < n ? '' : 'vide'}"></span>`).join('');
   return `<span class="ag-places" title="${n} élève${n > 1 ? 's' : ''} sur ${cap}">${ronds}<em>${n >= cap ? 'complet' : `${cap - n} place${cap - n > 1 ? 's' : ''}`}</em></span>${court}`;
 }
+// Menu « horaire de l'élève » dans la fenêtre d'une leçon
+function choixHoraire(p, i) {
+  const d0 = toMin(draft.debut), tot = toMin(draft.fin) - d0;
+  const hz = horaireP(draft, p);
+  const cle = hz.partiel ? `${toMin(hz.debut) - d0}-${toMin(hz.fin) - toMin(hz.debut)}` : '';
+  const hh = (t) => { const [h, m] = String(t).split(':'); return `${+h}h${m && m !== '00' ? m : ''}`; };
+  const opts = [['', `⏱ Toute la leçon (${hh(draft.debut)} → ${hh(draft.fin)})`]];
+  for (const dur of [60, 90, 120]) {
+    if (dur >= tot) continue;
+    for (let dec = 0; dec + dur <= tot; dec += 30) opts.push([`${dec}-${dur}`, `⏱ ${hh(fromMin(d0 + dec))} → ${hh(fromMin(d0 + dec + dur))} (${fmtH(dur / 60)})`]);
+  }
+  return `<select class="horaire-el ${hz.partiel ? 'partiel' : ''}" data-on-change="setHoraireEleve" data-i="${i}" aria-label="Horaire de l'élève">${opts.map(([v, l]) => `<option value="${v}" ${v === cle ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
+}
 function blocSeance(s, hMin) {
   const top = ((toMin(s.debut) - hMin) / 30) * ROW_H;
   const height = Math.max(ROW_H, ((toMin(s.fin) - toMin(s.debut)) / 30) * ROW_H) - 2;
@@ -615,7 +643,10 @@ function blocSeance(s, hMin) {
     const barre = p.statut === 'absent' || p.statut === 'excuse';
     const res = ['admis', 'valide'].includes(p.statut) ? ' ✅' : ['ajourne', 'nonvalide'].includes(p.statut) ? ' ❌' : '';
     const m = categorie(s.type) === 'lecon' ? modeP(s, p) : '';
-    const tag = m === 'blanc' ? '<span class="tag-el blanc"><span class="long">📝 Examen blanc</span><span class="court">📝 Ex. blanc</span></span>'
+    const hz = horaireP(s, p);
+    const ICO = { lecon: '⏱', blanc: '📝', prepa: '🎯', evaluation: '🧭' };
+    const tag = hz.partiel ? `<span class="tag-el ${m} tag-heure" title="${esc(MODES_ELEVE[m] || '')} de ${hz.debut} à ${hz.fin}">${ICO[m] || '⏱'} ${heureCourte(hz.debut)}-${heureCourte(hz.fin)}</span>`
+      : m === 'blanc' ? '<span class="tag-el blanc"><span class="long">📝 Examen blanc</span><span class="court">📝 Ex. blanc</span></span>'
       : m === 'prepa' ? '<span class="tag-el prepa"><span class="long">🎯 Prépa examen</span><span class="court">🎯 Prépa ex.</span></span>'
       : m === 'evaluation' ? '<span class="tag-el evaluation"><span class="long">🧭 Évaluation de départ</span><span class="court">🧭 Évaluation</span></span>' : '';
     return `<div class="ag-el ${barre ? 'abs' : ''}" style="--a:${esc(a?.couleur || '#94a3b8')}"><span class="ini">${esc((e?.prenom || eleveCourt(e) || '?').trim()[0]?.toUpperCase() || '?')}</span>${esc(eleveCourt(e))}${res}${tag}</div>`;
@@ -627,7 +658,7 @@ function blocSeance(s, hMin) {
   return `
   <div class="ag-bloc ${s.type}" style="top:${top + 1}px;height:${height}px" data-action="editSeance" data-id="${s.id}">
     <div class="ag-bloc-top"><span class="ag-type"><i>${ICONE_TYPE[baseDe(s.type)] || '🏍️'}</i><span>${s.debut}<span class="ag-nomtype"> · ${TYPES[s.type].short}</span></span>${resume}</span>${placesRonds(n, cap)}</div>
-    <div class="ag-els ${nbBlancs || nbPrepa || nbEval ? 'en-lignes' : ''}">${noms}</div>
+    <div class="ag-els ${nbBlancs || nbPrepa || nbEval || s.eleves.some((p) => horaireP(s, p).partiel) ? 'en-lignes' : ''}">${noms}</div>
     ${isExam(s.type) && n < cap ? `<div class="ag-libre">${cap - n} place${cap - n > 1 ? 's' : ''} à attribuer</div>` : ''}
     ${isExam(s.type) && s.lieu ? `<div class="ag-lieu">📍 ${esc(s.lieu)}</div>` : ''}
   </div>`;
@@ -1093,6 +1124,7 @@ function refreshDraft() {
         <button class="btn small ghost es-suppr" data-action="removeEleve" data-i="${i}" title="Retirer de la leçon" aria-label="Retirer ${esc(eleveNom(e))} de la leçon">🗑️</button></div>
       <div class="es-actions">
       ${categorie(draft.type) === 'lecon' ? `<span class="mode-el">${Object.entries(MODES_ELEVE).map(([k, l]) => `<button class="${modeP(draft, p) === k ? 'on' : ''} ${k}" data-action="setModeEleve" data-i="${i}" data-m="${k}" title="${k === 'lecon' ? 'Leçon normale' : k === 'blanc' ? 'Examen blanc pendant la leçon' : k === 'evaluation' ? 'Évaluation de départ (hors forfait)' : 'Préparation à l\'examen'}">${l}</button>`).join('')}</span>` : ''}
+      ${categorie(draft.type) === 'lecon' && toMin(draft.fin) - toMin(draft.debut) > 60 ? choixHoraire(p, i) : ''}
       <select data-on-change="setPresence" data-i="${i}" class="presence ${p.statut}">
         ${Object.entries(statutsEleve(draft, p)).map(([k, l]) => `<option value="${k}" ${p.statut === k ? 'selected' : ''}>${l}</option>`).join('')}
       </select>
@@ -1182,7 +1214,9 @@ function seanceConflicts(s) {
   for (const o of DB.seances.filter((x) => x.id !== s.id && overlaps(x, s))) {
     if (o.moniteurId === s.moniteurId) errors.push(messageMoniteurPris(o));
     for (const p of s.eleves) {
-      if (o.eleves.some((x) => x.eleveId === p.eleveId)) errors.push(`${eleveNom(byId('eleves', p.eleveId))} est déjà en leçon de ${o.debut} à ${o.fin}.`);
+      const x = o.eleves.find((y) => y.eleveId === p.eleveId); if (!x) continue;
+      const ho = horaireP(o, x), hs = horaireP(s, p);
+      if (overlaps({ date: o.date, ...ho }, { date: s.date, ...hs })) errors.push(`${eleveNom(byId('eleves', p.eleveId))} est déjà en leçon de ${ho.debut} à ${ho.fin}.`);
     }
   }
   return { errors };
@@ -1568,11 +1602,13 @@ function ligneSeance(s, eleveId) {
     return { libelle: `Frais de repassage ${epreuve} du ${fmtDate(s.date)}${lieu} (${n}e passage)`, qte: 1, pu: DB.settings.fraisRepassage[s.type] || 0, seanceId: s.id };
   }
   if (modeDe(s, eleveId) === 'evaluation') {
-    return { libelle: `Évaluation de départ du ${fmtDate(s.date)} ${s.debut}-${s.fin}${p?.statut === 'absent' ? ' (absence non excusée)' : ''}`, qte: 1, pu: DB.settings.tarifEvaluation ?? 50, seanceId: s.id };
+    const hz = horaireP(s, p);
+    return { libelle: `Évaluation de départ du ${fmtDate(s.date)} ${hz.debut}-${hz.fin}${p?.statut === 'absent' ? ' (absence non excusée)' : ''}`, qte: 1, pu: DB.settings.tarifEvaluation ?? 50, seanceId: s.id };
   }
+  const hz = horaireP(s, p);
   return {
-    libelle: `${modeDe(s, eleveId) === 'blanc' ? 'Examen blanc ' + baseDe(s.type) : 'Leçon ' + TYPES[s.type].label.toLowerCase() + (modeDe(s, eleveId) === 'prepa' ? ' (préparation examen)' : '')} du ${fmtDate(s.date)} ${s.debut}-${s.fin}${p?.statut === 'absent' ? ' (absence non excusée)' : ''}`,
-    qte: round2(durH(s)),
+    libelle: `${modeDe(s, eleveId) === 'blanc' ? 'Examen blanc ' + baseDe(s.type) : 'Leçon ' + TYPES[s.type].label.toLowerCase() + (modeDe(s, eleveId) === 'prepa' ? ' (préparation examen)' : '')} du ${fmtDate(s.date)} ${hz.debut}-${hz.fin}${p?.statut === 'absent' ? ' (absence non excusée)' : ''}`,
+    qte: round2(durP(s, p)),
     pu: DB.settings.tarifHeure[baseDe(s.type)] || 0,
     seanceId: s.id,
   };
@@ -2278,10 +2314,20 @@ const ACTIONS = {
     if (!draft.id && categorie(avant) !== categorie(draft.type)) draft.fin = fromMin(toMin(draft.debut) + dureeDe(draft.type));
     refreshDraft();
   },
+  setHoraireEleve(d, el) {
+    const p = draft.eleves[+d.i]; if (!p) return;
+    delete p.horaireAuto;
+    if (!el.value) { delete p.dec; delete p.dur; } else { const [dec, dur] = el.value.split('-').map(Number); p.dec = dec; p.dur = dur; }
+    refreshDraft();
+  },
   setModeEleve(d) {
     const p = draft.eleves[+d.i]; if (!p) return;
     const parDefaut = 'lecon';
+    const avant = p.mode;
     if (d.m === parDefaut) delete p.mode; else p.mode = d.m;
+    // l'évaluation dure 1h : dans une leçon plus longue, l'élève passe tout seul sur la 1re heure
+    if (d.m === 'evaluation' && avant !== 'evaluation' && p.dur == null && toMin(draft.fin) - toMin(draft.debut) > 60) { p.dec = 0; p.dur = 60; p.horaireAuto = true; }
+    if (d.m !== 'evaluation' && avant === 'evaluation' && p.horaireAuto) { delete p.dec; delete p.dur; delete p.horaireAuto; }
     if (!statutsEleve(draft, p)[p.statut]) p.statut = 'prevu';
     refreshDraft();
   },

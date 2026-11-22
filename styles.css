@@ -838,3 +838,10 @@ tr.sous-titre td { background: #f8fafc; font-weight: 700; font-size: 12.5px; col
 .es-suppr:hover { background: #fee2e2; }
 .es-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; }
 .es-actions .mode-el { flex: 0 1 auto; flex-wrap: wrap; max-width: 100%; }
+
+/* ---------- Horaire d'un élève dans une leçon ---------- */
+.horaire-el { width: auto; padding: 4px 6px; font-size: 13px; font-weight: 600; }
+.horaire-el.partiel { background: #ecfdf5; border-color: #86efac; color: #166534; }
+.tag-el.tag-heure { font-variant-numeric: tabular-nums; }
+.tag-el.lecon.tag-heure { background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; }
+.agenda.groupes .tag-el.tag-heure { display: table; margin: 0 0 1px 0; }
