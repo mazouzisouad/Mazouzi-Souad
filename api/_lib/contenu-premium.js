@@ -71,7 +71,10 @@ export const QUESTIONS_PREMIUM = {
       "Un passage à niveau sans barrière",
       "Une route barrée"
     ],
-    "e": "Ce panneau de danger annonce une intersection où vous devez céder le passage aux véhicules venant de votre droite."
+    "e": "Ce panneau de danger annonce une intersection où vous devez céder le passage aux véhicules venant de votre droite.",
+    "img": {
+      "panneau": "AB1"
+    }
   },
   "66": {
     "t": "Priorités",
@@ -82,7 +85,10 @@ export const QUESTIONS_PREMIUM = {
       "Vous devez céder le passage à droite",
       "Vous approchez d’un carrefour à sens giratoire"
     ],
-    "e": "Ce panneau annonce une intersection où les usagers de la route croisée doivent vous céder le passage. Il ne vaut que pour cette intersection."
+    "e": "Ce panneau annonce une intersection où les usagers de la route croisée doivent vous céder le passage. Il ne vaut que pour cette intersection.",
+    "img": {
+      "panneau": "AB2"
+    }
   },
   "67": {
     "t": "Priorités",
@@ -115,7 +121,24 @@ export const QUESTIONS_PREMIUM = {
       "Vous, car vous roulez plus vite",
       "Celui qui klaxonne le premier"
     ],
-    "e": "Sans signalisation, la priorité à droite s’applique quelle que soit la taille des routes."
+    "e": "Sans signalisation, la priorité à droite s’applique quelle que soit la taille des routes.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "E",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "x": 250
+        }
+      ]
+    }
   },
   "70": {
     "t": "Priorités",
@@ -137,7 +160,28 @@ export const QUESTIONS_PREMIUM = {
       "Vous tournez, car elle doit vous céder le passage",
       "Vous klaxonnez pour qu’elle s’arrête"
     ],
-    "e": "Pour tourner à gauche, vous cédez le passage aux véhicules qui arrivent en sens inverse, même si votre feu est vert."
+    "e": "Pour tourner à gauche, vous cédez le passage aux véhicules qui arrivent en sens inverse, même si votre feu est vert.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "feux": {
+        "S": "vert",
+        "N": "vert"
+      },
+      "moi": {
+        "bras": "S",
+        "action": "gauche",
+        "clignotant": "gauche"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "N",
+          "action": "tout_droit",
+          "couleur": "rouge"
+        }
+      ]
+    }
   },
   "72": {
     "t": "Priorités",
@@ -148,7 +192,33 @@ export const QUESTIONS_PREMIUM = {
       "Vous passez entre deux piétons",
       "Vous klaxonnez pour qu’ils se dépêchent"
     ],
-    "e": "En tournant, vous cédez le passage aux piétons qui traversent la chaussée où vous vous engagez."
+    "e": "En tournant, vous cédez le passage aux piétons qui traversent la chaussée où vous vous engagez.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "feux": {
+        "S": "vert"
+      },
+      "marquages": {
+        "E": "pieton"
+      },
+      "moi": {
+        "bras": "S",
+        "action": "droite",
+        "clignotant": "droite"
+      },
+      "autres": [
+        {
+          "type": "pieton",
+          "x": 249,
+          "y": 95,
+          "traverse": {
+            "x": 249,
+            "y": 145
+          }
+        }
+      ]
+    }
   },
   "73": {
     "t": "Priorités",
@@ -159,7 +229,25 @@ export const QUESTIONS_PREMIUM = {
       "Vous lui faites signe d’attendre",
       "Vous accélérez pour passer avant lui"
     ],
-    "e": "Selon l’article R415-11 du Code de la route, vous devez céder le passage au piéton qui s’engage ou qui manifeste clairement l’intention de traverser."
+    "e": "Selon l’article R415-11 du Code de la route, vous devez céder le passage au piéton qui s’engage ou qui manifeste clairement l’intention de traverser.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "marquages": {
+        "S": "pieton"
+      },
+      "moi": {
+        "bras": "S",
+        "recul": 22
+      },
+      "autres": [
+        {
+          "type": "pieton",
+          "x": 205,
+          "y": 167
+        }
+      ]
+    }
   },
   "74": {
     "t": "Priorités",
@@ -170,7 +258,35 @@ export const QUESTIONS_PREMIUM = {
       "Vous klaxonnez pour qu’il se dépêche",
       "Vous le contournez lentement"
     ],
-    "e": "Un piéton déjà engagé sur la chaussée doit pouvoir terminer sa traversée en sécurité."
+    "e": "Un piéton déjà engagé sur la chaussée doit pouvoir terminer sa traversée en sécurité.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "marquages": {
+        "S": [
+          "feu",
+          "pieton"
+        ]
+      },
+      "feux": {
+        "S": "vert"
+      },
+      "moi": {
+        "bras": "S",
+        "recul": 25
+      },
+      "autres": [
+        {
+          "type": "pieton",
+          "x": 170,
+          "y": 167,
+          "traverse": {
+            "x": 135,
+            "y": 167
+          }
+        }
+      ]
+    }
   },
   "75": {
     "t": "Priorités",
@@ -203,7 +319,25 @@ export const QUESTIONS_PREMIUM = {
       "Vous klaxonnez pour qu’il attende",
       "Vous continuez, car vous êtes déjà sur la voie"
     ],
-    "e": "En agglomération, il faut faciliter le départ des véhicules de transport en commun qui quittent un arrêt signalé."
+    "e": "En agglomération, il faut faciliter le départ des véhicules de transport en commun qui quittent un arrêt signalé.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "moi": {
+        "bras": "E",
+        "x": 300
+      },
+      "autres": [
+        {
+          "type": "bus",
+          "x": 236,
+          "y": 99,
+          "dir": "W",
+          "couleur": "jaune",
+          "clignotant": "gauche"
+        }
+      ]
+    }
   },
   "78": {
     "t": "Priorités",
@@ -247,7 +381,24 @@ export const QUESTIONS_PREMIUM = {
       "Vous accélérez pour tourner avant elle",
       "Vous klaxonnez pour qu’elle freine"
     ],
-    "e": "Comme pour un cycliste, vous ne devez pas couper la route d’un usager qui continue tout droit sur sa voie : attendez qu’il soit passé."
+    "e": "Comme pour un cycliste, vous ne devez pas couper la route d’un usager qui continue tout droit sur sa voie : attendez qu’il soit passé.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "moi": {
+        "bras": "S",
+        "action": "droite",
+        "clignotant": "droite"
+      },
+      "autres": [
+        {
+          "type": "trottinette",
+          "x": 192,
+          "y": 226,
+          "dir": "N"
+        }
+      ]
+    }
   },
   "82": {
     "t": "Priorités",
@@ -291,7 +442,36 @@ export const QUESTIONS_PREMIUM = {
       "Vous avancez jusqu’au milieu du carrefour",
       "Vous klaxonnez pour faire avancer la file"
     ],
-    "e": "Même au vert, on ne s’engage pas dans un carrefour si l’on risque d’y rester bloqué et de gêner la circulation transversale."
+    "e": "Même au vert, on ne s’engage pas dans un carrefour si l’on risque d’y rester bloqué et de gêner la circulation transversale.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "feux": {
+        "S": "vert"
+      },
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "couleur": "rouge",
+          "x": 175,
+          "y": 52,
+          "dir": "N",
+          "freins": true
+        },
+        {
+          "type": "voiture",
+          "couleur": "gris",
+          "x": 175,
+          "y": 10,
+          "dir": "N",
+          "freins": true
+        }
+      ]
+    }
   },
   "86": {
     "t": "Priorités",
@@ -302,7 +482,10 @@ export const QUESTIONS_PREMIUM = {
       "Klaxonner avant d’entrer dans le passage",
       "Faire demi-tour, car la route est fermée"
     ],
-    "e": "Ce panneau impose de céder le passage à la circulation venant en sens inverse. La flèche rouge, vers le haut, représente votre sens, qui doit attendre."
+    "e": "Ce panneau impose de céder le passage à la circulation venant en sens inverse. La flèche rouge, vers le haut, représente votre sens, qui doit attendre.",
+    "img": {
+      "panneau": "B15"
+    }
   },
   "87": {
     "t": "Priorités",
@@ -313,7 +496,10 @@ export const QUESTIONS_PREMIUM = {
       "Vous entrez dans une rue à sens unique",
       "Vous devez faire demi-tour"
     ],
-    "e": "Ce panneau carré bleu vous donne la priorité sur la circulation venant en sens inverse. La flèche blanche représente votre sens, la flèche rouge celui qui doit vous céder le passage."
+    "e": "Ce panneau carré bleu vous donne la priorité sur la circulation venant en sens inverse. La flèche blanche représente votre sens, la flèche rouge celui qui doit vous céder le passage.",
+    "img": {
+      "panneau": "C18"
+    }
   },
   "88": {
     "t": "Panneaux et feux",
@@ -324,7 +510,21 @@ export const QUESTIONS_PREMIUM = {
       "Passer en priorité, car le feu ne fonctionne pas",
       "Attendre qu’il passe au vert"
     ],
-    "e": "Le feu orange clignotant n’impose pas l’arrêt : il demande une prudence particulière, et ce sont les panneaux ou la priorité à droite qui s’appliquent."
+    "e": "Le feu orange clignotant n’impose pas l’arrêt : il demande une prudence particulière, et ce sont les panneaux ou la priorité à droite qui s’appliquent.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "feux": {
+        "S": "orange_clignotant",
+        "E": "orange_clignotant",
+        "W": "orange_clignotant",
+        "N": "orange_clignotant"
+      },
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      }
+    }
   },
   "89": {
     "t": "Panneaux et feux",
@@ -412,7 +612,21 @@ export const QUESTIONS_PREMIUM = {
       "Vous êtes prioritaire",
       "Vous devez stationner derrière la ligne"
     ],
-    "e": "Cette large ligne transversale discontinue complète le « cédez le passage ». Le STOP est complété par une ligne transversale continue. Aux feux, la ligne d’arrêt est aussi discontinue, mais plus fine."
+    "e": "Cette large ligne transversale discontinue complète le « cédez le passage ». Le STOP est complété par une ligne transversale continue. Aux feux, la ligne d’arrêt est aussi discontinue, mais plus fine.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "axes": {
+        "S": "continue"
+      },
+      "marquages": {
+        "S": "cedez"
+      },
+      "moi": {
+        "bras": "S",
+        "recul": 6
+      }
+    }
   },
   "97": {
     "t": "Panneaux et feux",
@@ -478,7 +692,10 @@ export const QUESTIONS_PREMIUM = {
       "Fin de toutes les interdictions",
       "Route prioritaire"
     ],
-    "e": "C’est le panneau de sens interdit : vous ne pouvez pas entrer dans cette voie."
+    "e": "C’est le panneau de sens interdit : vous ne pouvez pas entrer dans cette voie.",
+    "img": {
+      "panneau": "B1"
+    }
   },
   "103": {
     "t": "Panneaux et feux",
@@ -489,7 +706,10 @@ export const QUESTIONS_PREMIUM = {
       "Vitesse libre",
       "Stationnement autorisé"
     ],
-    "e": "Ce panneau interdit la circulation de tous les véhicules dans les deux sens."
+    "e": "Ce panneau interdit la circulation de tous les véhicules dans les deux sens.",
+    "img": {
+      "panneau": "B0"
+    }
   },
   "104": {
     "t": "Panneaux et feux",
@@ -511,7 +731,10 @@ export const QUESTIONS_PREMIUM = {
       "Interdiction aux vélos",
       "Parking à vélos"
     ],
-    "e": "Le panneau rond bleu impose une obligation : les cyclistes doivent emprunter cet aménagement, qui n’est pas destiné aux voitures."
+    "e": "Le panneau rond bleu impose une obligation : les cyclistes doivent emprunter cet aménagement, qui n’est pas destiné aux voitures.",
+    "img": {
+      "panneau": "B22a"
+    }
   },
   "106": {
     "t": "Panneaux et feux",
@@ -522,7 +745,10 @@ export const QUESTIONS_PREMIUM = {
       "Sens interdit",
       "Fin de zone de stationnement"
     ],
-    "e": "La croix rouge interdit à la fois l’arrêt et le stationnement. Un seul trait rouge n’interdit que le stationnement."
+    "e": "La croix rouge interdit à la fois l’arrêt et le stationnement. Un seul trait rouge n’interdit que le stationnement.",
+    "img": {
+      "panneau": "B6d"
+    }
   },
   "107": {
     "t": "Panneaux et feux",
@@ -544,7 +770,14 @@ export const QUESTIONS_PREMIUM = {
       "Un passage piéton réservé aux adultes",
       "Une zone de rencontre"
     ],
-    "e": "Ce panneau de danger signale la sortie d’une école ou un lieu où des enfants peuvent traverser : ralentissez et redoublez d’attention."
+    "e": "Ce panneau de danger signale la sortie d’une école ou un lieu où des enfants peuvent traverser : ralentissez et redoublez d’attention.",
+    "img": {
+      "scene": "vue",
+      "ville": true,
+      "panneau": [
+        "A13a"
+      ]
+    }
   },
   "109": {
     "t": "Panneaux et feux",
@@ -566,7 +799,14 @@ export const QUESTIONS_PREMIUM = {
       "70 km/h",
       "80 km/h"
     ],
-    "e": "Ce panneau marque l’entrée d’une agglomération, où la vitesse est limitée à 50 km/h sauf autre signalisation."
+    "e": "Ce panneau marque l’entrée d’une agglomération, où la vitesse est limitée à 50 km/h sauf autre signalisation.",
+    "img": {
+      "scene": "vue",
+      "ville": true,
+      "panneau": [
+        "EB10:VILLENEUVE"
+      ]
+    }
   },
   "111": {
     "t": "Panneaux et feux",
@@ -577,7 +817,14 @@ export const QUESTIONS_PREMIUM = {
       "Le stationnement est limité à 30 minutes",
       "Il est conseillé de rouler à 30 km/h, sans obligation"
     ],
-    "e": "La vitesse est limitée à 30 km/h dans toute la zone, jusqu’au panneau de sortie de zone 30."
+    "e": "La vitesse est limitée à 30 km/h dans toute la zone, jusqu’au panneau de sortie de zone 30.",
+    "img": {
+      "scene": "vue",
+      "ville": true,
+      "panneau": [
+        "B30"
+      ]
+    }
   },
   "112": {
     "t": "Panneaux et feux",
@@ -588,7 +835,10 @@ export const QUESTIONS_PREMIUM = {
       "Vous êtes prioritaire",
       "Vous entrez sur une autoroute"
     ],
-    "e": "Ce panneau d’indication signale une rue à sens unique : les véhicules n’y circulent que dans le sens de la flèche."
+    "e": "Ce panneau d’indication signale une rue à sens unique : les véhicules n’y circulent que dans le sens de la flèche.",
+    "img": {
+      "panneau": "C12"
+    }
   },
   "113": {
     "t": "Vitesse et distances",
@@ -665,7 +915,12 @@ export const QUESTIONS_PREMIUM = {
       "60 km/h",
       "50 km/h"
     ],
-    "e": "La pluie abaisse les limites de 130, 110 et 90 km/h, mais une route déjà limitée à 80 km/h reste à 80 km/h. Il faut tout de même adapter sa vitesse."
+    "e": "La pluie abaisse les limites de 130, 110 et 90 km/h, mais une route déjà limitée à 80 km/h reste à 80 km/h. Il faut tout de même adapter sa vitesse.",
+    "img": {
+      "scene": "vue",
+      "meteo": "pluie",
+      "ligne": "discontinue"
+    }
   },
   "120": {
     "t": "Vitesse et distances",
@@ -709,7 +964,11 @@ export const QUESTIONS_PREMIUM = {
       "Environ 20 mètres",
       "Environ 150 mètres"
     ],
-    "e": "À 90 km/h, on parcourt environ 25 mètres par seconde : 2 secondes représentent donc environ 50 mètres."
+    "e": "À 90 km/h, on parcourt environ 25 mètres par seconde : 2 secondes représentent donc environ 50 mètres.",
+    "img": {
+      "scene": "vue",
+      "vehicule_devant": "loin"
+    }
   },
   "124": {
     "t": "Vitesse et distances",
@@ -753,7 +1012,14 @@ export const QUESTIONS_PREMIUM = {
       "À la sortie du virage",
       "Seulement si le virage est serré"
     ],
-    "e": "On adapte sa vitesse avant le virage, en ligne droite. Freiner fort dans la courbe risque de déséquilibrer le véhicule."
+    "e": "On adapte sa vitesse avant le virage, en ligne droite. Freiner fort dans la courbe risque de déséquilibrer le véhicule.",
+    "img": {
+      "scene": "vue",
+      "virage": "droite",
+      "panneau": [
+        "A1a"
+      ]
+    }
   },
   "128": {
     "t": "Vitesse et distances",
@@ -830,7 +1096,14 @@ export const QUESTIONS_PREMIUM = {
       "Une vitesse minimale obligatoire",
       "La fin d’une limitation de vitesse"
     ],
-    "e": "Ce panneau indique une vitesse conseillée. Les vitesses maximales obligatoires sont indiquées par des panneaux ronds à bordure rouge."
+    "e": "Ce panneau indique une vitesse conseillée. Les vitesses maximales obligatoires sont indiquées par des panneaux ronds à bordure rouge.",
+    "img": {
+      "scene": "vue",
+      "virage": "gauche",
+      "panneau": [
+        "C4a:70"
+      ]
+    }
   },
   "135": {
     "t": "Vitesse et distances",
@@ -841,7 +1114,11 @@ export const QUESTIONS_PREMIUM = {
       "Vous roulez plus vite, car il y a moins de circulation",
       "Vous suivez de très près le véhicule devant pour profiter de ses feux"
     ],
-    "e": "La nuit, vous voyez moins loin : votre distance d’arrêt doit rester dans la portée de vos feux."
+    "e": "La nuit, vous voyez moins loin : votre distance d’arrêt doit rester dans la portée de vos feux.",
+    "img": {
+      "scene": "vue",
+      "meteo": "nuit"
+    }
   },
   "136": {
     "t": "Vitesse et distances",
@@ -852,7 +1129,13 @@ export const QUESTIONS_PREMIUM = {
       "Vous roulez au milieu de la chaussée",
       "Vous relâchez le volant pour laisser la voiture se stabiliser"
     ],
-    "e": "Le vent peut déporter brusquement le véhicule, surtout en sortie de tunnel, sur un pont ou en dépassant un camion."
+    "e": "Le vent peut déporter brusquement le véhicule, surtout en sortie de tunnel, sur un pont ou en dépassant un camion.",
+    "img": {
+      "scene": "vue",
+      "panneau": [
+        "A24"
+      ]
+    }
   },
   "137": {
     "t": "Circulation et stationnement",
@@ -885,7 +1168,12 @@ export const QUESTIONS_PREMIUM = {
       "Vous accélérez pour passer en premier",
       "Vous allumez vos feux de route"
     ],
-    "e": "Pour croiser, chaque conducteur serre à droite autant que le permet la présence des autres usagers, et ralentit si besoin."
+    "e": "Pour croiser, chaque conducteur serre à droite autant que le permet la présence des autres usagers, et ralentit si besoin.",
+    "img": {
+      "scene": "vue",
+      "ligne": "aucune",
+      "vehicule_face": true
+    }
   },
   "140": {
     "t": "Circulation et stationnement",
@@ -951,7 +1239,15 @@ export const QUESTIONS_PREMIUM = {
       "Sur la voie de gauche, à contresens",
       "Sur l’accotement"
     ],
-    "e": "Pour tourner à gauche sur une route à double sens, on se rapproche de l’axe central, sans le franchir, après avoir mis son clignotant."
+    "e": "Pour tourner à gauche sur une route à double sens, on se rapproche de l’axe central, sans le franchir, après avoir mis son clignotant.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "moi": {
+        "bras": "S",
+        "clignotant": "gauche"
+      }
+    }
   },
   "146": {
     "t": "Circulation et stationnement",
@@ -1028,7 +1324,12 @@ export const QUESTIONS_PREMIUM = {
       "Les feux de position seulement",
       "Les feux antibrouillard arrière"
     ],
-    "e": "Les feux de route éblouiraient le conducteur devant vous à travers ses rétroviseurs. On passe en feux de croisement quand on suit ou que l’on croise un véhicule."
+    "e": "Les feux de route éblouiraient le conducteur devant vous à travers ses rétroviseurs. On passe en feux de croisement quand on suit ou que l’on croise un véhicule.",
+    "img": {
+      "scene": "vue",
+      "meteo": "nuit",
+      "vehicule_devant": "proche"
+    }
   },
   "153": {
     "t": "Circulation et stationnement",
@@ -1622,7 +1923,12 @@ export const QUESTIONS_PREMIUM = {
       "Les feux antibrouillard arrière",
       "Les feux de détresse"
     ],
-    "e": "Par mauvaise visibilité, même de jour, on allume les feux de croisement. Les antibrouillard arrière sont interdits par simple pluie."
+    "e": "Par mauvaise visibilité, même de jour, on allume les feux de croisement. Les antibrouillard arrière sont interdits par simple pluie.",
+    "img": {
+      "scene": "vue",
+      "meteo": "pluie",
+      "vehicule_face": true
+    }
   },
   "207": {
     "t": "Véhicule et équipements",
@@ -1633,7 +1939,13 @@ export const QUESTIONS_PREMIUM = {
       "Vous éteignez tous vos feux",
       "Vous allumez vos feux de détresse"
     ],
-    "e": "Les feux de route éblouissent. On passe en feux de croisement quand on croise ou qu’on suit un autre usager."
+    "e": "Les feux de route éblouissent. On passe en feux de croisement quand on croise ou qu’on suit un autre usager.",
+    "img": {
+      "scene": "vue",
+      "meteo": "nuit",
+      "vehicule_face": true,
+      "feux_route": true
+    }
   },
   "208": {
     "t": "Véhicule et équipements",
@@ -1688,7 +2000,12 @@ export const QUESTIONS_PREMIUM = {
       "Vous fixez ses phares",
       "Vous accélérez pour le croiser plus vite"
     ],
-    "e": "Regarder le bord droit de la chaussée limite l’éblouissement. On ralentit, car on voit moins bien."
+    "e": "Regarder le bord droit de la chaussée limite l’éblouissement. On ralentit, car on voit moins bien.",
+    "img": {
+      "scene": "vue",
+      "meteo": "nuit",
+      "vehicule_face": true
+    }
   },
   "213": {
     "t": "Véhicule et équipements",
@@ -2118,6 +2435,2930 @@ export const QUESTIONS_PREMIUM = {
       "Ce n’est pas utile"
     ],
     "e": "Le nombre de cases cochées, noté par chacun, protège contre toute modification ultérieure."
+  },
+  "252": {
+    "t": "Panneaux et feux",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "Un virage à droite",
+      "Un virage à gauche",
+      "Une obligation de tourner à droite",
+      "Une succession de virages"
+    ],
+    "e": "Ce panneau de danger annonce un seul virage, vers la droite. Il est placé avant le virage pour vous laisser le temps de ralentir.",
+    "img": {
+      "panneau": "A1a"
+    }
+  },
+  "253": {
+    "t": "Panneaux et feux",
+    "q": "Que vous annonce ce panneau ?",
+    "o": [
+      "Plusieurs virages, dont le premier est à droite",
+      "Plusieurs virages, dont le premier est à gauche",
+      "Un seul virage, à droite",
+      "Une route sinueuse interdite aux camions"
+    ],
+    "e": "La flèche en zigzag annonce une succession de virages. Son premier coude indique le sens du premier virage : ici, à droite.",
+    "img": {
+      "panneau": "A1c"
+    }
+  },
+  "254": {
+    "t": "Panneaux et feux",
+    "q": "Vous voyez ce panneau. Que faites-vous ?",
+    "o": [
+      "Vous adaptez votre vitesse avant le virage à gauche qu’il annonce",
+      "Vous accélérez pour sortir plus vite du virage",
+      "Vous vous préparez à tourner à gauche à la prochaine intersection",
+      "Vous gardez votre vitesse, car ce panneau ne vise que les camions"
+    ],
+    "e": "Ce panneau de danger annonce un virage à gauche. Il vous prévient à l’avance : ralentissez avant d’entrer dans le virage.",
+    "img": {
+      "scene": "vue",
+      "virage": "gauche",
+      "ligne": "continue",
+      "panneau": [
+        "A1b"
+      ]
+    }
+  },
+  "255": {
+    "t": "Panneaux et feux",
+    "q": "Ces deux panneaux sont placés sur le même poteau. Que vous annoncent-ils ?",
+    "o": [
+      "Un ralentisseur, avec une vitesse limitée à 30 km/h",
+      "Une chaussée déformée, avec une vitesse conseillée de 30 km/h",
+      "Le début d’une zone 30 après la bosse",
+      "Un ralentisseur, à franchir à 30 km/h au minimum"
+    ],
+    "e": "Le triangle annonce un ralentisseur de type dos-d’âne. Le panneau rond à bordure rouge qui l’accompagne limite la vitesse à 30 km/h : c’est une obligation.",
+    "img": {
+      "panneaux": [
+        "A2b",
+        "B14:30"
+      ]
+    }
+  },
+  "256": {
+    "t": "Panneaux et feux",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "La chaussée se rétrécit",
+      "La chaussée s’élargit",
+      "Une route à double sens commence",
+      "Un pont mobile"
+    ],
+    "e": "Ce panneau de danger annonce un rétrécissement de la chaussée. Ralentissez et serrez à droite, surtout si un véhicule arrive en face.",
+    "img": {
+      "panneau": "A3"
+    }
+  },
+  "257": {
+    "t": "Panneaux et feux",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "La chaussée peut être particulièrement glissante",
+      "La route est en mauvais état, avec des trous",
+      "Une piste de dérapage contrôlé",
+      "Un virage dangereux"
+    ],
+    "e": "Ce panneau annonce une section de chaussée particulièrement glissante. Réduisez votre vitesse et évitez les freinages brusques.",
+    "img": {
+      "panneau": "A4"
+    }
+  },
+  "258": {
+    "t": "Panneaux et feux",
+    "q": "Que vous annonce ce panneau ?",
+    "o": [
+      "Un passage à niveau muni de barrières",
+      "Un passage à niveau sans barrière",
+      "Une barrière de péage",
+      "Une route fermée par des travaux"
+    ],
+    "e": "Le dessin de barrière annonce un passage à niveau équipé de barrières ou de demi-barrières.",
+    "img": {
+      "panneau": "A7"
+    }
+  },
+  "259": {
+    "t": "Panneaux et feux",
+    "q": "Que vous annonce ce panneau ?",
+    "o": [
+      "Un passage à niveau sans barrière",
+      "Un passage à niveau muni de barrières",
+      "Une gare",
+      "Une traversée de voies de tramway"
+    ],
+    "e": "La locomotive annonce un passage à niveau sans barrières ni demi-barrières. Redoublez de prudence : rien ne vous bloquera le passage.",
+    "img": {
+      "panneau": "A8"
+    }
+  },
+  "260": {
+    "t": "Panneaux et feux",
+    "q": "Ces deux panneaux concernent le même passage pour piétons. Où sont-ils placés ?",
+    "o": [
+      "Le triangle l’annonce à l’avance ; le carré bleu est placé au niveau du passage",
+      "Tous les deux sont placés au niveau du passage",
+      "Le carré bleu l’annonce à l’avance ; le triangle est placé au niveau du passage",
+      "Tous les deux sont placés 150 m avant le passage"
+    ],
+    "e": "Le panneau de danger triangulaire annonce le passage pour piétons à l’avance. Le panneau carré bleu est placé à l’endroit même du passage.",
+    "img": {
+      "panneaux": [
+        "A13b",
+        "C20a"
+      ]
+    }
+  },
+  "261": {
+    "t": "Panneaux et feux",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "Un danger d’un autre type, souvent précisé par un panonceau",
+      "Un danger sans gravité",
+      "Une interdiction générale",
+      "La fin de tous les dangers"
+    ],
+    "e": "Ce panneau signale un danger qui n’a pas de symbole propre (sortie d’usine, risque d’inondation…). Un panonceau en précise souvent la nature. Il n’indique pas que le danger est faible.",
+    "img": {
+      "panneau": "A14"
+    }
+  },
+  "262": {
+    "t": "Panneaux et feux",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "Des animaux domestiques peuvent traverser la route",
+      "Une ferme vend ses produits plus loin",
+      "La route est interdite aux animaux",
+      "Un marché aux bestiaux"
+    ],
+    "e": "Ce panneau annonce une zone où des animaux domestiques, comme des vaches, peuvent traverser la chaussée. Ralentissez.",
+    "img": {
+      "panneau": "A15a1"
+    }
+  },
+  "263": {
+    "t": "Panneaux et feux",
+    "q": "Que vous annonce ce panneau ?",
+    "o": [
+      "Des feux tricolores, plus loin",
+      "Un feu tricolore en panne",
+      "Un passage à niveau",
+      "Un carrefour à sens giratoire"
+    ],
+    "e": "Ce panneau annonce des feux tricolores, pour qu’ils ne vous surprennent pas. Préparez-vous à vous arrêter.",
+    "img": {
+      "panneau": "A17"
+    }
+  },
+  "264": {
+    "t": "Panneaux et feux",
+    "q": "Vous circuliez sur une chaussée à sens unique et vous voyez ce panneau. Que signifie-t-il ?",
+    "o": [
+      "La circulation se fait désormais dans les deux sens",
+      "Vous devez céder le passage aux véhicules venant en face",
+      "Vous êtes prioritaire sur les véhicules venant en face",
+      "La route passe à deux voies dans votre sens"
+    ],
+    "e": "Ce panneau de danger signale la fin du sens unique : des véhicules peuvent maintenant arriver en face.",
+    "img": {
+      "panneau": "A18"
+    }
+  },
+  "265": {
+    "t": "Panneaux et feux",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "Des cyclistes peuvent déboucher de la droite ou de la gauche",
+      "Une piste cyclable obligatoire pour les cyclistes",
+      "La route est interdite aux cycles",
+      "Une course cycliste a lieu aujourd’hui"
+    ],
+    "e": "Ce panneau de danger annonce l’endroit où des cyclistes venant d’une piste ou d’une bande cyclable peuvent couper ou rejoindre la route.",
+    "img": {
+      "panneau": "A21"
+    }
+  },
+  "266": {
+    "t": "Panneaux et feux",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "Du vent latéral",
+      "Des avions qui passent à basse altitude",
+      "Un poste de douane",
+      "Une zone de travaux"
+    ],
+    "e": "La manche à air annonce un endroit exposé au vent de côté. Tenez fermement le volant, surtout en dépassant ou en sortant d’un abri.",
+    "img": {
+      "panneau": "A24"
+    }
+  },
+  "267": {
+    "t": "Panneaux et feux",
+    "q": "En agglomération, à quelle distance environ du danger un panneau de danger est-il placé en général ?",
+    "o": [
+      "50 mètres",
+      "150 mètres",
+      "300 mètres",
+      "500 mètres"
+    ],
+    "e": "En agglomération, un panneau de danger est placé en général à 50 m environ du danger. Hors agglomération, c’est environ 150 m.",
+    "img": {
+      "scene": "vue",
+      "ville": true,
+      "ligne": "discontinue",
+      "panneau": [
+        "A13a"
+      ]
+    }
+  },
+  "268": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue et vous allez tout droit. Ce panneau annonçait l’intersection. Une voiture rouge arrive par la droite. Qui passe en premier ?",
+    "o": [
+      "La voiture rouge",
+      "Vous, car vous allez tout droit",
+      "Vous, si vous êtes arrivé le premier",
+      "Celui qui roule le plus vite"
+    ],
+    "e": "Le panneau triangulaire avec une croix annonce une intersection où vous devez céder le passage aux véhicules venant de votre droite.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "axe": "discontinue",
+      "panneaux": [
+        {
+          "code": "AB1",
+          "bras": "S"
+        }
+      ],
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "E",
+          "action": "tout_droit",
+          "couleur": "rouge"
+        }
+      ]
+    }
+  },
+  "269": {
+    "t": "Priorités",
+    "q": "Vous venez de passer ce panneau. À l’intersection qu’il annonce, une voiture arrive d’une route à votre droite. Qui passe en premier ?",
+    "o": [
+      "Vous, car les usagers de cette route doivent vous céder le passage",
+      "La voiture, car elle vient de votre droite",
+      "Celui qui arrive le premier",
+      "La voiture, si elle a mis son clignotant"
+    ],
+    "e": "Ce panneau annonce une intersection où vous êtes prioritaire : les usagers des routes rencontrées doivent vous céder le passage. Cela ne vaut que pour cette intersection.",
+    "img": {
+      "panneau": "AB2"
+    }
+  },
+  "270": {
+    "t": "Priorités",
+    "q": "Vous arrivez à ce panneau. Personne ne circule sur la route que vous allez emprunter. Que faites-vous ?",
+    "o": [
+      "Vous pouvez passer sans vous arrêter, après avoir bien regardé",
+      "Vous devez marquer un arrêt complet",
+      "Vous attendez qu’un véhicule passe sur l’autre route",
+      "Vous klaxonnez avant de passer"
+    ],
+    "e": "Le « cédez le passage » vous oblige à laisser passer les usagers de l’autre route, mais pas à vous arrêter si personne ne vient.",
+    "img": {
+      "panneau": "AB3a"
+    }
+  },
+  "271": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue, arrivée au STOP. Une voiture rouge arrive par la gauche. Que faites-vous ?",
+    "o": [
+      "Vous vous arrêtez à la ligne et vous la laissez passer",
+      "Vous passez, car elle vient de votre gauche",
+      "Vous ralentissez et vous passez avant elle",
+      "Vous vous arrêtez seulement si elle klaxonne"
+    ],
+    "e": "Au STOP, vous marquez l’arrêt et vous cédez le passage à tous les usagers de la route rencontrée, qu’ils viennent de gauche ou de droite.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "axe": "discontinue",
+      "marquages": {
+        "S": [
+          "stop"
+        ]
+      },
+      "panneaux": [
+        {
+          "code": "AB4",
+          "bras": "S"
+        }
+      ],
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "W",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "recul": 20
+        }
+      ]
+    }
+  },
+  "272": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue, sur une route signalée par le panneau jaune. Les rues de côté ont un « cédez le passage ». Une voiture rouge arrive par la droite. Qui passe en premier ?",
+    "o": [
+      "Vous, en restant attentif",
+      "La voiture rouge, car elle vient de votre droite",
+      "Celui qui arrive le premier",
+      "La voiture rouge, car elle va tout droit"
+    ],
+    "e": "Le panneau jaune en losange indique une route prioritaire. Les rues qui la croisent ont un « cédez le passage » : leurs usagers doivent vous laisser passer.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "axe": "discontinue",
+      "marquages": {
+        "E": [
+          "cedez"
+        ],
+        "W": [
+          "cedez"
+        ]
+      },
+      "panneaux": [
+        {
+          "code": "AB6",
+          "bras": "S"
+        },
+        {
+          "code": "AB3a",
+          "bras": "E"
+        },
+        {
+          "code": "AB3a",
+          "bras": "W"
+        }
+      ],
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "E",
+          "action": "tout_droit",
+          "couleur": "rouge"
+        }
+      ]
+    }
+  },
+  "273": {
+    "t": "Priorités",
+    "q": "Vous voyez ce panneau, sans panonceau de distance. À partir d’où perdez-vous la priorité ?",
+    "o": [
+      "Au prochain carrefour",
+      "Dès le panneau, et sur 1 km seulement",
+      "À la sortie de l’agglomération",
+      "Vous ne la perdez pas : ce panneau annonce une route prioritaire"
+    ],
+    "e": "Le losange barré annonce la fin de la route prioritaire. Sans panonceau, la perte de priorité a lieu au prochain carrefour.",
+    "img": {
+      "panneau": "AB7"
+    }
+  },
+  "274": {
+    "t": "Priorités",
+    "q": "Que vous annonce ce panneau ?",
+    "o": [
+      "Un carrefour à sens giratoire, où vous céderez le passage aux véhicules déjà sur l’anneau",
+      "Un carrefour à sens giratoire, où vous serez prioritaire en entrant",
+      "Un demi-tour obligatoire",
+      "Une déviation due à des travaux"
+    ],
+    "e": "Ce panneau annonce un carrefour à sens giratoire. À l’entrée, vous cédez le passage aux usagers qui circulent déjà sur l’anneau.",
+    "img": {
+      "panneau": "AB25"
+    }
+  },
+  "275": {
+    "t": "Priorités",
+    "q": "Lequel de ces deux panneaux vous oblige à céder le passage aux véhicules venant de votre droite ?",
+    "o": [
+      "Celui de gauche, avec la croix",
+      "Celui de droite, avec le trait vertical",
+      "Les deux",
+      "Aucun des deux"
+    ],
+    "e": "La croix (à gauche) annonce une intersection à priorité à droite. Le trait vertical coupé (à droite) annonce au contraire une intersection où vous êtes prioritaire.",
+    "img": {
+      "panneaux": [
+        "AB1",
+        "AB2"
+      ]
+    }
+  },
+  "276": {
+    "t": "Panneaux et feux",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "Interdiction de tourner à gauche à la prochaine intersection",
+      "Obligation de tourner à gauche",
+      "Interdiction de faire demi-tour",
+      "Virage à gauche dangereux"
+    ],
+    "e": "Ce panneau rond à bordure rouge, avec une flèche barrée, interdit de tourner à gauche à la prochaine intersection.",
+    "img": {
+      "panneau": "B2a"
+    }
+  },
+  "277": {
+    "t": "Panneaux et feux",
+    "q": "Ce panneau vous interdit de tourner à droite. Où s’applique cette interdiction ?",
+    "o": [
+      "À la prochaine intersection",
+      "Jusqu’à la sortie de l’agglomération",
+      "Sur 1 km",
+      "À toutes les intersections, jusqu’à un panneau de fin"
+    ],
+    "e": "L’interdiction de tourner ne vaut que pour la prochaine intersection.",
+    "img": {
+      "panneau": "B2b"
+    }
+  },
+  "278": {
+    "t": "Panneaux et feux",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "Interdiction de faire demi-tour jusqu’à la prochaine intersection incluse",
+      "Obligation de faire demi-tour",
+      "Interdiction de tourner à gauche seulement",
+      "Route sans issue"
+    ],
+    "e": "Ce panneau interdit le demi-tour sur la route suivie, jusqu’à la prochaine intersection comprise.",
+    "img": {
+      "panneau": "B2c"
+    }
+  },
+  "279": {
+    "t": "Panneaux et feux",
+    "q": "Vous voyez ce panneau. Pouvez-vous dépasser une moto sans side-car ?",
+    "o": [
+      "Oui, en respectant les règles habituelles du dépassement",
+      "Non, aucun dépassement n’est permis",
+      "Oui, mais seulement à moins de 50 km/h",
+      "Non, sauf si elle roule à moins de 30 km/h"
+    ],
+    "e": "Ce panneau interdit de dépasser les véhicules à moteur, sauf les deux-roues sans side-car. Le dépassement d’une moto reste possible s’il se fait en sécurité.",
+    "img": {
+      "panneau": "B3"
+    }
+  },
+  "280": {
+    "t": "Panneaux et feux",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "Fin de l’interdiction de dépasser",
+      "Interdiction de dépasser pour les camions",
+      "Fin de toutes les interdictions",
+      "Dépassement interdit sur une longue distance"
+    ],
+    "e": "Ce panneau barré marque la fin de l’interdiction de dépasser. Les règles générales du dépassement continuent de s’appliquer.",
+    "img": {
+      "panneau": "B34"
+    }
+  },
+  "281": {
+    "t": "Circulation et stationnement",
+    "q": "Ce panneau, sans panonceau, est placé sur le trottoir de droite. Où le stationnement est-il interdit ?",
+    "o": [
+      "De ce côté de la rue, depuis le panneau jusqu’à la prochaine intersection",
+      "Des deux côtés de la rue, sur toute sa longueur",
+      "Seulement sur 10 mètres autour du panneau",
+      "De ce côté, jusqu’à la sortie de l’agglomération"
+    ],
+    "e": "L’interdiction ne vaut que du côté où le panneau est placé, à partir du panneau et jusqu’à la prochaine intersection.",
+    "img": {
+      "panneau": "B6a1"
+    }
+  },
+  "282": {
+    "t": "Circulation et stationnement",
+    "q": "Vous voulez vous arrêter un instant pour déposer un passager, en restant au volant. Lequel de ces deux panneaux le permet ?",
+    "o": [
+      "Celui de gauche, qui interdit seulement le stationnement",
+      "Celui de droite, qui interdit seulement le stationnement",
+      "Les deux",
+      "Aucun des deux"
+    ],
+    "e": "Le panneau barré d’un trait (à gauche) interdit le stationnement mais pas l’arrêt. Le panneau barré d’une croix (à droite) interdit l’arrêt et le stationnement.",
+    "img": {
+      "panneaux": [
+        "B6a1",
+        "B6d"
+      ]
+    }
+  },
+  "283": {
+    "t": "Panneaux et feux",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "Accès interdit aux piétons",
+      "Chemin obligatoire pour les piétons",
+      "Passage pour piétons",
+      "Aire piétonne"
+    ],
+    "e": "Rond à bordure rouge : c’est une interdiction. Ici, les piétons n’ont pas le droit d’emprunter cette voie.",
+    "img": {
+      "panneau": "B9a"
+    }
+  },
+  "284": {
+    "t": "Panneaux et feux",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "Accès interdit aux cycles",
+      "Piste cyclable obligatoire",
+      "Débouché de cyclistes",
+      "Parking à vélos"
+    ],
+    "e": "Rond à bordure rouge avec un vélo : la voie est interdite aux cycles.",
+    "img": {
+      "panneau": "B9b"
+    }
+  },
+  "285": {
+    "t": "Panneaux et feux",
+    "q": "Hors agglomération, ces deux panneaux sont placés sur le même poteau. Que vous indiquent-ils ?",
+    "o": [
+      "Des feux tricolores plus loin, avec une vitesse limitée à 70 km/h",
+      "Un feu en panne, avec une vitesse conseillée de 70 km/h",
+      "Des feux tricolores dans 70 m",
+      "Des feux tricolores, à aborder à 70 km/h au minimum"
+    ],
+    "e": "Hors agglomération, les feux tricolores sont annoncés par ce triangle, accompagné d’un panneau de limitation de vitesse placé dessous.",
+    "img": {
+      "panneaux": [
+        "A17",
+        "B14:70"
+      ]
+    }
+  },
+  "286": {
+    "t": "Vitesse et distances",
+    "q": "Que vous impose ce panneau ?",
+    "o": [
+      "De ne pas dépasser 90 km/h",
+      "De rouler au moins à 90 km/h",
+      "De rouler à 90 km/h si possible, sans obligation",
+      "De garder 90 mètres avec le véhicule qui vous précède"
+    ],
+    "e": "Le panneau rond à bordure rouge avec un nombre fixe une vitesse maximale : vous ne devez pas la dépasser. Vous pouvez rouler moins vite si les conditions l’exigent.",
+    "img": {
+      "panneau": "B14:90"
+    }
+  },
+  "287": {
+    "t": "Vitesse et distances",
+    "q": "Lequel de ces deux panneaux vous interdit de dépasser 70 km/h ?",
+    "o": [
+      "Le rond à bordure rouge",
+      "Le carré bleu",
+      "Les deux",
+      "Aucun des deux"
+    ],
+    "e": "Le rond à bordure rouge est une limitation de vitesse obligatoire. Le carré bleu n’indique qu’une vitesse conseillée.",
+    "img": {
+      "panneaux": [
+        "B14:70",
+        "C4a:70"
+      ]
+    }
+  },
+  "288": {
+    "t": "Vitesse et distances",
+    "q": "Vous passez ce panneau. Quelle vitesse maximale s’applique ensuite ?",
+    "o": [
+      "Celle prévue par la règle générale pour cette route",
+      "Aucune : la vitesse devient libre",
+      "Toujours 70 km/h",
+      "Toujours 130 km/h"
+    ],
+    "e": "Ce panneau met fin à la limitation de 70 km/h. Vous revenez à la vitesse maximale prévue par la règle générale pour cette route (agglomération, route, autoroute…).",
+    "img": {
+      "panneau": "B33:70"
+    }
+  },
+  "289": {
+    "t": "Vitesse et distances",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "Vous devez rouler au moins à 80 km/h",
+      "Vous ne devez pas dépasser 80 km/h",
+      "Il est conseillé de rouler à 80 km/h",
+      "La limitation à 80 km/h prend fin"
+    ],
+    "e": "Le panneau rond à fond bleu avec un nombre est une obligation : c’est une vitesse minimale. On le trouve dans certains tunnels et sur autoroute.",
+    "img": {
+      "panneau": "B25:80"
+    }
+  },
+  "290": {
+    "t": "Panneaux et feux",
+    "q": "En agglomération, vous passez ce panneau. Que deviennent les règles propres à l’agglomération, comme la limite de 50 km/h ?",
+    "o": [
+      "Elles continuent de s’appliquer",
+      "Elles sont toutes levées",
+      "Elles sont levées sur 1 km",
+      "Elles ne s’appliquent plus qu’aux camions"
+    ],
+    "e": "Ce panneau met fin aux interdictions signalées auparavant par des panneaux, mais pas aux règles générales, comme celles de l’agglomération.",
+    "img": {
+      "panneau": "B31"
+    }
+  },
+  "291": {
+    "t": "Priorités",
+    "q": "Vous voyez ce panneau avant un passage étroit. Une voiture venant d’en face est déjà engagée dans le passage. Que faites-vous ?",
+    "o": [
+      "Vous attendez qu’elle en soit sortie",
+      "Vous vous engagez, car elle devra reculer",
+      "Vous vous engagez en serrant à droite",
+      "Vous faites un appel de phares et vous passez"
+    ],
+    "e": "Ce panneau vous oblige à céder le passage aux véhicules venant en face. Vous ne vous engagez que si vous pouvez traverser sans les obliger à s’arrêter.",
+    "img": {
+      "scene": "vue",
+      "ligne": "aucune",
+      "panneau": [
+        "B15"
+      ],
+      "vehicule_face": true
+    }
+  },
+  "292": {
+    "t": "Priorités",
+    "q": "Ces deux panneaux sont placés chacun à un bout du même passage étroit. Lequel donne la priorité sur les véhicules venant en face ?",
+    "o": [
+      "Le carré bleu",
+      "Le rond à bordure rouge",
+      "Les deux",
+      "Aucun : le premier arrivé passe"
+    ],
+    "e": "Le rond à bordure rouge oblige à céder le passage. Le carré bleu, placé à l’autre bout, indique au contraire que vous êtes prioritaire.",
+    "img": {
+      "panneaux": [
+        "B15",
+        "C18"
+      ]
+    }
+  },
+  "293": {
+    "t": "Panneaux et feux",
+    "q": "Ces deux panneaux sont placés aux deux bouts de la même rue. Que pouvez-vous en déduire ?",
+    "o": [
+      "La rue est à sens unique",
+      "La rue est fermée à toute circulation",
+      "La rue est une impasse",
+      "La rue est réservée aux bus"
+    ],
+    "e": "Le carré bleu à flèche blanche indique le sens unique du côté où l’on peut entrer. Le sens interdit est placé à l’autre bout de la rue.",
+    "img": {
+      "panneaux": [
+        "C12",
+        "B1"
+      ]
+    }
+  },
+  "294": {
+    "t": "Panneaux et feux",
+    "q": "Que signifient ces deux panneaux ?",
+    "o": [
+      "Gauche : tourner à droite avant le panneau ; droite : tourner à droite à la prochaine intersection",
+      "Les deux imposent exactement la même chose",
+      "Gauche : tourner à droite à la prochaine intersection ; droite : tourner à droite avant le panneau",
+      "Ils indiquent seulement des directions conseillées"
+    ],
+    "e": "La flèche droite horizontale impose de tourner à droite tout de suite, avant le panneau. La flèche coudée impose de tourner à droite à la prochaine intersection.",
+    "img": {
+      "panneaux": [
+        "B21-1",
+        "B21c1"
+      ]
+    }
+  },
+  "295": {
+    "t": "Panneaux et feux",
+    "q": "Vous arrivez face à ce panneau, placé au bout de la rue. Que devez-vous faire ?",
+    "o": [
+      "Tourner à gauche, avant le panneau",
+      "Tourner à gauche à l’intersection suivante, plus loin",
+      "Tourner à droite",
+      "Contourner un obstacle par la gauche"
+    ],
+    "e": "Ce panneau rond bleu à flèche horizontale vous oblige à tourner à gauche avant de l’atteindre.",
+    "img": {
+      "panneau": "B21-2"
+    }
+  },
+  "296": {
+    "t": "Panneaux et feux",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "Direction obligatoire à gauche à la prochaine intersection",
+      "Interdiction de tourner à gauche",
+      "Virage à gauche",
+      "Obligation de tourner à gauche avant le panneau"
+    ],
+    "e": "La flèche coudée sur fond bleu impose de tourner à gauche à la prochaine intersection.",
+    "img": {
+      "panneau": "B21c2"
+    }
+  },
+  "297": {
+    "t": "Panneaux et feux",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "Contournement obligatoire par la droite",
+      "Tourner à droite à la prochaine intersection",
+      "Chaussée rétrécie par la droite",
+      "Voie de droite réservée aux bus"
+    ],
+    "e": "La flèche oblique vers le bas à droite impose de passer à droite de l’obstacle ou de l’îlot.",
+    "img": {
+      "panneau": "B21a1"
+    }
+  },
+  "298": {
+    "t": "Panneaux et feux",
+    "q": "Vous voyez ce panneau avant un carrefour. Que devez-vous faire ?",
+    "o": [
+      "Continuer tout droit à la prochaine intersection",
+      "Rien de particulier : il indique une rue à sens unique",
+      "Vous considérer comme prioritaire",
+      "Vous placer sur la voie de gauche"
+    ],
+    "e": "Le rond bleu à flèche verticale impose d’aller tout droit à la prochaine intersection. Ne le confondez pas avec le carré bleu du sens unique.",
+    "img": {
+      "panneau": "B21b"
+    }
+  },
+  "299": {
+    "t": "Panneaux et feux",
+    "q": "Vous conduisez une voiture. Ce panneau est placé à l’entrée d’une bande. Pouvez-vous vous y arrêter un instant ?",
+    "o": [
+      "Non, vous ne pouvez ni y circuler ni vous y arrêter",
+      "Oui, moins de 2 minutes",
+      "Oui, avec les feux de détresse allumés",
+      "Oui, s’il n’y a pas de cycliste"
+    ],
+    "e": "Ce panneau réserve la piste ou la bande aux cycles. Les autres véhicules ne peuvent ni l’emprunter ni s’y arrêter.",
+    "img": {
+      "panneau": "B22a"
+    }
+  },
+  "300": {
+    "t": "Panneaux et feux",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "Chemin obligatoire pour les piétons",
+      "Accès interdit aux piétons",
+      "Passage pour piétons",
+      "Endroit fréquenté par les enfants"
+    ],
+    "e": "Ce panneau rond bleu oblige les piétons à emprunter ce chemin. Les autres usagers n’ont pas le droit de l’utiliser ni de s’y arrêter.",
+    "img": {
+      "panneau": "B22b"
+    }
+  },
+  "301": {
+    "t": "Panneaux et feux",
+    "q": "Vous passez ce panneau. Que signifie-t-il ?",
+    "o": [
+      "Vous sortez d’une zone 30",
+      "Vous entrez dans une zone 30",
+      "La vitesse conseillée est de 30 km/h",
+      "La vitesse minimale de 30 km/h prend fin"
+    ],
+    "e": "Ce panneau marque la sortie de la zone 30. La vitesse maximale redevient celle de la règle générale ou celle d’un autre panneau.",
+    "img": {
+      "panneau": "B51"
+    }
+  },
+  "302": {
+    "t": "Circulation et stationnement",
+    "q": "Vous passez ce panneau. Quelle est la vitesse maximale des véhicules dans cette zone ?",
+    "o": [
+      "20 km/h",
+      "30 km/h",
+      "L’allure du pas",
+      "50 km/h"
+    ],
+    "e": "Ce panneau annonce une zone de rencontre : les piétons peuvent marcher sur la chaussée, ils sont prioritaires, et les véhicules ne dépassent pas 20 km/h.",
+    "img": {
+      "panneau": "B52"
+    }
+  },
+  "303": {
+    "t": "Circulation et stationnement",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "L’entrée d’une aire piétonne",
+      "Un chemin obligatoire pour les piétons",
+      "L’entrée d’une zone de rencontre",
+      "Un passage pour piétons"
+    ],
+    "e": "Ce panneau carré bleu annonce une aire piétonne. Les véhicules autorisés y roulent au pas et laissent la priorité aux piétons.",
+    "img": {
+      "panneau": "B54"
+    }
+  },
+  "304": {
+    "t": "Circulation et stationnement",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "Un lieu aménagé pour le stationnement",
+      "Un poste de police",
+      "Une zone de stationnement interdit",
+      "Une aire de péage"
+    ],
+    "e": "Le « P » blanc sur fond bleu indique un lieu aménagé pour stationner.",
+    "img": {
+      "panneau": "C1a"
+    }
+  },
+  "305": {
+    "t": "Panneaux et feux",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "Une impasse",
+      "Une route prioritaire",
+      "Un sens interdit",
+      "Un arrêt de bus"
+    ],
+    "e": "Ce panneau indique une voie sans issue : vous devrez faire demi-tour au bout.",
+    "img": {
+      "panneau": "C13a"
+    }
+  },
+  "306": {
+    "t": "Panneaux et feux",
+    "q": "Ce panneau carré bleu est placé à l’endroit d’un aménagement de la chaussée. Lequel ?",
+    "o": [
+      "Une surélévation de chaussée, comme un ralentisseur",
+      "Un tunnel",
+      "Une descente dangereuse",
+      "Un passage à niveau"
+    ],
+    "e": "Ce panneau est placé au niveau d’un ralentisseur ou d’un plateau surélevé. Il est souvent annoncé avant par un panneau triangulaire.",
+    "img": {
+      "panneau": "C27"
+    }
+  },
+  "307": {
+    "t": "Vitesse et distances",
+    "q": "À l’entrée de la ville, ces deux panneaux sont sur le même poteau. Que signifient-ils ?",
+    "o": [
+      "La vitesse est limitée à 30 km/h dans toute l’agglomération, sauf autre indication",
+      "La vitesse est limitée à 30 km/h sur 300 m seulement",
+      "Il est conseillé de rouler à 30 km/h",
+      "La limite reste 50 km/h : le 30 ne concerne que les camions"
+    ],
+    "e": "Un panneau de limitation placé avec l’entrée d’agglomération s’applique à toutes les rues de l’agglomération, jusqu’à ce qu’un autre panneau indique une autre vitesse.",
+    "img": {
+      "panneaux": [
+        "EB10:VILLENEUVE",
+        "B14:30"
+      ]
+    }
+  },
+  "308": {
+    "t": "Vitesse et distances",
+    "q": "Que signifie ce panneau ?",
+    "o": [
+      "La sortie de l’agglomération : ses règles propres, comme les 50 km/h, cessent",
+      "L’entrée de l’agglomération",
+      "Une ville interdite aux camions",
+      "La fin d’une zone 30 seulement"
+    ],
+    "e": "Le nom barré de rouge marque la sortie de l’agglomération. Les règles propres à l’agglomération ne s’appliquent plus après ce panneau.",
+    "img": {
+      "panneau": "EB20:VILLENEUVE"
+    }
+  },
+  "309": {
+    "t": "Panneaux et feux",
+    "q": "Le feu est rouge. Un passage pour piétons se trouve avant le feu, et aucune ligne d’arrêt n’est tracée. Où vous arrêtez-vous ?",
+    "o": [
+      "Avant le passage pour piétons",
+      "Sur le passage pour piétons, au plus près du feu",
+      "Au pied du feu, après le passage",
+      "Où vous voulez, si aucun piéton ne traverse"
+    ],
+    "e": "Quand aucune ligne n’est tracée et qu’un passage pour piétons précède le feu, vous devez vous arrêter avant ce passage, pour le laisser libre.",
+    "img": {
+      "feu": "rouge"
+    }
+  },
+  "310": {
+    "t": "Panneaux et feux",
+    "q": "À un carrefour, ce feu clignote à l’orange et un panneau « cédez le passage » est fixé sous lui. Une voiture arrive par la gauche, sur l’autre route. Que faites-vous ?",
+    "o": [
+      "Vous la laissez passer, comme l’impose le panneau",
+      "Vous passez, car elle vient de votre gauche",
+      "Vous passez, car le feu orange clignotant vous rend prioritaire",
+      "Vous attendez que le feu passe au vert, même quand la voie sera libre"
+    ],
+    "e": "Feu orange clignotant : vous passez avec prudence, en suivant le panneau placé avec le feu. Ici, le « cédez le passage » vous oblige à laisser passer la voiture, même venant de gauche.",
+    "img": {
+      "feu": "orange_clignotant"
+    }
+  },
+  "311": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous allez tout droit. À cette intersection, il n’y a ni panneau, ni feu, ni marquage au sol. Qui passe en premier ?",
+    "o": [
+      "La voiture rouge, car elle arrive de votre droite",
+      "Vous, car vous allez tout droit",
+      "Vous, car la voiture rouge roule sur une route moins large",
+      "Le plus rapide des deux"
+    ],
+    "e": "Sans signalisation, c’est la priorité à droite : vous laissez passer la voiture qui arrive de votre droite.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "E",
+          "action": "tout_droit",
+          "couleur": "rouge"
+        }
+      ]
+    }
+  },
+  "312": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous allez tout droit. Il n’y a ni panneau, ni feu, ni marquage au sol. La voiture rouge arrive de votre gauche. Qui passe en premier ?",
+    "o": [
+      "Vous, car vous arrivez à la droite de la voiture rouge",
+      "La voiture rouge, car elle est déjà engagée",
+      "La voiture rouge, car elle va tout droit",
+      "Personne : vous attendez un signe de l’autre conducteur"
+    ],
+    "e": "La voiture rouge doit céder le passage aux véhicules qui arrivent de sa droite : c’est vous. Restez tout de même attentif.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "W",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "x": 70
+        }
+      ]
+    }
+  },
+  "313": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Les trois véhicules vont tout droit. Il n’y a ni panneau, ni feu, ni marquage au sol. Dans quel ordre passent-ils ?",
+    "o": [
+      "A, puis vous, puis B",
+      "B, puis vous, puis A",
+      "Vous, puis A, puis B",
+      "A et B en même temps, puis vous"
+    ],
+    "e": "Priorité à droite : A n’a personne à sa droite, il passe d’abord. Ensuite vous, car B doit vous céder le passage. B passe en dernier.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "E",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "lettre": "A"
+        },
+        {
+          "type": "voiture",
+          "bras": "W",
+          "action": "tout_droit",
+          "couleur": "vert",
+          "lettre": "B"
+        }
+      ]
+    }
+  },
+  "314": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous continuez tout droit. La voiture rouge sort de la route à votre gauche pour tourner à sa gauche. Il n’y a aucun panneau ni marquage. Qui passe en premier ?",
+    "o": [
+      "Vous, car vous arrivez à sa droite",
+      "La voiture rouge, car elle est sortie la première",
+      "La voiture rouge, car elle tourne",
+      "Celui qui roule sur la route la plus large"
+    ],
+    "e": "Même dans un carrefour en T, la priorité à droite s’applique sans signalisation : la voiture rouge vous a sur sa droite, elle vous laisse passer.",
+    "img": {
+      "scene": "plan",
+      "route": "T_gauche",
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "W",
+          "action": "gauche",
+          "couleur": "rouge",
+          "clignotant": "gauche"
+        }
+      ]
+    }
+  },
+  "315": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous continuez tout droit sur cette route. La voiture rouge sort d’une petite route à votre droite. Il n’y a aucun panneau ni marquage. Qui passe en premier ?",
+    "o": [
+      "La voiture rouge, car elle arrive de votre droite",
+      "Vous, car vous êtes sur la route principale",
+      "Vous, car elle sort d’une petite route",
+      "Vous, car vous allez tout droit"
+    ],
+    "e": "La taille de la route ne donne aucune priorité : sans panneau, vous laissez passer celui qui vient de droite.",
+    "img": {
+      "scene": "plan",
+      "route": "T_droite",
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "E",
+          "action": "gauche",
+          "couleur": "rouge",
+          "clignotant": "gauche"
+        }
+      ]
+    }
+  },
+  "316": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous tournez à droite. La voiture rouge arrive de votre gauche et va tout droit. Il n’y a ni panneau, ni feu, ni marquage. Qui passe en premier ?",
+    "o": [
+      "Vous, car vous arrivez à sa droite",
+      "La voiture rouge, car elle va tout droit",
+      "La voiture rouge, car vous tournez",
+      "Personne n’est prioritaire"
+    ],
+    "e": "Vous allez tous les deux dans la même rue. Sans signalisation, la priorité à droite s’applique : la voiture rouge doit vous céder le passage.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "moi": {
+        "bras": "S",
+        "action": "droite",
+        "clignotant": "droite"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "W",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "x": 70
+        }
+      ]
+    }
+  },
+  "317": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous allez tout droit. Un cycliste arrive de votre droite. Il n’y a ni panneau, ni feu, ni marquage. Qui passe en premier ?",
+    "o": [
+      "Le cycliste, car il arrive de votre droite",
+      "Vous, car une voiture est prioritaire sur un vélo",
+      "Vous, car il roule moins vite",
+      "Le cycliste doit toujours mettre pied à terre"
+    ],
+    "e": "Sur la chaussée, le cycliste suit les mêmes règles de priorité que les autres : il vient de droite, vous le laissez passer.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "velo",
+          "bras": "E",
+          "action": "tout_droit",
+          "x": 250
+        }
+      ]
+    }
+  },
+  "318": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous tournez à gauche (A arrive de votre droite, B arrive en face). A et B vont tout droit. Il n’y a ni panneau, ni feu, ni marquage. Dans quel ordre passe-t-on ?",
+    "o": [
+      "B, puis A, puis vous",
+      "A, puis B, puis vous",
+      "Vous, puis A, puis B",
+      "A, puis vous, puis B"
+    ],
+    "e": "B n’a personne à sa droite : il passe en premier. A passe ensuite, car il est à votre droite. Vous tournez à gauche en dernier, après avoir laissé passer B qui venait en face.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "moi": {
+        "bras": "S",
+        "action": "gauche",
+        "clignotant": "gauche"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "E",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "lettre": "A"
+        },
+        {
+          "type": "voiture",
+          "bras": "N",
+          "action": "tout_droit",
+          "couleur": "vert",
+          "lettre": "B"
+        }
+      ]
+    }
+  },
+  "319": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous êtes au stop et vous voulez aller tout droit. La voiture rouge arrive de votre gauche sur la route que vous croisez. Que faites-vous ?",
+    "o": [
+      "Vous vous arrêtez à la ligne et vous la laissez passer",
+      "Vous passez avant elle, car vous êtes à sa droite",
+      "Vous passez sans vous arrêter si elle est encore loin",
+      "Vous vous arrêtez, puis vous passez en même temps qu’elle"
+    ],
+    "e": "Au stop, l’arrêt est obligatoire et vous cédez le passage à tous les usagers de la route que vous croisez, qu’ils viennent de gauche ou de droite.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "axes": {
+        "S": "continue"
+      },
+      "marquages": {
+        "S": "stop"
+      },
+      "panneaux": [
+        {
+          "code": "AB4",
+          "bras": "S"
+        }
+      ],
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit",
+        "recul": 14
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "W",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "x": 70
+        }
+      ]
+    }
+  },
+  "320": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous êtes au stop. A arrive de votre gauche et B de votre droite, tous deux sur la route que vous croisez, et vont tout droit. Dans quel ordre passe-t-on ?",
+    "o": [
+      "A et B passent, puis vous",
+      "Vous, puis A et B",
+      "A, puis vous, puis B",
+      "B, puis vous, puis A"
+    ],
+    "e": "Au stop, vous cédez le passage aux usagers venant des deux côtés. A et B ne se gênent pas : ils passent, puis vous.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "axes": {
+        "S": "continue"
+      },
+      "marquages": {
+        "S": "stop"
+      },
+      "panneaux": [
+        {
+          "code": "AB4",
+          "bras": "S"
+        }
+      ],
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit",
+        "recul": 14
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "W",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "x": 70,
+          "lettre": "A"
+        },
+        {
+          "type": "voiture",
+          "bras": "E",
+          "action": "tout_droit",
+          "couleur": "vert",
+          "x": 250,
+          "lettre": "B"
+        }
+      ]
+    }
+  },
+  "321": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous arrivez à ce stop. Où devez-vous arrêter votre voiture ?",
+    "o": [
+      "Juste avant la large ligne blanche continue",
+      "Au niveau du panneau, même s’il est loin de la ligne",
+      "Après la ligne, l’avant de la voiture sur la route croisée",
+      "Nulle part si personne n’arrive"
+    ],
+    "e": "La ligne continue tracée au sol avec le stop marque l’endroit où vous marquez l’arrêt, avec la meilleure vue sur la route croisée.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "axes": {
+        "S": "continue"
+      },
+      "marquages": {
+        "S": "stop"
+      },
+      "panneaux": [
+        {
+          "code": "AB4",
+          "bras": "S"
+        }
+      ],
+      "moi": {
+        "bras": "S",
+        "recul": 18
+      }
+    }
+  },
+  "322": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous allez tout droit sur une route où ce panneau annonce l’intersection. La voiture rouge, à droite, est arrêtée à un stop. Qui passe en premier ?",
+    "o": [
+      "Vous, car l’autre route doit vous céder le passage",
+      "La voiture rouge, car elle vient de votre droite",
+      "La voiture rouge, car elle était là avant vous",
+      "Le premier qui démarre"
+    ],
+    "e": "Le panneau triangulaire à flèche noire indique que vous êtes prioritaire à cette intersection : la voiture au stop doit vous laisser passer.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "axes": {
+        "E": "continue"
+      },
+      "marquages": {
+        "E": "stop"
+      },
+      "panneaux": [
+        {
+          "code": "AB2",
+          "bras": "S"
+        },
+        {
+          "code": "AB4",
+          "bras": "E"
+        }
+      ],
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "E",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "x": 250,
+          "freins": true
+        }
+      ]
+    }
+  },
+  "323": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous êtes au cédez-le-passage et vous voulez aller tout droit. La voiture rouge arrive de votre droite sur la route que vous croisez. Que faites-vous ?",
+    "o": [
+      "Vous la laissez passer",
+      "Vous passez, car le cédez-le-passage ne concerne que la gauche",
+      "Vous passez, car elle est sur la voie la plus éloignée",
+      "Vous klaxonnez pour la prévenir et vous passez"
+    ],
+    "e": "Le cédez-le-passage vous oblige à laisser passer les usagers de la route croisée, des deux côtés.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "axes": {
+        "S": "continue"
+      },
+      "marquages": {
+        "S": "cedez"
+      },
+      "panneaux": [
+        {
+          "code": "AB3a",
+          "bras": "S"
+        }
+      ],
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit",
+        "recul": 6
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "E",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "x": 250
+        }
+      ]
+    }
+  },
+  "324": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous arrivez à ce cédez-le-passage. Personne n’arrive et vous voyez bien des deux côtés. Devez-vous vous arrêter ?",
+    "o": [
+      "Non : vous ralentissez, regardez, et vous pouvez passer sans arrêt",
+      "Oui, l’arrêt est obligatoire comme au stop",
+      "Oui, pendant au moins trois secondes",
+      "Non, et vous pouvez passer sans ralentir"
+    ],
+    "e": "Au cédez-le-passage, l’arrêt n’est obligatoire que si quelqu’un arrive. Il faut quand même ralentir assez pour bien regarder.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "axes": {
+        "S": "continue"
+      },
+      "marquages": {
+        "S": "cedez"
+      },
+      "panneaux": [
+        {
+          "code": "AB3a",
+          "bras": "S"
+        }
+      ],
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit",
+        "recul": 6
+      }
+    }
+  },
+  "325": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous roulez sur cette route prioritaire et vous allez tout droit. La voiture rouge arrive de votre gauche, où un cédez-le-passage est tracé. Qui passe en premier ?",
+    "o": [
+      "Vous, car la voiture rouge doit vous céder le passage",
+      "La voiture rouge, car elle est déjà arrêtée",
+      "La voiture rouge, car elle tourne",
+      "Vous devez toujours vous arrêter à une intersection"
+    ],
+    "e": "Sur une route prioritaire, les routes qui la croisent ont un cédez-le-passage ou un stop : vous passez, en restant attentif.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "axes": {
+        "W": "continue",
+        "E": "continue"
+      },
+      "marquages": {
+        "W": "cedez",
+        "E": "cedez"
+      },
+      "panneaux": [
+        {
+          "code": "AB6",
+          "bras": "S"
+        },
+        {
+          "code": "AB3a",
+          "bras": "W"
+        }
+      ],
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "W",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "x": 80
+        }
+      ]
+    }
+  },
+  "326": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous roulez sur une route prioritaire et vous tournez à gauche. La voiture rouge arrive en face et va tout droit. Qui passe en premier ?",
+    "o": [
+      "La voiture rouge, car vous tournez à gauche et elle vient en face",
+      "Vous, car vous êtes sur une route prioritaire",
+      "Vous, car vous avez mis votre clignotant",
+      "Celui qui est arrivé le premier au carrefour"
+    ],
+    "e": "La route prioritaire vous protège des routes qui la croisent, pas de la voiture d’en face. Pour tourner à gauche, vous laissez passer ceux qui viennent en sens inverse.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "axes": {
+        "W": "continue",
+        "E": "continue"
+      },
+      "marquages": {
+        "W": "cedez",
+        "E": "cedez"
+      },
+      "panneaux": [
+        {
+          "code": "AB6",
+          "bras": "S"
+        }
+      ],
+      "moi": {
+        "bras": "S",
+        "action": "gauche",
+        "clignotant": "gauche"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "N",
+          "action": "tout_droit",
+          "couleur": "rouge"
+        }
+      ]
+    }
+  },
+  "327": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Juste avant cette intersection, vous avez passé ce panneau de fin de route prioritaire. Il n’y a aucun autre panneau ni marquage. Qui passe en premier ?",
+    "o": [
+      "La voiture rouge, car elle arrive de votre droite",
+      "Vous, car vous étiez sur une route prioritaire",
+      "Vous, car vous allez tout droit",
+      "La voiture rouge, seulement si elle a mis son clignotant"
+    ],
+    "e": "Le panneau barré annonce que vous n’êtes plus prioritaire au carrefour suivant. Sans autre signalisation, la priorité à droite s’applique.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "panneaux": [
+        {
+          "code": "AB7",
+          "bras": "S"
+        }
+      ],
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "E",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "x": 250
+        }
+      ]
+    }
+  },
+  "328": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous arrivez à ce carrefour à sens giratoire, signalé par un cédez-le-passage. La voiture rouge circule déjà sur l’anneau. Que faites-vous ?",
+    "o": [
+      "Vous la laissez passer avant d’entrer",
+      "Vous entrez, car elle arrive de votre gauche",
+      "Vous entrez, car vous êtes à sa droite",
+      "Vous entrez en klaxonnant"
+    ],
+    "e": "À l’entrée d’un carrefour à sens giratoire, vous cédez le passage aux usagers qui circulent déjà sur l’anneau.",
+    "img": {
+      "scene": "plan",
+      "route": "giratoire",
+      "marquages": {
+        "S": "cedez"
+      },
+      "panneaux": [
+        {
+          "code": "AB3a",
+          "bras": "S"
+        }
+      ],
+      "moi": {
+        "bras": "S",
+        "recul": 22
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "couleur": "rouge",
+          "x": 112,
+          "y": 140,
+          "dir": "S"
+        }
+      ]
+    }
+  },
+  "329": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous circulez sur l’anneau de ce carrefour à sens giratoire. La voiture rouge attend à l’entrée de droite, au cédez-le-passage. Qui passe en premier ?",
+    "o": [
+      "Vous, car vous êtes déjà sur l’anneau",
+      "La voiture rouge, car elle arrive de votre droite",
+      "La voiture rouge, car elle attend depuis longtemps",
+      "Vous devez vous arrêter sur l’anneau"
+    ],
+    "e": "Ceux qui entrent dans un carrefour à sens giratoire doivent céder le passage aux usagers déjà sur l’anneau : vous passez.",
+    "img": {
+      "scene": "plan",
+      "route": "giratoire",
+      "marquages": {
+        "E": "cedez"
+      },
+      "panneaux": [
+        {
+          "code": "AB3a",
+          "bras": "E"
+        }
+      ],
+      "moi": {
+        "x": 208,
+        "y": 150,
+        "dir": "N"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "E",
+          "couleur": "rouge",
+          "recul": 22
+        }
+      ]
+    }
+  },
+  "330": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous arrivez à ce carrefour à sens giratoire, signalé par un cédez-le-passage. Un cycliste circule déjà sur l’anneau. Que faites-vous ?",
+    "o": [
+      "Vous le laissez passer avant d’entrer",
+      "Vous entrez, car un vélo doit laisser passer les voitures",
+      "Vous entrez, car il roule lentement",
+      "Vous entrez en le dépassant sur l’anneau"
+    ],
+    "e": "Le cycliste sur l’anneau est prioritaire comme tout autre usager : vous le laissez passer avant d’entrer.",
+    "img": {
+      "scene": "plan",
+      "route": "giratoire",
+      "marquages": {
+        "S": "cedez"
+      },
+      "panneaux": [
+        {
+          "code": "AB3a",
+          "bras": "S"
+        }
+      ],
+      "moi": {
+        "bras": "S",
+        "recul": 22
+      },
+      "autres": [
+        {
+          "type": "velo",
+          "x": 112,
+          "y": 145,
+          "dir": "S"
+        }
+      ]
+    }
+  },
+  "331": {
+    "t": "Circulation et stationnement",
+    "q": "Vous êtes la voiture bleue. Vous entrez dans ce carrefour à sens giratoire. Dans quel sens faites-vous le tour de l’îlot central ?",
+    "o": [
+      "En gardant l’îlot sur votre gauche (sens inverse des aiguilles d’une montre)",
+      "En gardant l’îlot sur votre droite",
+      "Par le côté le plus court vers votre sortie",
+      "Dans un sens ou dans l’autre, selon la circulation"
+    ],
+    "e": "L’anneau est à sens unique : vous tournez autour de l’îlot en le gardant à votre gauche.",
+    "img": {
+      "scene": "plan",
+      "route": "giratoire",
+      "marquages": {
+        "S": "cedez"
+      },
+      "panneaux": [
+        {
+          "code": "AB3a",
+          "bras": "S"
+        }
+      ],
+      "moi": {
+        "bras": "S",
+        "recul": 22
+      }
+    }
+  },
+  "332": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous quittez le carrefour à sens giratoire par la sortie de droite. Un piéton traverse sur le passage piéton de cette sortie. Que faites-vous ?",
+    "o": [
+      "Vous le laissez traverser avant de passer",
+      "Vous passez, car vous êtes prioritaire en sortant de l’anneau",
+      "Vous passez devant lui en klaxonnant",
+      "Vous vous arrêtez sur l’anneau sans regarder derrière"
+    ],
+    "e": "Un piéton engagé sur la traversée est prioritaire : vous le laissez finir de traverser, même en sortant du giratoire.",
+    "img": {
+      "scene": "plan",
+      "route": "giratoire",
+      "marquages": {
+        "E": "pieton"
+      },
+      "moi": {
+        "x": 208,
+        "y": 140,
+        "dir": "N",
+        "clignotant": "droite"
+      },
+      "autres": [
+        {
+          "type": "pieton",
+          "x": 249,
+          "y": 95,
+          "traverse": {
+            "x": 249,
+            "y": 140
+          }
+        }
+      ]
+    }
+  },
+  "333": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Votre feu est vert et vous allez tout droit. La voiture rouge, à votre droite, a le feu rouge. Qui passe en premier ?",
+    "o": [
+      "Vous, car votre feu est vert",
+      "La voiture rouge, car elle vient de votre droite",
+      "La voiture rouge, si elle était là avant vous",
+      "Personne : vous attendez qu’elle vous fasse signe"
+    ],
+    "e": "Quand les feux fonctionnent, ils passent avant les règles de priorité : la voiture qui a le feu rouge doit attendre.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "marquages": {
+        "S": "feu",
+        "E": "feu"
+      },
+      "feux": {
+        "S": "vert",
+        "E": "rouge"
+      },
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "E",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "freins": true
+        }
+      ]
+    }
+  },
+  "334": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Votre feu est rouge. À quel endroit devez-vous vous arrêter ?",
+    "o": [
+      "Avant la ligne blanche discontinue, donc avant le passage piéton",
+      "Sur le passage piéton, pour mieux voir",
+      "Au niveau du feu, même après la ligne",
+      "Juste avant l’intersection, après le passage piéton"
+    ],
+    "e": "Au feu rouge, on s’arrête avant la ligne d’effet du feu. Quand il y a un passage piéton, elle est tracée avant lui pour le laisser libre.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "marquages": {
+        "S": [
+          "feu",
+          "pieton"
+        ]
+      },
+      "feux": {
+        "S": "rouge"
+      },
+      "moi": {
+        "bras": "S",
+        "recul": 25
+      }
+    }
+  },
+  "335": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Le feu est vert pour vous et pour la voiture rouge en face. Vous allez tout droit, elle tourne à sa gauche. Qui passe en premier ?",
+    "o": [
+      "Vous, car elle tourne à gauche et vous venez en face",
+      "La voiture rouge, car elle a mis son clignotant",
+      "La voiture rouge, car elle est arrivée la première",
+      "Personne : les deux feux sont verts"
+    ],
+    "e": "Celui qui tourne à gauche laisse passer les véhicules qui arrivent en sens inverse : ici, c’est la voiture rouge qui vous attend.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "feux": {
+        "S": "vert",
+        "N": "vert"
+      },
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "N",
+          "action": "gauche",
+          "couleur": "rouge",
+          "clignotant": "gauche"
+        }
+      ]
+    }
+  },
+  "336": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Le feu clignote à l’orange. Il n’y a aucun panneau ni marquage à cette intersection. La voiture rouge arrive de votre droite. Que faites-vous ?",
+    "o": [
+      "Vous la laissez passer, car la priorité à droite s’applique",
+      "Vous passez, car le feu orange clignotant vous donne la priorité",
+      "Vous vous arrêtez jusqu’à ce que le feu passe au vert",
+      "Vous passez, car le feu orange clignotant veut dire « accélérez »"
+    ],
+    "e": "Feu orange clignotant : passez avec prudence en suivant les panneaux. Sans panneau, c’est la priorité à droite.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "feux": {
+        "S": "orange_clignotant",
+        "E": "orange_clignotant"
+      },
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "E",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "x": 250
+        }
+      ]
+    }
+  },
+  "337": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Le feu clignote à l’orange. Sur le même poteau que votre feu, il y a un panneau « cédez le passage ». La voiture rouge arrive de votre gauche. Que faites-vous ?",
+    "o": [
+      "Vous la laissez passer, car vous devez céder le passage",
+      "Vous passez, car elle vient de votre gauche",
+      "Vous passez, car le feu n’est pas rouge",
+      "Vous attendez que le feu passe au vert"
+    ],
+    "e": "Quand le feu clignote à l’orange, ce sont les panneaux qui comptent. Avec un cédez-le-passage, vous laissez passer les deux côtés.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "feux": {
+        "S": "orange_clignotant"
+      },
+      "marquages": {
+        "S": "feu"
+      },
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "W",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "x": 70
+        }
+      ],
+      "panneaux": [
+        {
+          "code": "AB3a",
+          "bras": "S"
+        }
+      ]
+    }
+  },
+  "338": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Le feu clignote à l’orange. Sur le même poteau que votre feu, il y a un panneau triangulaire à flèche noire (priorité ponctuelle). La voiture rouge arrive de votre droite. Qui passe en premier ?",
+    "o": [
+      "Vous, avec prudence, car le panneau vous donne la priorité",
+      "La voiture rouge, car elle vient de votre droite",
+      "Personne tant que le feu clignote",
+      "La voiture rouge, car le feu clignotant interdit de passer"
+    ],
+    "e": "Au feu orange clignotant, on suit les panneaux : ce panneau vous rend prioritaire à cette intersection. Passez prudemment.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "feux": {
+        "S": "orange_clignotant",
+        "E": "orange_clignotant"
+      },
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "E",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "x": 250
+        }
+      ],
+      "panneaux": [
+        {
+          "code": "AB2",
+          "bras": "S"
+        }
+      ]
+    }
+  },
+  "339": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous tournez à gauche. La voiture rouge arrive en face et tourne à sa droite, dans la même rue que vous. Il n’y a ni panneau, ni feu. Qui passe en premier ?",
+    "o": [
+      "La voiture rouge, car vous tournez à gauche et elle vient en face",
+      "Vous, car vous avez mis votre clignotant le premier",
+      "Vous, car elle tourne à droite",
+      "Le plus rapide des deux"
+    ],
+    "e": "Quand vous tournez à gauche, vous laissez passer les usagers qui arrivent en face, même s’ils tournent.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "moi": {
+        "bras": "S",
+        "action": "gauche",
+        "clignotant": "gauche"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "N",
+          "action": "droite",
+          "couleur": "rouge",
+          "clignotant": "droite"
+        }
+      ]
+    }
+  },
+  "340": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous tournez à droite. La voiture rouge arrive en face et tourne à sa gauche, dans la même rue que vous. Il n’y a ni panneau, ni feu. Qui passe en premier ?",
+    "o": [
+      "Vous, car elle tourne à gauche et vous venez en face",
+      "La voiture rouge, car elle est déjà dans le carrefour",
+      "La voiture rouge, car elle vient de votre gauche",
+      "Personne : la rue est trop étroite"
+    ],
+    "e": "La voiture qui tourne à gauche doit laisser passer celles qui arrivent en face : ici, c’est vous.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "moi": {
+        "bras": "S",
+        "action": "droite",
+        "clignotant": "droite"
+      },
+      "autres": [
+        {
+          "type": "voiture",
+          "bras": "N",
+          "action": "gauche",
+          "couleur": "rouge",
+          "clignotant": "gauche"
+        }
+      ]
+    }
+  },
+  "341": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous tournez à gauche. Un cycliste arrive en face et va tout droit. Il n’y a ni panneau, ni feu. Que faites-vous ?",
+    "o": [
+      "Vous le laissez passer avant de tourner",
+      "Vous tournez devant lui, car c’est un vélo",
+      "Vous tournez, car il doit ralentir pour vous",
+      "Vous klaxonnez pour qu’il s’arrête"
+    ],
+    "e": "Pour tourner à gauche, vous laissez passer tous ceux qui arrivent en face : voitures, motos, vélos…",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "moi": {
+        "bras": "S",
+        "action": "gauche",
+        "clignotant": "gauche"
+      },
+      "autres": [
+        {
+          "type": "velo",
+          "bras": "N",
+          "action": "tout_droit"
+        }
+      ]
+    }
+  },
+  "342": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous tournez à gauche. Un piéton traverse sur le passage piéton de la rue où vous allez entrer. Que faites-vous ?",
+    "o": [
+      "Vous le laissez finir de traverser avant de passer",
+      "Vous passez derrière lui sans ralentir",
+      "Vous passez, car vous avez mis votre clignotant",
+      "Vous klaxonnez pour qu’il se presse"
+    ],
+    "e": "Un piéton engagé dans la traversée est prioritaire : vous attendez qu’il ait traversé.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "marquages": {
+        "W": "pieton"
+      },
+      "moi": {
+        "bras": "S",
+        "action": "gauche",
+        "clignotant": "gauche"
+      },
+      "autres": [
+        {
+          "type": "pieton",
+          "x": 113,
+          "y": 98,
+          "traverse": {
+            "x": 113,
+            "y": 140
+          }
+        }
+      ]
+    }
+  },
+  "343": {
+    "t": "Circulation et stationnement",
+    "q": "Vous êtes la voiture bleue. Vous allez tourner à droite. Un cycliste roule juste derrière vous, sur votre droite. Que contrôlez-vous juste avant de tourner ?",
+    "o": [
+      "Le rétroviseur droit et l’angle mort à droite, en tournant la tête",
+      "Seulement le rétroviseur intérieur",
+      "Le rétroviseur gauche",
+      "Rien : votre clignotant suffit à prévenir le cycliste"
+    ],
+    "e": "Un deux-roues peut se trouver dans l’angle mort à droite. Avant de tourner, regardez le rétroviseur droit et tournez la tête.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "moi": {
+        "bras": "S",
+        "action": "droite",
+        "clignotant": "droite"
+      },
+      "autres": [
+        {
+          "type": "velo",
+          "x": 191,
+          "y": 232,
+          "dir": "N"
+        }
+      ]
+    }
+  },
+  "344": {
+    "t": "Circulation et stationnement",
+    "q": "Vous êtes la voiture bleue. Vous roulez dans une rue à sens unique (panneau bleu à flèche blanche) et vous voulez tourner à gauche au carrefour. Où vous placez-vous ?",
+    "o": [
+      "Du côté gauche de la chaussée",
+      "Du côté droit de la chaussée, comme d’habitude",
+      "Au milieu de la chaussée",
+      "Peu importe, la rue est à sens unique"
+    ],
+    "e": "Dans une rue à sens unique, vous vous placez à gauche pour tourner à gauche : la droite reste libre pour les autres.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "axes": {
+        "S": "aucune",
+        "N": "aucune"
+      },
+      "panneaux": [
+        {
+          "code": "C12",
+          "bras": "S"
+        }
+      ],
+      "moi": {
+        "bras": "S",
+        "x": 160,
+        "clignotant": "gauche"
+      }
+    }
+  },
+  "345": {
+    "t": "Circulation et stationnement",
+    "q": "Vous êtes la voiture bleue. Vous suivez un camion lent. Une ligne continue sépare les deux sens de circulation. Pouvez-vous le dépasser ?",
+    "o": [
+      "Non, car il est interdit de franchir la ligne continue",
+      "Oui, si personne n’arrive en face",
+      "Oui, en roulant à cheval sur la ligne",
+      "Oui, si le camion roule à moins de 50 km/h"
+    ],
+    "e": "Une ligne continue ne se franchit pas, même pour dépasser : vous restez derrière le camion.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "axes": {
+        "S": "continue",
+        "N": "continue"
+      },
+      "moi": {
+        "bras": "S",
+        "y": 222
+      },
+      "autres": [
+        {
+          "type": "camion",
+          "x": 175,
+          "y": 166,
+          "dir": "N",
+          "couleur": "gris"
+        }
+      ]
+    }
+  },
+  "346": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Vous allez tout droit. Un véhicule de pompiers arrive de votre gauche, sirène deux tons et gyrophare bleu allumés. Il n’y a ni panneau, ni feu. Que faites-vous ?",
+    "o": [
+      "Vous le laissez passer",
+      "Vous passez, car vous êtes à sa droite",
+      "Vous passez vite avant qu’il n’arrive",
+      "Vous vous arrêtez au milieu du carrefour"
+    ],
+    "e": "Un véhicule d’intervention qui utilise sa sirène et son gyrophare est prioritaire : vous lui cédez le passage, même s’il vient de gauche.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "secours",
+          "bras": "W",
+          "action": "tout_droit",
+          "couleur": "rouge"
+        }
+      ]
+    }
+  },
+  "347": {
+    "t": "Priorités",
+    "q": "Vous êtes la voiture bleue. Les trois véhicules vont tout droit. A est une ambulance avec sirène et gyrophare bleu allumés. Il n’y a ni panneau, ni feu, ni marquage. Dans quel ordre passe-t-on ?",
+    "o": [
+      "A, puis B, puis vous",
+      "B, puis vous, puis A",
+      "A, puis vous, puis B",
+      "Vous, puis B, puis A"
+    ],
+    "e": "L’ambulance en intervention passe d’abord. Ensuite, la priorité à droite : B est à votre droite, il passe avant vous.",
+    "img": {
+      "scene": "plan",
+      "route": "croix",
+      "moi": {
+        "bras": "S",
+        "action": "tout_droit"
+      },
+      "autres": [
+        {
+          "type": "secours",
+          "bras": "W",
+          "action": "tout_droit",
+          "lettre": "A"
+        },
+        {
+          "type": "voiture",
+          "bras": "E",
+          "action": "tout_droit",
+          "couleur": "rouge",
+          "lettre": "B"
+        }
+      ]
+    }
+  },
+  "348": {
+    "t": "Vitesse et distances",
+    "q": "Il pleut et vous suivez cette voiture. Que faites-vous ?",
+    "o": [
+      "Vous augmentez la distance qui vous sépare d’elle",
+      "Vous gardez la même distance que par temps sec",
+      "Vous vous rapprochez pour mieux voir ses feux",
+      "Vous allumez vos feux de brouillard arrière"
+    ],
+    "e": "Sur route mouillée, on freine moins bien : il faut ralentir et laisser plus de distance avec le véhicule de devant.",
+    "img": {
+      "scene": "vue",
+      "meteo": "pluie",
+      "vehicule_devant": "proche"
+    }
+  },
+  "349": {
+    "t": "Vitesse et distances",
+    "q": "Cette route est limitée à 90 km/h, mais le brouillard réduit la visibilité à moins de 50 mètres. Quelle est votre vitesse maximale ?",
+    "o": [
+      "50 km/h",
+      "90 km/h",
+      "80 km/h",
+      "70 km/h"
+    ],
+    "e": "Quand la visibilité est inférieure à 50 m, la vitesse est limitée à 50 km/h sur toutes les routes, quel que soit le panneau.",
+    "img": {
+      "scene": "vue",
+      "meteo": "brouillard",
+      "panneau": [
+        "B14:90"
+      ]
+    }
+  },
+  "350": {
+    "t": "Véhicule et équipements",
+    "q": "Vous roulez de jour dans ce brouillard. Quels feux devez-vous allumer au minimum ?",
+    "o": [
+      "Les feux de croisement",
+      "Les feux de position seulement",
+      "Les feux de route",
+      "Aucun, car il fait jour"
+    ],
+    "e": "Dans le brouillard, il faut voir et être vu : les feux de croisement sont obligatoires, même de jour. Les feux de brouillard peuvent les compléter.",
+    "img": {
+      "scene": "vue",
+      "meteo": "brouillard",
+      "vehicule_devant": "loin"
+    }
+  },
+  "351": {
+    "t": "Circulation et stationnement",
+    "q": "Sur cette route à double sens, le brouillard est épais. La voiture devant vous roule lentement. Pouvez-vous la dépasser ?",
+    "o": [
+      "Non, la visibilité est insuffisante pour dépasser",
+      "Oui, si vous klaxonnez avant",
+      "Oui, en allumant vos feux de route",
+      "Oui, si la ligne est discontinue"
+    ],
+    "e": "Dépasser demande de voir loin devant. Dans le brouillard, sur une route à double sens, on reste derrière.",
+    "img": {
+      "scene": "vue",
+      "meteo": "brouillard",
+      "vehicule_devant": "proche"
+    }
+  },
+  "352": {
+    "t": "Vitesse et distances",
+    "q": "Il neige et la route devient glissante. Comment conduisez-vous ?",
+    "o": [
+      "Plus lentement, avec des gestes doux et plus de distance avec le véhicule devant",
+      "À la même vitesse, mais en freinant plus fort",
+      "En restant tout près du véhicule devant pour suivre ses traces",
+      "En accélérant franchement pour ne pas rester bloqué"
+    ],
+    "e": "Sur la neige, l’adhérence est faible : on ralentit, on anticipe, on freine en douceur et on laisse plus de distance.",
+    "img": {
+      "scene": "vue",
+      "meteo": "neige",
+      "vehicule_devant": "loin"
+    }
+  },
+  "353": {
+    "t": "Véhicule et équipements",
+    "q": "La nuit, hors agglomération, cette route n’est pas éclairée. Personne ne vous précède et personne n’arrive en face. Quels feux utilisez-vous ?",
+    "o": [
+      "Les feux de route",
+      "Les feux de position",
+      "Les feux de brouillard arrière",
+      "Les feux de détresse"
+    ],
+    "e": "Sur une route non éclairée, les feux de route permettent de voir loin. On repasse en feux de croisement dès qu’on croise ou suit quelqu’un.",
+    "img": {
+      "scene": "vue",
+      "meteo": "nuit",
+      "feux_route": true
+    }
+  },
+  "354": {
+    "t": "Véhicule et équipements",
+    "q": "La nuit, vous roulez en agglomération dans une rue bien éclairée. Quels feux devez-vous allumer au minimum ?",
+    "o": [
+      "Les feux de position",
+      "Les feux de route",
+      "Aucun feu",
+      "Les feux de brouillard arrière"
+    ],
+    "e": "En agglomération, si l’éclairage public suffit, les feux de position sont le minimum. Les feux de croisement restent conseillés.",
+    "img": {
+      "scene": "vue",
+      "meteo": "nuit",
+      "ville": true
+    }
+  },
+  "355": {
+    "t": "Véhicule et équipements",
+    "q": "La nuit, hors agglomération, ce piéton marche sur le bord de la chaussée et ne semble pas vous avoir vu. Comment l’avertir ?",
+    "o": [
+      "Par des appels de phares",
+      "Par un long coup de klaxon",
+      "En allumant vos feux de détresse",
+      "En allumant vos feux de brouillard arrière"
+    ],
+    "e": "La nuit, on avertit par des appels de phares. Le klaxon est réservé aux cas d’absolue nécessité.",
+    "img": {
+      "scene": "vue",
+      "meteo": "nuit",
+      "pieton": "droite"
+    }
+  },
+  "356": {
+    "t": "Vitesse et distances",
+    "q": "Vous suivez cette voiture de beaucoup trop près. Combien de points risquez-vous de perdre pour non-respect des distances de sécurité ?",
+    "o": [
+      "3 points",
+      "1 point",
+      "6 points",
+      "Aucun point"
+    ],
+    "e": "Ne pas respecter la distance de sécurité est une contravention de 4e classe : 135 € et 3 points.",
+    "img": {
+      "scene": "vue",
+      "vehicule_devant": "proche"
+    }
+  },
+  "357": {
+    "t": "Panneaux et feux",
+    "q": "Pour couper ce virage, vous chevauchez la ligne continue. Combien de points risquez-vous de perdre ?",
+    "o": [
+      "1 point",
+      "3 points",
+      "4 points",
+      "Aucun point"
+    ],
+    "e": "Chevaucher une ligne continue coûte 1 point, la franchir complètement en coûte 3. Dans un virage, on reste dans sa voie.",
+    "img": {
+      "scene": "vue",
+      "virage": "gauche",
+      "ligne": "continue",
+      "vehicule_face": true
+    }
+  },
+  "358": {
+    "t": "Circulation et stationnement",
+    "q": "Dans ce virage, la voiture devant vous roule lentement. Pouvez-vous la dépasser ?",
+    "o": [
+      "Non : la ligne est continue et la visibilité insuffisante",
+      "Oui, si elle roule à moins de 50 km/h",
+      "Oui, en klaxonnant pour la prévenir",
+      "Oui, si vous dépassez rapidement"
+    ],
+    "e": "Dans un virage, on ne voit pas ce qui arrive en face. Avec une ligne continue, on ne peut ni la franchir ni la chevaucher pour dépasser une voiture.",
+    "img": {
+      "scene": "vue",
+      "virage": "gauche",
+      "ligne": "continue",
+      "panneau": [
+        "A1b"
+      ],
+      "vehicule_devant": "proche"
+    }
+  },
+  "359": {
+    "t": "Circulation et stationnement",
+    "q": "De jour, hors agglomération, vous abordez ce virage sans visibilité. Pouvez-vous utiliser l’avertisseur sonore pour signaler votre présence ?",
+    "o": [
+      "Oui, si c’est nécessaire pour avertir les autres usagers",
+      "Non, il est interdit hors agglomération",
+      "Oui, mais seulement la nuit",
+      "Non, seuls les véhicules prioritaires peuvent l’utiliser"
+    ],
+    "e": "De jour et hors agglomération, le klaxon peut servir à donner un avertissement utile, par exemple avant un virage sans visibilité.",
+    "img": {
+      "scene": "vue",
+      "virage": "droite",
+      "ligne": "continue",
+      "panneau": [
+        "A1a"
+      ]
+    }
+  },
+  "360": {
+    "t": "Circulation et stationnement",
+    "q": "Vous venez de passer ce panneau. La voie de gauche est libre. Pouvez-vous dépasser ce cycliste ?",
+    "o": [
+      "Oui, ce panneau n’interdit pas de dépasser un cycliste",
+      "Non, ce panneau interdit tout dépassement",
+      "Non, sauf si le cycliste vous fait signe",
+      "Oui, mais seulement en agglomération"
+    ],
+    "e": "Ce panneau interdit de dépasser les véhicules à moteur autres que les deux-roues. Un vélo n’est pas un véhicule à moteur : vous pouvez le dépasser, en laissant 1,5 m hors agglomération.",
+    "img": {
+      "scene": "vue",
+      "ligne": "discontinue",
+      "panneau": [
+        "B3"
+      ],
+      "cycliste": "droite"
+    }
+  },
+  "361": {
+    "t": "Circulation et stationnement",
+    "q": "La ligne au centre est continue. La visibilité est bonne et personne n’arrive en face. Pouvez-vous dépasser ce cycliste ?",
+    "o": [
+      "Oui, en chevauchant la ligne continue si nécessaire, sans la franchir",
+      "Non, jamais tant que la ligne est continue",
+      "Oui, en franchissant complètement la ligne",
+      "Oui, en le serrant pour rester dans votre voie"
+    ],
+    "e": "Depuis 2015, on peut chevaucher une ligne continue pour dépasser un cycliste si la visibilité est suffisante. La franchir reste interdit.",
+    "img": {
+      "scene": "vue",
+      "ligne": "continue",
+      "cycliste": "droite"
+    }
+  },
+  "362": {
+    "t": "Circulation et stationnement",
+    "q": "Hors agglomération, vous voulez dépasser ce cycliste, mais une voiture arrive en face. Que faites-vous ?",
+    "o": [
+      "Vous restez derrière le cycliste jusqu’à pouvoir le dépasser en laissant 1,5 m",
+      "Vous le dépassez en le frôlant pour rester dans votre voie",
+      "Vous klaxonnez pour qu’il se range sur le bas-côté",
+      "Vous accélérez pour passer avant la voiture"
+    ],
+    "e": "Il faut pouvoir laisser au moins 1,5 m au cycliste hors agglomération. Si ce n’est pas possible, on attend derrière lui.",
+    "img": {
+      "scene": "vue",
+      "ligne": "discontinue",
+      "cycliste": "droite",
+      "vehicule_face": true
+    }
+  },
+  "363": {
+    "t": "Vitesse et distances",
+    "q": "En agglomération, vous allez dépasser ce cycliste en lui laissant au moins 1 mètre. Que devez-vous faire aussi ?",
+    "o": [
+      "Réduire votre vitesse",
+      "Klaxonner pour le prévenir",
+      "Allumer vos feux de détresse",
+      "Accélérer pour rester peu de temps à côté de lui"
+    ],
+    "e": "Le code impose de réduire sa vitesse quand on croise ou dépasse un cycliste.",
+    "img": {
+      "scene": "vue",
+      "ville": true,
+      "ligne": "discontinue",
+      "cycliste": "droite"
+    }
+  },
+  "364": {
+    "t": "Circulation et stationnement",
+    "q": "Hors agglomération, vous allez dépasser ce piéton qui marche sur le bord de la chaussée. Quelle distance latérale minimale lui laissez-vous ?",
+    "o": [
+      "1,5 mètre",
+      "50 centimètres",
+      "1 mètre",
+      "3 mètres"
+    ],
+    "e": "On laisse aux piétons le même écart qu’aux cyclistes : 1 m en agglomération, 1,5 m hors agglomération.",
+    "img": {
+      "scene": "vue",
+      "ligne": "discontinue",
+      "pieton": "droite"
+    }
+  },
+  "365": {
+    "t": "Panneaux et feux",
+    "q": "Vous venez de passer ce panneau d’entrée d’agglomération. Quand pouvez-vous utiliser l’avertisseur sonore ?",
+    "o": [
+      "Seulement en cas de danger immédiat",
+      "Pour saluer un piéton que vous connaissez",
+      "Pour demander au véhicule devant d’avancer",
+      "Jamais, même en cas de danger"
+    ],
+    "e": "En agglomération, le klaxon ne sert qu’en cas de danger immédiat, par exemple pour éviter une collision.",
+    "img": {
+      "scene": "vue",
+      "ville": true,
+      "panneau": [
+        "EB10:VILLENEUVE"
+      ]
+    }
+  },
+  "366": {
+    "t": "Vitesse et distances",
+    "q": "Un panneau 30 est placé sous le panneau d’entrée de cette agglomération. Où s’applique cette limitation ?",
+    "o": [
+      "Sur toutes les voies de l’agglomération, sauf autre indication de vitesse",
+      "Jusqu’à la prochaine intersection seulement",
+      "Seulement près des écoles",
+      "Sur les 500 premiers mètres"
+    ],
+    "e": "Une limitation placée avec le panneau d’entrée vaut pour toute l’agglomération, jusqu’à ce qu’un autre panneau indique une autre vitesse.",
+    "img": {
+      "scene": "vue",
+      "ville": true,
+      "panneau": [
+        "EB10:VILLENEUVE",
+        "B14:30"
+      ]
+    }
+  },
+  "367": {
+    "t": "Vitesse et distances",
+    "q": "Vous passez ce panneau de sortie d’agglomération. La route est à double sens, sans séparateur central. Sauf indication contraire, quelle est votre vitesse maximale ?",
+    "o": [
+      "80 km/h",
+      "50 km/h",
+      "70 km/h",
+      "110 km/h"
+    ],
+    "e": "Après la sortie d’agglomération, on applique la limite de la route : 80 km/h sur une route à double sens sans séparateur, sauf panneau contraire.",
+    "img": {
+      "scene": "vue",
+      "panneau": [
+        "EB20:VILLENEUVE"
+      ]
+    }
+  },
+  "368": {
+    "t": "Vitesse et distances",
+    "q": "Vous entrez dans cette zone. Jusqu’où la limitation à 30 km/h s’applique-t-elle ?",
+    "o": [
+      "Dans toute la zone, jusqu’à un panneau de sortie de zone",
+      "Jusqu’à la prochaine intersection",
+      "Sur 200 mètres seulement",
+      "Jusqu’au prochain feu tricolore"
+    ],
+    "e": "La zone 30 commence au panneau d’entrée et se termine à un panneau de sortie de zone (ou au changement d’agglomération).",
+    "img": {
+      "scene": "vue",
+      "ville": true,
+      "panneau": [
+        "B30"
+      ]
+    }
+  },
+  "369": {
+    "t": "Vitesse et distances",
+    "q": "Vous êtes en agglomération et vous passez ce panneau. Sauf autre indication, quelle est votre vitesse maximale ?",
+    "o": [
+      "50 km/h",
+      "30 km/h",
+      "20 km/h",
+      "70 km/h"
+    ],
+    "e": "Ce panneau marque la sortie de la zone 30. On revient à la règle de l’agglomération : 50 km/h.",
+    "img": {
+      "scene": "vue",
+      "ville": true,
+      "panneau": [
+        "B51"
+      ]
+    }
+  },
+  "370": {
+    "t": "Vitesse et distances",
+    "q": "Près de cette école, un ballon roule sur la chaussée devant vous. Que faites-vous ?",
+    "o": [
+      "Vous ralentissez fortement, prêt à vous arrêter : un enfant peut courir après",
+      "Vous gardez votre vitesse, car aucun enfant n’est visible",
+      "Vous klaxonnez et continuez",
+      "Vous contournez le ballon en accélérant"
+    ],
+    "e": "Les enfants ont des réactions imprévisibles. Un ballon sur la route annonce souvent un enfant qui va surgir.",
+    "img": {
+      "scene": "vue",
+      "ville": true,
+      "panneau": [
+        "A13a"
+      ],
+      "ballon": true
+    }
+  },
+  "371": {
+    "t": "Panneaux et feux",
+    "q": "Vous ne vous arrêtez pas à ce feu rouge. Combien de points perdez-vous ?",
+    "o": [
+      "4 points",
+      "1 point",
+      "2 points",
+      "6 points"
+    ],
+    "e": "Ne pas marquer l’arrêt au feu rouge est une contravention de 4e classe : 135 € et 4 points.",
+    "img": {
+      "scene": "vue",
+      "ville": true,
+      "feu": "rouge",
+      "passage_pieton": true
+    }
+  },
+  "372": {
+    "t": "Priorités",
+    "q": "Ce piéton est engagé sur le passage. Si vous ne lui cédez pas le passage, combien de points perdez-vous ?",
+    "o": [
+      "6 points",
+      "2 points",
+      "3 points",
+      "Aucun point"
+    ],
+    "e": "Ne pas céder le passage à un piéton engagé ou qui veut clairement traverser coûte 6 points et 135 €.",
+    "img": {
+      "scene": "vue",
+      "ville": true,
+      "passage_pieton": true,
+      "pieton": "route"
+    }
+  },
+  "373": {
+    "t": "Vitesse et distances",
+    "q": "Il pleut et ce panneau est placé au bord de la route. Que faites-vous ?",
+    "o": [
+      "Vous ralentissez et évitez les freinages et les coups de volant brusques",
+      "Vous gardez votre vitesse, car la route est droite",
+      "Vous freinez fort pour tester l’adhérence",
+      "Vous allumez vos feux de brouillard arrière"
+    ],
+    "e": "Ce panneau annonce une chaussée particulièrement glissante. Avec la pluie, l’adhérence baisse encore : douceur et vitesse réduite.",
+    "img": {
+      "scene": "vue",
+      "meteo": "pluie",
+      "panneau": [
+        "A4"
+      ]
+    }
+  },
+  "374": {
+    "t": "Permis et examen",
+    "q": "Vous avez appris à conduire en conduite accompagnée (AAC) et ne suivez pas de formation complémentaire. Combien de temps dure votre période probatoire ?",
+    "o": [
+      "2 ans",
+      "1 an",
+      "3 ans",
+      "5 ans"
+    ],
+    "e": "Après l’AAC, la période probatoire dure 2 ans, avec 3 points de plus à la fin de chaque année sans infraction."
+  },
+  "375": {
+    "t": "Permis et examen",
+    "q": "Après un apprentissage classique, combien de points gagne chaque année un jeune conducteur qui ne commet aucune infraction ?",
+    "o": [
+      "2 points",
+      "1 point",
+      "3 points",
+      "6 points"
+    ],
+    "e": "En formule classique, le permis probatoire passe de 6 à 12 points en 3 ans : 2 points de plus par an."
+  },
+  "376": {
+    "t": "Permis et examen",
+    "q": "Quand peut-on suivre la formation complémentaire qui réduit la période probatoire ?",
+    "o": [
+      "Entre le 6e et le 12e mois après l’obtention du permis",
+      "Avant l’examen du code",
+      "Le jour de l’examen pratique",
+      "Seulement après avoir perdu des points"
+    ],
+    "e": "Cette formation d’une journée (7 heures) a lieu entre 6 et 12 mois après le permis, dans une école labellisée."
+  },
+  "377": {
+    "t": "Permis et examen",
+    "q": "Vous avez perdu des points pour un feu rouge non respecté. Sans nouvelle infraction, au bout de combien de temps retrouvez-vous tous vos points ?",
+    "o": [
+      "3 ans",
+      "6 mois",
+      "1 an",
+      "10 ans"
+    ],
+    "e": "Pour une infraction grave (4e ou 5e classe, ou délit), il faut 3 ans sans nouvelle infraction pour retrouver ses points."
+  },
+  "378": {
+    "t": "Permis et examen",
+    "q": "Les forces de l’ordre retiennent votre permis de conduire. Combien de temps la rétention dure-t-elle en général au maximum ?",
+    "o": [
+      "72 heures",
+      "24 heures",
+      "1 semaine",
+      "1 mois"
+    ],
+    "e": "La rétention dure 72 heures au maximum (120 heures si des analyses en laboratoire sont nécessaires). Pendant ce temps, vous ne pouvez pas conduire."
+  },
+  "379": {
+    "t": "Permis et examen",
+    "q": "En formule classique (sans conduite accompagnée), à partir de quel âge pouvez-vous préparer l’examen du code ?",
+    "o": [
+      "16 ans",
+      "14 ans",
+      "17 ans",
+      "18 ans"
+    ],
+    "e": "On peut préparer le code dès 15 ans en conduite accompagnée, et dès 16 ans en formule classique."
+  },
+  "380": {
+    "t": "Accident et secours",
+    "q": "Quel numéro appelez-vous pour joindre la police ou la gendarmerie en urgence ?",
+    "o": [
+      "17",
+      "15",
+      "18",
+      "114"
+    ],
+    "e": "Le 17 joint Police-secours, par exemple pour un accident de la route. Le 112 fonctionne aussi."
+  },
+  "381": {
+    "t": "Accident et secours",
+    "q": "Votre voiture est immobilisée sur une route très fréquentée. Poser le triangle vous mettrait en grand danger. Que dit la règle ?",
+    "o": [
+      "Vous n’êtes pas obligé de le poser",
+      "Vous devez le poser quoi qu’il arrive",
+      "Vous devez le poser sur le toit de la voiture",
+      "Vous devez le remplacer par une lampe de poche"
+    ],
+    "e": "Le triangle se place à 30 m au moins, mais on n’est pas obligé de le poser si cela met sa vie en danger. Les feux de détresse restent indispensables."
+  },
+  "382": {
+    "t": "Accident et secours",
+    "q": "Lors d’un accident, une personne est brûlée au bras. Quel est le premier geste ?",
+    "o": [
+      "Refroidir la brûlure sous l’eau tempérée pendant au moins 10 minutes",
+      "Mettre de la glace directement sur la peau",
+      "Appliquer de la crème grasse",
+      "Percer les cloques"
+    ],
+    "e": "On refroidit tout de suite à l’eau tempérée (15 à 25 °C), au moins 10 minutes et si possible 20 minutes."
+  },
+  "383": {
+    "t": "Accident et secours",
+    "q": "Une victime est inconsciente. Avant de vérifier si elle respire, que faites-vous ?",
+    "o": [
+      "Vous basculez doucement sa tête en arrière et soulevez son menton",
+      "Vous lui donnez de l’eau",
+      "Vous la secouez fortement",
+      "Vous l’asseyez contre un mur"
+    ],
+    "e": "Chez une personne inconsciente, la langue peut boucher la gorge. Basculer la tête en arrière et lever le menton libère les voies respiratoires."
+  },
+  "384": {
+    "t": "Accident et secours",
+    "q": "Après un accident, l’autre conducteur prend la fuite. Que faites-vous ?",
+    "o": [
+      "Vous notez sa plaque d’immatriculation et prévenez la police ou la gendarmerie",
+      "Vous le poursuivez en voiture",
+      "Vous partez aussi, car le constat est impossible",
+      "Vous signez un constat à sa place"
+    ],
+    "e": "On relève la plaque, on prévient la police ou la gendarmerie et on peut porter plainte pour délit de fuite. Le constat indique la fuite dans « Observations »."
+  },
+  "385": {
+    "t": "Accident et secours",
+    "q": "Dans quel cas ne pouvez-vous pas utiliser l’application e-constat auto ?",
+    "o": [
+      "Quand une personne est blessée",
+      "Quand l’accident a lieu en France",
+      "Quand deux voitures sont impliquées",
+      "Quand les deux conducteurs sont d’accord"
+    ],
+    "e": "L’e-constat ne s’utilise pas s’il y a un blessé, plus de 2 véhicules ou un accident à l’étranger : on remplit alors un constat papier."
+  },
+  "386": {
+    "t": "Alcool, fatigue, santé",
+    "q": "Un conducteur a conduit après avoir pris des stupéfiants et en étant aussi sous l’emprise de l’alcool. Combien de points perd-il ?",
+    "o": [
+      "9 points",
+      "3 points",
+      "6 points",
+      "12 points"
+    ],
+    "e": "Stupéfiants seuls : 6 points. Stupéfiants et alcool ensemble : 9 points, et jusqu’à 5 ans de prison."
+  },
+  "387": {
+    "t": "Alcool, fatigue, santé",
+    "q": "Pouvez-vous conduire après avoir consommé une petite quantité de cannabis ?",
+    "o": [
+      "Non, l’interdiction s’applique quelle que soit la quantité",
+      "Oui, si vous attendez 1 heure",
+      "Oui, si vous ne ressentez aucun effet",
+      "Oui, en dehors des autoroutes"
+    ],
+    "e": "Conduire après usage de stupéfiants est interdit, même en petite quantité."
+  },
+  "388": {
+    "t": "Alcool, fatigue, santé",
+    "q": "En conduite accompagnée, l’interdiction de conduire après usage de stupéfiants concerne-t-elle aussi l’accompagnateur ?",
+    "o": [
+      "Oui, elle le concerne aussi",
+      "Non, seulement l’élève",
+      "Non, seulement s’il est jeune conducteur",
+      "Oui, mais seulement la nuit"
+    ],
+    "e": "L’accompagnateur est responsable de l’élève : il ne doit pas non plus avoir pris de stupéfiants."
+  },
+  "389": {
+    "t": "Alcool, fatigue, santé",
+    "q": "Un passager veut fumer dans la voiture alors qu’un enfant de 12 ans est à bord. Est-ce autorisé ?",
+    "o": [
+      "Non, fumer est interdit pour tous en présence d’un mineur",
+      "Oui, si la fenêtre est ouverte",
+      "Oui, si c’est un passager et non le conducteur",
+      "Oui, si l’enfant est à l’arrière"
+    ],
+    "e": "En présence d’un mineur, il est interdit de fumer dans la voiture, pour tous les occupants (135 € d’amende en général)."
+  },
+  "390": {
+    "t": "Alcool, fatigue, santé",
+    "q": "Lors d’un contrôle, un conducteur refuse de se soumettre à la vérification de son taux d’alcool. Que risque-t-il ?",
+    "o": [
+      "C’est un délit, avec un retrait de 6 points",
+      "Rien, ce contrôle est facultatif",
+      "Une simple amende de 35 €, sans retrait de points",
+      "Un retrait de 1 point"
+    ],
+    "e": "Refuser la vérification d’alcoolémie est un délit, sanctionné comme une alcoolémie élevée : 6 points en moins."
+  },
+  "391": {
+    "t": "Alcool, fatigue, santé",
+    "q": "Le code 01 est inscrit au verso de votre permis de conduire. Que signifie-t-il ?",
+    "o": [
+      "Vous devez porter des lunettes ou des lentilles pour conduire",
+      "Vous ne pouvez pas conduire la nuit",
+      "Vous ne pouvez pas conduire sur autoroute",
+      "Vous devez conduire une voiture à boîte automatique"
+    ],
+    "e": "Les codes du verso indiquent des restrictions. Le code 01 impose une correction de la vue."
+  },
+  "392": {
+    "t": "Véhicule et équipements",
+    "q": "Vous installez un bébé à l’avant, dans un siège dos à la route. Que devez-vous faire ?",
+    "o": [
+      "Désactiver l’airbag passager",
+      "Rien de plus",
+      "Reculer le siège au maximum, airbag activé",
+      "Le laisser sans ceinture"
+    ],
+    "e": "Un airbag qui se déclenche contre un siège dos à la route est très dangereux : il doit être désactivé."
+  },
+  "393": {
+    "t": "Véhicule et équipements",
+    "q": "Un enfant de 8 ans voyage dans votre voiture sans siège ni rehausseur adapté. Qui est sanctionné ?",
+    "o": [
+      "Le conducteur",
+      "L’enfant",
+      "Le propriétaire du siège",
+      "Personne, s’il porte la ceinture"
+    ],
+    "e": "Le conducteur répond de l’installation des enfants : il risque en général 135 € d’amende."
+  },
+  "394": {
+    "t": "Véhicule et équipements",
+    "q": "Le conducteur n’a pas attaché sa ceinture de sécurité. Combien de points risque-t-il de perdre ?",
+    "o": [
+      "3 points",
+      "1 point",
+      "6 points",
+      "Aucun point"
+    ],
+    "e": "Ne pas porter sa ceinture coûte en général 135 € et, pour le conducteur, 3 points."
+  },
+  "395": {
+    "t": "Véhicule et équipements",
+    "q": "Le contrôle technique de votre voiture est favorable. Pendant combien de temps est-il valable ?",
+    "o": [
+      "2 ans",
+      "1 an",
+      "4 ans",
+      "5 ans"
+    ],
+    "e": "Pour une voiture, un contrôle technique favorable est valable 2 ans."
+  },
+  "396": {
+    "t": "Véhicule et équipements",
+    "q": "Le contrôle technique relève une défaillance critique. Jusqu’à quand pouvez-vous circuler avec la voiture ?",
+    "o": [
+      "Seulement le jour du contrôle",
+      "Pendant 2 mois",
+      "Pendant 1 an",
+      "Jusqu’au prochain contrôle"
+    ],
+    "e": "Avec une défaillance critique, le contrôle n’est valable que le jour même : la voiture doit être réparée avant de reprendre la route."
+  },
+  "397": {
+    "t": "Véhicule et équipements",
+    "q": "Dans certaines communes de montagne, pendant quelle période devez-vous avoir des pneus hiver ou des chaînes à neige ?",
+    "o": [
+      "Du 1er novembre au 31 mars",
+      "Du 1er décembre au 28 février",
+      "Toute l’année",
+      "Seulement les jours où il neige"
+    ],
+    "e": "Dans les communes concernées des massifs montagneux, cette obligation vaut du 1er novembre au 31 mars."
+  },
+  "398": {
+    "t": "Véhicule et équipements",
+    "q": "Le pare-brise et les vitres avant de votre voiture peuvent-ils être fortement teintés ?",
+    "o": [
+      "Non, ils doivent laisser passer au moins 70 % de la lumière",
+      "Oui, sans limite",
+      "Oui, si les vitres arrière sont claires",
+      "Oui, seulement en été"
+    ],
+    "e": "Le pare-brise et les vitres latérales avant doivent rester assez transparents : 70 % de la lumière au moins. Sinon : 135 € et 3 points."
   }
 };
 

@@ -227,6 +227,7 @@ a.item{text-decoration:none;color:inherit}
 @media (prefers-reduced-motion:reduce){.illus-clignote{animation:none}}
 /* confort de lecture et accessibilité */
 :focus-visible{outline:3px solid #2f6fd6;outline-offset:2px;border-radius:10px}
+#question:focus,#question:focus-visible{outline:none}
 .confort-btn{position:absolute;top:12px;left:14px;z-index:3;display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:30px;padding:0 10px;background:rgba(255,255,255,.92);color:#2f6fd6;font-weight:900;font-size:14px;border-radius:999px;box-shadow:0 2px 8px rgba(30,60,120,.15)}
 .ecoute{display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:#e6efff;color:#2f6fd6;font-weight:900;font-size:13.5px;padding:8px 14px;border-radius:999px}
 .ecoute svg{width:16px;height:16px}
@@ -290,29 +291,29 @@ body.facile .item .tt{font-size:16px}
 <script>
 var Q = [
     // Priorités
-    {t:'Priorités', q:'À une intersection sans panneau ni feu, qui est prioritaire ?', o:['Le véhicule qui vient de votre droite','Le véhicule qui vient de votre gauche','Le véhicule le plus rapide','Le véhicule le plus gros'], e:'En l’absence de signalisation, on applique la priorité à droite.'},
-    {t:'Priorités', q:'Vous arrivez devant un panneau STOP et la voie semble libre. Que faites-vous ?', o:['Vous vous arrêtez complètement, puis vous regardez','Vous ralentissez seulement','Vous vous arrêtez uniquement si un véhicule arrive','Vous klaxonnez avant de passer'], e:'Le STOP impose un arrêt complet, même si personne n’arrive.'},
-    {t:'Priorités', q:'À l’entrée d’un carrefour à sens giratoire signalé par un panneau « cédez le passage », qui passe en premier ?', o:['Les véhicules déjà engagés sur l’anneau','Les véhicules qui veulent y entrer','Les véhicules qui arrivent sur votre droite à l’entrée','Le véhicule le plus rapide'], e:'Vous cédez le passage aux véhicules déjà engagés sur l’anneau (article R415-10 du Code de la route).'},
-    {t:'Priorités', q:'Un véhicule de secours avec sirène et gyrophare arrive derrière vous. Que faites-vous ?', o:['Vous vous rangez dès que possible pour le laisser passer','Vous accélérez pour dégager la route','Vous freinez et vous vous arrêtez au milieu de la voie','Vous continuez normalement'], e:'Vous facilitez son passage en vous rangeant sans prendre de risque.'},
-    {t:'Priorités', q:'Un piéton s’engage sur un passage protégé devant vous. Que devez-vous faire ?', o:['Lui céder le passage','Klaxonner pour qu’il se dépêche','Passer devant lui s’il marche lentement','Accélérer pour passer avant lui'], e:'Le piéton engagé sur un passage protégé est prioritaire.'}, // n°4
-    {t:'Priorités', q:'Le feu passe à l’orange fixe alors que vous approchez. Que faites-vous ?', o:['Vous vous arrêtez, sauf si l’arrêt est trop brusque pour être sûr','Vous accélérez systématiquement','Vous passez toujours, car l’orange est tolérée','Vous freinez à fond dans tous les cas'], e:'L’orange fixe annonce le rouge : il faut s’arrêter, sauf si l’arrêt ne peut se faire dans de bonnes conditions de sécurité.'}, // n°5
-    {t:'Priorités', q:'Un véhicule d’intervention avec gyrophare bleu et sirène à deux tons arrive à un carrefour où vous avez le feu vert. Que faites-vous ?', o:['Vous lui cédez le passage sans mettre personne en danger','Vous passez, car vous avez le feu vert','Vous accélérez pour libérer le carrefour avant lui','Vous klaxonnez pour le prévenir'], e:'Un véhicule prioritaire en intervention bénéficie de la priorité, même si le feu est vert pour vous. Cédez-lui le passage en restant prudent.'}, // n°6
+    {t:'Priorités', q:'À une intersection sans panneau ni feu, qui est prioritaire ?', o:['Le véhicule qui vient de votre droite','Le véhicule qui vient de votre gauche','Le véhicule le plus rapide','Le véhicule le plus gros'], e:'En l’absence de signalisation, on applique la priorité à droite.', img:{"scene":"plan","route":"croix","moi":{"bras":"S","action":"tout_droit"},"autres":[{"type":"voiture","bras":"E","action":"tout_droit","couleur":"rouge"}]}},
+    {t:'Priorités', q:'Vous arrivez devant un panneau STOP et la voie semble libre. Que faites-vous ?', o:['Vous vous arrêtez complètement, puis vous regardez','Vous ralentissez seulement','Vous vous arrêtez uniquement si un véhicule arrive','Vous klaxonnez avant de passer'], e:'Le STOP impose un arrêt complet, même si personne n’arrive.', img:{"scene":"plan","route":"croix","axes":{"S":"continue"},"marquages":{"S":"stop"},"panneaux":[{"code":"AB4","bras":"S"}],"moi":{"bras":"S","action":"tout_droit","recul":6}}},
+    {t:'Priorités', q:'À l’entrée d’un carrefour à sens giratoire signalé par un panneau « cédez le passage », qui passe en premier ?', o:['Les véhicules déjà engagés sur l’anneau','Les véhicules qui veulent y entrer','Les véhicules qui arrivent sur votre droite à l’entrée','Le véhicule le plus rapide'], e:'Vous cédez le passage aux véhicules déjà engagés sur l’anneau (article R415-10 du Code de la route).', img:{"scene":"plan","route":"giratoire","marquages":{"S":"cedez"},"panneaux":[{"code":"AB3a","bras":"S"}],"moi":{"bras":"S","recul":22},"autres":[{"type":"voiture","couleur":"rouge","x":112,"y":140,"dir":"S"}]}},
+    {t:'Priorités', q:'Un véhicule de secours avec sirène et gyrophare arrive derrière vous. Que faites-vous ?', o:['Vous vous rangez dès que possible pour le laisser passer','Vous accélérez pour dégager la route','Vous freinez et vous vous arrêtez au milieu de la voie','Vous continuez normalement'], e:'Vous facilitez son passage en vous rangeant sans prendre de risque.', img:{"scene":"plan","route":"croix","moi":{"bras":"E","x":232},"autres":[{"type":"secours","x":292,"y":105,"dir":"W"}]}},
+    {t:'Priorités', q:'Un piéton s’engage sur un passage protégé devant vous. Que devez-vous faire ?', o:['Lui céder le passage','Klaxonner pour qu’il se dépêche','Passer devant lui s’il marche lentement','Accélérer pour passer avant lui'], e:'Le piéton engagé sur un passage protégé est prioritaire.', img:{"scene":"plan","route":"croix","marquages":{"S":"pieton"},"moi":{"bras":"S","recul":22},"autres":[{"type":"pieton","x":205,"y":167,"traverse":{"x":150,"y":167}}]}}, // n°4
+    {t:'Priorités', q:'Le feu passe à l’orange fixe alors que vous approchez. Que faites-vous ?', o:['Vous vous arrêtez, sauf si l’arrêt est trop brusque pour être sûr','Vous accélérez systématiquement','Vous passez toujours, car l’orange est tolérée','Vous freinez à fond dans tous les cas'], e:'L’orange fixe annonce le rouge : il faut s’arrêter, sauf si l’arrêt ne peut se faire dans de bonnes conditions de sécurité.', img:{"scene":"plan","route":"croix","marquages":{"S":"feu"},"feux":{"S":"orange"},"moi":{"bras":"S","action":"tout_droit","recul":10}}}, // n°5
+    {t:'Priorités', q:'Un véhicule d’intervention avec gyrophare bleu et sirène à deux tons arrive à un carrefour où vous avez le feu vert. Que faites-vous ?', o:['Vous lui cédez le passage sans mettre personne en danger','Vous passez, car vous avez le feu vert','Vous accélérez pour libérer le carrefour avant lui','Vous klaxonnez pour le prévenir'], e:'Un véhicule prioritaire en intervention bénéficie de la priorité, même si le feu est vert pour vous. Cédez-lui le passage en restant prudent.', img:{"scene":"plan","route":"croix","feux":{"S":"vert","W":"rouge"},"moi":{"bras":"S","action":"tout_droit"},"autres":[{"type":"secours","bras":"W","action":"tout_droit"}]}}, // n°6
     {t:'Priorités', q:'Un véhicule a un gyrophare bleu et une sirène à trois tons. Que devez-vous faire ?', o:['Faciliter son passage, sans qu’il soit prioritaire aux intersections','Lui céder la priorité à tous les carrefours, comme à un véhicule des pompiers','L’ignorer, car il n’a aucun droit particulier','Passer avant lui dans tous les cas'], e:'Avec une sirène à trois tons, le véhicule bénéficie de facilités de passage : vous l’aidez à passer, mais il doit respecter la signalisation et les priorités.'}, // n°7
     // Vitesse et distances
     {t:'Vitesse et distances', q:'Sauf indication contraire, quelle est la vitesse maximale en agglomération ?', o:['50 km/h','30 km/h','60 km/h','70 km/h'], e:'La limite générale en agglomération est de 50 km/h.'},
     {t:'Vitesse et distances', q:'Sauf indication contraire, quelle est la vitesse maximale sur une route à double sens sans séparateur central, hors agglomération ?', o:['80 km/h','70 km/h','90 km/h','100 km/h'], e:'Sur ces routes, la limite générale est de 80 km/h.'},
     {t:'Vitesse et distances', q:'Par temps de pluie, quelle est la vitesse maximale sur autoroute pour un conducteur confirmé ?', o:['110 km/h','90 km/h','100 km/h','130 km/h'], e:'La limite est de 130 km/h par temps sec et de 110 km/h par temps de pluie. Un jeune conducteur est limité à 110 km/h sur autoroute, même par temps sec (100 km/h sur les sections limitées à moins de 130 km/h).'},
-    {t:'Vitesse et distances', q:'Quelle est la distance de sécurité minimale avec le véhicule qui vous précède ?', o:['Un intervalle d’au moins 2 secondes','Un intervalle d’une demi-seconde','La longueur d’une voiture','Environ 5 mètres, quelle que soit la vitesse'], e:'Gardez au moins 2 secondes d’écart. Il faut l’augmenter quand la route est mouillée.'},
+    {t:'Vitesse et distances', q:'Quelle est la distance de sécurité minimale avec le véhicule qui vous précède ?', o:['Un intervalle d’au moins 2 secondes','Un intervalle d’une demi-seconde','La longueur d’une voiture','Environ 5 mètres, quelle que soit la vitesse'], e:'Gardez au moins 2 secondes d’écart. Il faut l’augmenter quand la route est mouillée.', img:{"scene":"vue","vehicule_devant":"loin"}},
     {t:'Vitesse et distances', q:'La distance d’arrêt est égale à…', o:['la distance de réaction plus la distance de freinage','la distance de freinage seulement','la distance de réaction seulement','la distance de sécurité'], e:'Pendant le temps de réaction, le véhicule roule encore avant même que le freinage commence.'}, // n°12
-    {t:'Vitesse et distances', q:'Sur chaussée mouillée, la distance de freinage…', o:['augmente nettement','reste la même','diminue légèrement','diminue beaucoup'], e:'L’adhérence est moins bonne, il faut freiner plus tôt et rouler moins vite.'}, // n°13
-    {t:'Vitesse et distances', q:'Votre véhicule commence à aquaplaner. Que faites-vous ?', o:['Vous relâchez progressivement l’accélérateur et tenez fermement le volant','Vous freinez très fort','Vous donnez un coup de volant brusque','Vous accélérez pour retrouver de l’adhérence'], e:'Évitez tout geste brusque : ralentissez progressivement jusqu’à ce que les pneus retrouvent le contact avec la route.'}, // n°14
-    {t:'Vitesse et distances', q:'Le brouillard réduit la visibilité à moins de 50 mètres. Quelle est la vitesse maximale sur tous types de route ?', o:['50 km/h','30 km/h','70 km/h','80 km/h'], e:'Quand la visibilité est inférieure à 50 mètres, la vitesse est limitée à 50 km/h sur toutes les routes.'}, // n°15
+    {t:'Vitesse et distances', q:'Sur chaussée mouillée, la distance de freinage…', o:['augmente nettement','reste la même','diminue légèrement','diminue beaucoup'], e:'L’adhérence est moins bonne, il faut freiner plus tôt et rouler moins vite.', img:{"scene":"vue","meteo":"pluie","vehicule_devant":"loin"}}, // n°13
+    {t:'Vitesse et distances', q:'Votre véhicule commence à aquaplaner. Que faites-vous ?', o:['Vous relâchez progressivement l’accélérateur et tenez fermement le volant','Vous freinez très fort','Vous donnez un coup de volant brusque','Vous accélérez pour retrouver de l’adhérence'], e:'Évitez tout geste brusque : ralentissez progressivement jusqu’à ce que les pneus retrouvent le contact avec la route.', img:{"scene":"vue","meteo":"pluie"}}, // n°14
+    {t:'Vitesse et distances', q:'Le brouillard réduit la visibilité à moins de 50 mètres. Quelle est la vitesse maximale sur tous types de route ?', o:['50 km/h','30 km/h','70 km/h','80 km/h'], e:'Quand la visibilité est inférieure à 50 mètres, la vitesse est limitée à 50 km/h sur toutes les routes.', img:{"scene":"vue","meteo":"brouillard"}}, // n°15
     {t:'Vitesse et distances', q:'Sur autoroute, quelle distance minimale respecter derrière le véhicule qui vous précède, avec les traits de la bande d’arrêt d’urgence ?', o:['Au moins deux traits','Un seul trait','Quatre traits en toutes circonstances','Il n’y a pas de repère'], e:'Un trait correspond à un danger, deux traits au minimum de sécurité. Ce repère aide à garder environ 2 secondes ou plus d’écart.'}, // n°16
     // Panneaux et feux
-    {t:'Panneaux et feux', q:'Un panneau triangulaire avec une bordure rouge indique…', o:['un danger','une interdiction','une obligation','une indication de direction'], e:'Les panneaux triangulaires à bordure rouge avertissent d’un danger.'}, // n°17
-    {t:'Panneaux et feux', q:'Un panneau rond avec une bordure rouge indique en général…', o:['une interdiction ou une restriction','une obligation','un danger','un parking'], e:'Les panneaux ronds à bordure rouge interdisent ou limitent quelque chose.'}, // n°18
-    {t:'Panneaux et feux', q:'Un panneau rond à fond bleu indique en général…', o:['une obligation','une interdiction','un danger','une fin de limitation'], e:'Les panneaux ronds à fond bleu imposent une obligation.'}, // n°19
-    {t:'Panneaux et feux', q:'Que signifie une ligne continue au centre de la chaussée ?', o:['Il ne faut ni la franchir ni la chevaucher','On peut la franchir pour doubler','On peut la chevaucher si la route est libre','Elle indique seulement un virage'], e:'La ligne continue interdit en principe de la franchir ou de la chevaucher. Une exception encadrée existe pour dépasser un cycliste.'}, // n°20
+    {t:'Panneaux et feux', q:'Un panneau triangulaire avec une bordure rouge indique…', o:['un danger','une interdiction','une obligation','une indication de direction'], e:'Les panneaux triangulaires à bordure rouge avertissent d’un danger.', img:{"panneau":"A14"}}, // n°17
+    {t:'Panneaux et feux', q:'Un panneau rond avec une bordure rouge indique en général…', o:['une interdiction ou une restriction','une obligation','un danger','un parking'], e:'Les panneaux ronds à bordure rouge interdisent ou limitent quelque chose.', img:{"panneau":"B3"}}, // n°18
+    {t:'Panneaux et feux', q:'Un panneau rond à fond bleu indique en général…', o:['une obligation','une interdiction','un danger','une fin de limitation'], e:'Les panneaux ronds à fond bleu imposent une obligation.', img:{"panneau":"B21b"}}, // n°19
+    {t:'Panneaux et feux', q:'Que signifie une ligne continue au centre de la chaussée ?', o:['Il ne faut ni la franchir ni la chevaucher','On peut la franchir pour doubler','On peut la chevaucher si la route est libre','Elle indique seulement un virage'], e:'La ligne continue interdit en principe de la franchir ou de la chevaucher. Une exception encadrée existe pour dépasser un cycliste.', img:{"scene":"vue","ligne":"continue"}}, // n°20
     {t:'Panneaux et feux', q:'À un passage à niveau, les feux rouges clignotent. Que faites-vous ?', o:['Vous vous arrêtez','Vous passez vite avant le train','Vous ralentissez et vous passez si la voie est libre','Vous klaxonnez et vous passez'], e:'Les feux rouges clignotants imposent l’arrêt, même si aucun train n’est en vue.'}, // n°21
     // Alcool, fatigue, santé
     {t:'Alcool, fatigue, santé', q:'À partir de quel taux d’alcool dans le sang la conduite est-elle interdite pour un conducteur confirmé ?', o:['0,5 g par litre de sang','0,8 g par litre de sang','1 g par litre de sang','0,2 g par litre de sang'], e:'La conduite est interdite dès 0,5 g/L de sang. Le mieux reste de ne pas boire du tout avant de conduire.'},
@@ -341,8 +342,8 @@ var Q = [
     // Circulation et stationnement
     {t:'Circulation et stationnement', q:'Sur autoroute, sur quelle voie roulez-vous normalement ?', o:['La voie la plus à droite, sauf pour dépasser','La voie du milieu, pour être tranquille','La voie la plus à gauche, pour aller plus vite','Celle qui est la plus libre, sans règle'], e:'On revient à droite dès que le dépassement est terminé.'}, // n°44
     {t:'Circulation et stationnement', q:'Dans quel cas est-il interdit de dépasser ?', o:['À l’approche d’un sommet de côte où la visibilité est insuffisante','Sur une route droite et dégagée','Sur une ligne discontinue','Sur une route droite en rase campagne'], e:'On ne dépasse jamais sans voir suffisamment loin devant soi, notamment dans un virage ou au sommet d’une côte.'}, // n°45
-    {t:'Circulation et stationnement', q:'Quand vous dépassez un cycliste hors agglomération, quelle distance latérale devez-vous laisser ?', o:['Au moins 1,5 mètre','Au moins 50 centimètres','Au moins 3 mètres','Aucune règle'], e:'Il faut laisser au moins 1 mètre en agglomération et 1,5 mètre hors agglomération.'}, // n°46
-    {t:'Circulation et stationnement', q:'En agglomération, quelle distance latérale minimale laissez-vous en dépassant un cycliste ?', o:['Au moins 1 mètre','Au moins 50 centimètres','Au moins 1,5 mètre','Aucune règle'], e:'Le minimum est de 1 mètre en agglomération et de 1,5 mètre hors agglomération.'}, // n°47
+    {t:'Circulation et stationnement', q:'Quand vous dépassez un cycliste hors agglomération, quelle distance latérale devez-vous laisser ?', o:['Au moins 1,5 mètre','Au moins 50 centimètres','Au moins 3 mètres','Aucune règle'], e:'Il faut laisser au moins 1 mètre en agglomération et 1,5 mètre hors agglomération.', img:{"scene":"vue","ligne":"discontinue","cycliste":"droite"}}, // n°46
+    {t:'Circulation et stationnement', q:'En agglomération, quelle distance latérale minimale laissez-vous en dépassant un cycliste ?', o:['Au moins 1 mètre','Au moins 50 centimètres','Au moins 1,5 mètre','Aucune règle'], e:'Le minimum est de 1 mètre en agglomération et de 1,5 mètre hors agglomération.', img:{"scene":"vue","ville":true,"ligne":"discontinue","cycliste":"droite"}}, // n°47
     {t:'Circulation et stationnement', q:'Peut-on stationner sur un passage piéton ?', o:['Non, et aussi à moins de 5 mètres avant','Oui, si on reste dans la voiture','Oui, pour moins de 5 minutes','Oui, la nuit'], e:'Le stationnement est interdit sur le passage piéton et à moins de 5 mètres avant, pour garder la visibilité entre piétons et conducteurs.'}, // n°48
     {t:'Circulation et stationnement', q:'Avant de changer de file, que devez-vous faire ?', o:['Mettre le clignotant, regarder dans les rétroviseurs et vérifier l’angle mort','Mettre le clignotant seulement','Regarder dans le rétroviseur intérieur seulement','Klaxonner'], e:'L’angle mort ne se voit pas dans les rétroviseurs : il faut tourner la tête.'}, // n°49
     // Permis et examen
@@ -361,8 +362,8 @@ var Q = [
     {t:'Accident et secours', p:1}, // n°61 : accès complet
     {t:'Accident et secours', p:1}, // n°62 : accès complet
     // Questions ajoutées (accès complet)
-    {t:'Priorités', q:'Vous circulez sur une route signalée par un panneau carré posé sur la pointe, jaune bordé de blanc. Que signifie-t-il ?', o:['Vous êtes prioritaire aux intersections jusqu’à la fin de cette signalisation','Vous êtes prioritaire à la prochaine intersection seulement','Vous devez céder le passage à droite à chaque intersection','Vous entrez dans une zone où le stationnement est interdit'], e:'Ce panneau indique une route à caractère prioritaire : vous gardez la priorité aux intersections tant que le panneau de fin n’apparaît pas.'}, // n°63
-    {t:'Priorités', q:'Le même panneau jaune en losange apparaît, mais barré d’un trait noir. Qu’est-ce que cela signifie ?', o:['La route n’est plus prioritaire : aux prochaines intersections, vous suivez la signalisation ou la priorité à droite','Vous êtes prioritaire jusqu’à la fin de l’agglomération','La route devient une autoroute','Le stationnement est de nouveau autorisé'], e:'Le losange barré annonce la fin de la route à caractère prioritaire. Les règles habituelles s’appliquent ensuite à chaque intersection.'}, // n°64
+    {t:'Priorités', q:'Vous circulez sur une route signalée par un panneau carré posé sur la pointe, jaune bordé de blanc. Que signifie-t-il ?', o:['Vous êtes prioritaire aux intersections jusqu’à la fin de cette signalisation','Vous êtes prioritaire à la prochaine intersection seulement','Vous devez céder le passage à droite à chaque intersection','Vous entrez dans une zone où le stationnement est interdit'], e:'Ce panneau indique une route à caractère prioritaire : vous gardez la priorité aux intersections tant que le panneau de fin n’apparaît pas.', img:{"panneau":"AB6"}}, // n°63
+    {t:'Priorités', q:'Le même panneau jaune en losange apparaît, mais barré d’un trait noir. Qu’est-ce que cela signifie ?', o:['La route n’est plus prioritaire : aux prochaines intersections, vous suivez la signalisation ou la priorité à droite','Vous êtes prioritaire jusqu’à la fin de l’agglomération','La route devient une autoroute','Le stationnement est de nouveau autorisé'], e:'Le losange barré annonce la fin de la route à caractère prioritaire. Les règles habituelles s’appliquent ensuite à chaque intersection.', img:{"panneau":"AB7"}}, // n°64
     {t:'Priorités', p:1}, // n°65 : accès complet
     {t:'Priorités', p:1}, // n°66 : accès complet
     {t:'Priorités', p:1}, // n°67 : accès complet
@@ -549,7 +550,155 @@ var Q = [
     {t:'Accident et secours', p:1}, // n°248 : accès complet
     {t:'Accident et secours', p:1}, // n°249 : accès complet
     {t:'Accident et secours', p:1}, // n°250 : accès complet
-    {t:'Accident et secours', p:1} // n°251 : accès complet
+    {t:'Accident et secours', p:1}, // n°251 : accès complet
+    // Questions illustrées (accès complet)
+    {t:'Panneaux et feux', p:1}, // n°252 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°253 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°254 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°255 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°256 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°257 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°258 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°259 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°260 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°261 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°262 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°263 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°264 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°265 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°266 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°267 : accès complet
+    {t:'Priorités', p:1}, // n°268 : accès complet
+    {t:'Priorités', p:1}, // n°269 : accès complet
+    {t:'Priorités', p:1}, // n°270 : accès complet
+    {t:'Priorités', p:1}, // n°271 : accès complet
+    {t:'Priorités', p:1}, // n°272 : accès complet
+    {t:'Priorités', p:1}, // n°273 : accès complet
+    {t:'Priorités', p:1}, // n°274 : accès complet
+    {t:'Priorités', p:1}, // n°275 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°276 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°277 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°278 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°279 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°280 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°281 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°282 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°283 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°284 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°285 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°286 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°287 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°288 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°289 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°290 : accès complet
+    {t:'Priorités', p:1}, // n°291 : accès complet
+    {t:'Priorités', p:1}, // n°292 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°293 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°294 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°295 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°296 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°297 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°298 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°299 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°300 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°301 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°302 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°303 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°304 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°305 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°306 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°307 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°308 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°309 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°310 : accès complet
+    {t:'Priorités', p:1}, // n°311 : accès complet
+    {t:'Priorités', p:1}, // n°312 : accès complet
+    {t:'Priorités', p:1}, // n°313 : accès complet
+    {t:'Priorités', p:1}, // n°314 : accès complet
+    {t:'Priorités', p:1}, // n°315 : accès complet
+    {t:'Priorités', p:1}, // n°316 : accès complet
+    {t:'Priorités', p:1}, // n°317 : accès complet
+    {t:'Priorités', p:1}, // n°318 : accès complet
+    {t:'Priorités', p:1}, // n°319 : accès complet
+    {t:'Priorités', p:1}, // n°320 : accès complet
+    {t:'Priorités', p:1}, // n°321 : accès complet
+    {t:'Priorités', p:1}, // n°322 : accès complet
+    {t:'Priorités', p:1}, // n°323 : accès complet
+    {t:'Priorités', p:1}, // n°324 : accès complet
+    {t:'Priorités', p:1}, // n°325 : accès complet
+    {t:'Priorités', p:1}, // n°326 : accès complet
+    {t:'Priorités', p:1}, // n°327 : accès complet
+    {t:'Priorités', p:1}, // n°328 : accès complet
+    {t:'Priorités', p:1}, // n°329 : accès complet
+    {t:'Priorités', p:1}, // n°330 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°331 : accès complet
+    {t:'Priorités', p:1}, // n°332 : accès complet
+    {t:'Priorités', p:1}, // n°333 : accès complet
+    {t:'Priorités', p:1}, // n°334 : accès complet
+    {t:'Priorités', p:1}, // n°335 : accès complet
+    {t:'Priorités', p:1}, // n°336 : accès complet
+    {t:'Priorités', p:1}, // n°337 : accès complet
+    {t:'Priorités', p:1}, // n°338 : accès complet
+    {t:'Priorités', p:1}, // n°339 : accès complet
+    {t:'Priorités', p:1}, // n°340 : accès complet
+    {t:'Priorités', p:1}, // n°341 : accès complet
+    {t:'Priorités', p:1}, // n°342 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°343 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°344 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°345 : accès complet
+    {t:'Priorités', p:1}, // n°346 : accès complet
+    {t:'Priorités', p:1}, // n°347 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°348 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°349 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°350 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°351 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°352 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°353 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°354 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°355 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°356 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°357 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°358 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°359 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°360 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°361 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°362 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°363 : accès complet
+    {t:'Circulation et stationnement', p:1}, // n°364 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°365 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°366 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°367 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°368 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°369 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°370 : accès complet
+    {t:'Panneaux et feux', p:1}, // n°371 : accès complet
+    {t:'Priorités', p:1}, // n°372 : accès complet
+    {t:'Vitesse et distances', p:1}, // n°373 : accès complet
+    {t:'Permis et examen', p:1}, // n°374 : accès complet
+    {t:'Permis et examen', p:1}, // n°375 : accès complet
+    {t:'Permis et examen', p:1}, // n°376 : accès complet
+    {t:'Permis et examen', p:1}, // n°377 : accès complet
+    {t:'Permis et examen', p:1}, // n°378 : accès complet
+    {t:'Permis et examen', p:1}, // n°379 : accès complet
+    {t:'Accident et secours', p:1}, // n°380 : accès complet
+    {t:'Accident et secours', p:1}, // n°381 : accès complet
+    {t:'Accident et secours', p:1}, // n°382 : accès complet
+    {t:'Accident et secours', p:1}, // n°383 : accès complet
+    {t:'Accident et secours', p:1}, // n°384 : accès complet
+    {t:'Accident et secours', p:1}, // n°385 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°386 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°387 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°388 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°389 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°390 : accès complet
+    {t:'Alcool, fatigue, santé', p:1}, // n°391 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°392 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°393 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°394 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°395 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°396 : accès complet
+    {t:'Véhicule et équipements', p:1}, // n°397 : accès complet
+    {t:'Véhicule et équipements', p:1} // n°398 : accès complet
   ];
 
 

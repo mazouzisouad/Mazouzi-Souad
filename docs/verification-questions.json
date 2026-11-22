@@ -3060,5 +3060,2699 @@
   ],
   "probleme": "Aucune source officielle ni aucun site de formation lu n’explique le rôle du total de cases cochées (service-public F2149, En Voiture Simone, Ornikar et Le Permis Libre muets sur ce point). La règle n’apparaît que sur des sites d’assureurs (MAIF, Allianz, selon un moteur de recherche), non retenus comme sources et non lus (maif.fr inaccessible).",
   "source_officielle_a_lire": "service-public.gouv.fr, fiche F2149 (constat amiable)"
+ },
+ {
+  "n": 252,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A1a",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "A1a Virage à droite",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A1a",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "A1a Virage à droite"
+   }
+  ]
+ },
+ {
+  "n": 253,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A1c",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "A1c Succession de virages dont le premier est à droite",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A1c",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "A1c Succession de virages dont le premier est à droite"
+   }
+  ]
+ },
+ {
+  "n": 254,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 2e partie, art. 19 et 27 (signalisation de danger, virages)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_2epartie_vc_20220613_cle253d8c.pdf",
+  "extrait": "attirer de façon toute spéciale l'attention des usagers de la route aux endroits où leur vigilance doit redoubler",
+  "sources": [
+   {
+    "nom": "IISR 2e partie, art. 19 et 27 (signalisation de danger, virages)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_2epartie_vc_20220613_cle253d8c.pdf",
+    "type": "officiel",
+    "extrait": "attirer de façon toute spéciale l'attention des usagers de la route aux endroits où leur vigilance doit redoubler"
+   }
+  ]
+ },
+ {
+  "n": 255,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 2e partie, art. 28-1 (ralentisseurs)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_2epartie_vc_20220613_cle253d8c.pdf",
+  "extrait": "se fait à l'aide du panneau A2b, complété par un panneau B14 de limitation de vitesse à 30 km/h",
+  "sources": [
+   {
+    "nom": "IISR 2e partie, art. 28-1 (ralentisseurs)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_2epartie_vc_20220613_cle253d8c.pdf",
+    "type": "officiel",
+    "extrait": "se fait à l'aide du panneau A2b, complété par un panneau B14 de limitation de vitesse à 30 km/h"
+   }
+  ]
+ },
+ {
+  "n": 256,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A3",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "A3 Chaussée rétrécie",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A3",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "A3 Chaussée rétrécie"
+   }
+  ]
+ },
+ {
+  "n": 257,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A4",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "A4 Chaussée particulièrement glissante",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A4",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "A4 Chaussée particulièrement glissante"
+   }
+  ]
+ },
+ {
+  "n": 258,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A7",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "Passage à niveau muni de barrières à fonctionnement manuel ou de demi-barrières automatiques lors du passage des trains",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A7",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "Passage à niveau muni de barrières à fonctionnement manuel ou de demi-barrières automatiques lors du passage des trains"
+   }
+  ]
+ },
+ {
+  "n": 259,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A8",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "A8 Passage à niveau sans barrières ni demi-barrières",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A8",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "A8 Passage à niveau sans barrières ni demi-barrières"
+   }
+  ]
+ },
+ {
+  "n": 260,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 5e partie, art. 72-1 (passage pour piétons) ; 2e partie, art. 40",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_5epartie_vc_20250904mb_partie_modifie_par_arrete_avril2025etsept2025_relu_dsr.pdf",
+  "extrait": "Le panneau C20a est exclusivement implanté en signalisation de position.",
+  "sources": [
+   {
+    "nom": "IISR 5e partie, art. 72-1 (passage pour piétons) ; 2e partie, art. 40",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_5epartie_vc_20250904mb_partie_modifie_par_arrete_avril2025etsept2025_relu_dsr.pdf",
+    "type": "officiel",
+    "extrait": "Le panneau C20a est exclusivement implanté en signalisation de position."
+   }
+  ]
+ },
+ {
+  "n": 261,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 2e partie, art. 41 (autres dangers)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_2epartie_vc_20220613_cle253d8c.pdf",
+  "extrait": "L'utilisation du panneau A14 n'implique en aucune façon que le danger signalé est de faible importance",
+  "sources": [
+   {
+    "nom": "IISR 2e partie, art. 41 (autres dangers)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_2epartie_vc_20220613_cle253d8c.pdf",
+    "type": "officiel",
+    "extrait": "L'utilisation du panneau A14 n'implique en aucune façon que le danger signalé est de faible importance"
+   }
+  ]
+ },
+ {
+  "n": 262,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A15a1",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "A15a1 Passage d'animaux domestiques",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A15a1",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "A15a1 Passage d'animaux domestiques"
+   }
+  ]
+ },
+ {
+  "n": 263,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A17",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "A17 Annonce de feux tricolores",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A17",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "A17 Annonce de feux tricolores"
+   }
+  ]
+ },
+ {
+  "n": 264,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 2e partie, art. 40-4 (circulation dans les deux sens)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_2epartie_vc_20220613_cle253d8c.pdf",
+  "extrait": "A la fin d'une section de route à sens unique, il est nécessaire de signaler que la circulation s'effectue dans les deux sens",
+  "sources": [
+   {
+    "nom": "IISR 2e partie, art. 40-4 (circulation dans les deux sens)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_2epartie_vc_20220613_cle253d8c.pdf",
+    "type": "officiel",
+    "extrait": "A la fin d'une section de route à sens unique, il est nécessaire de signaler que la circulation s'effectue dans les deux sens"
+   }
+  ]
+ },
+ {
+  "n": 265,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A21",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "A21 Débouché de cyclistes venant de droite ou de gauche",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A21",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "A21 Débouché de cyclistes venant de droite ou de gauche"
+   }
+  ]
+ },
+ {
+  "n": 266,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A24",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "A24 Vent latéral",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau A24",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "A24 Vent latéral"
+   }
+  ]
+ },
+ {
+  "n": 267,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 2e partie, art. 25 (implantation des panneaux de danger)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_2epartie_vc_20220613_cle253d8c.pdf",
+  "extrait": "En agglomération, la distance normale d'implantation est comprise entre 0 et 50 m. Elle est choisie aussi proche que possible de 50 m.",
+  "sources": [
+   {
+    "nom": "IISR 2e partie, art. 25 (implantation des panneaux de danger)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_2epartie_vc_20220613_cle253d8c.pdf",
+    "type": "officiel",
+    "extrait": "En agglomération, la distance normale d'implantation est comprise entre 0 et 50 m. Elle est choisie aussi proche que possible de 50 m."
+   }
+  ]
+ },
+ {
+  "n": 268,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-2 A (panneau AB1, art. R415-5 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "intersections où le conducteur est tenu de céder le passage aux véhicules débouchant de la ou des routes situées à sa droite",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-2 A (panneau AB1, art. R415-5 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "intersections où le conducteur est tenu de céder le passage aux véhicules débouchant de la ou des routes situées à sa droite"
+   }
+  ]
+ },
+ {
+  "n": 269,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-2 B (panneau AB2)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "C'est un signal avancé indiquant une intersection avec une route dont les usagers doivent céder le passage",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-2 B (panneau AB2)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "C'est un signal avancé indiquant une intersection avec une route dont les usagers doivent céder le passage"
+   }
+  ]
+ },
+ {
+  "n": 270,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-2 C (panneau AB3a)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "l'obligation de céder le passage à l'intersection aux usagers de l'autre route sans avoir à marquer obligatoirement l'arrêt",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-2 C (panneau AB3a)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "l'obligation de céder le passage à l'intersection aux usagers de l'autre route sans avoir à marquer obligatoirement l'arrêt"
+   }
+  ]
+ },
+ {
+  "n": 271,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-2 E (panneau AB4)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "les conducteurs doivent marquer un temps d’arrêt et céder le passage aux usagers de la route rencontrée",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-2 E (panneau AB4)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "les conducteurs doivent marquer un temps d’arrêt et céder le passage aux usagers de la route rencontrée"
+   }
+  ]
+ },
+ {
+  "n": 272,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-3 A (panneau AB6)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "les voies adjacentes étant par ailleurs munies de la signalisation « CÉDEZ LE PASSAGE » (ou éventuellement « STOP »)",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-3 A (panneau AB6)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "les voies adjacentes étant par ailleurs munies de la signalisation « CÉDEZ LE PASSAGE » (ou éventuellement « STOP »)"
+   }
+  ]
+ },
+ {
+  "n": 273,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-3 B (panneau AB7)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "Le panneau AB7 sans panonceau de distance annonce la perte de priorité au prochain carrefour rencontré.",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-3 B (panneau AB7)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "Le panneau AB7 sans panonceau de distance annonce la perte de priorité au prochain carrefour rencontré."
+   }
+  ]
+ },
+ {
+  "n": 274,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 7e partie, art. 117-1 (art. R110-2 et R415-10 du Code de la route) ; 3e partie, art. 42-2 G",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+  "extrait": "tout conducteur qui l'aborde est tenu de céder le passage aux usagers circulant sur l’anneau",
+  "sources": [
+   {
+    "nom": "IISR 7e partie, art. 117-1 (art. R110-2 et R415-10 du Code de la route) ; 3e partie, art. 42-2 G",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+    "type": "officiel",
+    "extrait": "tout conducteur qui l'aborde est tenu de céder le passage aux usagers circulant sur l’anneau"
+   }
+  ]
+ },
+ {
+  "n": 275,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau AB1",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "Intersection où le conducteur est tenu de céder le passage aux véhicules débouchant de la ou des routes situées à sa droite",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau AB1",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "Intersection où le conducteur est tenu de céder le passage aux véhicules débouchant de la ou des routes situées à sa droite"
+   }
+  ]
+ },
+ {
+  "n": 276,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B2a",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "B2a Interdiction de tourner à gauche à la prochaine intersection",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B2a",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "B2a Interdiction de tourner à gauche à la prochaine intersection"
+   }
+  ]
+ },
+ {
+  "n": 277,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 4e partie, art. 51 (interdiction de tourner)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+  "extrait": "L'interdiction de tourner s'applique à la prochaine intersection.",
+  "sources": [
+   {
+    "nom": "IISR 4e partie, art. 51 (interdiction de tourner)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+    "type": "officiel",
+    "extrait": "L'interdiction de tourner s'applique à la prochaine intersection."
+   }
+  ]
+ },
+ {
+  "n": 278,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 4e partie, art. 51-1 (interdiction de faire demi-tour)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+  "extrait": "Le panneau B2c est utilisé pour signaler l'interdiction de faire demi-tour jusqu'à la prochaine intersection incluse.",
+  "sources": [
+   {
+    "nom": "IISR 4e partie, art. 51-1 (interdiction de faire demi-tour)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+    "type": "officiel",
+    "extrait": "Le panneau B2c est utilisé pour signaler l'interdiction de faire demi-tour jusqu'à la prochaine intersection incluse."
+   }
+  ]
+ },
+ {
+  "n": 279,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B3",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "Interdiction de dépasser tous les véhicules à moteur autres que ceux à deux roues sans side-car",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B3",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "Interdiction de dépasser tous les véhicules à moteur autres que ceux à deux roues sans side-car"
+   }
+  ]
+ },
+ {
+  "n": 280,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B34",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "B34 Fin d’interdiction de dépasser notifiée par le panneau B3",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B34",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "B34 Fin d’interdiction de dépasser notifiée par le panneau B3"
+   }
+  ]
+ },
+ {
+  "n": 281,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 4e partie, art. 55 A (stationnement interdit)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+  "extrait": "ne s'appliquent que du côté de la route sur lequel les panneaux sont placés. Elles s'appliquent au-delà du signal […] jusqu'à la prochaine intersection.",
+  "sources": [
+   {
+    "nom": "IISR 4e partie, art. 55 A (stationnement interdit)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+    "type": "officiel",
+    "extrait": "ne s'appliquent que du côté de la route sur lequel les panneaux sont placés. Elles s'appliquent au-delà du signal […] jusqu'à la prochaine intersection."
+   }
+  ]
+ },
+ {
+  "n": 282,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux, B6a1 et B6d ; IISR 4e partie, art. 55-3",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "B6a1 Stationnement interdit […] B6d Arrêt et stationnement interdits",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux, B6a1 et B6d ; IISR 4e partie, art. 55-3",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "B6a1 Stationnement interdit […] B6d Arrêt et stationnement interdits"
+   }
+  ]
+ },
+ {
+  "n": 283,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B9a",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "B9a Accès interdit aux piétons",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B9a",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "B9a Accès interdit aux piétons"
+   }
+  ]
+ },
+ {
+  "n": 284,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B9b",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "B9b Accès interdit aux cycles",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B9b",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "B9b Accès interdit aux cycles"
+   }
+  ]
+ },
+ {
+  "n": 285,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 2e partie, art. 40-3 (annonce de feux tricolores)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_2epartie_vc_20220613_cle253d8c.pdf",
+  "extrait": "Il est complété par un panneau B14 de limitation de vitesse posé sur le même support et en dessous du panneau A17.",
+  "sources": [
+   {
+    "nom": "IISR 2e partie, art. 40-3 (annonce de feux tricolores)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_2epartie_vc_20220613_cle253d8c.pdf",
+    "type": "officiel",
+    "extrait": "Il est complété par un panneau B14 de limitation de vitesse posé sur le même support et en dessous du panneau A17."
+   }
+  ]
+ },
+ {
+  "n": 286,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B14",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "Limitation de vitesse. Ce panneau notifie l'interdiction de dépasser la vitesse indiquée",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B14",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "Limitation de vitesse. Ce panneau notifie l'interdiction de dépasser la vitesse indiquée"
+   }
+  ]
+ },
+ {
+  "n": 287,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Arrêté du 24 novembre 1967, art. 8 (panneau C4a)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "Panneau C4a. Vitesse conseillée. Ce panneau indique la vitesse à laquelle il est conseillé de circuler si les circonstances le permettent",
+  "sources": [
+   {
+    "nom": "Arrêté du 24 novembre 1967, art. 8 (panneau C4a)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+    "type": "officiel",
+    "extrait": "Panneau C4a. Vitesse conseillée. Ce panneau indique la vitesse à laquelle il est conseillé de circuler si les circonstances le permettent"
+   }
+  ]
+ },
+ {
+  "n": 288,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 4e partie, art. 68-2 (fin de limitation de vitesse)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+  "extrait": "Le panneau B33 est généralement utilisé pour signaler aux usagers le retour à la limitation de vitesse découlant de la réglementation générale",
+  "sources": [
+   {
+    "nom": "IISR 4e partie, art. 68-2 (fin de limitation de vitesse)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+    "type": "officiel",
+    "extrait": "Le panneau B33 est généralement utilisé pour signaler aux usagers le retour à la limitation de vitesse découlant de la réglementation générale"
+   }
+  ]
+ },
+ {
+  "n": 289,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 4e partie, art. 67 (vitesse minimale obligatoire)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+  "extrait": "Le panneau B25 est employé pour indiquer que les véhicules sont tenus de circuler au moins à la vitesse indiquée.",
+  "sources": [
+   {
+    "nom": "IISR 4e partie, art. 67 (vitesse minimale obligatoire)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+    "type": "officiel",
+    "extrait": "Le panneau B25 est employé pour indiquer que les véhicules sont tenus de circuler au moins à la vitesse indiquée."
+   }
+  ]
+ },
+ {
+  "n": 290,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 4e partie, art. 68-1 (panneau B31)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+  "extrait": "il n'implique pas la disparition des prescriptions résultant d'un texte général (par exemple celles qui découlent du fait que l'on est en agglomération)",
+  "sources": [
+   {
+    "nom": "IISR 4e partie, art. 68-1 (panneau B31)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+    "type": "officiel",
+    "extrait": "il n'implique pas la disparition des prescriptions résultant d'un texte général (par exemple celles qui découlent du fait que l'on est en agglomération)"
+   }
+  ]
+ },
+ {
+  "n": 291,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 4e partie, art. 64 (panneau B15)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+  "extrait": "l'interdiction de s'engager dans le passage étroit tant qu'il n'est pas possible de franchir ledit passage sans obliger les véhicules […] à s'arrêter",
+  "sources": [
+   {
+    "nom": "IISR 4e partie, art. 64 (panneau B15)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+    "type": "officiel",
+    "extrait": "l'interdiction de s'engager dans le passage étroit tant qu'il n'est pas possible de franchir ledit passage sans obliger les véhicules […] à s'arrêter"
+   }
+  ]
+ },
+ {
+  "n": 292,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 5e partie, art. 72 (panneau C18)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_5epartie_vc_20250904mb_partie_modifie_par_arrete_avril2025etsept2025_relu_dsr.pdf",
+  "extrait": "pour indiquer aux conducteurs qu'ils ont la priorité par rapport aux véhicules circulant en sens inverse. Cette signalisation est assurée au moyen du panneau C18.",
+  "sources": [
+   {
+    "nom": "IISR 5e partie, art. 72 (panneau C18)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_5epartie_vc_20250904mb_partie_modifie_par_arrete_avril2025etsept2025_relu_dsr.pdf",
+    "type": "officiel",
+    "extrait": "pour indiquer aux conducteurs qu'ils ont la priorité par rapport aux véhicules circulant en sens inverse. Cette signalisation est assurée au moyen du panneau C18."
+   }
+  ]
+ },
+ {
+  "n": 293,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 5e partie, art. 71 (circulation à sens unique)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_5epartie_vc_20250904mb_partie_modifie_par_arrete_avril2025etsept2025_relu_dsr.pdf",
+  "extrait": "Hors créneau de dépassement, le panneau B1 est implanté à l’autre extrémité de la section concernée",
+  "sources": [
+   {
+    "nom": "IISR 5e partie, art. 71 (circulation à sens unique)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_5epartie_vc_20250904mb_partie_modifie_par_arrete_avril2025etsept2025_relu_dsr.pdf",
+    "type": "officiel",
+    "extrait": "Hors créneau de dépassement, le panneau B1 est implanté à l’autre extrémité de la section concernée"
+   }
+  ]
+ },
+ {
+  "n": 294,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 4e partie, art. 65 (obligation de direction)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+  "extrait": "B21-1. Obligation de tourner à droite avant le panneau. […] B21c1. Direction obligatoire à la prochaine intersection : à droite.",
+  "sources": [
+   {
+    "nom": "IISR 4e partie, art. 65 (obligation de direction)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+    "type": "officiel",
+    "extrait": "B21-1. Obligation de tourner à droite avant le panneau. […] B21c1. Direction obligatoire à la prochaine intersection : à droite."
+   }
+  ]
+ },
+ {
+  "n": 295,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B21-2",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "B21-2 Obligation de tourner à gauche avant le panneau",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B21-2",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "B21-2 Obligation de tourner à gauche avant le panneau"
+   }
+  ]
+ },
+ {
+  "n": 296,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B21c2",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "B21c2 Direction obligatoire à la prochaine intersection : à gauche",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B21c2",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "B21c2 Direction obligatoire à la prochaine intersection : à gauche"
+   }
+  ]
+ },
+ {
+  "n": 297,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B21a1",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "B21a1 Contournement obligatoire par la droite",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B21a1",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "B21a1 Contournement obligatoire par la droite"
+   }
+  ]
+ },
+ {
+  "n": 298,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B21b",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "B21b Direction obligatoire à la prochaine intersection : tout droit",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B21b",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "B21b Direction obligatoire à la prochaine intersection : tout droit"
+   }
+  ]
+ },
+ {
+  "n": 299,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 4e partie, art. 66 (piste ou bande cyclable obligatoire)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+  "extrait": "aux conducteurs d'autres véhicules qu'ils n'ont pas le droit d'emprunter cette piste ni de s'y arrêter",
+  "sources": [
+   {
+    "nom": "IISR 4e partie, art. 66 (piste ou bande cyclable obligatoire)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+    "type": "officiel",
+    "extrait": "aux conducteurs d'autres véhicules qu'ils n'ont pas le droit d'emprunter cette piste ni de s'y arrêter"
+   }
+  ]
+ },
+ {
+  "n": 300,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 4e partie, art. 66-1 (chemin pour piétons obligatoire)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+  "extrait": "Le panneau B22b signale aux piétons qu'ils sont tenus d'emprunter le chemin à l'entrée duquel il est placé",
+  "sources": [
+   {
+    "nom": "IISR 4e partie, art. 66-1 (chemin pour piétons obligatoire)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+    "type": "officiel",
+    "extrait": "Le panneau B22b signale aux piétons qu'ils sont tenus d'emprunter le chemin à l'entrée duquel il est placé"
+   }
+  ]
+ },
+ {
+  "n": 301,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B51",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "B51 Sortie d'une zone à vitesse limitée à 30 km/h",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B51",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "B51 Sortie d'une zone à vitesse limitée à 30 km/h"
+   }
+  ]
+ },
+ {
+  "n": 302,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Sécurité routière, fiche technique « zone de rencontre » (art. R110-2 du Code de la route)",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/guide_techn_fiche3_technique_zone_rencontre_cle0262fe.pdf",
+  "extrait": "La vitesse des véhicules y est limitée à 20 km/h.",
+  "sources": [
+   {
+    "nom": "Sécurité routière, fiche technique « zone de rencontre » (art. R110-2 du Code de la route)",
+    "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/guide_techn_fiche3_technique_zone_rencontre_cle0262fe.pdf",
+    "type": "officiel",
+    "extrait": "La vitesse des véhicules y est limitée à 20 km/h."
+   }
+  ]
+ },
+ {
+  "n": 303,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B54",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "B54 Entrée d'une aire piétonne",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau B54",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "B54 Entrée d'une aire piétonne"
+   }
+  ]
+ },
+ {
+  "n": 304,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau C1a",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "C1a Lieu aménagé pour le stationnement",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau C1a",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "C1a Lieu aménagé pour le stationnement"
+   }
+  ]
+ },
+ {
+  "n": 305,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau C13a",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "C13a Impasse",
+  "sources": [
+   {
+    "nom": "Catalogue officiel des panneaux (IISR, version consolidée 2025), panneau C13a",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "C13a Impasse"
+   }
+  ]
+ },
+ {
+  "n": 306,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 5e partie, art. 72-6 (aménagements de sécurité) ; catalogue : C27 Surélévation de chaussée",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_5epartie_vc_20250904mb_partie_modifie_par_arrete_avril2025etsept2025_relu_dsr.pdf",
+  "extrait": "la signalisation des aménagements de sécurité (ralentisseurs de type dos d’âne, plateaux surélevés, coussins) est obligatoire. Elle est assurée au moyen du panneau C27",
+  "sources": [
+   {
+    "nom": "IISR 5e partie, art. 72-6 (aménagements de sécurité) ; catalogue : C27 Surélévation de chaussée",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_5epartie_vc_20250904mb_partie_modifie_par_arrete_avril2025etsept2025_relu_dsr.pdf",
+    "type": "officiel",
+    "extrait": "la signalisation des aménagements de sécurité (ralentisseurs de type dos d’âne, plateaux surélevés, coussins) est obligatoire. Elle est assurée au moyen du panneau C27"
+   }
+  ]
+ },
+ {
+  "n": 307,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 4e partie, art. 63 d (limitation de vitesse en agglomération)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+  "extrait": "un panneau B14 ou B30, B52, ou B54 est placé sur le support du panneau EB10. Les prescriptions […] s’appliquent alors à toutes les voies",
+  "sources": [
+   {
+    "nom": "IISR 4e partie, art. 63 d (limitation de vitesse en agglomération)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+    "type": "officiel",
+    "extrait": "un panneau B14 ou B30, B52, ou B54 est placé sur le support du panneau EB10. Les prescriptions […] s’appliquent alors à toutes les voies"
+   }
+  ]
+ },
+ {
+  "n": 308,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Arrêté du 24 novembre 1967, art. 13 (panneaux EB10 et EB20)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "les limites à l'intérieur desquelles les règles de conduite, de police ou d'urbanisme particulières aux agglomérations sont applicables",
+  "sources": [
+   {
+    "nom": "Arrêté du 24 novembre 1967, art. 13 (panneaux EB10 et EB20)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+    "type": "officiel",
+    "extrait": "les limites à l'intérieur desquelles les règles de conduite, de police ou d'urbanisme particulières aux agglomérations sont applicables"
+   }
+  ]
+ },
+ {
+  "n": 309,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Arrêté du 24 novembre 1967, art. 7, 3 (ligne d’effet des signaux)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "la ligne d'effet des signaux destinés aux véhicules se situe avant le passage pour piétons s'il précède les feux",
+  "sources": [
+   {
+    "nom": "Arrêté du 24 novembre 1967, art. 7, 3 (ligne d’effet des signaux)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+    "type": "officiel",
+    "extrait": "la ligne d'effet des signaux destinés aux véhicules se situe avant le passage pour piétons s'il précède les feux"
+   }
+  ]
+ },
+ {
+  "n": 310,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Arrêté du 24 novembre 1967, art. 7 (feu jaune clignotant, art. R412-32 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+  "extrait": "se conformer aux indications du panneau de type AB et aux règles de priorité mentionnées ci-dessus qui se trouveraient également applicables",
+  "sources": [
+   {
+    "nom": "Arrêté du 24 novembre 1967, art. 7 (feu jaune clignotant, art. R412-32 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/arrete_du_24_novembre_1967_relatif_a_la_signalisation_des_routes_et_des_autoroutes_-_legifrance.pdf",
+    "type": "officiel",
+    "extrait": "se conformer aux indications du panneau de type AB et aux règles de priorité mentionnées ci-dessus qui se trouveraient également applicables"
+   }
+  ]
+ },
+ {
+  "n": 311,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation.",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation."
+   }
+  ]
+ },
+ {
+  "n": 312,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation.",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation."
+   },
+   {
+    "nom": "En Voiture Simone – Les panneaux de priorité",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/priorite",
+    "type": "sites_de_code",
+    "extrait": "l’usager qui se trouve à votre droite […] a la priorité. Si c’est vous qui êtes à la droite de l’autre voiture, vous êtes prioritaire"
+   }
+  ]
+ },
+ {
+  "n": 313,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation.",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation."
+   },
+   {
+    "nom": "En Voiture Simone – Les panneaux de priorité",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/priorite",
+    "type": "sites_de_code",
+    "extrait": "l’usager qui se trouve à votre droite […] a la priorité. Si c’est vous qui êtes à la droite de l’autre voiture, vous êtes prioritaire"
+   }
+  ]
+ },
+ {
+  "n": 314,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation.",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation."
+   },
+   {
+    "nom": "En Voiture Simone – Les panneaux de priorité",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/priorite",
+    "type": "sites_de_code",
+    "extrait": "l’usager qui se trouve à votre droite […] a la priorité. Si c’est vous qui êtes à la droite de l’autre voiture, vous êtes prioritaire"
+   }
+  ]
+ },
+ {
+  "n": 315,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation.",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation."
+   },
+   {
+    "nom": "En Voiture Simone – Les panneaux de priorité",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/priorite",
+    "type": "sites_de_code",
+    "extrait": "l’usager qui se trouve à votre droite […] a la priorité. Si c’est vous qui êtes à la droite de l’autre voiture, vous êtes prioritaire"
+   }
+  ]
+ },
+ {
+  "n": 316,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation.",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation."
+   },
+   {
+    "nom": "En Voiture Simone – Les panneaux de priorité",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/priorite",
+    "type": "sites_de_code",
+    "extrait": "l’usager qui se trouve à votre droite […] a la priorité. Si c’est vous qui êtes à la droite de l’autre voiture, vous êtes prioritaire"
+   }
+  ]
+ },
+ {
+  "n": 317,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation.",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation."
+   },
+   {
+    "nom": "En Voiture Simone – Les vélos",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/autres-usagers/usagers-vulnerables/2-roues/velos",
+    "type": "sites_de_code",
+    "extrait": "le vélo y est soumis aux mêmes règles de priorité que tout autre usager"
+   },
+   {
+    "nom": "Le Permis Libre – Code de la route à vélo",
+    "url": "https://www.lepermislibre.fr/code-route/code-de-la-route-velo/",
+    "type": "sites_de_code",
+    "extrait": "les règles de priorité, comme la priorité à droite, le panneau cédez le passage et les feux de signalisation"
+   }
+  ]
+ },
+ {
+  "n": 318,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation.",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation."
+   },
+   {
+    "nom": "En Voiture Simone – Changer de direction",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/changer-direction",
+    "type": "sites_de_code",
+    "extrait": "Dans tous les cas, vous devez céder la priorité aux usagers qui arrivent en face (voitures, vélos, motos…)."
+   },
+   {
+    "nom": "En Voiture Simone – Les panneaux de priorité",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/priorite",
+    "type": "sites_de_code",
+    "extrait": "l’usager qui se trouve à votre droite […] a la priorité. Si c’est vous qui êtes à la droite de l’autre voiture, vous êtes prioritaire"
+   }
+  ]
+ },
+ {
+  "n": 319,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-2 E (panneau AB4, art. R415-6 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "les intersections où les conducteurs doivent marquer un temps d’arrêt et céder le passage aux usagers de la route rencontrée",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-2 E (panneau AB4, art. R415-6 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "les intersections où les conducteurs doivent marquer un temps d’arrêt et céder le passage aux usagers de la route rencontrée"
+   }
+  ]
+ },
+ {
+  "n": 320,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-2 E (panneau AB4, art. R415-6 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "les intersections où les conducteurs doivent marquer un temps d’arrêt et céder le passage aux usagers de la route rencontrée",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-2 E (panneau AB4, art. R415-6 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "les intersections où les conducteurs doivent marquer un temps d’arrêt et céder le passage aux usagers de la route rencontrée"
+   }
+  ]
+ },
+ {
+  "n": 321,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 7e partie, art. 117-4 A (ligne complétant le panneau STOP)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+  "extrait": "Elle doit être implantée de façon que les véhicules à l’arrêt aient la meilleure visibilité possible du trafic de la chaussée prioritaire",
+  "sources": [
+   {
+    "nom": "IISR 7e partie, art. 117-4 A (ligne complétant le panneau STOP)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+    "type": "officiel",
+    "extrait": "Elle doit être implantée de façon que les véhicules à l’arrêt aient la meilleure visibilité possible du trafic de la chaussée prioritaire"
+   }
+  ]
+ },
+ {
+  "n": 322,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-2 B (panneau AB2)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "C’est un signal avancé indiquant une intersection avec une route dont les usagers doivent céder le passage (avec ou sans obligation d’arrêt).",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-2 B (panneau AB2)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "C’est un signal avancé indiquant une intersection avec une route dont les usagers doivent céder le passage (avec ou sans obligation d’arrêt)."
+   }
+  ]
+ },
+ {
+  "n": 323,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-2 C (panneau AB3a)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "l’obligation de céder le passage à l’intersection aux usagers de l’autre route sans avoir à marquer obligatoirement l’arrêt",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-2 C (panneau AB3a)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "l’obligation de céder le passage à l’intersection aux usagers de l’autre route sans avoir à marquer obligatoirement l’arrêt"
+   }
+  ]
+ },
+ {
+  "n": 324,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-2 C (panneau AB3a)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "l’obligation de céder le passage à l’intersection aux usagers de l’autre route sans avoir à marquer obligatoirement l’arrêt",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-2 C (panneau AB3a)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "l’obligation de céder le passage à l’intersection aux usagers de l’autre route sans avoir à marquer obligatoirement l’arrêt"
+   },
+   {
+    "nom": "En Voiture Simone – Les panneaux de priorité",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/priorite",
+    "type": "sites_de_code",
+    "extrait": "Le premier demande de ralentir suffisamment pour vérifier que vous pouvez vous engager."
+   }
+  ]
+ },
+ {
+  "n": 325,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-3 et 43 B (panneau AB6, régime « cédez le passage »)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "sur la ou les branches non prioritaires un panneau avancé AB3b et un panneau de position AB3a",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-3 et 43 B (panneau AB6, régime « cédez le passage »)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "sur la ou les branches non prioritaires un panneau avancé AB3b et un panneau de position AB3a"
+   },
+   {
+    "nom": "IISR 3e partie, art. 42-2 C (panneau AB3a)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "l’obligation de céder le passage à l’intersection aux usagers de l’autre route sans avoir à marquer obligatoirement l’arrêt"
+   }
+  ]
+ },
+ {
+  "n": 326,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "En Voiture Simone – Changer de direction",
+  "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/changer-direction",
+  "extrait": "Dans tous les cas, vous devez céder la priorité aux usagers qui arrivent en face (voitures, vélos, motos…).",
+  "sources": [
+   {
+    "nom": "En Voiture Simone – Changer de direction",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/changer-direction",
+    "type": "sites_de_code",
+    "extrait": "Dans tous les cas, vous devez céder la priorité aux usagers qui arrivent en face (voitures, vélos, motos…)."
+   },
+   {
+    "nom": "Ornikar – Feux tricolores",
+    "url": "https://www.ornikar.com/code/cours/signalisation/lumineuse/feu",
+    "type": "sites_de_code",
+    "extrait": "Lorsqu’un véhicule tourne à gauche, il doit nécessairement céder le passage aux usagers venant en sens inverse"
+   }
+  ]
+ },
+ {
+  "n": 327,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-3 B et 43 A (panneau AB7, priorité à droite)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "Le panneau AB7 sans panonceau de distance annonce la perte de priorité au prochain carrefour rencontré.",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-3 B et 43 A (panneau AB7, priorité à droite)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "Le panneau AB7 sans panonceau de distance annonce la perte de priorité au prochain carrefour rencontré."
+   }
+  ]
+ },
+ {
+  "n": 328,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 7e partie, art. 117-1 (art. R110-2 et R415-10 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+  "extrait": "tout conducteur qui l’aborde est tenu de céder le passage aux usagers circulant sur l’anneau",
+  "sources": [
+   {
+    "nom": "IISR 7e partie, art. 117-1 (art. R110-2 et R415-10 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+    "type": "officiel",
+    "extrait": "tout conducteur qui l’aborde est tenu de céder le passage aux usagers circulant sur l’anneau"
+   }
+  ]
+ },
+ {
+  "n": 329,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 7e partie, art. 117-1 (art. R110-2 et R415-10 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+  "extrait": "tout conducteur qui l’aborde est tenu de céder le passage aux usagers circulant sur l’anneau",
+  "sources": [
+   {
+    "nom": "IISR 7e partie, art. 117-1 (art. R110-2 et R415-10 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+    "type": "officiel",
+    "extrait": "tout conducteur qui l’aborde est tenu de céder le passage aux usagers circulant sur l’anneau"
+   }
+  ]
+ },
+ {
+  "n": 330,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 7e partie, art. 117-1 (art. R110-2 et R415-10 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+  "extrait": "tout conducteur qui l’aborde est tenu de céder le passage aux usagers circulant sur l’anneau",
+  "sources": [
+   {
+    "nom": "IISR 7e partie, art. 117-1 (art. R110-2 et R415-10 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+    "type": "officiel",
+    "extrait": "tout conducteur qui l’aborde est tenu de céder le passage aux usagers circulant sur l’anneau"
+   },
+   {
+    "nom": "Ornikar – Rond-point et giratoire",
+    "url": "https://www.ornikar.com/code/cours/circulation/intersections/rond-point-giratoire",
+    "type": "sites_de_code",
+    "extrait": "Si un cycliste circule dans l’anneau avec les voitures, les règles habituelles de priorité s’appliquent."
+   }
+  ]
+ },
+ {
+  "n": 331,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "Ornikar – Rond-point et giratoire",
+  "url": "https://www.ornikar.com/code/cours/circulation/intersections/rond-point-giratoire",
+  "extrait": "Circuler dans un giratoire, c’est rouler sur une chaussée à sens unique, dans le sens inverse des aiguilles d’une montre.",
+  "sources": [
+   {
+    "nom": "Ornikar – Rond-point et giratoire",
+    "url": "https://www.ornikar.com/code/cours/circulation/intersections/rond-point-giratoire",
+    "type": "sites_de_code",
+    "extrait": "Circuler dans un giratoire, c’est rouler sur une chaussée à sens unique, dans le sens inverse des aiguilles d’une montre."
+   },
+   {
+    "nom": "Le Permis Libre – Intersections et priorités",
+    "url": "https://www.lepermislibre.fr/code-route/intersections-et-priorites/",
+    "type": "sites_de_code",
+    "extrait": "obligeant les véhicules à tourner autour d’un îlot central, dans une direction contraire aux aiguilles d’une montre"
+   }
+  ]
+ },
+ {
+  "n": 332,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Fiche Certu « Les traversées des piétons » (art. R415-11 du Code de la route), securite-routiere.gouv.fr",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/fiche2_decret_12112010_traversepieton_cle298117.pdf",
+  "extrait": "Tout conducteur est tenu de céder le passage, au besoin en s’arrêtant, au piéton s’engageant régulièrement dans la traversée d’une chaussée",
+  "sources": [
+   {
+    "nom": "Fiche Certu « Les traversées des piétons » (art. R415-11 du Code de la route), securite-routiere.gouv.fr",
+    "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/fiche2_decret_12112010_traversepieton_cle298117.pdf",
+    "type": "officiel",
+    "extrait": "Tout conducteur est tenu de céder le passage, au besoin en s’arrêtant, au piéton s’engageant régulièrement dans la traversée d’une chaussée"
+   },
+   {
+    "nom": "Ornikar – Rond-point et giratoire",
+    "url": "https://www.ornikar.com/code/cours/circulation/intersections/rond-point-giratoire",
+    "type": "sites_de_code",
+    "extrait": "Les piétons engagés sur un passage balisé sont prioritaires sur les véhicules qui sortent du giratoire."
+   }
+  ]
+ },
+ {
+  "n": 333,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-9 B (art. R411-25 du Code de la route)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "« Les indications des feux de signalisation lumineux prévalent sur celles qui sont données par les signaux routiers réglementant la priorité »",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-9 B (art. R411-25 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "« Les indications des feux de signalisation lumineux prévalent sur celles qui sont données par les signaux routiers réglementant la priorité »"
+   },
+   {
+    "nom": "Ornikar – Feux tricolores",
+    "url": "https://www.ornikar.com/code/cours/signalisation/lumineuse/feu",
+    "type": "sites_de_code",
+    "extrait": "Le feu rouge : arrêt absolu Lorsqu’un feu passe au rouge, il indique une interdiction absolue de franchir la ligne d’effet du signal"
+   }
+  ]
+ },
+ {
+  "n": 334,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 7e partie, art. 117-4 C (ligne d’effet des feux)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+  "extrait": "Elle est tracée lorsque les véhicules doivent s’arrêter en amont des signaux ou en amont d’un passage pour piétons s’il existe.",
+  "sources": [
+   {
+    "nom": "IISR 7e partie, art. 117-4 C (ligne d’effet des feux)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+    "type": "officiel",
+    "extrait": "Elle est tracée lorsque les véhicules doivent s’arrêter en amont des signaux ou en amont d’un passage pour piétons s’il existe."
+   },
+   {
+    "nom": "Ornikar – Feux tricolores",
+    "url": "https://www.ornikar.com/code/cours/signalisation/lumineuse/feu",
+    "type": "sites_de_code",
+    "extrait": "Le feu rouge : arrêt absolu Lorsqu’un feu passe au rouge, il indique une interdiction absolue de franchir la ligne d’effet du signal"
+   }
+  ]
+ },
+ {
+  "n": 335,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "Ornikar – Feux tricolores",
+  "url": "https://www.ornikar.com/code/cours/signalisation/lumineuse/feu",
+  "extrait": "Lorsqu’un véhicule tourne à gauche, il doit nécessairement céder le passage aux usagers venant en sens inverse",
+  "sources": [
+   {
+    "nom": "Ornikar – Feux tricolores",
+    "url": "https://www.ornikar.com/code/cours/signalisation/lumineuse/feu",
+    "type": "sites_de_code",
+    "extrait": "Lorsqu’un véhicule tourne à gauche, il doit nécessairement céder le passage aux usagers venant en sens inverse"
+   },
+   {
+    "nom": "Le Permis Libre – Feux de signalisation",
+    "url": "https://www.lepermislibre.fr/code-route/feux-de-signalisation/",
+    "type": "sites_de_code",
+    "extrait": "si vous tournez à gauche, vous devez cédez le passage aux usagers venant en sens inverse"
+   }
+  ]
+ },
+ {
+  "n": 336,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-9 B 1° (panneaux AB dans un carrefour à feux)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "ces panneaux n’ont d’utilité que […] lorsque l’ensemble de l’installation fonctionne au jaune clignotant général",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-9 B 1° (panneaux AB dans un carrefour à feux)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "ces panneaux n’ont d’utilité que […] lorsque l’ensemble de l’installation fonctionne au jaune clignotant général"
+   },
+   {
+    "nom": "Le Permis Libre – Feux de signalisation",
+    "url": "https://www.lepermislibre.fr/code-route/feux-de-signalisation/",
+    "type": "sites_de_code",
+    "extrait": "qu’un feu jaune clignote […], vous devez suivre les indications des panneaux […] En l’absence de signalisation, appliquez la règle de la priorité à droite"
+   }
+  ]
+ },
+ {
+  "n": 337,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-9 B 1° (panneaux AB dans un carrefour à feux)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "ces panneaux n’ont d’utilité que […] lorsque l’ensemble de l’installation fonctionne au jaune clignotant général",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-9 B 1° (panneaux AB dans un carrefour à feux)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "ces panneaux n’ont d’utilité que […] lorsque l’ensemble de l’installation fonctionne au jaune clignotant général"
+   },
+   {
+    "nom": "IISR 3e partie, art. 42-2 C (panneau AB3a)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "l’obligation de céder le passage à l’intersection aux usagers de l’autre route sans avoir à marquer obligatoirement l’arrêt"
+   }
+  ]
+ },
+ {
+  "n": 338,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 3e partie, art. 42-9 B 1° (panneaux AB dans un carrefour à feux)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+  "extrait": "ces panneaux n’ont d’utilité que […] lorsque l’ensemble de l’installation fonctionne au jaune clignotant général",
+  "sources": [
+   {
+    "nom": "IISR 3e partie, art. 42-9 B 1° (panneaux AB dans un carrefour à feux)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "ces panneaux n’ont d’utilité que […] lorsque l’ensemble de l’installation fonctionne au jaune clignotant général"
+   },
+   {
+    "nom": "IISR 3e partie, art. 42-2 B (panneau AB2)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "C’est un signal avancé indiquant une intersection avec une route dont les usagers doivent céder le passage (avec ou sans obligation d’arrêt)."
+   }
+  ]
+ },
+ {
+  "n": 339,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "En Voiture Simone – Changer de direction",
+  "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/changer-direction",
+  "extrait": "Dans tous les cas, vous devez céder la priorité aux usagers qui arrivent en face (voitures, vélos, motos…).",
+  "sources": [
+   {
+    "nom": "En Voiture Simone – Changer de direction",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/changer-direction",
+    "type": "sites_de_code",
+    "extrait": "Dans tous les cas, vous devez céder la priorité aux usagers qui arrivent en face (voitures, vélos, motos…)."
+   },
+   {
+    "nom": "Ornikar – Feux tricolores",
+    "url": "https://www.ornikar.com/code/cours/signalisation/lumineuse/feu",
+    "type": "sites_de_code",
+    "extrait": "Lorsqu’un véhicule tourne à gauche, il doit nécessairement céder le passage aux usagers venant en sens inverse"
+   }
+  ]
+ },
+ {
+  "n": 340,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "En Voiture Simone – Changer de direction",
+  "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/changer-direction",
+  "extrait": "Dans tous les cas, vous devez céder la priorité aux usagers qui arrivent en face (voitures, vélos, motos…).",
+  "sources": [
+   {
+    "nom": "En Voiture Simone – Changer de direction",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/changer-direction",
+    "type": "sites_de_code",
+    "extrait": "Dans tous les cas, vous devez céder la priorité aux usagers qui arrivent en face (voitures, vélos, motos…)."
+   },
+   {
+    "nom": "Ornikar – Feux tricolores",
+    "url": "https://www.ornikar.com/code/cours/signalisation/lumineuse/feu",
+    "type": "sites_de_code",
+    "extrait": "Lorsqu’un véhicule tourne à gauche, il doit nécessairement céder le passage aux usagers venant en sens inverse"
+   }
+  ]
+ },
+ {
+  "n": 341,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "En Voiture Simone – Changer de direction",
+  "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/changer-direction",
+  "extrait": "Dans tous les cas, vous devez céder la priorité aux usagers qui arrivent en face (voitures, vélos, motos…).",
+  "sources": [
+   {
+    "nom": "En Voiture Simone – Changer de direction",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/changer-direction",
+    "type": "sites_de_code",
+    "extrait": "Dans tous les cas, vous devez céder la priorité aux usagers qui arrivent en face (voitures, vélos, motos…)."
+   },
+   {
+    "nom": "Le Permis Libre – Feux de signalisation",
+    "url": "https://www.lepermislibre.fr/code-route/feux-de-signalisation/",
+    "type": "sites_de_code",
+    "extrait": "si vous tournez à gauche, vous devez cédez le passage aux usagers venant en sens inverse"
+   }
+  ]
+ },
+ {
+  "n": 342,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Fiche Certu « Les traversées des piétons » (art. R415-11 du Code de la route), securite-routiere.gouv.fr",
+  "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/fiche2_decret_12112010_traversepieton_cle298117.pdf",
+  "extrait": "Tout conducteur est tenu de céder le passage, au besoin en s’arrêtant, au piéton s’engageant régulièrement dans la traversée d’une chaussée",
+  "sources": [
+   {
+    "nom": "Fiche Certu « Les traversées des piétons » (art. R415-11 du Code de la route), securite-routiere.gouv.fr",
+    "url": "https://www.securite-routiere.gouv.fr/sites/default/files/2019-02/fiche2_decret_12112010_traversepieton_cle298117.pdf",
+    "type": "officiel",
+    "extrait": "Tout conducteur est tenu de céder le passage, au besoin en s’arrêtant, au piéton s’engageant régulièrement dans la traversée d’une chaussée"
+   }
+  ]
+ },
+ {
+  "n": 343,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "Ornikar – Tout savoir sur l’angle mort",
+  "url": "https://www.ornikar.com/permis/conseils-conduite/controle-visuel/angle-mort",
+  "extrait": "Lorsqu’il tourne à droite ou à gauche, il devra […] contrôler le rétroviseur extérieur ainsi que l’angle mort correspondant à sa direction",
+  "sources": [
+   {
+    "nom": "Ornikar – Tout savoir sur l’angle mort",
+    "url": "https://www.ornikar.com/permis/conseils-conduite/controle-visuel/angle-mort",
+    "type": "sites_de_code",
+    "extrait": "Lorsqu’il tourne à droite ou à gauche, il devra […] contrôler le rétroviseur extérieur ainsi que l’angle mort correspondant à sa direction"
+   },
+   {
+    "nom": "En Voiture Simone – Tourner à droite",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/changer-direction/tourner-a-droite",
+    "type": "sites_de_code",
+    "extrait": "un cycliste ou un deux-roues motorisé peut toujours se faufiler sur votre droite. Par conséquent, vérifiez bien vos angles morts."
+   },
+   {
+    "nom": "Stych – Les contrôles : rétroviseurs et angle mort",
+    "url": "https://www.stych.fr/code/le-conducteur-1/les-controles-285",
+    "type": "sites_de_code",
+    "extrait": "avant d’effectuer un virage ou un dépassement de regarder directement par la vitre, droite ou gauche, selon l’endroit où vous tournez"
+   }
+  ]
+ },
+ {
+  "n": 344,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "En Voiture Simone – Changer de direction",
+  "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/changer-direction",
+  "extrait": "Sur une chaussée à sens unique, effectuez les mêmes manœuvres, mais ici, placez-vous sur la voie la plus à gauche.",
+  "sources": [
+   {
+    "nom": "En Voiture Simone – Changer de direction",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/changer-direction",
+    "type": "sites_de_code",
+    "extrait": "Sur une chaussée à sens unique, effectuez les mêmes manœuvres, mais ici, placez-vous sur la voie la plus à gauche."
+   },
+   {
+    "nom": "Ornikar – Tourner correctement vers la gauche",
+    "url": "https://www.ornikar.com/permis/conseils-conduite/fondamentaux/tourner-gauche",
+    "type": "sites_de_code",
+    "extrait": "l’usager devra placer son véhicule sur la voie de gauche afin de laisser l’accès à la voie de droite"
+   }
+  ]
+ },
+ {
+  "n": 345,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 7e partie, art. 113 A (catégories de marques)",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+  "extrait": "On distingue : 1. - Les lignes longitudinales […] − continues infranchissables",
+  "sources": [
+   {
+    "nom": "IISR 7e partie, art. 113 A (catégories de marques)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_7epartie_vc_20250404.pdf",
+    "type": "officiel",
+    "extrait": "On distingue : 1. - Les lignes longitudinales […] − continues infranchissables"
+   },
+   {
+    "nom": "Le Permis Libre – Franchissement d’une ligne continue",
+    "url": "https://www.lepermislibre.fr/code-route/franchissement-ligne-continue/",
+    "type": "sites_de_code",
+    "extrait": "Le franchissement d’une ligne continue est interdit. Il n’est donc pas possible de dépasser un véhicule"
+   }
+  ]
+ },
+ {
+  "n": 346,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "Le Permis Libre – Véhicules prioritaires",
+  "url": "https://www.lepermislibre.fr/code-route/cours/vehicules-prioritaires",
+  "extrait": "Un véhicule prioritaire peut également surgir lorsque vous êtes au niveau d’une intersection. Dans ce cas, vous devez obligatoirement lui céder la priorité",
+  "sources": [
+   {
+    "nom": "Le Permis Libre – Véhicules prioritaires",
+    "url": "https://www.lepermislibre.fr/code-route/cours/vehicules-prioritaires",
+    "type": "sites_de_code",
+    "extrait": "Un véhicule prioritaire peut également surgir lorsque vous êtes au niveau d’une intersection. Dans ce cas, vous devez obligatoirement lui céder la priorité"
+   },
+   {
+    "nom": "Ornikar – Les priorités",
+    "url": "https://www.ornikar.com/code/cours/circulation/priorite",
+    "type": "sites_de_code",
+    "extrait": "Les véhicules prioritaires : quand leur sirène et leur gyrophare sont actifs, tous les usagers leur cèdent le passage."
+   }
+  ]
+ },
+ {
+  "n": 347,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Le Permis Libre – Véhicules prioritaires",
+  "url": "https://www.lepermislibre.fr/code-route/cours/vehicules-prioritaires",
+  "extrait": "Un véhicule prioritaire peut également surgir lorsque vous êtes au niveau d’une intersection. Dans ce cas, vous devez obligatoirement lui céder la priorité",
+  "sources": [
+   {
+    "nom": "Le Permis Libre – Véhicules prioritaires",
+    "url": "https://www.lepermislibre.fr/code-route/cours/vehicules-prioritaires",
+    "type": "sites_de_code",
+    "extrait": "Un véhicule prioritaire peut également surgir lorsque vous êtes au niveau d’une intersection. Dans ce cas, vous devez obligatoirement lui céder la priorité"
+   },
+   {
+    "nom": "Ornikar – Les priorités",
+    "url": "https://www.ornikar.com/code/cours/circulation/priorite",
+    "type": "sites_de_code",
+    "extrait": "Les véhicules prioritaires : quand leur sirène et leur gyrophare sont actifs, tous les usagers leur cèdent le passage."
+   },
+   {
+    "nom": "IISR 3e partie, art. 43 A et 42-2 A (art. R415-5 du Code de la route)",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_3epartie_vc_201901_cle09e7a7.pdf",
+    "type": "officiel",
+    "extrait": "La priorité à droite est le régime qui s’applique en l’absence de signalisation."
+   }
+  ]
+ },
+ {
+  "n": 348,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "Stych, Circuler par temps de pluie",
+  "url": "https://www.stych.fr/code/la-route-9/circuler-par-temps-de-pluie-265",
+  "extrait": "Suivez toujours ces 3 conseils lorsqu'il pleut : ralentissez ; augmentez vos distances de sécurité",
+  "sources": [
+   {
+    "nom": "Stych, Circuler par temps de pluie",
+    "url": "https://www.stych.fr/code/la-route-9/circuler-par-temps-de-pluie-265",
+    "type": "sites_de_code",
+    "extrait": "Suivez toujours ces 3 conseils lorsqu'il pleut : ralentissez ; augmentez vos distances de sécurité",
+    "autres": [
+     {
+      "nom": "Le Permis Libre, Distance de sécurité",
+      "url": "https://www.lepermislibre.fr/code-route/distance-securite-calcul/",
+      "extrait": "Sur chaussée mouillée par exemple, on doit multiplier sa distance de sécurité par 1,5."
+     }
+    ]
+   },
+   {
+    "nom": "Le Permis Libre, Distance de sécurité",
+    "url": "https://www.lepermislibre.fr/code-route/distance-securite-calcul/",
+    "extrait": "Sur chaussée mouillée par exemple, on doit multiplier sa distance de sécurité par 1,5."
+   }
+  ]
+ },
+ {
+  "n": 349,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Vitesse au volant",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+  "extrait": "En cas de visibilité inférieure à 50 m […] Route à double-sens, sans séparateur central 50 km/h",
+  "sources": [
+   {
+    "nom": "Service-Public, Vitesse au volant",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+    "type": "officiel",
+    "extrait": "En cas de visibilité inférieure à 50 m […] Route à double-sens, sans séparateur central 50 km/h"
+   }
+  ]
+ },
+ {
+  "n": 350,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "Stych, Circuler par temps de brouillard",
+  "url": "https://www.stych.fr/code/la-route-9/circuler-par-temps-de-brouillard-266",
+  "extrait": "Par temps de brouillard, vous DEVEZ circuler avec vos feux de croisement.",
+  "sources": [
+   {
+    "nom": "Stych, Circuler par temps de brouillard",
+    "url": "https://www.stych.fr/code/la-route-9/circuler-par-temps-de-brouillard-266",
+    "type": "sites_de_code",
+    "extrait": "Par temps de brouillard, vous DEVEZ circuler avec vos feux de croisement.",
+    "autres": [
+     {
+      "nom": "Le Permis Libre, Feux de brouillard",
+      "url": "https://www.lepermislibre.fr/code-route/feux-brouillard-avant-arriere/",
+      "extrait": "Dès que la visibilité est altérée, il convient d’allumer les feux de croisement."
+     }
+    ]
+   },
+   {
+    "nom": "Le Permis Libre, Feux de brouillard",
+    "url": "https://www.lepermislibre.fr/code-route/feux-brouillard-avant-arriere/",
+    "extrait": "Dès que la visibilité est altérée, il convient d’allumer les feux de croisement."
+   }
+  ]
+ },
+ {
+  "n": 351,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "Stych, Circuler par temps de brouillard",
+  "url": "https://www.stych.fr/code/la-route-9/circuler-par-temps-de-brouillard-266",
+  "extrait": "Les dépassements sont interdits quand la chaussée est à double sens de circulation",
+  "sources": [
+   {
+    "nom": "Stych, Circuler par temps de brouillard",
+    "url": "https://www.stych.fr/code/la-route-9/circuler-par-temps-de-brouillard-266",
+    "type": "sites_de_code",
+    "extrait": "Les dépassements sont interdits quand la chaussée est à double sens de circulation",
+    "autres": [
+     {
+      "nom": "En Voiture Simone, Le dépassement",
+      "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/depassement",
+      "extrait": "tout dépassement est interdit dès que la visibilité n’est pas suffisante (virages, par temps de pluie ou de brouillard"
+     }
+    ]
+   },
+   {
+    "nom": "En Voiture Simone, Le dépassement",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/depassement",
+    "extrait": "tout dépassement est interdit dès que la visibilité n’est pas suffisante (virages, par temps de pluie ou de brouillard"
+   }
+  ]
+ },
+ {
+  "n": 352,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "Stych, Neige et verglas",
+  "url": "https://www.stych.fr/code/la-route-9/neige-et-verglas-267",
+  "extrait": "ralentissez de moitié […] anticipez au maximum vos freinages ; freinez en douceur et évitez tout mouvement brusque",
+  "sources": [
+   {
+    "nom": "Stych, Neige et verglas",
+    "url": "https://www.stych.fr/code/la-route-9/neige-et-verglas-267",
+    "type": "sites_de_code",
+    "extrait": "ralentissez de moitié […] anticipez au maximum vos freinages ; freinez en douceur et évitez tout mouvement brusque",
+    "autres": [
+     {
+      "nom": "Le Permis Libre, Phares de neige",
+      "url": "https://www.lepermislibre.fr/code-route/phares-neige/",
+      "extrait": "pensez à bien ralentir et à adopter une allure stable. Augmentez votre distance de sécurité"
+     }
+    ]
+   },
+   {
+    "nom": "Le Permis Libre, Phares de neige",
+    "url": "https://www.lepermislibre.fr/code-route/phares-neige/",
+    "extrait": "pensez à bien ralentir et à adopter une allure stable. Augmentez votre distance de sécurité"
+   }
+  ]
+ },
+ {
+  "n": 353,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "Le Permis Libre, Quels feux allumer la nuit",
+  "url": "https://www.lepermislibre.fr/code-route/quels-feux-allumer-nuit/",
+  "extrait": "Les feux de route doivent être activés en agglomération et hors-agglomération quand la chaussée n’est pas éclairée",
+  "sources": [
+   {
+    "nom": "Le Permis Libre, Quels feux allumer la nuit",
+    "url": "https://www.lepermislibre.fr/code-route/quels-feux-allumer-nuit/",
+    "type": "sites_de_code",
+    "extrait": "Les feux de route doivent être activés en agglomération et hors-agglomération quand la chaussée n’est pas éclairée",
+    "autres": [
+     {
+      "nom": "Ornikar, Les feux de route",
+      "url": "https://www.ornikar.com/code/cours/mecanique-vehicule/feux/route",
+      "extrait": "Les feux de route servent à éclairer la trajectoire des conducteurs lorsque ces derniers circulent de nuit"
+     }
+    ]
+   },
+   {
+    "nom": "Ornikar, Les feux de route",
+    "url": "https://www.ornikar.com/code/cours/mecanique-vehicule/feux/route",
+    "extrait": "Les feux de route servent à éclairer la trajectoire des conducteurs lorsque ces derniers circulent de nuit"
+   }
+  ]
+ },
+ {
+  "n": 354,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "Stych, Circuler la nuit",
+  "url": "https://www.stych.fr/code/la-route-9/circuler-la-nuit-264",
+  "extrait": "Sur les chaussées éclairées en agglomération, je DOIS rouler en feux de position et je PEUX rouler en feux de croisement",
+  "sources": [
+   {
+    "nom": "Stych, Circuler la nuit",
+    "url": "https://www.stych.fr/code/la-route-9/circuler-la-nuit-264",
+    "type": "sites_de_code",
+    "extrait": "Sur les chaussées éclairées en agglomération, je DOIS rouler en feux de position et je PEUX rouler en feux de croisement",
+    "autres": [
+     {
+      "nom": "Le Permis Libre, Quels feux allumer la nuit",
+      "url": "https://www.lepermislibre.fr/code-route/quels-feux-allumer-nuit/",
+      "extrait": "En agglomération uniquement, si l’éclairage public vous assure une visibilité suffisante, il est possible de n’allumer que les feux de position"
+     }
+    ]
+   },
+   {
+    "nom": "Le Permis Libre, Quels feux allumer la nuit",
+    "url": "https://www.lepermislibre.fr/code-route/quels-feux-allumer-nuit/",
+    "extrait": "En agglomération uniquement, si l’éclairage public vous assure une visibilité suffisante, il est possible de n’allumer que les feux de position"
+   }
+  ]
+ },
+ {
+  "n": 355,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Appels de phare",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F35345",
+  "extrait": "De nuit, vous devez faire un appel de phare pour avertir les autres usagers de la route d'un danger immédiat.",
+  "sources": [
+   {
+    "nom": "Service-Public, Appels de phare",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F35345",
+    "type": "officiel",
+    "extrait": "De nuit, vous devez faire un appel de phare pour avertir les autres usagers de la route d'un danger immédiat."
+   }
+  ]
+ },
+ {
+  "n": 356,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Barème des points",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F31551",
+  "extrait": "Non-respect des distances de sécurité entre deux véhicules Contravention de 4 è classe 3",
+  "sources": [
+   {
+    "nom": "Service-Public, Barème des points",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F31551",
+    "type": "officiel",
+    "extrait": "Non-respect des distances de sécurité entre deux véhicules Contravention de 4 è classe 3"
+   }
+  ]
+ },
+ {
+  "n": 357,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Barème des points",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F31551",
+  "extrait": "Chevauchement de ligne continue 4 è classe 1 Franchissement de ligne continue 4 è classe 3",
+  "sources": [
+   {
+    "nom": "Service-Public, Barème des points",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F31551",
+    "type": "officiel",
+    "extrait": "Chevauchement de ligne continue 4 è classe 1 Franchissement de ligne continue 4 è classe 3"
+   }
+  ]
+ },
+ {
+  "n": 358,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "En Voiture Simone, Le dépassement",
+  "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/depassement",
+  "extrait": "tout dépassement est interdit dès que la visibilité n’est pas suffisante (virages, par temps de pluie ou de brouillard",
+  "sources": [
+   {
+    "nom": "En Voiture Simone, Le dépassement",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/depassement",
+    "type": "sites_de_code",
+    "extrait": "tout dépassement est interdit dès que la visibilité n’est pas suffisante (virages, par temps de pluie ou de brouillard",
+    "autres": [
+     {
+      "nom": "Stych, Signalisation horizontale",
+      "url": "https://www.stych.fr/code/regles-de-circulation-8/signalisation-horizontale-222",
+      "extrait": "La ligne continue : Il est strictement interdit de la franchir. Tout chevauchement de véhicules à moteur est également formellement interdit."
+     }
+    ]
+   },
+   {
+    "nom": "Stych, Signalisation horizontale",
+    "url": "https://www.stych.fr/code/regles-de-circulation-8/signalisation-horizontale-222",
+    "extrait": "La ligne continue : Il est strictement interdit de la franchir. Tout chevauchement de véhicules à moteur est également formellement interdit."
+   }
+  ]
+ },
+ {
+  "n": 359,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Klaxon",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F35343",
+  "extrait": "De jour et hors agglomération, vous pouvez utiliser le klaxon […] pour signaler votre présence à l'approche d'un virage sans visibilité.",
+  "sources": [
+   {
+    "nom": "Service-Public, Klaxon",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F35343",
+    "type": "officiel",
+    "extrait": "De jour et hors agglomération, vous pouvez utiliser le klaxon […] pour signaler votre présence à l'approche d'un virage sans visibilité."
+   }
+  ]
+ },
+ {
+  "n": 360,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue des panneaux (IISR), B3",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "B3 Interdiction de dépasser tous les véhicules à moteur autres que ceux à deux roues sans side-car",
+  "sources": [
+   {
+    "nom": "Catalogue des panneaux (IISR), B3",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "B3 Interdiction de dépasser tous les véhicules à moteur autres que ceux à deux roues sans side-car"
+   }
+  ]
+ },
+ {
+  "n": 361,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "Stych, Signalisation horizontale",
+  "url": "https://www.stych.fr/code/regles-de-circulation-8/signalisation-horizontale-222",
+  "extrait": "il est désormais possible de chevaucher une ligne continue pour dépasser un cycliste, lorsque la visibilité du conducteur est suffisante.",
+  "sources": [
+   {
+    "nom": "Stych, Signalisation horizontale",
+    "url": "https://www.stych.fr/code/regles-de-circulation-8/signalisation-horizontale-222",
+    "type": "sites_de_code",
+    "extrait": "il est désormais possible de chevaucher une ligne continue pour dépasser un cycliste, lorsque la visibilité du conducteur est suffisante.",
+    "autres": [
+     {
+      "nom": "En Voiture Simone, Le dépassement",
+      "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/depassement",
+      "extrait": "La seule exception possible est le dépassement d’un cycliste sur une route à double sens et uniquement si la visibilité est suffisante."
+     }
+    ]
+   },
+   {
+    "nom": "En Voiture Simone, Le dépassement",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/depassement",
+    "extrait": "La seule exception possible est le dépassement d’un cycliste sur une route à double sens et uniquement si la visibilité est suffisante."
+   }
+  ]
+ },
+ {
+  "n": 362,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "En Voiture Simone, Le dépassement",
+  "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/depassement",
+  "extrait": "Pour garantir la sécurité du cycliste, vous devez ralentir votre vitesse lorsque vous doublez ou croisez un vélo.",
+  "sources": [
+   {
+    "nom": "En Voiture Simone, Le dépassement",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/circulation/depassement",
+    "type": "sites_de_code",
+    "extrait": "Pour garantir la sécurité du cycliste, vous devez ralentir votre vitesse lorsque vous doublez ou croisez un vélo.",
+    "autres": [
+     {
+      "nom": "Stych, Les diverses catégories d’usagers",
+      "url": "https://www.stych.fr/code/autres-usagers-3/les-diverses-categories-d-usagers-275",
+      "extrait": "pour dépasser tous ces usagers, vous devez laisser 1 mètre en ville et 1,50 mètres hors agglomération"
+     }
+    ]
+   },
+   {
+    "nom": "Stych, Les diverses catégories d’usagers",
+    "url": "https://www.stych.fr/code/autres-usagers-3/les-diverses-categories-d-usagers-275",
+    "extrait": "pour dépasser tous ces usagers, vous devez laisser 1 mètre en ville et 1,50 mètres hors agglomération"
+   }
+  ]
+ },
+ {
+  "n": 363,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Vitesse au volant",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+  "extrait": "Vous devez réduire votre vitesse […] Lors du croisement ou du dépassement […] de cyclistes isolés ou en groupe",
+  "sources": [
+   {
+    "nom": "Service-Public, Vitesse au volant",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+    "type": "officiel",
+    "extrait": "Vous devez réduire votre vitesse […] Lors du croisement ou du dépassement […] de cyclistes isolés ou en groupe"
+   }
+  ]
+ },
+ {
+  "n": 364,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "En Voiture Simone, Les piétons",
+  "url": "https://www.envoituresimone.com/code-de-la-route/cours/autres-usagers/usagers-vulnerables/pietons",
+  "extrait": "le dépassement des piétons se fait en respectant une distance latérale de sécurité […] 1 mètre en agglomération ; 1,50 m hors agglomération.",
+  "sources": [
+   {
+    "nom": "En Voiture Simone, Les piétons",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/autres-usagers/usagers-vulnerables/pietons",
+    "type": "sites_de_code",
+    "extrait": "le dépassement des piétons se fait en respectant une distance latérale de sécurité […] 1 mètre en agglomération ; 1,50 m hors agglomération.",
+    "autres": [
+     {
+      "nom": "Le Permis Libre, Code de la route pour les piétons",
+      "url": "https://www.lepermislibre.fr/code-route/code-de-la-route-pietons/",
+      "extrait": "les mêmes qu’en cas de dépassement de cyclistes, à savoir : 1 mètre en agglomération, 1,50 mètre hors agglomération."
+     }
+    ]
+   },
+   {
+    "nom": "Le Permis Libre, Code de la route pour les piétons",
+    "url": "https://www.lepermislibre.fr/code-route/code-de-la-route-pietons/",
+    "extrait": "les mêmes qu’en cas de dépassement de cyclistes, à savoir : 1 mètre en agglomération, 1,50 mètre hors agglomération."
+   }
+  ]
+ },
+ {
+  "n": 365,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Klaxon",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F35343",
+  "extrait": "En ville, vous pouvez utiliser le klaxon (avertisseur sonore) uniquement en cas de danger immédiat.",
+  "sources": [
+   {
+    "nom": "Service-Public, Klaxon",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F35343",
+    "type": "officiel",
+    "extrait": "En ville, vous pouvez utiliser le klaxon (avertisseur sonore) uniquement en cas de danger immédiat.",
+    "autres": [
+     {
+      "nom": "Le Permis Libre, Klaxon",
+      "url": "https://www.lepermislibre.fr/code-route/klaxon-definition-utilisation/",
+      "extrait": "En agglomération, l’usage de l’avertisseur sonore n’est autorisé qu’en cas de danger immédiat."
+     }
+    ]
+   },
+   {
+    "nom": "Le Permis Libre, Klaxon",
+    "url": "https://www.lepermislibre.fr/code-route/klaxon-definition-utilisation/",
+    "extrait": "En agglomération, l’usage de l’avertisseur sonore n’est autorisé qu’en cas de danger immédiat."
+   }
+  ]
+ },
+ {
+  "n": 366,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 4e partie, art. 59 d",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+  "extrait": "Les prescriptions portées par l’ensemble des deux panneaux s’appliquent alors à toutes les voies jusqu’à indication d’une vitesse maximale autorisée différente",
+  "sources": [
+   {
+    "nom": "IISR 4e partie, art. 59 d",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+    "type": "officiel",
+    "extrait": "Les prescriptions portées par l’ensemble des deux panneaux s’appliquent alors à toutes les voies jusqu’à indication d’une vitesse maximale autorisée différente"
+   }
+  ]
+ },
+ {
+  "n": 367,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Vitesse au volant",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+  "extrait": "Route à double-sens, sans séparateur central 80 km/h",
+  "sources": [
+   {
+    "nom": "Service-Public, Vitesse au volant",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19460",
+    "type": "officiel",
+    "extrait": "Route à double-sens, sans séparateur central 80 km/h"
+   }
+  ]
+ },
+ {
+  "n": 368,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "IISR 4e partie, art. 63-1",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+  "extrait": "la signalisation des sorties de zones 30 est assurée par un panneau B51 de sortie de zone",
+  "sources": [
+   {
+    "nom": "IISR 4e partie, art. 63-1",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/iisr_4epartie_vc_20220613_cle22c5b5.pdf",
+    "type": "officiel",
+    "extrait": "la signalisation des sorties de zones 30 est assurée par un panneau B51 de sortie de zone"
+   }
+  ]
+ },
+ {
+  "n": 369,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue des panneaux (IISR), B51 ; Service-Public F19460",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "B51 Sortie d'une zone à vitesse limitée à 30 km/h",
+  "sources": [
+   {
+    "nom": "Catalogue des panneaux (IISR), B51 ; Service-Public F19460",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "B51 Sortie d'une zone à vitesse limitée à 30 km/h"
+   }
+  ]
+ },
+ {
+  "n": 370,
+  "verdict": "conforme_sites",
+  "etape": 3,
+  "source": "Le Permis Libre, Code de la route pour les piétons",
+  "url": "https://www.lepermislibre.fr/code-route/code-de-la-route-pietons/",
+  "extrait": "Ralentir ou s’arrêter quand la situation est incertaine […] des enfants qui peuvent brusquement traverser la route sans regarder",
+  "sources": [
+   {
+    "nom": "Le Permis Libre, Code de la route pour les piétons",
+    "url": "https://www.lepermislibre.fr/code-route/code-de-la-route-pietons/",
+    "type": "sites_de_code",
+    "extrait": "Ralentir ou s’arrêter quand la situation est incertaine […] des enfants qui peuvent brusquement traverser la route sans regarder",
+    "autres": [
+     {
+      "nom": "En Voiture Simone, Les piétons",
+      "url": "https://www.envoituresimone.com/code-de-la-route/cours/autres-usagers/usagers-vulnerables/pietons",
+      "extrait": "des réactions parfois vives et imprévisibles, notamment des enfants"
+     }
+    ]
+   },
+   {
+    "nom": "En Voiture Simone, Les piétons",
+    "url": "https://www.envoituresimone.com/code-de-la-route/cours/autres-usagers/usagers-vulnerables/pietons",
+    "extrait": "des réactions parfois vives et imprévisibles, notamment des enfants"
+   }
+  ]
+ },
+ {
+  "n": 371,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Barème des points",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F31551",
+  "extrait": "Ne pas s'arrêter à un feu rouge est une contravention de 4 e classe sanctionnée par un retrait de 4 points du permis.",
+  "sources": [
+   {
+    "nom": "Service-Public, Barème des points",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F31551",
+    "type": "officiel",
+    "extrait": "Ne pas s'arrêter à un feu rouge est une contravention de 4 e classe sanctionnée par un retrait de 4 points du permis."
+   }
+  ]
+ },
+ {
+  "n": 372,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Barème des points",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F31551",
+  "extrait": "Non-respect de l'obligation de céder le passage au piéton s'engageant régulièrement dans la traversée d'une chaussée",
+  "sources": [
+   {
+    "nom": "Service-Public, Barème des points",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F31551",
+    "type": "officiel",
+    "extrait": "Non-respect de l'obligation de céder le passage au piéton s'engageant régulièrement dans la traversée d'une chaussée"
+   }
+  ]
+ },
+ {
+  "n": 373,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Catalogue des panneaux (IISR), A4",
+  "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+  "extrait": "A4 Chaussée particulièrement glissante",
+  "sources": [
+   {
+    "nom": "Catalogue des panneaux (IISR), A4",
+    "url": "https://equipementsdelaroute.cerema.fr/IMG/pdf/panneaux_iisr_septembre_2025.pdf",
+    "type": "officiel",
+    "extrait": "A4 Chaussée particulièrement glissante",
+    "autres": [
+     {
+      "nom": "Stych, Circuler par temps de pluie",
+      "url": "https://www.stych.fr/code/la-route-9/circuler-par-temps-de-pluie-265",
+      "extrait": "ralentissez ; augmentez vos distances de sécurité […] ne freinez jamais brusquement."
+     }
+    ]
+   },
+   {
+    "nom": "Stych, Circuler par temps de pluie",
+    "url": "https://www.stych.fr/code/la-route-9/circuler-par-temps-de-pluie-265",
+    "extrait": "ralentissez ; augmentez vos distances de sécurité […] ne freinez jamais brusquement."
+   }
+  ]
+ },
+ {
+  "n": 374,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Permis probatoire",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2390",
+  "extrait": "Sans formation complémentaire Votre permis probatoire dure 2 ans […] Votre permis est augmenté de 3 points à la fin de chaque année probatoire.",
+  "sources": [
+   {
+    "nom": "Service-Public, Permis probatoire",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2390",
+    "type": "officiel",
+    "extrait": "Sans formation complémentaire Votre permis probatoire dure 2 ans […] Votre permis est augmenté de 3 points à la fin de chaque année probatoire."
+   }
+  ]
+ },
+ {
+  "n": 375,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Permis probatoire",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2390",
+  "extrait": "Votre permis probatoire dure 3 ans […] Votre permis est augmenté de 2 points à la fin de chaque année probatoire.",
+  "sources": [
+   {
+    "nom": "Service-Public, Permis probatoire",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2390",
+    "type": "officiel",
+    "extrait": "Votre permis probatoire dure 3 ans […] Votre permis est augmenté de 2 points à la fin de chaque année probatoire."
+   }
+  ]
+ },
+ {
+  "n": 376,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Permis probatoire",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2390",
+  "extrait": "Elle a lieu entre le 6e et le 12e mois après l'obtention du permis de conduire et dure 1 jour (7 heures).",
+  "sources": [
+   {
+    "nom": "Service-Public, Permis probatoire",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2390",
+    "type": "officiel",
+    "extrait": "Elle a lieu entre le 6e et le 12e mois après l'obtention du permis de conduire et dure 1 jour (7 heures)."
+   }
+  ]
+ },
+ {
+  "n": 377,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Récupération des points",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F1685",
+  "extrait": "Si vous commettez une infraction grave (4e ou 5e classe ou délit), vous récupérez vos points au bout de 3 ans.",
+  "sources": [
+   {
+    "nom": "Service-Public, Récupération des points",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F1685",
+    "type": "officiel",
+    "extrait": "Si vous commettez une infraction grave (4e ou 5e classe ou délit), vous récupérez vos points au bout de 3 ans."
+   }
+  ]
+ },
+ {
+  "n": 378,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Rétention du permis",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F1040",
+  "extrait": "La rétention du permis dure 72 heures maximum.",
+  "sources": [
+   {
+    "nom": "Service-Public, Rétention du permis",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F1040",
+    "type": "officiel",
+    "extrait": "La rétention du permis dure 72 heures maximum."
+   }
+  ]
+ },
+ {
+  "n": 379,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Passer le code (ETG)",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F33694",
+  "extrait": "Vous pouvez préparer l' ETG : […] à partir de 16 ans pour la formule classique.",
+  "sources": [
+   {
+    "nom": "Service-Public, Passer le code (ETG)",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F33694",
+    "type": "officiel",
+    "extrait": "Vous pouvez préparer l' ETG : […] à partir de 16 ans pour la formule classique."
+   }
+  ]
+ },
+ {
+  "n": 380,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Alerter la police ou la gendarmerie",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F33953",
+  "extrait": "Composez le 17 en cas d'urgence concernant un accident de la route, un trouble à l'ordre public ou une infraction pénale.",
+  "sources": [
+   {
+    "nom": "Service-Public, Alerter la police ou la gendarmerie",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F33953",
+    "type": "officiel",
+    "extrait": "Composez le 17 en cas d'urgence concernant un accident de la route, un trouble à l'ordre public ou une infraction pénale."
+   }
+  ]
+ },
+ {
+  "n": 381,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Équipements obligatoires",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19459",
+  "extrait": "Vous n'êtes pas obligé de mettre en place le triangle si vous estimez que cela peut mettre votre vie en danger.",
+  "sources": [
+   {
+    "nom": "Service-Public, Équipements obligatoires",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19459",
+    "type": "officiel",
+    "extrait": "Vous n'êtes pas obligé de mettre en place le triangle si vous estimez que cela peut mettre votre vie en danger."
+   }
+  ]
+ },
+ {
+  "n": 382,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Croix-Rouge française, Brûlure",
+  "url": "https://www.croix-rouge.fr/les-gestes-de-premiers-secours/que-faire-en-cas-de-brulure",
+  "extrait": "refroidir la zone touchée sous l'eau tempérée (15-25°C) pendant au moins 10 minutes et idéalement 20 minutes",
+  "sources": [
+   {
+    "nom": "Croix-Rouge française, Brûlure",
+    "url": "https://www.croix-rouge.fr/les-gestes-de-premiers-secours/que-faire-en-cas-de-brulure",
+    "type": "officiel",
+    "extrait": "refroidir la zone touchée sous l'eau tempérée (15-25°C) pendant au moins 10 minutes et idéalement 20 minutes"
+   }
+  ]
+ },
+ {
+  "n": 383,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Croix-Rouge française, L’inconscience",
+  "url": "https://www.croix-rouge.fr/les-gestes-de-premiers-secours/inconscience",
+  "extrait": "Ce risque peut être écarté en basculant la tête de la victime en arrière et en soulevant son menton.",
+  "sources": [
+   {
+    "nom": "Croix-Rouge française, L’inconscience",
+    "url": "https://www.croix-rouge.fr/les-gestes-de-premiers-secours/inconscience",
+    "type": "officiel",
+    "extrait": "Ce risque peut être écarté en basculant la tête de la victime en arrière et en soulevant son menton."
+   }
+  ]
+ },
+ {
+  "n": 384,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Constat amiable",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2149",
+  "extrait": "il est important de noter le numéro de sa plaque d'immatriculation et de prévenir la police ou la gendarmerie.",
+  "sources": [
+   {
+    "nom": "Service-Public, Constat amiable",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2149",
+    "type": "officiel",
+    "extrait": "il est important de noter le numéro de sa plaque d'immatriculation et de prévenir la police ou la gendarmerie."
+   }
+  ]
+ },
+ {
+  "n": 385,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Constat amiable",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2149",
+  "extrait": "Le e-constat ne peut pas être utilisé dans les cas suivants : […] Plus de 2 véhicules impliqués […] Présence de blessé",
+  "sources": [
+   {
+    "nom": "Service-Public, Constat amiable",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2149",
+    "type": "officiel",
+    "extrait": "Le e-constat ne peut pas être utilisé dans les cas suivants : […] Plus de 2 véhicules impliqués […] Présence de blessé"
+   }
+  ]
+ },
+ {
+  "n": 386,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Drogue au volant",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2886",
+  "extrait": "6 points sont retirés de votre permis de conduire, ou 9 points si vous conduisez aussi sous l’emprise de l’alcool.",
+  "sources": [
+   {
+    "nom": "Service-Public, Drogue au volant",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2886",
+    "type": "officiel",
+    "extrait": "6 points sont retirés de votre permis de conduire, ou 9 points si vous conduisez aussi sous l’emprise de l’alcool."
+   }
+  ]
+ },
+ {
+  "n": 387,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Drogue au volant",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2886",
+  "extrait": "Il est interdit de conduire après usage de stupéfiants : cannabis, ecstasy, cocaïne […] L'interdiction s'applique quelle que soit la quantité",
+  "sources": [
+   {
+    "nom": "Service-Public, Drogue au volant",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2886",
+    "type": "officiel",
+    "extrait": "Il est interdit de conduire après usage de stupéfiants : cannabis, ecstasy, cocaïne […] L'interdiction s'applique quelle que soit la quantité"
+   }
+  ]
+ },
+ {
+  "n": 388,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Drogue au volant",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2886",
+  "extrait": "En cas de conduite accompagnée, l'interdiction concerne également la personne qui accompagne l'élève conducteur.",
+  "sources": [
+   {
+    "nom": "Service-Public, Drogue au volant",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2886",
+    "type": "officiel",
+    "extrait": "En cas de conduite accompagnée, l'interdiction concerne également la personne qui accompagne l'élève conducteur."
+   }
+  ]
+ },
+ {
+  "n": 389,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Fumer en voiture",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F33513",
+  "extrait": "en présence d'un mineur, fumer en voiture est interdit. L'interdiction s'applique à tous les occupants du véhicule.",
+  "sources": [
+   {
+    "nom": "Service-Public, Fumer en voiture",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F33513",
+    "type": "officiel",
+    "extrait": "en présence d'un mineur, fumer en voiture est interdit. L'interdiction s'applique à tous les occupants du véhicule."
+   }
+  ]
+ },
+ {
+  "n": 390,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Barème des points",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F31551",
+  "extrait": "Refus de se soumettre à une vérification de présence d'alcool dans le sang Délit 6",
+  "sources": [
+   {
+    "nom": "Service-Public, Barème des points",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F31551",
+    "type": "officiel",
+    "extrait": "Refus de se soumettre à une vérification de présence d'alcool dans le sang Délit 6"
+   }
+  ]
+ },
+ {
+  "n": 391,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Restrictions du permis",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F32927",
+  "extrait": "Par exemple, le code 01 indique que vous devez porter des lunettes ou des lentilles pour conduire.",
+  "sources": [
+   {
+    "nom": "Service-Public, Restrictions du permis",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F32927",
+    "type": "officiel",
+    "extrait": "Par exemple, le code 01 indique que vous devez porter des lunettes ou des lentilles pour conduire."
+   }
+  ]
+ },
+ {
+  "n": 392,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Ceinture et siège auto",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F628",
+  "extrait": "L'enfant est installé dos à la route, dans un système homologué de retenue […] L'airbag (coussin gonflable de sécurité) doit être désactivé.",
+  "sources": [
+   {
+    "nom": "Service-Public, Ceinture et siège auto",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F628",
+    "type": "officiel",
+    "extrait": "L'enfant est installé dos à la route, dans un système homologué de retenue […] L'airbag (coussin gonflable de sécurité) doit être désactivé."
+   }
+  ]
+ },
+ {
+  "n": 393,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Ceinture et siège auto",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F628",
+  "extrait": "Le conducteur qui ne respecte pas ces règles est sanctionné par une amende pouvant aller jusqu'à 750 €.",
+  "sources": [
+   {
+    "nom": "Service-Public, Ceinture et siège auto",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F628",
+    "type": "officiel",
+    "extrait": "Le conducteur qui ne respecte pas ces règles est sanctionné par une amende pouvant aller jusqu'à 750 €."
+   }
+  ]
+ },
+ {
+  "n": 394,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Ceinture et siège auto",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F628",
+  "extrait": "Le conducteur non attaché risque en plus un retrait de 3 points sur son permis.",
+  "sources": [
+   {
+    "nom": "Service-Public, Ceinture et siège auto",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F628",
+    "type": "officiel",
+    "extrait": "Le conducteur non attaché risque en plus un retrait de 3 points sur son permis."
+   }
+  ]
+ },
+ {
+  "n": 395,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Contrôle technique d’une voiture",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2878",
+  "extrait": "Le résultat favorable […] du contrôle technique périodique est valable 2 ans pour un véhicule de catégorie M1",
+  "sources": [
+   {
+    "nom": "Service-Public, Contrôle technique d’une voiture",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2878",
+    "type": "officiel",
+    "extrait": "Le résultat favorable […] du contrôle technique périodique est valable 2 ans pour un véhicule de catégorie M1"
+   }
+  ]
+ },
+ {
+  "n": 396,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Contrôle technique d’une voiture",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2878",
+  "extrait": "La validité du contrôle est limitée au jour du contrôle si le résultat est défavorable pour défaillance critique (R).",
+  "sources": [
+   {
+    "nom": "Service-Public, Contrôle technique d’une voiture",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F2878",
+    "type": "officiel",
+    "extrait": "La validité du contrôle est limitée au jour du contrôle si le résultat est défavorable pour défaillance critique (R)."
+   }
+  ]
+ },
+ {
+  "n": 397,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Équipements obligatoires",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19459",
+  "extrait": "Entre le 1 er novembre et le 31 mars, dans certaines communes des massifs montagneux, il est obligatoire d'équiper sa voiture en pneus hiver",
+  "sources": [
+   {
+    "nom": "Service-Public, Équipements obligatoires",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19459",
+    "type": "officiel",
+    "extrait": "Entre le 1 er novembre et le 31 mars, dans certaines communes des massifs montagneux, il est obligatoire d'équiper sa voiture en pneus hiver"
+   }
+  ]
+ },
+ {
+  "n": 398,
+  "verdict": "conforme",
+  "etape": 3,
+  "source": "Service-Public, Équipements obligatoires",
+  "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19459",
+  "extrait": "transmission régulière de la lumière d'au moins 70 %",
+  "sources": [
+   {
+    "nom": "Service-Public, Équipements obligatoires",
+    "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F19459",
+    "type": "officiel",
+    "extrait": "transmission régulière de la lumière d'au moins 70 %"
+   }
+  ]
  }
 ]
