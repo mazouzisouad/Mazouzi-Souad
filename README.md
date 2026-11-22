@@ -1,4 +1,4 @@
-# Moto Planning — gestion moto pour auto-écoles
+# Go Moto — gestion moto pour auto-écoles
 
 Application web (fonctionne sur ordinateur, tablette et téléphone) pour gérer la formation moto
 de plusieurs auto-écoles avec deux moniteurs (ou plus).

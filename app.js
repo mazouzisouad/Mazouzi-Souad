@@ -1,5 +1,5 @@
 /* =====================================================================
-   Moto Planning — planning moto multi-agences
+   Go Moto — planning moto multi-agences
    Planning en grille (comme AGX) : cliquer sur un créneau pour placer
    une leçon plateau (max 5) ou circulation (max 3), fiches élèves
    rattachées à une agence, factures, paiements, carte de RDV en PDF.
@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · signature des contrats à distance';
+const APP_VERSION = '2026-11-22 · l’appli s’appelle Go Moto';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },

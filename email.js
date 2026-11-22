@@ -25,14 +25,14 @@ const texteEnHtml = (t) => `<div style="font-family:Arial,sans-serif;font-size:1
 
 // Code du programme Apps Script, avec la clé secrète de l'appli
 function codeAppsScript(cle) {
-  return `// Moto Planning — envoi des e-mails (à coller dans script.google.com)
+  return `// Go Moto — envoi des e-mails (à coller dans script.google.com)
 const CLE = '${cle}';
 
 function doPost(e) {
   try {
     const d = JSON.parse(e.postData.contents);
     if (d.cle !== CLE) return reponse({ ok: false, erreur: 'clé invalide' });
-    const options = { name: d.nom || 'Moto Planning', htmlBody: d.html };
+    const options = { name: d.nom || 'Go Moto', htmlBody: d.html };
     if (d.replyTo) options.replyTo = d.replyTo;
     if (d.pj) options.attachments = [Utilities.newBlob(Utilities.base64Decode(d.pj.base64), 'application/pdf', d.pj.nom)];
     GmailApp.sendEmail(d.to, d.sujet, d.texte, options);
@@ -56,7 +56,7 @@ function autoriser() {
 
 async function envoyerEmailAuto({ to, subject, text, ecole, pj }) {
   const c = cfgEmail();
-  const nom = String((ecole && ecole.nom) || DB.entreprise.nom || 'Moto Planning').replace(/["<>]/g, '');
+  const nom = String((ecole && ecole.nom) || DB.entreprise.nom || 'Go Moto').replace(/["<>]/g, '');
   if (modeEmail() === 'script') {
     try {
       const r = await fetch(c.url, {
@@ -179,7 +179,7 @@ const EMAIL_ACTIONS = {
     const to = (Cloud.user && Cloud.user.email) || prompt('Adresse e-mail pour le test :');
     if (!to) return;
     toast('Envoi du test en cours…');
-    const r = await envoyerEmailAuto({ to, subject: 'Test Moto Planning', text: "Ceci est un e-mail de test : l'envoi automatique fonctionne 👍", ecole: null });
+    const r = await envoyerEmailAuto({ to, subject: 'Test Go Moto', text: "Ceci est un e-mail de test : l'envoi automatique fonctionne 👍", ecole: null });
     const m = messageResultat(r, to);
     toast(m.txt + (r.restant != null ? ` (encore ${r.restant} envois possibles aujourd'hui)` : ''), !m.ok);
   },
