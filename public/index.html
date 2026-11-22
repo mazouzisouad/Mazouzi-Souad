@@ -205,6 +205,15 @@ a.btn{text-decoration:none}
 .install .x{margin-left:auto;align-self:flex-start;color:var(--muted);font-size:20px;line-height:1;padding:0 2px}
 .install .btn{margin-top:8px}
 .horsligne{position:fixed;top:0;left:0;right:0;z-index:40;pointer-events:none;background:#1f2a44;color:#fff;font-weight:800;font-size:13px;text-align:center;padding:calc(6px + env(safe-area-inset-top)) 12px 6px}
+.etape{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.etape:last-child{border-bottom:0}
+.etape .num{width:28px;height:28px;border-radius:50%;background:#2f6fd6;color:#fff;font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;flex:none}
+.etape b{display:block;font-weight:900;font-size:14.5px}
+.etape span{font-size:13px;font-weight:600;color:var(--muted);line-height:1.4}
+.etape a{color:#4a5bd6;font-weight:800}
+a.item{text-decoration:none;color:inherit}
+.item .ico.centre{background:#e6efff;color:#2f6fd6;font-weight:900;font-size:15px}
+.inp.date{text-transform:none;letter-spacing:0;font-weight:700}
 .toast{position:fixed;left:50%;bottom:110px;transform:translate(-50%,20px);opacity:0;z-index:30;display:flex;align-items:center;gap:10px;background:#1f2a44;color:#fff;border-radius:18px;padding:10px 16px 10px 10px;box-shadow:0 8px 28px rgba(40,50,80,.3);transition:opacity .3s,transform .3s;max-width:calc(100% - 32px)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .toast svg{width:40px;height:40px;flex:none}
@@ -707,6 +716,67 @@ function toastSuivant(){
   setTimeout(function(){ el.classList.add('on'); }, 30);
   setTimeout(function(){ el.classList.remove('on'); setTimeout(function(){ el.remove(); toastSuivant(); }, 350); }, 3200);
 }
+/* ---------- passer l'examen du code ---------- */
+// Centres d'examen agréés et liens d'inscription officiels, tels que listés par service-public.gouv.fr
+var CENTRES = [
+  {nom:'La Poste', marque:'Le code La Poste', url:'https://www.lecode.laposte.fr/passermonexamenducodeaveclaposte/', ini:'LP'},
+  {nom:'SGS', marque:'Objectif Code', url:'https://www.objectifcode.com/', ini:'OC'},
+  {nom:'Dekra', marque:'Le Code Dekra', url:'https://www.le-code-dekra.fr/register-candidat', ini:'DK'},
+  {nom:'Pearson Vue', marque:'Point Code', url:'https://www.pointcode.fr/', ini:'PC'},
+  {nom:'Bureau Veritas', marque:'Code’n Go', url:'https://codengo.bureauveritas.fr/portal/', ini:'BV'}
+];
+var URL_NEPH = 'https://permisdeconduire.ants.gouv.fr/demarches-en-ligne/inscription-examen-permis';
+var URL_SP = 'https://www.service-public.gouv.fr/particuliers/vosdroits/F33694';
+var I_EXT = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+var I_CAL2 = '<svg viewBox="0 0 48 48"><rect x="6" y="9" width="36" height="33" rx="6" fill="#fff" stroke="#2f6fd6" stroke-width="3"/><path d="M6 18h36" stroke="#2f6fd6" stroke-width="3"/><path d="M15 5v8M33 5v8" stroke="#2f6fd6" stroke-width="3.500" stroke-linecap="round"/><path d="M16 28l5 5 10-10" stroke="#4aa03e" stroke-width="3.500" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function joursAvantExamen(){
+  if(!store.examDate) return null;
+  var p = store.examDate.split('-'), d = new Date(+p[0], +p[1]-1, +p[2]);
+  var auj = new Date(); auj.setHours(0,0,0,0);
+  return Math.round((d - auj)/864e5);
+}
+function dateExamFr(){ var p = store.examDate.split('-'); return new Date(+p[0], +p[1]-1, +p[2]).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}); }
+function carteExamen(){ // accueil : compte à rebours, ou invitation quand l'élève est prêt
+  var j = joursAvantExamen();
+  if(j !== null && j >= 0){
+    var t = j===0 ? 'C’est aujourd’hui ! Bonne chance 🍀' : (j===1 ? 'C’est demain !' : 'Dans '+j+' jours');
+    return '<button class="note" style="width:100%;text-align:left;background:#e6efff" data-a="examen">'+I_CAL2+'<div><b>Ton examen du code : '+t+'</b><span>'+dateExamFr()+(j>0?' • fais un examen blanc par jour d’ici là':'')+'</span></div></button>';
+  }
+  if(store.best !== null && store.best >= 35) return '<button class="note" style="width:100%;text-align:left;background:#e6efff" data-a="examen">'+I_CAL2+'<div><b>Tu sembles prêt pour le vrai code !</b><span>Réserve ta place dans un centre d’examen agréé ›</span></div></button>';
+  return '';
+}
+function vExamen(){
+  var best = store.best, nEx = Math.min(40, Q.length);
+  var html = '<div class="hero" style="height:170px;padding-top:50px">'+hills()+acct()+'<button class="back" data-a="tab" data-t="series">'+BACK+' Séries</button><h1 style="font-size:26px;max-width:58%">Passer le code</h1>'+mascot('flag','mascot')+'</div><div class="sheet">';
+  // niveau
+  var niveau = best===null ? 'Fais d’abord un examen blanc pour savoir où tu en es.' :
+    (best>=35 ? 'Ton meilleur examen blanc : '+best+'/'+nEx+'. Tu atteins le niveau requis (35/40) : vise-le plusieurs fois de suite avant de réserver.' :
+      'Ton meilleur examen blanc : '+best+'/'+nEx+'. Il faut 35 bonnes réponses sur 40 : continue à t’entraîner avant de réserver.');
+  html += '<div class="card"><div class="ctitle">'+I_BARS+'Es-tu prêt ?</div><div class="muted" style="font-size:14px">'+niveau+'</div>'+
+    (isPrem()?'<button class="btn green sm" style="margin-top:10px" data-a="exam">Faire un examen blanc '+CHEV+'</button>':'')+'</div>';
+  // étapes
+  html += '<div class="card"><div class="ctitle">'+I_DOC+'Les étapes</div>'+
+    '<div class="etape"><span class="num">1</span><div><b>Avoir un numéro NEPH</b><span>C’est le numéro de ton dossier de permis. Ton auto-école peut faire la demande, ou toi-même sur le <a href="'+URL_NEPH+'" target="_blank" rel="noopener">site de l’ANTS</a>.</span></div></div>'+
+    '<div class="etape"><span class="num">2</span><div><b>Choisir un centre agréé et payer 30 €</b><span>Le prix est le même partout. Il se paie en ligne sur le site du centre, et à nouveau en cas d’échec.</span></div></div>'+
+    '<div class="etape"><span class="num">3</span><div><b>Réserver une date et un lieu</b><span>Sur le site du centre choisi, avec ton numéro NEPH.</span></div></div>'+
+    '<div class="etape"><span class="num">4</span><div><b>Le jour J</b><span>Apporte ta convocation et une pièce d’identité. 40 questions : il faut au moins 35 bonnes réponses.</span></div></div></div>';
+  // centres
+  html += '<div class="sec"><h2>Réserver ta place</h2></div><div class="card" style="padding:6px 12px">';
+  CENTRES.forEach(function(c){
+    html += '<a class="item" href="'+c.url+'" target="_blank" rel="noopener"><span class="ico centre">'+c.ini+'</span><span style="flex:1"><div class="tt">'+c.marque+'</div><div class="ss">'+c.nom+' • centre agréé</div></span><span class="dt" style="color:#4a5bd6">'+I_EXT+'</span></a>';
+  });
+  html += '</div><div class="foot" style="margin-top:-6px">La réservation et le paiement se font sur le site officiel du centre. Liste des centres agréés : <a href="'+URL_SP+'" target="_blank" rel="noopener">service-public.gouv.fr</a>.</div>';
+  // date
+  var j = joursAvantExamen();
+  html += '<div class="card" style="margin-top:14px"><div class="ctitle">'+I_CAL+'Ta date d’examen</div>'+
+    '<div class="muted" style="margin-bottom:8px">Note-la ici : on affichera le compte à rebours sur l’accueil.</div>'+
+    '<input id="dateExam" type="date" class="inp date" value="'+(store.examDate||'')+'">'+
+    '<button class="btn purple full" data-a="dateexam">Enregistrer la date</button>'+
+    (store.examDate?'<button class="btn ghost full" style="margin-top:8px" data-a="nodateexam">Effacer la date</button>':'')+
+    (j!==null && j>=0?'<div class="msg ok" style="margin-top:10px">Examen '+(j===0?'aujourd’hui':'le '+dateExamFr())+'.</div>':'')+'</div>';
+  return html+'</div>';
+}
+
 /* ---------- appli installable ---------- */
 var invite = null, CLE_INSTALL = '__ca_install_masque';
 function estInstallee(){ try { return matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; } catch(e){ return false; } }
@@ -860,6 +930,7 @@ function vHome(){
   var qi = dailyQ(), qc = catOf(qi);
   html += '<div class="daily"><div class="tx"><div class="kick">'+I_STAR+' La question du jour</div><h3>'+cut(Q[qi].q,84)+'</h3><button class="btn purple sm" data-a="daily">Répondre '+CHEV+'</button></div><div class="pic">'+icon(qc)+'</div></div>';
   html += carteSerie();
+  html += carteExamen();
   html += carteInstall();
   html += promo();
   var wk = doneSince(Date.now()-7*864e5);
@@ -882,6 +953,7 @@ function vSeries(){
   var nEx = Math.min(40,Q.length);
   html += '<div class="exam"><div class="tx"><div class="ctitle" style="margin:0">'+I_DOC+'Examen blanc</div><h3>Teste-toi en conditions réelles'+(isPrem()?'':' <span class="lockb">'+I_LOCK+' Premium</span>')+'</h3><div class="muted" style="margin-bottom:10px">'+I_CLOCK+' '+nEx+' questions • ~20 min</div><button class="btn green sm" data-a="exam">Commencer '+CHEV+'</button>'+
     (store.best!==null?'<div class="muted" style="margin-top:8px">Meilleur score : '+store.best+' / '+nEx+'</div>':'')+'</div>'+mascot('clip','m')+'</div>';
+  html += '<button class="note" style="width:100%;text-align:left;background:#e6efff" data-a="examen">'+I_CAL2+'<div><b>Passer le vrai examen du code</b><span>Les étapes et les centres agréés : La Poste, Point Code, Objectif Code… ›</span></div></button>';
   html += '<div class="sec"><h2>Reprendre une série</h2></div>';
   if(store.resume){
     var c = catById(store.resume.cat), n = store.resume.ids.length, i = store.resume.results.length;
@@ -1036,6 +1108,7 @@ function render(){
   if(tabs[screen]){ html = tabs[screen](); withNav = true; }
   else if(screen==='fiche') html = vFiche();
   else if(screen==='premium') html = vPremium();
+  else if(screen==='examen') html = vExamen();
   else if(screen==='quiz') html = vQuiz();
   else html = vResult();
   $app.className = 'app'+(withNav?'':' noNav');
@@ -1126,6 +1199,13 @@ $app.addEventListener('click', function(e){
   }
   else if(a==='home'){ go('home'); }
   else if(a==='backprem'){ go('home'); }
+  else if(a==='examen'){ go('examen'); }
+  else if(a==='dateexam'){
+    var v = (document.getElementById('dateExam')||{}).value || '';
+    if(/^\d{4}-\d{2}-\d{2}$/.test(v)){ store.examDate = v; save(); }
+    render();
+  }
+  else if(a==='nodateexam'){ store.examDate = null; save(); render(); }
   else if(a==='filter'){ coursCat = d('c') && coursCat!==d('c') ? d('c') : null; render(); }
   else if(a==='fiche'){
     var fid = d('f');

@@ -8,6 +8,10 @@ Site d'entraînement au code de la route avec :
 - **252 questions** (16 gratuites) et 10 fiches de cours ;
 - **séries de jours d'affilée et 11 badges** à débloquer ;
 - **rappels par e-mail** : inactivité depuis 3 jours (si l'élève l'a accepté), fin d'accès dans 7 jours, accès terminé ;
+- **écran « Passer le code »** : niveau de l'élève, étapes (NEPH, 30 €, réservation, jour J), liens vers les
+  5 centres agréés listés par service-public.gouv.fr (La Poste, SGS/Objectif Code, Dekra, Pearson Vue/Point Code,
+  Bureau Veritas/Code'n Go) et compte à rebours jusqu'à la date d'examen. La réservation se fait sur le site du centre :
+  aucun centre ne propose de réservation intégrable dans une autre appli ;
 - **appli installable** sur téléphone (icône sur l'écran d'accueil, plein écran, questions gratuites utilisables hors connexion) ;
 - **tableau de bord interne** (`/admin`) : total encaissé, paiements, élèves ayant payé, ventes par mois, codes, remboursements ;
 - **déblocage automatique** de l'accès complet dès que le paiement est confirmé ;
