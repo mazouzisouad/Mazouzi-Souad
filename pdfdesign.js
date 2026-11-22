@@ -139,8 +139,11 @@ function buildCarteRdvPdfModerne(eleveId, seances) {
       doc.text(`${s.debut} – ${s.fin}`, M + 26, y + 8);
       const ct = couleurType(s.type);
       let px = M + w - 3;
-      px -= pastille(doc, f, px, y + 7.6, f.t(TYPES[s.type].label), ct.fond, ct.texte, { taille: 7, droite: true }) + 1.5;
-      if (s.prepa) pastille(doc, f, px, y + 7.6, 'Prépa examen', pl.clair, (pl.encre || pl.fonce), { taille: 6.5, droite: true });
+      const modeEl = modeDe(s, eleveId);
+      const libType = categorie(s.type) === 'lecon' && modeEl === 'blanc' ? 'Examen blanc ' + baseDe(s.type) : TYPES[s.type].label;
+      const ctAff = categorie(s.type) === 'lecon' && modeEl === 'blanc' ? COULEURS_TYPE.blanc : ct;
+      px -= pastille(doc, f, px, y + 7.6, f.t(libType), ctAff.fond, ctAff.texte, { taille: 7, droite: true }) + 1.5;
+      if (modeEl === 'prepa') pastille(doc, f, px, y + 7.6, 'Prépa examen', pl.clair, (pl.encre || pl.fonce), { taille: 6.5, droite: true });
       // détails
       f.reg(); doc.setFontSize(8); doc.setTextColor(...GRIS);
       const m = byId('moniteurs', s.moniteurId);

@@ -609,3 +609,17 @@ body.glisse-en-cours, body.glisse-en-cours * { cursor: grabbing !important; user
   .scene *, .pm *, .tlieux *, .jauge-bloc strong, .radar::after { animation: none !important; }
   .pm, .pm .corps, .jauge .aiguille { transition: none !important; }
 }
+
+/* ---------- Examen blanc / prépa par élève dans une leçon ---------- */
+.mode-el { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; flex: none; }
+.mode-el button { border: 0; background: #fff; padding: 5px 8px; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; white-space: nowrap; }
+.mode-el button + button { border-left: 1px solid var(--line); }
+.mode-el button.on.lecon { background: #e0f2fe; color: #0369a1; }
+.mode-el button.on.blanc { background: #fef3c7; color: #92400e; }
+.mode-el button.on.prepa { background: #ffedd5; color: #c2410c; }
+.mode-lu { font-size: 11.5px; font-weight: 700; border-radius: 8px; padding: 2px 7px; white-space: nowrap; }
+.mode-lu.blanc { background: #fef3c7; color: #92400e; }
+.mode-lu.prepa { background: #ffedd5; color: #c2410c; }
+.tag-el { font-size: 10px; margin-left: 2px; }
+.tag-blancs { display: inline-block; font-size: 10px; font-weight: 800; background: #fffbeb; color: #b45309; border: 1px dashed #f59e0b; border-radius: 6px; padding: 0 4px; margin-left: 4px; }
+@media (max-width: 600px) { .chip-row { flex-wrap: wrap; } .mode-el { order: 5; } }

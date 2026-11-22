@@ -67,6 +67,12 @@ modifiables pour chaque examen.
   4 à 6 h, réglable), en rouge s'il en manque.
 - Après un échec à l'examen, la liste des repassages indique si l'examen blanc est à refaire.
 
+**Examen blanc et prépa par élève dans une leçon** : dans une leçon plateau ou circulation, chaque élève a
+3 boutons « Leçon / 📝 Examen blanc / 🎯 Prépa ». On peut donc avoir, avec le même moniteur et à la même heure,
+des élèves en leçon normale, d'autres en examen blanc (Validé / Non validé) et d'autres en préparation.
+Les examens blancs validés comptent pour « Prêts pour l'examen », les heures de prépa pour le compteur de prépa,
+et la facture indique « Examen blanc » ou « (préparation examen) » pour l'élève concerné.
+
 ## Fiche de suivi
 
 Pour chaque élève, un historique de suivi pédagogique : après une leçon, le moniteur (ou la direction) choisit
