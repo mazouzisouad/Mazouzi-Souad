@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · planning sans « placer une leçon » au survol';
+const APP_VERSION = '2026-11-22 · prépa examen affichée à côté de chaque élève';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -616,17 +616,17 @@ function blocSeance(s, hMin) {
     const res = ['admis', 'valide'].includes(p.statut) ? ' ✅' : ['ajourne', 'nonvalide'].includes(p.statut) ? ' ❌' : '';
     const m = categorie(s.type) === 'lecon' ? modeP(s, p) : '';
     const tag = m === 'blanc' ? '<span class="tag-el blanc"><span class="long">📝 Examen blanc</span><span class="court">📝 Ex. blanc</span></span>'
-      : m === 'prepa' && !s.prepa ? '<span class="tag-el prepa"><span class="long">🎯 Prépa examen</span><span class="court">🎯 Prépa ex.</span></span>'
+      : m === 'prepa' ? '<span class="tag-el prepa"><span class="long">🎯 Prépa examen</span><span class="court">🎯 Prépa ex.</span></span>'
       : m === 'evaluation' ? '<span class="tag-el evaluation"><span class="long">🧭 Évaluation de départ</span><span class="court">🧭 Évaluation</span></span>' : '';
     return `<div class="ag-el ${barre ? 'abs' : ''}" style="--a:${esc(a?.couleur || '#94a3b8')}"><span class="ini">${esc((e?.prenom || eleveCourt(e) || '?').trim()[0]?.toUpperCase() || '?')}</span>${esc(eleveCourt(e))}${res}${tag}</div>`;
   }).join('');
   const nbBlancs = categorie(s.type) === 'lecon' ? s.eleves.filter((p) => modeP(s, p) === 'blanc').length : 0;
-  const nbPrepa = categorie(s.type) === 'lecon' && !s.prepa ? s.eleves.filter((p) => modeP(s, p) === 'prepa').length : 0;
+  const nbPrepa = categorie(s.type) === 'lecon' ? s.eleves.filter((p) => modeP(s, p) === 'prepa').length : 0;
   const nbEval = categorie(s.type) === 'lecon' ? s.eleves.filter((p) => modeP(s, p) === 'evaluation').length : 0;
   const resume = (nbBlancs ? ` <span class="tag-blancs resume-mode">📝 ${nbBlancs} blanc${nbBlancs > 1 ? 's' : ''}</span>` : '') + (nbPrepa ? ` <span class="tag-prepa resume-mode">🎯 ${nbPrepa} prépa</span>` : '');
   return `
-  <div class="ag-bloc ${s.type}${s.prepa ? ' prepa' : ''}" style="top:${top + 1}px;height:${height}px" data-action="editSeance" data-id="${s.id}">
-    <div class="ag-bloc-top"><span class="ag-type"><i>${ICONE_TYPE[baseDe(s.type)] || '🏍️'}</i><span>${s.debut}<span class="ag-nomtype"> · ${TYPES[s.type].short}</span></span>${s.prepa ? ' <span class="tag-prepa">🎯 Prépa exam</span>' : ''}${resume}</span>${placesRonds(n, cap)}</div>
+  <div class="ag-bloc ${s.type}" style="top:${top + 1}px;height:${height}px" data-action="editSeance" data-id="${s.id}">
+    <div class="ag-bloc-top"><span class="ag-type"><i>${ICONE_TYPE[baseDe(s.type)] || '🏍️'}</i><span>${s.debut}<span class="ag-nomtype"> · ${TYPES[s.type].short}</span></span>${resume}</span>${placesRonds(n, cap)}</div>
     <div class="ag-els ${nbBlancs || nbPrepa || nbEval ? 'en-lignes' : ''}">${noms}</div>
     ${isExam(s.type) && n < cap ? `<div class="ag-libre">${cap - n} place${cap - n > 1 ? 's' : ''} à attribuer</div>` : ''}
     ${isExam(s.type) && s.lieu ? `<div class="ag-lieu">📍 ${esc(s.lieu)}</div>` : ''}
