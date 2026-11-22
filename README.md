@@ -44,7 +44,7 @@ Technologies : Supabase (comptes + base de données), Stripe (paiement), Vercel 
 
 ## Ce qui a changé dans l'appli
 
-Questions, fiches, design et contenu gratuit (60 questions, 4 fiches et 1 examen blanc) sont inchangés. Seuls ajouts :
+Questions, fiches et design d'origine sont conservés ; le contenu gratuit a été élargi à 60 questions, 4 fiches et 1 examen blanc. Ajouts :
 
 - **le contenu payant n'est plus dans la page** : les 47 questions et 8 fiches payantes sont sur le serveur
   (`api/_lib/contenu-premium.js`) et ne sont envoyées qu'aux élèves connectés dont l'accès est actif ;
