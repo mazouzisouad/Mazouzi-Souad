@@ -281,7 +281,7 @@ const Cloud = {
         moniteurIds: Object.fromEntries(avecAcces.map((m) => [low(m.email), m.id])),
       },
       public: {
-        agences: (db.agences || []).map((a) => ({ id: a.id, nom: a.nom || '', couleur: a.couleur || '', adresse: a.adresse || '', cp: a.cp || '', ville: a.ville || '', tel: a.tel || '' })),
+        agences: (db.agences || []).map((a) => ({ id: a.id, nom: a.nom || '', couleur: a.couleur || '', logo: a.logo || '', adresse: a.adresse || '', cp: a.cp || '', ville: a.ville || '', tel: a.tel || '' })),
         moniteurs: (db.moniteurs || []).map((m) => ({ id: m.id, prenom: m.prenom || '', nom: m.nom || '', couleur: m.couleur || '' })),
         settings: {
           capacite: (db.settings && db.settings.capacite) || {},

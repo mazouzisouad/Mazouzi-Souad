@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · planning plus ludique';
+const APP_VERSION = '2026-11-22 · logos des auto-écoles';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -216,9 +216,16 @@ function ecoleDe(a) {
   const ent = DB.entreprise;
   const ec = { nom: a?.nom || ent.nom };
   for (const k of CHAMPS_ECOLE) ec[k] = (a && a[k]) || ent[k] || '';
+  ec.logo = (a && a.logo) || ent.logo || '';
   return ec;
 }
-const agenceBadge = (a) => (a ? `<span class="badge agence" style="--c:${esc(a.couleur)}">${esc(a.nom)}</span>` : '');
+const agenceBadge = (a) => (a ? `<span class="badge agence" style="--c:${esc(a.couleur)}">${a.logo ? `<img class="badge-logo" src="${a.logo}" alt="">` : ''}${esc(a.nom)}</span>` : '');
+// Logo réduit (max 480 px) : PNG pour garder la transparence, JPEG si trop lourd
+async function logoReduit(file) {
+  let img = await chargerImageReduite(file, 480);
+  if (img.length > 160000) img = await chargerImageReduite(new File([file], 'logo.jpg', { type: 'image/jpeg' }), 400);
+  return img;
+}
 
 function factureTotaux(f) {
   const ttc = round2(f.lignes.reduce((s, l) => s + (Number(l.qte) || 0) * (Number(l.pu) || 0), 0));
@@ -1934,10 +1941,10 @@ function viewParametres() {
     </div>
     <div class="card">
       <h2>Auto-écoles (agences)</h2>
-      <p class="muted small">Chaque élève est inscrit dans une auto-école : son nom, son SIRET, sa signature et son tampon figurent sur les documents de l'élève.</p>
+      <p class="muted small">Chaque élève est inscrit dans une auto-école : son logo, son nom, son SIRET, sa signature et son tampon figurent sur les documents de l'élève.</p>
       ${DB.agences.map((a) => {
         const manque = ['siret', 'agrement', 'assureur', 'mediateur'].filter((k) => !a[k]).length;
-        return ligne(`<span class="dot" style="background:${esc(a.couleur)}"></span><span class="name">${esc(a.nom)} <span class="muted small">${esc(a.ville || '')}</span>${manque ? ' <span class="badge warn">infos à compléter</span>' : ''}</span>`, 'editAgence', a.id);
+        return ligne(`${a.logo ? `<img class="ligne-logo" src="${a.logo}" alt="">` : `<span class="dot" style="background:${esc(a.couleur)}"></span>`}<span class="name">${esc(a.nom)} <span class="muted small">${esc(a.ville || '')}</span>${manque ? ' <span class="badge warn">infos à compléter</span>' : ''}</span>`, 'editAgence', a.id);
       }).join('')}
       <button class="btn" data-action="editAgence">+ Ajouter une auto-école</button>
     </div>
@@ -2092,7 +2099,13 @@ function openSimpleForm({ title, fields, values = {}, onSave, onDelete }) {
   openModal({
     title,
     body: `<form id="simple-form" class="form-grid" onsubmit="return false">
-      ${fields.map((f) => `<label class="field ${f.full ? 'full' : ''}"><span>${esc(f.label)}</span>
+      ${fields.map((f) => f.type === 'image' ? `<div class="field full"><span>${esc(f.label)}</span>
+        <div class="champ-image"><div class="ci-apercu" id="ci-${f.name}">${values[f.name] ? `<img src="${values[f.name]}" alt="">` : '<span class="muted small">Aucun</span>'}</div>
+          <input type="hidden" name="${f.name}" value="${esc(values[f.name] ?? '')}">
+          <label class="btn">📷 ${values[f.name] ? 'Changer' : 'Ajouter'}<input type="file" accept="image/*" hidden data-image-pour="${f.name}"></label>
+          <button type="button" class="btn ghost" data-retirer-image="${f.name}">Retirer</button></div>
+        ${f.aide ? `<span class="small muted">${esc(f.aide)}</span>` : ''}</div>`
+      : `<label class="field ${f.full ? 'full' : ''}"><span>${esc(f.label)}</span>
         <input name="${f.name}" type="${f.type || 'text'}" ${f.step ? `step="${f.step}"` : ''} ${f.required ? 'required' : ''} value="${esc(values[f.name] ?? '')}">
       </label>`).join('')}
     </form>`,
@@ -2100,6 +2113,18 @@ function openSimpleForm({ title, fields, values = {}, onSave, onDelete }) {
       <button class="btn" data-action="closeModal">Annuler</button>
       <button class="btn primary" id="sf-save">Enregistrer</button>`,
     onMount: (m) => {
+      m.querySelectorAll('[data-image-pour]').forEach((inp) => inp.addEventListener('change', async () => {
+        const file = inp.files[0]; if (!file) return;
+        try {
+          const img = await logoReduit(file);
+          $(`#simple-form [name="${inp.dataset.imagePour}"]`).value = img;
+          $(`#ci-${inp.dataset.imagePour}`).innerHTML = `<img src="${img}" alt="">`;
+        } catch (e) { toast("Image illisible : essayez un fichier PNG ou JPEG.", true); }
+      }));
+      m.querySelectorAll('[data-retirer-image]').forEach((b) => b.addEventListener('click', () => {
+        $(`#simple-form [name="${b.dataset.retirerImage}"]`).value = '';
+        $(`#ci-${b.dataset.retirerImage}`).innerHTML = '<span class="muted small">Aucun</span>';
+      }));
       $('#sf-save', m).addEventListener('click', () => {
         const form = $('#simple-form');
         if (!form.reportValidity()) return;
@@ -2509,6 +2534,7 @@ const ACTIONS = {
       title: a ? "Modifier l'auto-école" : 'Nouvelle auto-école',
       values: a || { couleur: COULEURS_AGENCE[DB.agences.length % COULEURS_AGENCE.length] },
       fields: [
+        { name: 'logo', label: "Logo de l'auto-école", type: 'image', aide: 'Il apparaît sur les factures, les contrats et les cartes de rendez-vous. Un fichier PNG sur fond transparent rend le mieux.' },
         { name: 'nom', label: "Nom de l'auto-école *", required: true, full: true },
         { name: 'adresse', label: 'Adresse', full: true },
         { name: 'cp', label: 'Code postal' }, { name: 'ville', label: 'Ville' },

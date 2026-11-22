@@ -77,6 +77,9 @@ function bandeau(doc, f, pl, ec, { W, h, M }) {
     doc.circle(W - h * 1.45, -2, h * 0.32, 'F');
   });
   doc.setFillColor(...pl.accent); doc.rect(0, h, W, 1.6, 'F');
+  const lh = h - 14;
+  const lw = logoPdf(doc, ec.logo, M, 7, Math.min(lh * 2.2, 52), lh, { fond: true });
+  if (lw) M += lw + 5;
   doc.setTextColor(...surFonce()); f.bold(); doc.setFontSize(h > 40 ? 18 : 15);
   doc.text(f.t(ec.nom), M, h > 40 ? 17 : 14);
   f.reg(); doc.setFontSize(7.8); doc.setTextColor(...sousFonce());
@@ -88,6 +91,19 @@ function bandeau(doc, f, pl, ec, { W, h, M }) {
   lignes.forEach((l, i) => doc.text(f.t(l), M, (h > 40 ? 23 : 19.5) + i * 4));
 }
 const fmtImgPdf = (img) => (/^data:image\/jpe?g/.test(img) ? 'JPEG' : 'PNG');
+// Dessine le logo dans un cadre (maxW × maxH), centré verticalement ; renvoie la largeur utilisée (0 sans logo)
+function logoPdf(doc, logo, x, y, maxW, maxH, { fond = false } = {}) {
+  if (!logo) return 0;
+  try {
+    const pr = doc.getImageProperties(logo);
+    const k = Math.min(maxW / pr.width, maxH / pr.height);
+    const w = pr.width * k, h = pr.height * k;
+    const y0 = y + (maxH - h) / 2;
+    if (fond) { doc.setFillColor(255, 255, 255); doc.roundedRect(x, y0 - 2.5, w + 5, h + 5, 2.5, 2.5, 'F'); }
+    doc.addImage(logo, fmtImgPdf(logo), x + (fond ? 2.5 : 0), y0, w, h);
+    return w + (fond ? 5 : 0);
+  } catch (e) { return 0; }
+}
 
 /* =====================================================================
    CARTE DE RENDEZ-VOUS (A5 portrait, lisible sur téléphone)
@@ -416,14 +432,15 @@ function buildFacturePdfClassique(f) {
   doc.setFillColor(...palette().accent); doc.rect(0, 0, W, 6, 'F');
   doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
   const ec = ecoleDe(ag);
-  doc.text(pdfText(ec.nom), M, 20);
+  const xe = M + (logoPdf(doc, ec.logo, M, 12, 40, 24) ? 45 : 0);
+  doc.text(pdfText(ec.nom), xe, 20);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
   const lignesEnt = [
     ec.adresse, [ec.cp, ec.ville].filter(Boolean).join(' '),
     [ec.tel && 'Tél. ' + ec.tel, ec.email].filter(Boolean).join(' - '),
     ec.siret && 'SIRET ' + ec.siret, ec.agrement && 'Agrément ' + ec.agrement,
   ].filter(Boolean);
-  lignesEnt.forEach((l, i) => doc.text(pdfText(l), M, 25 + i * 4.2));
+  lignesEnt.forEach((l, i) => doc.text(pdfText(l), xe, 25 + i * 4.2));
 
   doc.setFont('helvetica', 'bold'); doc.setFontSize(22);
   doc.text('FACTURE', W - M, 22, { align: 'right' });
@@ -502,10 +519,13 @@ function buildCarteRdvPdfClassique(eleveId, seances) {
     doc.setFillColor(...palette().fonce); doc.rect(0, 0, W, 20, 'F');
     doc.setFillColor(...palette().accent); doc.rect(0, 20, W, 1.5, 'F');
     doc.setTextColor(...surFonce());
+    const lwc = logoPdf(doc, ec.logo, M, 3.5, 26, 13, { fond: true });
+    const xc = M + (lwc ? lwc + 4 : 0);
+    doc.setTextColor(...surFonce());
     doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
-    doc.text(pdfText(ec.nom), M, 9);
+    doc.text(pdfText(ec.nom), xc, 9);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
-    doc.text(pdfText(coord.join('  -  ')), M, 15);
+    doc.text(pdfText(coord.join('  -  ')), xc, 15);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
     doc.text('CARTE DE RENDEZ-VOUS', W - M, 9, { align: 'right' });
     doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
@@ -552,6 +572,7 @@ function buildContratPdfClassique(c) {
   let y = 16;
 
   doc.setFillColor(...palette().accent); doc.rect(0, 0, W, 4, 'F');
+  if (logoPdf(doc, ec.logo, W - M - 34, 8, 34, 16)) { /* logo en haut à droite */ }
   doc.setFont('helvetica', 'bold'); doc.setFontSize(11);
   doc.text(pdfText(c.ecoleNom || ec.nom), M, y);
   doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(100, 116, 139);

@@ -826,3 +826,11 @@ tr.sous-titre td { background: #f8fafc; font-weight: 700; font-size: 12.5px; col
 .agenda.groupes .ag-col:not(.debut-jour), .agenda.groupes .ag-colhead.mini:not(.debut-jour) { border-left-color: transparent; }
 .ag-el.abs { background: rgba(255,255,255,.5); }
 @media (prefers-reduced-motion: reduce) { .ag-bloc { transition: none; } }
+
+/* ---------- Logos des auto-écoles ---------- */
+.champ-image { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ci-apercu { width: 120px; height: 64px; border: 1px dashed var(--line); border-radius: 10px; display: grid; place-items: center; background: #fff; overflow: hidden; }
+.ci-apercu img { max-width: 110px; max-height: 56px; object-fit: contain; }
+.ligne-logo { width: 34px; height: 24px; object-fit: contain; margin-right: 6px; vertical-align: middle; background: #fff; border-radius: 4px; }
+.badge-logo { height: 14px; max-width: 34px; object-fit: contain; margin-right: 4px; vertical-align: -3px; background: #fff; border-radius: 3px; }
+.contrat-logo { display: block; max-height: 60px; max-width: 180px; object-fit: contain; margin: 0 0 10px; }

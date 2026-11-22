@@ -437,7 +437,7 @@ function openSignature(c) {
     title: '✍️ Signature du contrat',
     wide: true,
     body: `
-      <div class="contrat-lecture">${contratHtml(c.texte)}</div>
+      <div class="contrat-lecture">${a.logo ? `<img class="contrat-logo" src="${a.logo}" alt="Logo ${esc(a.nom || '')}">` : ''}${contratHtml(c.texte)}</div>
       <label style="display:flex;align-items:center;margin:12px 0;gap:10px;font-weight:600"><input type="checkbox" id="sg-lu" style="width:auto;flex:none;transform:scale(1.3)"> J'ai lu le contrat et je l'accepte (lu et approuvé)</label>
       <div class="grid cols-2">
         <div>
@@ -500,11 +500,12 @@ function validerSignature() {
 
 /* ---------- Contrat signé : lecture ---------- */
 function openContratSigne(c) {
+  const a = agenceDe(byId('eleves', c.eleveId)) || {};
   openModal({
     title: `${esc(c.titre)} — signé`,
     wide: true,
     body: `
-      <div class="contrat-lecture">${contratHtml(c.texte)}</div>
+      <div class="contrat-lecture">${a.logo ? `<img class="contrat-logo" src="${a.logo}" alt="Logo ${esc(a.nom || '')}">` : ''}${contratHtml(c.texte)}</div>
       <div class="grid cols-2" style="margin-top:12px">
         <div><div class="lbl">L'élève — ${esc(c.signataireEleve)}</div><div class="sig-pad sig-ok"><img src="${c.signatureEleve}" alt=""></div>
           <p class="muted small">Lu et approuvé, signé électroniquement le ${fmtDateHeure(c.signeLe)}</p></div>
