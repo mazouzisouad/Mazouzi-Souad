@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · récap du mois et paie des moniteurs';
+const APP_VERSION = '2026-11-23 · factures par auto-école, export comptable, réussite, trous du planning';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -97,6 +97,7 @@ function defaultState() {
       tarifHeure: { plateau: 45, circulation: 50 },
       tarifExamen: { exam_plateau: 0, exam_circulation: 0 }, // 1er accompagnement (0 = offert)
       tarifEvaluation: 50, // évaluation de départ (hors forfait)
+      numerotationParAgence: true, // une suite de numéros de facture par auto-école (sociétés différentes)
       fraisRepassage: { exam_plateau: 100, exam_circulation: 150 },
       heuresPrepa: { min: 4, max: 6 },
       rappel: JSON.parse(JSON.stringify(RAPPEL_DEFAUT)),
@@ -199,6 +200,11 @@ function save() {
 
 const byId = (list, id) => DB[list].find((x) => x.id === id);
 const triNom = (a, b) => `${a.nom} ${a.prenom}`.localeCompare(`${b.nom} ${b.prenom}`, 'fr');
+function prefixeAuto(a) {
+  const mots = String(a?.nom || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().split(/[^A-Z]+/).filter((w) => w.length > 1 && !['MY', 'AUTO', 'ECOLE', 'PERMIS', 'DE', 'LA', 'LE', 'DU'].includes(w));
+  return (mots[mots.length - 1] || 'F').slice(0, 3);
+}
+const prefixeFactureDe = (a) => (a && a.prefixeFacture) || prefixeAuto(a);
 const eleveNom = (e) => (e ? `${e.prenom} ${e.nom}`.trim() : '—');
 const eleveCourt = (e) => (e ? `${e.prenom} ${(e.nom || '').charAt(0).toUpperCase()}.` : '—');
 const moniteurNom = (m) => (m ? `${m.prenom} ${m.nom}`.trim() : '—');
@@ -1021,6 +1027,7 @@ function openSeance(seance) {
       <div class="seg" id="s-duree"></div>
       <div class="lbl row between"><span>Élèves <span id="s-cap" class="fill"></span></span></div>
       <div id="s-eleves" class="chips"></div>
+      <div id="s-suggest" style="margin-top:8px"></div>
       <div id="s-picker">
         <input id="s-search" placeholder="🔍 Tapez le nom de l'élève…" autocomplete="off" data-on-input="searchEleve">
         <div id="s-results" class="results"></div>
@@ -1085,6 +1092,7 @@ function refreshDraft() {
 
   $('#s-picker').hidden = n >= cap;
   renderResults();
+  renderSuggestions();
 
   const { errors } = seanceConflicts(draft);
   $('#s-errors').innerHTML = errors.map((e) => `<div class="alert bad">⛔ ${esc(e)}</div>`).join('')
@@ -1093,6 +1101,24 @@ function refreshDraft() {
   $('#s-errors-haut').innerHTML = pris ? `<div class="alert bad" style="margin-bottom:10px">⛔ ${esc(pris)}</div>` : '';
 }
 
+// Places libres : élèves qui ont payé des heures pas encore posées (pour combler le créneau)
+function renderSuggestions() {
+  const box = $('#s-suggest'); if (!box) return;
+  const cap = capDe(draft);
+  const libres = cap - draft.eleves.filter((p) => p.statut !== 'excuse').length;
+  if (libres <= 0 || categorie(draft.type) !== 'lecon' || !draft.date || draft.date < todayISO()) { box.innerHTML = ''; return; }
+  const occupes = new Set();
+  for (const o of DB.seances) if (o.id !== draft.id && overlaps(o, draft)) o.eleves.forEach((p) => occupes.add(p.eleveId));
+  const dedans = new Set(draft.eleves.map((p) => p.eleveId));
+  const h = durH(draft);
+  const liste = DB.eleves.filter((e) => e.statut === 'en_cours' && !dedans.has(e.id) && !occupes.has(e.id))
+    .map((e) => ({ e, c: compteEleve(e.id) }))
+    .filter((x) => x.c.heuresPossibles >= Math.min(h, 1) - 0.01)
+    .sort((x, y) => y.c.heuresPossibles - x.c.heuresPossibles).slice(0, 6);
+  box.innerHTML = liste.length ? `<div class="suggest"><div class="lbl">💡 ${libres} place${libres > 1 ? 's' : ''} libre${libres > 1 ? 's' : ''} : ces élèves ont des heures payées pas encore posées</div>
+    ${liste.map(({ e, c }) => `<button class="result" data-action="pickEleve" data-id="${e.id}"><span class="dot" style="background:${esc(agenceDe(e)?.couleur || '#94a3b8')}"></span><strong>${esc(e.nom.toUpperCase())}</strong> ${esc(e.prenom)}
+      <span class="muted small">${esc(agenceDe(e)?.nom || '')}${e.tel ? ' · ' + esc(e.tel) : ''}</span><span class="badge ok">${fmtH(c.heuresPossibles)} payée${c.heuresPossibles > 1 ? 's' : ''} à poser</span></button>`).join('')}</div>` : '';
+}
 function renderResults() {
   const box = $('#s-results');
   if (!box) return;
@@ -1488,6 +1514,7 @@ function viewPaiements() {
     <h1>Paiements</h1>
     <div class="spacer"></div>
     ${agenceSelect(UI.filtreAgence, 'filtreAgence')}
+    <button class="btn" data-action="exportComptable">⬇️ Export comptable</button>
     <button class="btn" data-action="newFacture">🧾 Facture</button>
     <button class="btn primary" data-action="newPaiement">💶 Encaisser</button>
   </div>
@@ -1630,12 +1657,18 @@ async function saveFacture() {
   let f;
   if (isNew) {
     const ent = DB.entreprise;
+    const ag = byId('agences', byId('eleves', draftFacture.eleveId)?.agenceId);
+    const parAgence = DB.settings.numerotationParAgence && ag;
+    const cle = parAgence ? 'a_' + ag.id : 'n';
+    ent.compteurs = ent.compteurs || {};
+    let n;
     if (Cloud.actif) {
-      try { ent.compteur = await Cloud.nextNumero(); }
+      try { n = await Cloud.nextNumero(cle); }
       catch (e) { return toast('Connexion nécessaire pour numéroter la facture : ' + e.message, true); }
-    } else ent.compteur = (Number(ent.compteur) || 0) + 1;
+    } else n = (Number(parAgence ? ent.compteurs[cle] : ent.compteur) || 0) + 1;
+    if (parAgence) ent.compteurs[cle] = n; else ent.compteur = n;
     draftFacture.id = uid();
-    draftFacture.numero = `${ent.prefixe || 'F'}-${draftFacture.date.slice(0, 4)}-${String(ent.compteur).padStart(4, '0')}`;
+    draftFacture.numero = `${parAgence ? prefixeFactureDe(ag) : ent.prefixe || 'F'}-${draftFacture.date.slice(0, 4)}-${String(n).padStart(4, '0')}`;
     draftFacture.tva = Number(ent.tva) || 0;
     draftFacture.agenceId = byId('eleves', draftFacture.eleveId)?.agenceId || '';
     DB.factures.push(draftFacture);
@@ -1883,7 +1916,9 @@ function viewParametres() {
     <div class="card">
       <h2>Facturation & infos communes</h2>
       <p class="muted small">Numérotation des factures et TVA. Les autres informations ne servent qu'à compléter ce qu'une auto-école n'a pas renseigné.</p>
-      ${ligne(`<span class="name">${esc(ent.nom)} <span class="muted small">· factures ${esc(ent.prefixe)}-AAAA-#### · TVA ${ent.tva}%</span></span>`, 'editEntreprise', '')}
+      ${ligne(`<span class="name">${esc(ent.nom)} <span class="muted small">· ${DB.settings.numerotationParAgence ? 'une suite de factures par auto-école' : `factures ${esc(ent.prefixe)}-AAAA-####`} · TVA ${ent.tva}%</span></span>`, 'editEntreprise', '')}
+      <label class="row small" style="gap:8px;margin-top:8px"><input type="checkbox" style="width:auto" data-on-change="numParAgence" ${DB.settings.numerotationParAgence ? 'checked' : ''}> Une suite de numéros de factures <strong>par auto-école</strong> (sociétés / SIRET différents)</label>
+      ${DB.settings.numerotationParAgence ? `<div class="small muted" style="margin-top:6px">${DB.agences.map((a) => `${esc(a.nom)} : <strong>${esc(prefixeFactureDe(a))}-${todayISO().slice(0, 4)}-${String((Number((ent.compteurs || {})['a_' + a.id]) || 0) + 1).padStart(4, '0')}</strong> (prochaine)`).join('<br>')}<br>Pour changer le début ou le dernier numéro : ✏️ sur l'auto-école.</div>` : ''}
     </div>
     <div class="card">
       <h2>Auto-écoles (agences)</h2>
@@ -2241,7 +2276,11 @@ const ACTIONS = {
     draft.eleves.splice(+d.i, 1);
     refreshDraft();
   },
-  setPresence(d, el) { draft.eleves[+d.i].statut = el.value; el.className = 'presence ' + el.value; },
+  setPresence(d, el) {
+    draft.eleves[+d.i].statut = el.value; el.className = 'presence ' + el.value;
+    renderSuggestions();
+    if (el.value === 'excuse' && $('#s-suggest .result')) toast('Une place s\'est libérée : voyez les élèves proposés en bas 💡');
+  },
   quickEleve() {
     readDraft();
     const snapshot = draft;
@@ -2448,8 +2487,12 @@ const ACTIONS = {
       },
     });
   },
+  numParAgence(d, el) { DB.settings.numerotationParAgence = el.checked; save(); render(); },
   editAgence(d) {
-    const a = d.id ? byId('agences', d.id) : null;
+    const a0 = d.id ? byId('agences', d.id) : null;
+    const a = a0;
+    if (a0) a0.dernierNumero = (DB.entreprise.compteurs || {})['a_' + a0.id] || 0;
+    setTimeout(() => { if (a0) delete a0.dernierNumero; }, 0);
     openSimpleForm({
       title: a ? "Modifier l'auto-école" : 'Nouvelle auto-école',
       values: a || { couleur: COULEURS_AGENCE[DB.agences.length % COULEURS_AGENCE.length] },
@@ -2464,8 +2507,21 @@ const ACTIONS = {
         { name: 'garantie', label: "Garantie financière (organisme et montant) — vide s'il n'y en a pas", full: true },
         { name: 'mediateur', label: 'Médiateur de la consommation (nom, site internet)', full: true },
         { name: 'couleur', label: 'Couleur dans le planning', type: 'color' },
+        { name: 'prefixeFacture', label: 'Début des n° de facture (ex : TRE)' },
+        { name: 'dernierNumero', label: 'Dernier n° de facture utilisé (cette année)', type: 'number' },
       ],
-      onSave: (data) => { if (a) Object.assign(a, data); else DB.agences.push({ id: uid(), ...data }); },
+      onSave: (data) => {
+        const dernier = data.dernierNumero; delete data.dernierNumero;
+        data.prefixeFacture = String(data.prefixeFacture || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+        let cible = a;
+        if (a) Object.assign(a, data); else { cible = { id: uid(), ...data }; DB.agences.push(cible); }
+        if (dernier !== '' && dernier != null) {
+          const n = parseInt(dernier, 10) || 0;
+          DB.entreprise.compteurs = DB.entreprise.compteurs || {};
+          DB.entreprise.compteurs['a_' + cible.id] = n;
+          if (Cloud.actif) Cloud.setCompteur(n, 'a_' + cible.id).catch(() => {});
+        }
+      },
       onDelete: a && (() => {
         if (DB.agences.length < 2) { toast('Il faut au moins une agence.', true); return false; }
         if (DB.eleves.some((x) => x.agenceId === a.id)) { toast('Des élèves sont inscrits dans cette agence.', true); return false; }

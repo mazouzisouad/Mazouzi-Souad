@@ -12,7 +12,7 @@
    ===================================================================== */
 'use strict';
 
-const UI_RECAP = { mois: '', ouvert: null };
+const UI_RECAP = { mois: '', ouvert: null, periodeStats: 'annee' };
 const tauxDe = (m) => Number(m && m.tauxHoraire) || 0;
 
 function seancePassee(s) {
@@ -128,6 +128,63 @@ function viewRecap() {
         <td class="num"><strong style="color:var(--ok)">${A.encaisse ? eur(A.encaisse) : '—'}</strong></td></tr>`).join('')}</tbody>
     </table></div>
     <p class="small muted">« Heures plateau / circu » : heures de leçon suivies par les élèves de l'auto-école (un élève = ses heures). « Temps moniteur » : la durée de chaque leçon partagée entre les auto-écoles selon le nombre de leurs élèves présents ; « Coût moniteur » = ce temps × le taux horaire du moniteur, pour les comptes entre auto-écoles.</p>
+  </div>
+  ${blocReussite()}`;
+}
+
+
+/* ---------- Réussite aux examens (par auto-école et par moniteur accompagnateur) ---------- */
+function periodeStats() {
+  const mois = UI_RECAP.mois || todayISO().slice(0, 7);
+  if (UI_RECAP.periodeStats === 'mois') return { du: mois + '-01', au: mois + '-31', nom: parseISO(mois + '-01').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) };
+  if (UI_RECAP.periodeStats === '12mois') { const d = parseISO(mois + '-01'); d.setMonth(d.getMonth() - 11); return { du: toISODate(d), au: mois + '-31', nom: '12 derniers mois' }; }
+  return { du: mois.slice(0, 4) + '-01-01', au: mois.slice(0, 4) + '-12-31', nom: 'année ' + mois.slice(0, 4) };
+}
+function statsReussite() {
+  const { du, au } = periodeStats();
+  const vide = () => ({ plateau: { pres: 0, admis: 0, prem: 0, premAdmis: 0 }, circulation: { pres: 0, admis: 0, prem: 0, premAdmis: 0 }, absents: 0 });
+  const parAg = new Map(), parMon = new Map(), total = vide();
+  for (const s of DB.seances) {
+    if (!isExam(s.type) || s.date < du || s.date > au) continue;
+    const base = baseDe(s.type);
+    for (const p of s.eleves) {
+      const e = byId('eleves', p.eleveId);
+      const cibles = [total, parAg.get(e?.agenceId || '') || parAg.set(e?.agenceId || '', vide()).get(e?.agenceId || ''), parMon.get(s.moniteurId) || parMon.set(s.moniteurId, vide()).get(s.moniteurId)];
+      if (p.statut === 'absent') { cibles.forEach((c) => c.absents++); continue; }
+      if (!['admis', 'ajourne'].includes(p.statut)) continue;
+      const premier = numeroPassage(p.eleveId, s) === 1;
+      for (const c of cibles) {
+        c[base].pres++; if (p.statut === 'admis') c[base].admis++;
+        if (premier) { c[base].prem++; if (p.statut === 'admis') c[base].premAdmis++; }
+      }
+    }
+  }
+  return { parAg, parMon, total };
+}
+function cellTaux(x) {
+  if (!x.pres) return '<td class="num muted">—</td>';
+  const t = Math.round((x.admis / x.pres) * 100);
+  return `<td class="num"><strong class="taux ${t >= 70 ? 'ok' : t >= 50 ? 'moyen' : 'bas'}">${t} %</strong><br><span class="small muted">${x.admis}/${x.pres}${x.prem ? ` · 1er passage ${Math.round((x.premAdmis / x.prem) * 100)} %` : ''}</span></td>`;
+}
+function blocReussite() {
+  const { parAg, parMon, total } = statsReussite();
+  const per = periodeStats();
+  const ligne = (nom, x) => `<tr><td>${nom}</td>${cellTaux(x.plateau)}${cellTaux(x.circulation)}<td class="num">${x.absents || '—'}</td></tr>`;
+  const ags = DB.agences.filter((a) => parAg.has(a.id));
+  const mons = DB.moniteurs.filter((m) => parMon.has(m.id));
+  return `
+  <div class="card" style="margin-top:14px">
+    <div class="row between"><h2 style="margin:0">🎯 Réussite aux examens</h2>
+      <div class="seg">${[['mois', 'Ce mois'], ['annee', 'Année'], ['12mois', '12 derniers mois']].map(([k, l]) => `<button class="${UI_RECAP.periodeStats === k ? 'on' : ''}" data-action="recapPeriode" data-p="${k}">${l}</button>`).join('')}</div></div>
+    <p class="small muted">${esc(per.nom)} · examens notés « Admis » ou « Ajourné ». Le moniteur est celui qui a accompagné l'élève à l'examen.</p>
+    ${total.plateau.pres || total.circulation.pres || total.absents ? `
+    <div class="table-wrap"><table>
+      <thead><tr><th></th><th class="num">Plateau</th><th class="num">Circulation</th><th class="num">Absents</th></tr></thead>
+      <tbody>
+        ${ligne('<strong>Toutes les auto-écoles</strong>', total)}
+        ${ags.map((a) => ligne(agenceBadge(a), parAg.get(a.id))).join('')}
+        ${mons.length ? `<tr class="sous-titre"><td colspan="4">Par moniteur</td></tr>${mons.map((m) => ligne(`<span class="dot" style="background:${esc(m.couleur)}"></span>${esc(moniteurNom(m))}`, parMon.get(m.id))).join('')}` : ''}
+      </tbody></table></div>` : '<p class="muted">Aucun résultat d\'examen sur cette période.</p>'}
   </div>`;
 }
 
@@ -145,6 +202,52 @@ function exportRecapCsv() {
   l.push('', 'DÉTAIL DES LEÇONS', 'Moniteur;Date;Début;Fin;Type;Durée (h);Élèves (auto-école)');
   for (const r of moniteurs) for (const s of r.lecons) l.push([moniteurNom(r.m), fmtDate(s.date), s.debut, s.fin, TYPES[s.type].label, n(durH(s)), participants(s).map((p) => { const e = byId('eleves', p.eleveId); return `${eleveNom(e)} (${agenceDe(e)?.nom || '—'})`; }).join(' / ')].join(';'));
   downloadBlob(new Blob(['﻿' + l.join('\r\n')], { type: 'text/csv;charset=utf-8' }), `recap-${mois}.csv`);
+}
+
+
+/* ---------- Export pour le comptable : factures et encaissements du mois, par auto-école ---------- */
+function exportComptable(mois, agenceId) {
+  const n = (x) => String(round2(x)).replace('.', ',');
+  const agOk = (eid) => !agenceId || byId('eleves', eid)?.agenceId === agenceId;
+  const ags = agenceId ? [byId('agences', agenceId)] : [...DB.agences, { id: '', nom: 'Sans auto-école' }];
+  const l = [`Export comptable ${mois}${agenceId ? ' - ' + byId('agences', agenceId).nom : ''}`, ''];
+  let totF = 0, totE = 0;
+  for (const a of ags) {
+    const fac = DB.factures.filter((f) => f.date.startsWith(mois) && agOk(f.eleveId) && (f.agenceId || byId('eleves', f.eleveId)?.agenceId || '') === a.id).sort((x, y) => x.numero.localeCompare(y.numero));
+    const enc = DB.paiements.filter((p) => (p.date || '').startsWith(mois) && agOk(p.eleveId) && (byId('eleves', p.eleveId)?.agenceId || '') === a.id).sort((x, y) => x.date.localeCompare(y.date));
+    if (!fac.length && !enc.length) continue;
+    const ec = a.id ? ecoleDe(a) : {};
+    l.push(`AUTO-ÉCOLE : ${a.nom}${ec.siret ? ' - SIRET ' + ec.siret : ''}`);
+    l.push('FACTURES', 'Date;Numéro;Élève;Total HT (€);TVA (€);Total TTC (€);Taux TVA;Payé (€);Statut');
+    let sHT = 0, sTVA = 0, sTTC = 0;
+    for (const f of fac) {
+      const t = factureTotaux(f); sHT += t.ht; sTVA += t.tva; sTTC += t.ttc;
+      l.push([fmtDate(f.date), f.numero, eleveNom(byId('eleves', f.eleveId)), n(t.ht), n(t.tva), n(t.ttc), t.taux + ' %', n(facturePaye(f)), factureStatut(f).label].join(';'));
+    }
+    l.push(`Total factures;;;${n(sHT)};${n(sTVA)};${n(sTTC)};;;`, '');
+    l.push('ENCAISSEMENTS', 'Date;Élève;Mode;Référence;Facture;Montant (€)');
+    const parMode = {};
+    let sE = 0;
+    for (const p of enc) {
+      sE += Number(p.montant || 0); parMode[p.mode] = (parMode[p.mode] || 0) + Number(p.montant || 0);
+      l.push([fmtDate(p.date), eleveNom(byId('eleves', p.eleveId)), p.mode || '', (p.reference || '').replace(/;/g, ','), byId('factures', p.factureId)?.numero || 'acompte', n(p.montant)].join(';'));
+    }
+    l.push(`Total encaissé;;;;;${n(sE)}`, ...Object.entries(parMode).map(([m, v]) => `dont ${m};;;;;${n(v)}`), '', '');
+    totF += sTTC; totE += sE;
+  }
+  if (!agenceId) l.push(`TOTAL TOUTES AUTO-ÉCOLES;Factures TTC;${n(totF)};Encaissé;${n(totE)}`);
+  downloadBlob(new Blob(['﻿' + l.join('\r\n')], { type: 'text/csv;charset=utf-8' }), `compta-${mois}${agenceId ? '-' + prefixeFactureDe(byId('agences', agenceId)) : ''}.csv`);
+}
+function openExportComptable() {
+  openModal({
+    title: '⬇️ Export pour le comptable',
+    body: `<div class="form-grid">
+      <label class="field"><span>Mois</span><input type="month" id="cpt-mois" value="${(UI.moisEnc || todayISO()).slice(0, 7)}"></label>
+      <label class="field"><span>Auto-école</span><select id="cpt-ag"><option value="">Toutes (une partie par auto-école)</option>${DB.agences.map((a) => `<option value="${a.id}" ${UI.filtreAgence === a.id ? 'selected' : ''}>${esc(a.nom)}</option>`).join('')}</select></label>
+    </div>
+    <p class="small muted">Fichier Excel (CSV) : pour chaque auto-école, la liste des factures du mois (HT, TVA, TTC, payé) et des encaissements (mode, référence, facture), avec les totaux.</p>`,
+    foot: `<button class="btn" data-action="closeModal">Annuler</button><button class="btn primary" data-action="comptaTelecharger">⬇️ Télécharger</button>`,
+  });
 }
 
 const RECAP_ACTIONS = {
@@ -176,4 +279,7 @@ const RECAP_ACTIONS = {
     delete m.paies[UI_RECAP.mois]; save(); render();
   },
   recapExport() { exportRecapCsv(); },
+  recapPeriode(d) { UI_RECAP.periodeStats = d.p; render(); },
+  exportComptable() { openExportComptable(); },
+  comptaTelecharger() { const m = $('#cpt-mois').value; if (!m) return; exportComptable(m, $('#cpt-ag').value); closeModal(); toast('⬇️ Export téléchargé'); },
 };

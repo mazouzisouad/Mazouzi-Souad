@@ -121,6 +121,18 @@ Planning → « 📥 Importer Google Agenda ». Dans Google Agenda (ordinateur) 
 - **Export Excel** (CSV) : moniteurs, temps par auto-école, auto-écoles, détail des leçons.
 Les taux et montants ne sont jamais envoyés aux moniteurs.
 
+## Factures par auto-école, export comptable, réussite, places libres
+
+- **Numérotation des factures par auto-école** (Paramètres → Facturation, case cochée par défaut) : chaque
+  auto-école a sa suite (ex. TRE-2026-0001, SMI-2026-0001). Début et dernier numéro : ✏️ sur l'auto-école.
+  En ligne, le numéro est réservé par une transaction : deux postes ne peuvent pas prendre le même.
+- **Export comptable** (Paiements → ⬇️ Export comptable) : par mois, pour chaque auto-école, factures
+  (HT, TVA, TTC, payé, statut) et encaissements (mode, référence, facture), avec totaux.
+- **Réussite aux examens** (Récap) : taux plateau / circulation, 1er passage, absents, par auto-école et par
+  moniteur accompagnateur ; ce mois, l'année ou 12 derniers mois.
+- **Places libres** : dans une leçon à venir avec de la place (ou quand un élève est excusé), l'appli propose
+  les élèves qui ont des heures payées pas encore posées.
+
 ## Fiche de suivi
 
 Pour chaque élève, un historique de suivi pédagogique : après une leçon, le moniteur (ou la direction) choisit

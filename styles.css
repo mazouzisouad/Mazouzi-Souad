@@ -682,3 +682,9 @@ body.glisse-en-cours, body.glisse-en-cours * { cursor: grabbing !important; user
 .recap-cols { display: grid; grid-template-columns: minmax(220px, 1fr) 2fr; gap: 18px; padding: 6px 2px; }
 .recap-lecons { max-height: 260px; overflow: auto; display: grid; gap: 3px; }
 @media (max-width: 700px) { .recap-cols { grid-template-columns: 1fr; } }
+
+/* ---------- Réussite / suggestions ---------- */
+.taux.ok { color: var(--ok); } .taux.moyen { color: var(--warn); } .taux.bas { color: var(--bad); }
+tr.sous-titre td { background: #f8fafc; font-weight: 700; font-size: 12.5px; color: var(--muted); }
+.suggest { border: 2px dashed #86efac; background: #f0fdf4; border-radius: 12px; padding: 8px 10px; display: grid; gap: 4px; }
+.suggest .result { background: #fff; }

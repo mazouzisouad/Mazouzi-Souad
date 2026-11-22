@@ -219,6 +219,7 @@ const Cloud = {
       doc('config', 'config', (d) => { if (d.exists && this.ready && this.empty) { this.empty = false; this.onState(); } });
       this.unsubs.push(this.fs.collection('ecole').doc('compteur').onSnapshot((d) => {
         this.remote.compteur = d.exists ? Number(d.data().n) || 0 : 0;
+        this.remote.compteurs = d.exists ? Object.fromEntries(Object.entries(d.data()).filter(([k]) => k.startsWith('a_'))) : {};
         recu('compteur');
       }, onErr));
       doc('roles', 'roles');
@@ -264,7 +265,7 @@ const Cloud = {
       };
     }
     const db = clean(this.remote.config || {});
-    db.entreprise = Object.assign({}, db.entreprise || {}, { compteur: this.remote.compteur });
+    db.entreprise = Object.assign({}, db.entreprise || {}, { compteur: this.remote.compteur, compteurs: this.remote.compteurs || {} });
     for (const c of CLOUD_COLLS) db[c] = [...this.remote[c].values()].map(clean);
     return db;
   },
@@ -340,7 +341,7 @@ const Cloud = {
       const cfg = {};
       for (const k of CLOUD_CONFIG_KEYS) cfg[k] = db[k];
       cfg.entreprise = Object.assign({}, db.entreprise);
-      delete cfg.entreprise.compteur;
+      delete cfg.entreprise.compteur; delete cfg.entreprise.compteurs;
       const sCfg = stableStringify(clean(cfg));
       if (sCfg !== this.synced.config) { ops.push(['set', this.fs.collection('ecole').doc('config'), clean(cfg)]); this.synced.config = sCfg; }
       const der = this.derive(db);
@@ -373,23 +374,24 @@ const Cloud = {
   // Première mise en ligne : envoie toutes les données de cet appareil
   async upload(db) {
     this.empty = false;
-    await this.fs.collection('ecole').doc('compteur').set({ n: Number(db.entreprise?.compteur) || 0 });
+    await this.fs.collection('ecole').doc('compteur').set({ n: Number(db.entreprise?.compteur) || 0, ...(db.entreprise?.compteurs || {}) });
     this.synced.config = null;
     await this.push(db);
     this.onState();
   },
 
   // Numéro de facture suivant, sans doublon même si deux agences facturent en même temps
-  async nextNumero() {
+  // cle : 'n' (suite commune) ou 'a_<auto-école>' (une suite par auto-école)
+  async nextNumero(cle = 'n') {
     const ref = this.fs.collection('ecole').doc('compteur');
     return this.fs.runTransaction(async (t) => {
       const d = await t.get(ref);
-      const n = (d.exists ? Number(d.data().n) || 0 : 0) + 1;
-      t.set(ref, { n });
+      const n = (d.exists ? Number(d.data()[cle]) || 0 : 0) + 1;
+      t.set(ref, { [cle]: n }, { merge: true });
       return n;
     });
   },
-  setCompteur(n) { return this.fs.collection('ecole').doc('compteur').set({ n: Number(n) || 0 }); },
+  setCompteur(n, cle = 'n') { return this.fs.collection('ecole').doc('compteur').set({ [cle]: Number(n) || 0 }, { merge: true }); },
 
   get actif() { return this.enabled && this.user && this.ready && !this.empty; },
   get moniteur() { return this.actif && this.role === 'moniteur'; },
