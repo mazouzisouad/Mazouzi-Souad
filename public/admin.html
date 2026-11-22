@@ -74,6 +74,7 @@
       <div class="tuile"><div class="lib">Codes utilisés</div><div class="val" id="t-codes">–</div><div class="det" id="t-codes-det"></div></div>
       <div class="tuile"><div class="lib">Comptes élèves</div><div class="val" id="t-comptes">–</div><div class="det" id="t-comptes-30"></div></div>
       <div class="tuile"><div class="lib">Élèves actifs (7 jours)</div><div class="val" id="t-actifs7">–</div><div class="det">se sont entraînés</div></div>
+      <div class="tuile"><div class="lib">Parrainages</div><div class="val" id="t-parrain">–</div><div class="det" id="t-parrain-det"></div></div>
       <div class="tuile"><div class="lib">Remboursements</div><div class="val" id="t-remb">–</div><div class="det" id="t-remb-det"></div></div>
     </div>
 
@@ -142,6 +143,8 @@
     $('t-comptes').textContent = nb(s.nb_comptes);
     $('t-comptes-30').textContent = '+' + nb(s.comptes_30j) + ' ces 30 derniers jours';
     $('t-actifs7').textContent = nb(s.actifs_7j);
+    $('t-parrain').textContent = nb(s.parrainages || 0);
+    $('t-parrain-det').textContent = '+' + nb(s.parrainages_mois || 0) + ' ce mois-ci · 1 mois offert chacun';
     $('t-remb').textContent = nb(s.nb_rembourses);
     $('t-remb-det').textContent = s.nb_rembourses ? euros(s.total_rembourse_centimes) + ' remboursés' : 'aucun';
     graphe(s.par_mois);

@@ -38,6 +38,15 @@ export function contenuRappel(r, site) {
   };
 }
 
+export function contenuParrainage(site) {
+  return {
+    sujet: 'Merci ! Ton ami t’offre 1 mois de Code Ludique',
+    titre: 'Ton parrainage a fonctionné 🎉',
+    texte: 'Un ami s’est inscrit avec ton lien et a pris l’accès complet. Tu gagnes 1 mois d’accès complet en plus, déjà ajouté à ton compte. Continue à partager ton lien : chaque nouvel ami te rapporte un mois.',
+    bouton: 'Voir mon compte', lien: `${site}/compte`,
+  };
+}
+
 export function htmlRappel(c, lienDesinscription) {
   return `<!doctype html><html lang="fr"><body style="margin:0;background:#f6f1ec;font-family:Nunito,Arial,sans-serif;color:${TEXTE}">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f1ec;padding:24px 12px"><tr><td align="center">

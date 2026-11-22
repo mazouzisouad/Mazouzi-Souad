@@ -14,12 +14,14 @@ export default async function handler(req, res) {
     }
 
     const site = urlDuSite(req);
+    // code de parrainage éventuel (lien « ?parrain=XXXXXX » de l'ami qui a invité l'élève)
+    const parrain = /^[A-HJ-NP-Z2-9]{6}$/.test(String(corps.parrain || '').toUpperCase()) ? String(corps.parrain).toUpperCase() : null;
     const session = await stripe().checkout.sessions.create({
       mode: 'payment',
       locale: 'fr',
       customer_email: user.email,
       client_reference_id: user.id,
-      metadata: { user_id: user.id, renonciation_le: new Date().toISOString() },
+      metadata: { user_id: user.id, renonciation_le: new Date().toISOString(), ...(parrain ? { parrain } : {}) },
       payment_intent_data: {
         metadata: { user_id: user.id },
         // Figure sur le reçu Stripe envoyé par e-mail (confirmation sur support durable, art. L221-13)

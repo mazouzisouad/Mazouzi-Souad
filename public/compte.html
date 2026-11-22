@@ -60,6 +60,19 @@
     <div id="paiements" class="doux">Aucun paiement.</div>
   </div>
 
+  <div class="carte" id="parrainage">
+    <h2 style="margin-top:0">🎁 Parrainage : 1 mois offert</h2>
+    <p>Partagez votre lien. Quand un ami s’inscrit avec ce lien et prend l’accès complet pour la première fois,
+      vous gagnez <b>1 mois d’accès complet</b>, ajouté automatiquement à votre compte.</p>
+    <label for="lien-parrain">Votre lien</label>
+    <input id="lien-parrain" type="text" readonly value="Chargement…" style="width:100%;padding:12px 14px;border:2px solid var(--bord);border-radius:16px;font:inherit;background:#fff">
+    <button class="bouton" id="partager" type="button">Partager mon lien</button>
+    <button class="bouton secondaire" id="copier" type="button">Copier le lien</button>
+    <p class="doux" id="bilan-parrain" style="margin-top:12px"></p>
+    <div id="msg-parrain" class="message" role="status"></div>
+    <p class="doux">12 mois offerts au maximum par an. Voir les <a href="/cgv#parrainage">conditions</a>.</p>
+  </div>
+
   <div class="carte">
     <h2 style="margin-top:0">Rappels par e-mail</h2>
     <label class="case"><input type="checkbox" id="pref-entrainement">
@@ -141,6 +154,29 @@
     });
   });
   CodeAcces.pret.then(chargerPreferences);
+  function chargerParrainage() {
+    if (!CodeAcces.utilisateur) return;
+    CodeAcces.client.rpc('obtenir_code_parrainage').then(function (r) {
+      if (r.error || !r.data) { $('lien-parrain').value = 'Indisponible pour le moment'; return; }
+      $('lien-parrain').value = location.origin + '/?parrain=' + r.data;
+    });
+    CodeAcces.client.from('parrainages').select('cree_le, annule_le').then(function (r) {
+      var n = (r.data || []).filter(function (p) { return !p.annule_le; }).length;
+      $('bilan-parrain').textContent = n ? n + ' ami' + (n > 1 ? 's' : '') + ' parrainé' + (n > 1 ? 's' : '') + ' : ' + n + ' mois offert' + (n > 1 ? 's' : '') + '. Merci !' : 'Aucun ami parrainé pour l’instant.';
+    });
+  }
+  CodeAcces.pret.then(chargerParrainage);
+  $('copier').onclick = function () {
+    var v = $('lien-parrain').value;
+    (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(function () {
+      Pages.message('msg-parrain', 'Lien copié !', 'ok');
+    }).catch(function () { $('lien-parrain').select(); Pages.message('msg-parrain', 'Sélectionnez le lien et copiez-le.', 'ok'); });
+  };
+  $('partager').onclick = function () {
+    var v = $('lien-parrain').value, t = 'Je révise le code de la route avec Code Ludique : essaie-le, c’est gratuit pour commencer !';
+    if (navigator.share) navigator.share({ title: 'Code Ludique', text: t, url: v }).catch(function () {});
+    else $('copier').onclick();
+  };
   CodeAcces.pret.then(afficher);
   CodeAcces.surChangement(afficher);
 
@@ -150,7 +186,8 @@
     }
     $('payer').disabled = true;
     Pages.message('msg-paiement', 'Redirection vers le paiement sécurisé…', 'ok');
-    Pages.api('/api/creer-paiement', { cgv: true, renonciation: true }).then(function (d) {
+    var parrain = null; try { parrain = localStorage.getItem('__ca_parrain'); } catch (e) {}
+    Pages.api('/api/creer-paiement', { cgv: true, renonciation: true, parrain: parrain }).then(function (d) {
       if (d.url) return location.assign(d.url);
       throw new Error(d.erreur || 'Erreur inattendue');
     }).catch(function (e) {

@@ -35,6 +35,7 @@ before(async () => {
       if (req.url.startsWith('/rest/v1/rpc/desinscrire')) return res.end(JSON.stringify(JSON.parse(corps).p_jeton === '11111111-2222-3333-4444-555555555555'));
       if (req.url.startsWith('/rest/v1/rpc/stats_admin')) return res.end(JSON.stringify({ total_centimes: 1980, nb_paiements: 2 }));
       if (req.url.startsWith('/rest/v1/rpc/rembourser') || req.url.startsWith('/rest/v1/rpc/lier_payment_intent')) return res.end('true');
+      if (req.url.startsWith('/rest/v1/rpc/recompenser_parrain')) return res.end('null');
       if (req.url.startsWith('/rest/v1/acces')) {
         const ligne = globalThis.EXPIRE_LE ? { expire_le: globalThis.EXPIRE_LE } : null;
         const objet = (req.headers.accept || '').includes('vnd.pgrst.object');
@@ -369,4 +370,24 @@ test('tableau de bord : e-mail non confirmé → refusé', async () => {
   assert.equal(estAdmin({ email: 'gerant@autoecole.fr' }), false);
   assert.equal(estAdmin({ email: 'gerant@autoecole.fr', email_confirmed_at: 'x' }), true);
   assert.equal(estAdmin({ email: 'intrus@autoecole.fr', email_confirmed_at: 'x' }), false);
+});
+
+test('parrainage : paiement avec un code → récompense demandée pour ce filleul', async () => {
+  const { default: webhook } = await import('../api/stripe-webhook.js');
+  const { charge, sig } = evenementSigne({ ...sessionPayee, id: 'cs_test_parrain', metadata: { ...sessionPayee.metadata, parrain: 'K7QM4X' } });
+  appels.length = 0;
+  const res = reponse();
+  await webhook(requete({ headers: { 'stripe-signature': sig }, corps: charge }), res);
+  assert.equal(res.statusCode, 200);
+  const r = appels.find((a) => a.url.includes('recompenser_parrain'));
+  assert.deepEqual(r && r.corps, { p_session_id: 'cs_test_parrain', p_filleul: 'u-123', p_code: 'K7QM4X' });
+});
+
+test('parrainage : paiement sans code → aucune récompense demandée', async () => {
+  const { default: webhook } = await import('../api/stripe-webhook.js');
+  const { charge, sig } = evenementSigne(sessionPayee);
+  appels.length = 0;
+  const res = reponse();
+  await webhook(requete({ headers: { 'stripe-signature': sig }, corps: charge }), res);
+  assert.equal(appels.filter((a) => a.url.includes('recompenser_parrain')).length, 0);
 });

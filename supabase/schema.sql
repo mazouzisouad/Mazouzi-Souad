@@ -270,6 +270,122 @@ $$;
 revoke all on function public.rembourser(text) from public, anon, authenticated;
 grant execute on function public.rembourser(text) to service_role;
 
+
+
+-- Lie le paiement Stripe (payment_intent) à la ligne de paiement, pour retrouver un remboursement
+create or replace function public.lier_payment_intent(p_session_id text, p_payment_intent text) returns void
+language sql security definer set search_path = public as $$
+  update paiements set payment_intent = p_payment_intent
+  where stripe_session_id = p_session_id and payment_intent is null;
+$$;
+revoke all on function public.lier_payment_intent(text, text) from public, anon, authenticated;
+grant execute on function public.lier_payment_intent(text, text) to service_role;
+
+-- ============================================================
+--  Parrainage : un élève qui fait acheter un ami gagne 1 mois
+-- ============================================================
+create table if not exists public.parrainage_codes (
+  user_id  uuid primary key references auth.users (id) on delete cascade,
+  code     text not null unique,
+  cree_le  timestamptz not null default now()
+);
+create table if not exists public.parrainages (
+  id          bigserial primary key,
+  parrain_id  uuid references auth.users (id) on delete set null,
+  filleul_id  uuid unique references auth.users (id) on delete set null,
+  session_id  text unique,
+  cree_le     timestamptz not null default now(),
+  annule_le   timestamptz
+);
+alter table public.parrainage_codes enable row level security;
+alter table public.parrainages enable row level security;
+drop policy if exists "parrainage: mon code" on public.parrainage_codes;
+create policy "parrainage: mon code" on public.parrainage_codes
+  for select to authenticated using (auth.uid() = user_id);
+drop policy if exists "parrainage: mes filleuls" on public.parrainages;
+create policy "parrainage: mes filleuls" on public.parrainages
+  for select to authenticated using (auth.uid() = parrain_id);
+
+-- Code personnel de l'élève connecté (créé à la première demande). 6 caractères sans 0/O/1/I.
+create or replace function public.obtenir_code_parrainage() returns text
+language plpgsql security definer set search_path = public as $$
+declare
+  v_uid uuid := auth.uid();
+  v_code text;
+  alphabet constant text := 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+begin
+  if v_uid is null then raise exception 'non_connecte'; end if;
+  select code into v_code from parrainage_codes where user_id = v_uid;
+  if v_code is not null then return v_code; end if;
+  loop
+    v_code := '';
+    for i in 1..6 loop
+      v_code := v_code || substr(alphabet, 1 + floor(random() * length(alphabet))::int, 1);
+    end loop;
+    begin
+      insert into parrainage_codes (user_id, code) values (v_uid, v_code);
+      return v_code;
+    exception when unique_violation then
+      select code into v_code from parrainage_codes where user_id = v_uid; -- appel simultané
+      if v_code is not null then return v_code; end if;
+    end;
+  end loop;
+end;
+$$;
+revoke all on function public.obtenir_code_parrainage() from public, anon;
+grant execute on function public.obtenir_code_parrainage() to authenticated;
+
+-- Récompense après le premier paiement d'un filleul (appelée par le serveur, sans effet si déjà faite).
+-- Renvoie l'identifiant du parrain récompensé, ou NULL.
+create or replace function public.recompenser_parrain(p_session_id text, p_filleul uuid, p_code text) returns uuid
+language plpgsql security definer set search_path = public as $$
+declare
+  v_parrain uuid;
+begin
+  select user_id into v_parrain from parrainage_codes where code = upper(p_code);
+  if v_parrain is null or v_parrain = p_filleul then return null; end if;
+  perform pg_advisory_xact_lock(hashtext(v_parrain::text));
+  if exists (select 1 from parrainages where filleul_id = p_filleul or session_id = p_session_id) then return null; end if;
+  -- seulement le tout premier achat du filleul
+  if exists (select 1 from paiements where user_id = p_filleul and stripe_session_id <> p_session_id) then return null; end if;
+  -- au plus 12 mois offerts par période de 12 mois
+  if (select count(*) from parrainages where parrain_id = v_parrain and annule_le is null
+        and cree_le > now() - interval '1 year') >= 12 then return null; end if;
+  insert into parrainages (parrain_id, filleul_id, session_id) values (v_parrain, p_filleul, p_session_id);
+  insert into acces (user_id, expire_le, mis_a_jour) values (v_parrain, now() + interval '1 month', now())
+  on conflict (user_id) do update set expire_le = greatest(acces.expire_le, now()) + interval '1 month', mis_a_jour = now();
+  return v_parrain;
+end;
+$$;
+revoke all on function public.recompenser_parrain(text, uuid, text) from public, anon, authenticated;
+grant execute on function public.recompenser_parrain(text, uuid, text) to service_role;
+
+-- Remboursement : le mois offert au parrain est aussi retiré
+create or replace function public.rembourser(p_payment_intent text) returns boolean
+language plpgsql security definer set search_path = public as $$
+declare
+  v_user uuid;
+  v_session text;
+  v_parrain uuid;
+begin
+  update paiements set rembourse_le = now()
+  where payment_intent = p_payment_intent and rembourse_le is null
+  returning user_id, stripe_session_id into v_user, v_session;
+  if not found then return false; end if;
+  if v_user is not null then
+    update acces set expire_le = expire_le - interval '3 months', mis_a_jour = now() where user_id = v_user;
+  end if;
+  update parrainages set annule_le = now() where session_id = v_session and annule_le is null
+  returning parrain_id into v_parrain;
+  if v_parrain is not null then
+    update acces set expire_le = expire_le - interval '1 month', mis_a_jour = now() where user_id = v_parrain;
+  end if;
+  return true;
+end;
+$$;
+revoke all on function public.rembourser(text) from public, anon, authenticated;
+grant execute on function public.rembourser(text) to service_role;
+
 -- ============================================================
 --  Tableau de bord interne (ventes)
 -- ============================================================
@@ -289,6 +405,8 @@ language sql security definer set search_path = public as $$
     'acces_actifs',        (select count(*) from acces where expire_le > now()),
     'codes_utilises',      (select count(*) from codes_utilises),
     'actifs_7j',           (select count(*) from progression where mis_a_jour > now() - interval '7 days'),
+    'parrainages',         (select count(*) from parrainages where annule_le is null),
+    'parrainages_mois',    (select count(*) from parrainages where annule_le is null and cree_le >= date_trunc('month', now())),
     'par_mois', coalesce((
       select jsonb_agg(jsonb_build_object('mois', to_char(m, 'YYYY-MM'), 'centimes', coalesce(s.c, 0), 'paiements', coalesce(s.n, 0)) order by m)
       from generate_series(date_trunc('month', now()) - interval '11 months', date_trunc('month', now()), interval '1 month') m
@@ -302,14 +420,6 @@ language sql security definer set search_path = public as $$
     ), '[]'::jsonb)
   );
 $$;
+
 revoke all on function public.stats_admin() from public, anon, authenticated;
 grant execute on function public.stats_admin() to service_role;
-
--- Lie le paiement Stripe (payment_intent) à la ligne de paiement, pour retrouver un remboursement
-create or replace function public.lier_payment_intent(p_session_id text, p_payment_intent text) returns void
-language sql security definer set search_path = public as $$
-  update paiements set payment_intent = p_payment_intent
-  where stripe_session_id = p_session_id and payment_intent is null;
-$$;
-revoke all on function public.lier_payment_intent(text, text) from public, anon, authenticated;
-grant execute on function public.lier_payment_intent(text, text) to service_role;

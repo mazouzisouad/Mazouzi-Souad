@@ -82,5 +82,26 @@ export async function traiterSessionPayee(session) {
     const pi = typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent.id;
     await supabaseAdmin().rpc('lier_payment_intent', { p_session_id: session.id, p_payment_intent: pi });
   }
+  if (session.metadata?.parrain) await recompenserParrain(session, userId);
   return data; // date de fin d'accès
+}
+
+// Parrainage : +1 mois au parrain si c'est le premier achat de l'ami. Ne bloque jamais le paiement.
+async function recompenserParrain(session, filleulId) {
+  try {
+    const { data: parrainId, error } = await supabaseAdmin().rpc('recompenser_parrain', {
+      p_session_id: session.id, p_filleul: filleulId, p_code: session.metadata.parrain,
+    });
+    if (error) throw new Error(error.message);
+    if (!parrainId || !process.env.BREVO_API_KEY) return;
+    const { data: u } = await supabaseAdmin().auth.admin.getUserById(parrainId);
+    if (!u?.user?.email) return;
+    const { contenuParrainage, htmlRappel, texteRappel, envoyerEmail } = await import('./emails.js');
+    const site = (process.env.SITE_URL || '').replace(/\/$/, '');
+    const c = contenuParrainage(site);
+    const lien = `${site}/compte`;
+    await envoyerEmail({ a: u.user.email, sujet: c.sujet, html: htmlRappel(c, lien), texte: texteRappel(c, lien), lienDesinscription: lien });
+  } catch (e) {
+    console.error('Parrainage non traité :', e.message);
+  }
 }
