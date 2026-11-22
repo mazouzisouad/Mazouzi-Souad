@@ -173,7 +173,12 @@
       nom = nom || 'VILLENEUVE';
       return '<rect x="3" y="24" width="94" height="52" rx="4" fill="' + BLANC + '" stroke="' + ROUGE + '" stroke-width="5"/>' + texte(nom, 50, 56, nom.length > 10 ? 10 : 12, NOIR, 900);
     },
-    EB20: function (nom) { return P.EB10(nom) + '<path d="M8 72 L92 28" stroke="' + ROUGE + '" stroke-width="5"/>'; },
+    EB20: function (nom) { // fond blanc, listel noir, barre oblique rouge (arrêté du 24 novembre 1967)
+      nom = nom || 'VILLENEUVE';
+      return '<rect x="3" y="24" width="94" height="52" rx="4" fill="' + BLANC + '" stroke="#bdbdbd" stroke-width="1"/>' +
+        '<rect x="7" y="28" width="86" height="44" rx="2" fill="none" stroke="' + NOIR + '" stroke-width="2.500"/>' +
+        texte(nom, 50, 56, nom.length > 10 ? 10 : 12, NOIR, 900) + '<path d="M10 70 L90 30" stroke="' + ROUGE + '" stroke-width="5"/>';
+    },
   };
   var ALIAS = { 'B21-1': 'B21_1', 'B21-2': 'B21_2' };
 
@@ -335,6 +340,10 @@
     // panneaux et feux au bord de la route
     (s.panneaux || []).forEach(function (p) {
       var pos = posBordDroit(p.bras), t = 30;
+      if (s.feux && s.feux[p.bras]) { // un feu au même endroit : le panneau se place juste avant
+        var dec = { S: [0, 36], N: [0, -36], E: [36, 0], W: [-36, 0] }[p.bras];
+        pos = { x: pos.x + dec[0], y: pos.y + dec[1] };
+      }
       o += '<g transform="translate(' + (pos.x - t / 2) + ' ' + (pos.y - t / 2) + ')"><svg width="' + t + '" height="' + t + '" viewBox="0 0 100 100">' + (panneauInterne(p.code) || '') + '</svg></g>';
     });
     Object.keys(s.feux || {}).forEach(function (b) {
