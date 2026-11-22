@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr" data-ca-sans-badge>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nouveau mot de passe – Code de la route</title>
+<link rel="stylesheet" href="/css/site.css">
+<script src="/api/config"></script>
+<script src="/vendor/supabase.js"></script>
+<script src="/js/acces.js"></script>
+<script src="/js/pages.js"></script>
+</head>
+<body>
+<header class="entete">
+  <a class="logo" href="/">🚗 Code de la route<span>.</span></a>
+  <a href="/compte">Mon compte</a>
+</header>
+<main>
+<div class="carte etroit">
+  <h1>Nouveau mot de passe</h1>
+  <form id="formulaire">
+    <label for="mdp">Nouveau mot de passe (8 caractères minimum)</label>
+    <input id="mdp" type="password" autocomplete="new-password" minlength="8" required>
+    <div id="msg" class="message" role="status"></div>
+    <button class="bouton" id="valider" type="submit">Enregistrer</button>
+  </form>
+</div>
+</main>
+<footer class="pied">
+  <a href="/">Entraînement</a>
+  <a href="/compte">Mon compte</a>
+  <a href="/cgv">Conditions de vente</a>
+  <a href="/confidentialite">Confidentialité</a>
+  <a href="/mentions-legales">Mentions légales</a>
+</footer>
+<script>
+document.getElementById('formulaire').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var mdp = document.getElementById('mdp').value;
+  if (mdp.length < 8) return Pages.message('msg', 'Au moins 8 caractères.', 'erreur');
+  CodeAcces.pret.then(function () {
+    if (!CodeAcces.utilisateur) throw new Error('Lien expiré. Redemandez un e-mail depuis la page de connexion.');
+    return CodeAcces.client.auth.updateUser({ password: mdp });
+  }).then(function (r) {
+    if (r && r.error) throw r.error;
+    Pages.message('msg', 'Mot de passe modifié. Redirection…', 'ok');
+    setTimeout(function () { location.replace('/'); }, 1200);
+  }).catch(function (err) { Pages.message('msg', Pages.traduire(err), 'erreur'); });
+});
+</script>
+</body>
+</html>

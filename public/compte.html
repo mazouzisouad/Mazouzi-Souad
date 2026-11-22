@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr" data-ca-sans-badge>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mon compte – Code de la route</title>
+<link rel="stylesheet" href="/css/site.css">
+<script src="/api/config"></script>
+<script src="/vendor/supabase.js"></script>
+<script src="/js/acces.js"></script>
+<script src="/js/pages.js"></script>
+</head>
+<body>
+<header class="entete">
+  <a class="logo" href="/">🚗 Code de la route<span>.</span></a>
+  <a href="/compte">Mon compte</a>
+</header>
+<main>
+<div id="non-connecte" class="carte etroit" hidden>
+  <h1>Mon compte</h1>
+  <p>Connectez-vous pour sauvegarder votre progression et débloquer l’accès complet.</p>
+  <a class="bouton" href="/connexion?suite=/compte">Se connecter</a>
+  <a class="bouton secondaire" href="/connexion?mode=inscription&amp;suite=/compte">Créer un compte</a>
+</div>
+
+<div id="connecte" hidden>
+  <div class="carte">
+    <h1>Mon compte</h1>
+    <p>Connecté avec <b id="email"></b></p>
+    <p>Accès complet : <span id="statut" class="statut inactif">—</span></p>
+    <p class="doux" id="detail-acces"></p>
+    <a class="bouton" href="/">Continuer l’entraînement</a>
+  </div>
+
+  <div class="carte" id="offre">
+    <h2 style="margin-top:0" id="titre-offre">Débloquer l’accès complet</h2>
+    <div class="prix">9,90 € <small>TTC pour 3 mois</small></div>
+    <ul class="liste-avantages">
+      <li>Toutes les questions et toutes les séries</li>
+      <li>Progression sauvegardée sur tous vos appareils</li>
+      <li>Paiement unique, <b>sans abonnement</b> ni renouvellement automatique</li>
+    </ul>
+    <label class="case"><input type="checkbox" id="cgv">
+      <span>J’ai lu et j’accepte les <a href="/cgv" target="_blank">conditions générales de vente</a>.</span></label>
+    <label class="case"><input type="checkbox" id="renonciation">
+      <span>Je demande l’accès immédiat au contenu et je reconnais <b>perdre mon droit de rétractation</b> dès le début de l’accès (art. L221-28 13° du Code de la consommation).</span></label>
+    <div id="msg-paiement" class="message" role="status"></div>
+    <button class="bouton" id="payer" type="button">Payer 9,90 € par carte</button>
+    <p class="doux" style="margin-top:8px">Paiement sécurisé par Stripe. Nous ne voyons jamais votre numéro de carte.</p>
+  </div>
+
+  <div class="carte">
+    <h2 style="margin-top:0">Mes paiements</h2>
+    <div id="paiements" class="doux">Aucun paiement.</div>
+  </div>
+
+  <div class="carte">
+    <h2 style="margin-top:0">Mes données</h2>
+    <p class="doux">Votre progression est enregistrée automatiquement.</p>
+    <button class="bouton secondaire" id="exporter" type="button">Télécharger mes données</button>
+    <button class="bouton secondaire" id="deconnexion" type="button">Se déconnecter</button>
+    <button class="bouton danger" id="supprimer" type="button">Supprimer mon compte</button>
+    <div id="msg-compte" class="message" role="status"></div>
+  </div>
+</div>
+</main>
+<footer class="pied">
+  <a href="/">Entraînement</a>
+  <a href="/compte">Mon compte</a>
+  <a href="/cgv">Conditions de vente</a>
+  <a href="/confidentialite">Confidentialité</a>
+  <a href="/mentions-legales">Mentions légales</a>
+</footer>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  if (new URLSearchParams(location.search).get('paiement') === 'annule') {
+    Pages.message('msg-paiement', 'Paiement annulé : aucun montant n’a été débité.', 'erreur');
+  }
+
+  function afficher() {
+    var u = CodeAcces.utilisateur;
+    $('non-connecte').hidden = !!u;
+    $('connecte').hidden = !u;
+    if (!u) return;
+    $('email').textContent = u.email;
+    var actif = CodeAcces.premium, fin = CodeAcces.expireLe;
+    $('statut').textContent = actif ? 'actif' : 'non activé';
+    $('statut').className = 'statut ' + (actif ? 'actif' : 'inactif');
+    $('detail-acces').textContent = actif ? 'Valable jusqu’au ' + Pages.dateFr(fin) + '.'
+      : (fin ? 'Votre accès a pris fin le ' + Pages.dateFr(fin) + '.' : '');
+    $('titre-offre').textContent = actif ? 'Prolonger de 3 mois' : 'Débloquer l’accès complet';
+    $('payer').textContent = actif ? 'Prolonger : 9,90 € par carte' : 'Payer 9,90 € par carte';
+    CodeAcces.client.from('paiements').select('cree_le, montant_centimes, fin_periode')
+      .order('cree_le', { ascending: false }).then(function (r) {
+        if (!r.data || !r.data.length) return;
+        $('paiements').innerHTML = '';
+        var t = document.createElement('table');
+        t.innerHTML = '<tr><th>Date</th><th>Montant</th><th>Accès jusqu’au</th></tr>';
+        r.data.forEach(function (p) {
+          var tr = document.createElement('tr');
+          [Pages.dateFr(p.cree_le), (p.montant_centimes / 100).toFixed(2).replace('.', ',') + ' €', Pages.dateFr(p.fin_periode)]
+            .forEach(function (v) { var td = document.createElement('td'); td.textContent = v; tr.appendChild(td); });
+          t.appendChild(tr);
+        });
+        $('paiements').appendChild(t);
+      });
+  }
+  CodeAcces.pret.then(afficher);
+  CodeAcces.surChangement(afficher);
+
+  $('payer').onclick = function () {
+    if (!$('cgv').checked || !$('renonciation').checked) {
+      return Pages.message('msg-paiement', 'Merci de cocher les deux cases pour continuer.', 'erreur');
+    }
+    $('payer').disabled = true;
+    Pages.message('msg-paiement', 'Redirection vers le paiement sécurisé…', 'ok');
+    Pages.api('/api/creer-paiement', { cgv: true, renonciation: true }).then(function (d) {
+      if (d.url) return location.assign(d.url);
+      throw new Error(d.erreur || 'Erreur inattendue');
+    }).catch(function (e) {
+      Pages.message('msg-paiement', e.message, 'erreur');
+      $('payer').disabled = false;
+    });
+  };
+
+  $('deconnexion').onclick = function () {
+    CodeAcces.deconnexion().then(function () { location.replace('/'); });
+  };
+
+  $('exporter').onclick = function () {
+    var sb = CodeAcces.client;
+    Promise.all([
+      sb.from('progression').select('*').maybeSingle(),
+      sb.from('acces').select('*').maybeSingle(),
+      sb.from('paiements').select('*'),
+    ]).then(function (r) {
+      var donnees = { compte: { id: CodeAcces.utilisateur.id, email: CodeAcces.utilisateur.email, cree_le: CodeAcces.utilisateur.created_at },
+        progression: r[0].data, acces: r[1].data, paiements: r[2].data, exporte_le: new Date().toISOString() };
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(donnees, null, 2)], { type: 'application/json' }));
+      a.download = 'mes-donnees-code-de-la-route.json';
+      a.click();
+    });
+  };
+
+  $('supprimer').onclick = function () {
+    var msg = 'Supprimer définitivement votre compte et votre progression ?' +
+      (CodeAcces.premium ? '\n\nVotre accès payant en cours sera perdu, sans remboursement.' : '') +
+      '\n\nCette action est irréversible.';
+    if (!confirm(msg)) return;
+    Pages.api('/api/supprimer-compte').then(function (d) {
+      if (!d.supprime) throw new Error(d.erreur || 'Suppression impossible');
+      return CodeAcces.deconnexion().catch(function () {});
+    }).then(function () {
+      alert('Votre compte a été supprimé.');
+      location.replace('/');
+    }).catch(function (e) { Pages.message('msg-compte', e.message, 'erreur'); });
+  };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!doctype html>
+<!--
+  ╔══════════════════════════════════════════════════════════════════════╗
+  ║  PAGE TEMPORAIRE : à remplacer par votre fichier HTML d'entraînement. ║
+  ║                                                                      ║
+  ║  Pour brancher votre appli, il suffit :                              ║
+  ║   1) d'ajouter ces 3 lignes dans <head>, AVANT vos scripts :         ║
+  ║        <script src="/api/config"></script>                           ║
+  ║        <script src="/vendor/supabase.js"></script>                   ║
+  ║        <script src="/js/acces.js"></script>                          ║
+  ║      → comptes + sauvegarde en ligne de la progression (localStorage) ║
+  ║   2) avant d'ouvrir un contenu payant :                              ║
+  ║        if (!CodeAcces.exigerPremium()) return;                       ║
+  ║   3) d'ajouter des liens vers /cgv /confidentialite /mentions-legales ║
+  ╚══════════════════════════════════════════════════════════════════════╝
+-->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code de la route – entraînement</title>
+<script src="/api/config"></script>
+<script src="/vendor/supabase.js"></script>
+<script src="/js/acces.js"></script>
+<link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<main>
+  <div class="carte">
+    <h1>Entraînement au code de la route</h1>
+    <p class="doux">Page de démonstration : elle sera remplacée par l’appli d’entraînement.</p>
+    <p>Séries terminées sur cet appareil et dans votre compte : <b id="compteur">0</b></p>
+    <button class="bouton secondaire" id="gratuite" type="button">Série 1 (gratuite)</button>
+    <button class="bouton" id="payante" type="button">Série 2 (accès complet)</button>
+  </div>
+</main>
+<footer class="pied">
+  <a href="/compte">Mon compte</a>
+  <a href="/cgv">Conditions de vente</a>
+  <a href="/confidentialite">Confidentialité</a>
+  <a href="/mentions-legales">Mentions légales</a>
+</footer>
+<script>
+  // L'appli garde sa logique habituelle : elle écrit simplement dans localStorage.
+  function lire() { return Number(localStorage.getItem('series_terminees') || 0); }
+  function afficher() { document.getElementById('compteur').textContent = lire(); }
+  function terminerSerie() { localStorage.setItem('series_terminees', lire() + 1); afficher(); }
+  document.getElementById('gratuite').onclick = terminerSerie;
+  document.getElementById('payante').onclick = function () {
+    if (!CodeAcces.exigerPremium()) return;   // propose de se connecter / payer
+    terminerSerie();
+  };
+  afficher();
+</script>
+</body>
+</html>

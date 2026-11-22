@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="fr" data-ca-sans-badge>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connexion – Code de la route</title>
+<link rel="stylesheet" href="/css/site.css">
+<script src="/api/config"></script>
+<script src="/vendor/supabase.js"></script>
+<script src="/js/acces.js"></script>
+<script src="/js/pages.js"></script>
+</head>
+<body>
+<header class="entete">
+  <a class="logo" href="/">🚗 Code de la route<span>.</span></a>
+  <a href="/compte">Mon compte</a>
+</header>
+<main>
+<div class="carte etroit">
+  <h1>Votre compte élève</h1>
+  <p class="doux">Votre progression est sauvegardée en ligne et vous la retrouvez sur tous vos appareils.</p>
+  <div class="onglets" role="tablist">
+    <button type="button" role="tab" id="t-connexion" aria-selected="true">Se connecter</button>
+    <button type="button" role="tab" id="t-inscription" aria-selected="false">Créer un compte</button>
+  </div>
+  <form id="formulaire" novalidate>
+    <label for="email">Adresse e-mail</label>
+    <input id="email" type="email" autocomplete="email" required>
+    <label for="mdp">Mot de passe</label>
+    <input id="mdp" type="password" autocomplete="current-password" minlength="8" required>
+    <label class="case" id="bloc-cgu" hidden>
+      <input type="checkbox" id="cgu">
+      <span>J’ai lu la <a href="/confidentialite" target="_blank">politique de confidentialité</a>.</span>
+    </label>
+    <div id="msg" class="message" role="status"></div>
+    <button class="bouton" id="valider" type="submit">Se connecter</button>
+  </form>
+  <p style="margin-top:16px"><button type="button" class="lien-bouton" id="oubli">Mot de passe oublié ?</button></p>
+</div>
+</main>
+<footer class="pied">
+  <a href="/">Entraînement</a>
+  <a href="/compte">Mon compte</a>
+  <a href="/cgv">Conditions de vente</a>
+  <a href="/confidentialite">Confidentialité</a>
+  <a href="/mentions-legales">Mentions légales</a>
+</footer>
+<script>
+(function () {
+  var mode = 'connexion';
+  var params = new URLSearchParams(location.search);
+  var suite = params.get('suite') || '/';
+  if (!/^\/(?!\/)/.test(suite)) suite = '/';
+  var $ = function (id) { return document.getElementById(id); };
+
+  function choisir(m) {
+    mode = m;
+    $('t-connexion').setAttribute('aria-selected', m === 'connexion');
+    $('t-inscription').setAttribute('aria-selected', m === 'inscription');
+    $('valider').textContent = m === 'connexion' ? 'Se connecter' : 'Créer mon compte';
+    $('mdp').autocomplete = m === 'connexion' ? 'current-password' : 'new-password';
+    $('bloc-cgu').hidden = m !== 'inscription';
+    Pages.message('msg', '');
+  }
+  $('t-connexion').onclick = function () { choisir('connexion'); };
+  $('t-inscription').onclick = function () { choisir('inscription'); };
+  if (params.get('mode') === 'inscription') choisir('inscription');
+
+  CodeAcces.pret.then(function () {
+    if (!CodeAcces.configure) Pages.message('msg', 'Le site n’est pas encore configuré (Supabase).', 'erreur');
+    else if (CodeAcces.utilisateur) location.replace(suite);
+  });
+
+  $('formulaire').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = $('email').value.trim(), mdp = $('mdp').value;
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return Pages.message('msg', 'Adresse e-mail invalide.', 'erreur');
+    if (mdp.length < 8) return Pages.message('msg', 'Le mot de passe doit contenir au moins 8 caractères.', 'erreur');
+    if (mode === 'inscription' && !$('cgu').checked) return Pages.message('msg', 'Merci de cocher la case.', 'erreur');
+    $('valider').disabled = true;
+    var sb = CodeAcces.client, req;
+    if (mode === 'connexion') {
+      req = sb.auth.signInWithPassword({ email: email, password: mdp }).then(function (r) {
+        if (r.error) throw r.error;
+        location.replace(suite);
+      });
+    } else {
+      req = sb.auth.signUp({ email: email, password: mdp, options: { emailRedirectTo: location.origin + suite } })
+        .then(function (r) {
+          if (r.error) throw r.error;
+          if (r.data.session) return location.replace(suite);
+          Pages.message('msg', 'Compte créé ! Cliquez sur le lien reçu par e-mail pour l’activer (pensez aux spams).', 'ok');
+        });
+    }
+    req.catch(function (err) { Pages.message('msg', Pages.traduire(err), 'erreur'); })
+       .then(function () { $('valider').disabled = false; });
+  });
+
+  $('oubli').onclick = function () {
+    var email = $('email').value.trim();
+    if (!email) return Pages.message('msg', 'Saisissez d’abord votre e-mail ci-dessus.', 'erreur');
+    CodeAcces.client.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/reinitialiser' })
+      .then(function (r) {
+        if (r.error) throw r.error;
+        Pages.message('msg', 'Si un compte existe, un e-mail de réinitialisation vient d’être envoyé.', 'ok');
+      })
+      .catch(function (err) { Pages.message('msg', Pages.traduire(err), 'erreur'); });
+  };
+})();
+</script>
+</body>
+</html>

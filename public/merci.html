@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr" data-ca-sans-badge>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merci – Code de la route</title>
+<link rel="stylesheet" href="/css/site.css">
+<script src="/api/config"></script>
+<script src="/vendor/supabase.js"></script>
+<script src="/js/acces.js"></script>
+<script src="/js/pages.js"></script>
+</head>
+<body>
+<header class="entete">
+  <a class="logo" href="/">🚗 Code de la route<span>.</span></a>
+  <a href="/compte">Mon compte</a>
+</header>
+<main>
+<div class="carte etroit" style="text-align:center">
+  <div style="font-size:48px" id="icone">⏳</div>
+  <h1 id="titre">Validation du paiement…</h1>
+  <p id="texte">Merci de patienter quelques secondes.</p>
+  <a class="bouton" id="continuer" href="/" hidden>Commencer l’entraînement</a>
+  <a class="bouton secondaire" href="/compte">Mon compte</a>
+</div>
+</main>
+<footer class="pied">
+  <a href="/">Entraînement</a>
+  <a href="/compte">Mon compte</a>
+  <a href="/cgv">Conditions de vente</a>
+  <a href="/confidentialite">Confidentialité</a>
+  <a href="/mentions-legales">Mentions légales</a>
+</footer>
+<script>
+(function () {
+  var id = new URLSearchParams(location.search).get('session_id');
+  var essais = 0;
+  function fini(ok, texte) {
+    document.getElementById('icone').textContent = ok ? '🎉' : 'ℹ️';
+    document.getElementById('titre').textContent = ok ? 'Accès complet débloqué !' : 'Paiement en cours de validation';
+    document.getElementById('texte').textContent = texte;
+    document.getElementById('continuer').hidden = !ok;
+  }
+  function verifier() {
+    essais++;
+    Pages.api('/api/verifier-paiement?session_id=' + encodeURIComponent(id)).then(function (d) {
+      if (d.statut === 'paye') {
+        return CodeAcces.rafraichirAcces().then(function () {
+          fini(true, 'Votre accès est valable jusqu’au ' + Pages.dateFr(d.expire_le) + '. Un reçu vous est envoyé par e-mail.');
+        });
+      }
+      if (essais < 6 && d._statut !== 403 && d._statut !== 400) return setTimeout(verifier, 2500);
+      fini(false, d.erreur || 'Votre paiement est enregistré mais pas encore confirmé. L’accès se débloquera automatiquement dès confirmation ; vous pouvez fermer cette page.');
+    }).catch(function () {
+      if (essais < 6) return setTimeout(verifier, 2500);
+      fini(false, 'Vérification impossible pour le moment. L’accès se débloquera automatiquement dès confirmation du paiement.');
+    });
+  }
+  CodeAcces.pret.then(function () {
+    if (!id) return fini(false, 'Aucun paiement à vérifier.');
+    if (!CodeAcces.utilisateur) {
+      location.replace('/connexion?suite=' + encodeURIComponent(location.pathname + location.search));
+      return;
+    }
+    verifier();
+  });
+})();
+</script>
+</body>
+</html>
