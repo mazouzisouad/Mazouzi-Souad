@@ -26,11 +26,18 @@
 
   var CLE_SYNC = '__ca_sync';           // métadonnées de synchro (non synchronisées)
   var CLE_RECHARGE = '__ca_recharge';   // évite les rechargements en boucle
+  var CLE_ETAT = '__ca_etat';           // dernier statut connu (affichage immédiat)
   var DELAI_ENVOI = 1500;               // ms : regroupe les écritures rapides
 
   var cfg = window.SITE_CONFIG || {};
   var etat = { utilisateur: null, premium: false, expireLe: null, configure: !!(cfg.supabaseUrl && cfg.supabaseAnonKey) };
   var ecouteurs = [];
+  try { // affichage immédiat du dernier statut connu, confirmé ensuite par le serveur
+    var cache = JSON.parse(localStorage.getItem(CLE_ETAT) || 'null');
+    if (cache && cache.expireLe && new Date(cache.expireLe) > new Date()) {
+      etat.premium = true; etat.expireLe = new Date(cache.expireLe);
+    }
+  } catch (e) {}
   var sb = null;
   var synchroFaite = false;  // n'envoie rien avant d'avoir lu la version en ligne
 
@@ -176,12 +183,17 @@
 
   // ---------- Accès payant ----------
   function chargerAcces() {
-    if (!etat.utilisateur) { etat.premium = false; etat.expireLe = null; return Promise.resolve(); }
+    if (!etat.utilisateur) {
+      etat.premium = false; etat.expireLe = null;
+      natif.removeItem.call(stockage, CLE_ETAT);
+      return Promise.resolve();
+    }
     return sb.from('acces').select('expire_le').eq('user_id', etat.utilisateur.id).maybeSingle()
       .then(function (r) {
         var fin = r.data && r.data.expire_le ? new Date(r.data.expire_le) : null;
         etat.expireLe = fin;
         etat.premium = !!(fin && fin > new Date());
+        try { natif.setItem.call(stockage, CLE_ETAT, JSON.stringify({ expireLe: fin })); } catch (e) {}
       });
   }
 
@@ -234,6 +246,7 @@
 
   function demarrer() {
     if (!etat.configure || !window.supabase) {
+      etat.premium = false; etat.expireLe = null;
       console.warn('[CodeAcces] Supabase non configuré : mode hors ligne.');
       resoudrePret(); notifier(); return;
     }
@@ -243,7 +256,7 @@
 
     sb.auth.getSession().then(function (r) {
       etat.utilisateur = r.data.session ? r.data.session.user : null;
-      if (!etat.utilisateur) return;
+      if (!etat.utilisateur) return chargerAcces(); // efface un statut en cache
       return Promise.all([chargerAcces(), synchroniserAuDemarrage()]);
     }).catch(function (e) { console.warn('[CodeAcces]', e); })
       .then(function () { resoudrePret(); notifier(); });
@@ -284,6 +297,8 @@
         // La progression de l'élève ne reste pas sur un appareil partagé
         Object.keys(instantane()).forEach(function (k) { natif.removeItem.call(stockage, k); });
         natif.removeItem.call(stockage, CLE_SYNC);
+        natif.removeItem.call(stockage, CLE_ETAT);
+        etat.premium = false; etat.expireLe = null;
       });
     },
   };

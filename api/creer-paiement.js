@@ -42,7 +42,7 @@ export default async function handler(req, res) {
         },
       },
       success_url: `${site}/merci?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${site}/compte?paiement=annule`,
+      cancel_url: `${site}/?ecran=premium&paiement=annule`,
     });
     return json(res, 200, { url: session.url });
   } catch (e) {

@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-ca-sans-badge>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#4f8fe0">
 <title>Code Ludique : entraînement au code de la route</title>
+<!-- Comptes élèves, accès payant et sauvegarde en ligne de la progression -->
+<script src="/api/config"></script>
+<script src="/vendor/supabase.js"></script>
+<script src="/js/acces.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -172,6 +176,14 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;paddin
 .inp:focus{outline:none;border-color:#4a8be6}
 .msg{font-size:13.5px;font-weight:800;margin:-2px 0 10px}
 .msg.ko{color:var(--red)} .msg.ok{color:#2f7a25}
+/* compte élève + paiement */
+.acct{position:absolute;top:12px;right:14px;z-index:3;display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.92);color:#2f6fd6;font-weight:900;font-size:12.5px;padding:6px 12px;border-radius:999px;text-decoration:none;box-shadow:0 2px 8px rgba(30,60,120,.15)}
+.acct svg{width:14px;height:14px}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;font-weight:700;line-height:1.4;margin:10px 0;cursor:pointer}
+.chk input{width:20px;height:20px;flex:none;margin:1px 0 0;accent-color:var(--green)}
+.chk a,.foot a,.muted a{color:#4a5bd6}
+a.btn{text-decoration:none}
+.legal{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin-top:8px}
 </style>
 </head>
 <body>
@@ -371,10 +383,16 @@ var FICHES = [
 ];
 
 /* ---------- accès gratuit / premium ---------- */
-var PAY_URL = 'https://buy.stripe.com/REMPLACER';   // à remplacer par ton lien de paiement Stripe
-var PRICE = '9,90 €', PREM_DAYS = 90;
-var CODES = [997899237460645, 371386072721844, 5171951318268295, 5618724655633229, 6443889238390320, 6544723450888883, 2686765284634331, 5918525155673982, 61800051289866, 4313681511400290, 8934943355262407, 7377063734074142, 2407039596151176, 5238613196211084, 3323033046700580, 4956787592260920, 7307078643118911, 2194765664207146, 5244394521147916, 4054896237954719, 2825677608897498, 2395021628310966, 5267797875160296, 4589559434427939, 6620671085480584, 6016434098146070, 5636845473968207, 1813176710549481, 2180460363356789, 1896380714709208];
-function cyrb53(s){var h1=0xdeadbeef,h2=0x41c6ce57;for(var i=0,ch;i<s.length;i++){ch=s.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return 4294967296*(2097151&h2)+(h1>>>0);}
+// Accès complet : géré par le compte élève (Supabase) et le paiement Stripe, voir /js/acces.js
+var PRICE = '9,90 €';
+var LOGIN_URL = '/connexion?mode=inscription&suite=' + encodeURIComponent('/?ecran=premium');
+var cgvOk = false, renOk = false, busy = false;
+function connecte(){ return !!(window.CodeAcces && CodeAcces.utilisateur); }
+function apiPost(url, body){
+  return CodeAcces.jeton().then(function(t){
+    return fetch(url, {method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer '+(t||'')}, body:JSON.stringify(body||{})});
+  }).then(function(r){ return r.json().catch(function(){ return {}; }); });
+}
 var FREE_FICHES = {f1:1, f4:1};
 var FREE_IDS = {};
 CAT.forEach(function(c){ c.ids.slice(0,4).forEach(function(i){ FREE_IDS[i]=1; }); });
@@ -474,7 +492,7 @@ function ring(frac, label){
   return '<div class="ring"><svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="'+r+'" fill="none" stroke="#e7e2db" stroke-width="6"/><circle cx="30" cy="30" r="'+r+'" fill="none" stroke="#4aa03e" stroke-width="6" stroke-linecap="round" stroke-dasharray="'+(c*f).toFixed(1)+' '+c.toFixed(1)+'"/></svg><b>'+label+'</b></div>';
 }
 function hero(inner, kind, bubble){
-  return '<div class="hero">'+hills()+inner+'<div class="bubble">'+bubble+'</div>'+mascot(kind,'mascot')+'</div>';
+  return '<div class="hero">'+hills()+acct()+inner+'<div class="bubble">'+bubble+'</div>'+mascot(kind,'mascot')+'</div>';
 }
 function nav(){
   var items = [['home','Accueil'],['series','Séries'],['stats','Statistiques'],['cours','Cours']];
@@ -482,8 +500,12 @@ function nav(){
     return '<button data-a="tab" data-t="'+x[0]+'" class="'+(screen===x[0]?'on':'')+'">'+TAB[x[0]]+'<span>'+x[1]+'</span></button>';
   }).join('')+'</nav>';
 }
-function isPrem(){ return !!store.prem && Date.now() < store.prem + PREM_DAYS*864e5; }
-function premDays(){ return Math.max(0, Math.ceil((store.prem + PREM_DAYS*864e5 - Date.now())/864e5)); }
+function isPrem(){ return !!(window.CodeAcces && CodeAcces.premium); }
+function premDays(){ var f = window.CodeAcces && CodeAcces.expireLe; return f ? Math.max(0, Math.ceil((f - Date.now())/864e5)) : 0; }
+function premEnd(){ return new Date(CodeAcces.expireLe).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'}); }
+var I_USER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.5-6 8-6s7 1.5 8 6"/></svg>';
+function acct(){ return '<a class="acct" href="/compte">'+I_USER+(connecte()?'Mon compte':'Se connecter')+'</a>'; }
+function legal(){ return '<div class="legal"><a href="/compte">Mon compte</a><a href="/cgv">Conditions de vente</a><a href="/confidentialite">Confidentialité</a><a href="/mentions-legales">Mentions légales</a></div>'; }
 function usable(c){ return isPrem() ? c.ids : c.ids.filter(function(i){ return FREE_IDS[i]; }); }
 var I_LOCK = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 function pickSeries(c){
@@ -527,7 +549,7 @@ function vHome(){
   html += promo();
   var wk = doneSince(Date.now()-7*864e5);
   html += '<div class="note">'+I_TROPHY+'<div><b>'+(wk?'Bravo !':'C’est parti !')+'</b><span>'+(wk?('Tu as validé '+wk+' série'+(wk>1?'s':'')+' cette semaine'):'Termine ta première série de la semaine')+'</span></div></div>';
-  html += '<div class="foot">Questions d’entraînement originales, non officielles. Elles ne remplacent pas la préparation en auto-école.</div></div>';
+  html += '<div class="foot">Questions d’entraînement originales, non officielles. Elles ne remplacent pas la préparation en auto-école.'+legal()+'</div></div>';
   return html;
 }
 
@@ -621,15 +643,28 @@ function vFiche(){
 }
 
 function vPremium(){
-  var html = '<div class="hero" style="height:170px;padding-top:50px">'+hills()+'<button class="back" data-a="backprem">'+BACK+' Retour</button><h1 style="font-size:26px;max-width:62%">Accès complet</h1>'+mascot('trophy','mascot')+'</div><div class="sheet">';
+  var html = '<div class="hero" style="height:170px;padding-top:50px">'+hills()+acct()+'<button class="back" data-a="backprem">'+BACK+' Retour</button><h1 style="font-size:26px;max-width:62%">Accès complet</h1>'+mascot('trophy','mascot')+'</div><div class="sheet">';
+  function m(w){ return payMsg && payMsg.w===w ? '<div class="msg '+payMsg.k+'" style="margin-top:10px">'+payMsg.t+'</div>' : ''; }
   if(isPrem()){
-    html += '<div class="card"><div class="ctitle">Accès complet actif</div><div class="muted">Encore '+premDays()+' jour'+(premDays()>1?'s':'')+'. Bonne préparation !</div></div>';
-    return html+'</div>';
+    html += '<div class="card"><div class="ctitle">Accès complet actif</div><div class="muted">Valable jusqu’au '+premEnd()+' (encore '+premDays()+' jour'+(premDays()>1?'s':'')+'). Bonne préparation !</div>'+m('code')+
+      '<a class="btn ghost full" style="margin-top:12px" href="/compte">Mon compte</a></div>';
+    return html+'<div class="foot">'+legal()+'</div></div>';
   }
-  html += '<div class="card"><div class="price">'+PRICE+' <small>pour 3 mois</small></div><ul class="perks"><li>Les '+Q.length+' questions, sur tous les thèmes</li><li>Examens blancs de 40 questions, avec correction</li><li>Les 10 fiches de cours</li><li>Suivi de tes progrès et de tes erreurs</li></ul>'+
-    '<button class="btn green full" style="margin-top:10px" data-a="buy">Acheter l’accès complet</button>'+(payMsg&&payMsg.k==='ko'&&payMsg.t.indexOf('paiement')>=0?'<div class="msg ko" style="margin-top:10px">'+payMsg.t+'</div>':'')+'</div>';
-  html += '<div class="card"><div class="ctitle">Tu as déjà un code ?</div><input id="code" class="inp" placeholder="CODE-XXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">'+(payMsg&&payMsg.t.indexOf('paiement')<0?'<div class="msg '+payMsg.k+'">'+payMsg.t+'</div>':'')+'<button class="btn purple full" data-a="activate">Activer mon code</button></div>';
-  html += '<div class="foot">Gratuit : '+Object.keys(FREE_IDS).length+' questions et 2 fiches. Questions d’entraînement originales, non officielles.</div></div>';
+  html += '<div class="card"><div class="price">'+PRICE+' <small>pour 3 mois</small></div><ul class="perks"><li>Les '+Q.length+' questions, sur tous les thèmes</li><li>Examens blancs de 40 questions, avec correction</li><li>Les 10 fiches de cours</li><li>Suivi de tes progrès et de tes erreurs</li><li>Progression sauvegardée sur tous tes appareils</li></ul>'+
+    '<div class="muted" style="margin:6px 0 4px">Paiement unique, sans abonnement ni renouvellement automatique.</div>';
+  if(!connecte()){
+    html += '<div class="muted" style="margin:10px 0 2px">Crée d’abord ton compte élève : ton accès et ta progression y seront enregistrés.</div>'+
+      '<a class="btn green full" style="margin-top:10px" href="'+LOGIN_URL+'">Créer mon compte</a>'+
+      '<div class="muted" style="text-align:center;margin-top:10px"><a href="'+LOGIN_URL.replace('mode=inscription&','')+'">J’ai déjà un compte</a></div>';
+  } else {
+    html += '<label class="chk"><input type="checkbox" id="cgv"'+(cgvOk?' checked':'')+'><span>J’ai lu et j’accepte les <a href="/cgv" target="_blank">conditions générales de vente</a>.</span></label>'+
+      '<label class="chk"><input type="checkbox" id="ren"'+(renOk?' checked':'')+'><span>Je demande l’accès immédiat et je reconnais perdre mon droit de rétractation dès le début de l’accès (art. L221-28 13° du Code de la consommation).</span></label>'+
+      '<button class="btn green full" style="margin-top:6px" data-a="buy"'+(busy?' disabled':'')+'>'+(busy?'Redirection vers le paiement…':'Payer '+PRICE+' par carte')+'</button>'+
+      '<div class="muted" style="text-align:center;margin-top:8px">Paiement sécurisé par Stripe.</div>';
+  }
+  html += m('buy')+'</div>';
+  html += '<div class="card"><div class="ctitle">Tu as déjà un code ?</div><input id="code" class="inp" placeholder="CODE-XXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">'+m('code')+'<button class="btn purple full" data-a="activate"'+(busy?' disabled':'')+'>Activer mon code</button></div>';
+  html += '<div class="foot">Gratuit : '+Object.keys(FREE_IDS).length+' questions et 2 fiches. Questions d’entraînement originales, non officielles.'+legal()+'</div></div>';
   return html;
 }
 function modeLabel(){ return run.mode==='exam'?'Examen blanc':run.mode==='errors'?'Mes erreurs':run.mode==='daily'?'Question du jour':catById(run.cat).name; }
@@ -766,17 +801,44 @@ $app.addEventListener('click', function(e){
   else if(a==='filter'){ coursCat = d('c') && coursCat!==d('c') ? d('c') : null; render(); }
   else if(a==='fiche'){ if(!isPrem() && !FREE_FICHES[d('f')]){ payMsg=null; go('premium'); return; } ficheId = d('f'); go('fiche'); }
   else if(a==='premium'){ payMsg=null; go('premium'); }
-  else if(a==='buy'){ if(PAY_URL.indexOf('REMPLACER')>=0){ payMsg={k:'ko',t:'Le paiement en ligne sera disponible très bientôt.'}; render(); } else { try{ window.open(PAY_URL,'_blank','noopener'); }catch(e){} } }
+  else if(a==='buy'){
+    if(!connecte()){ location.href = LOGIN_URL; return; }
+    if(!cgvOk || !renOk){ payMsg={w:'buy',k:'ko',t:'Coche les deux cases pour continuer.'}; render(); return; }
+    busy = true; payMsg = null; render();
+    apiPost('/api/creer-paiement', {cgv:true, renonciation:true}).then(function(r){
+      if(r.url){ location.href = r.url; return; }
+      throw new Error(r.erreur);
+    }).catch(function(err){ busy = false; payMsg={w:'buy',k:'ko',t:(err && err.message) || 'Le paiement est indisponible pour le moment. Réessaie plus tard.'}; render(); });
+  }
   else if(a==='activate'){
     var inp = document.getElementById('code'), v = inp ? inp.value.toUpperCase().replace(/\s/g,'') : '';
-    if(CODES.indexOf(cyrb53(v))>=0){ store.prem = Date.now(); save(); payMsg={k:'ok',t:'Accès complet activé pour 3 mois !'}; }
-    else payMsg={k:'ko',t:'Code incorrect. Vérifie les majuscules et le tiret.'};
-    render();
+    if(!v){ payMsg={w:'code',k:'ko',t:'Saisis ton code.'}; render(); return; }
+    if(!connecte()){ payMsg={w:'code',k:'ko',t:'Connecte-toi d’abord : ton code sera lié à ton compte. <a href="'+LOGIN_URL+'">Créer mon compte</a>'}; render(); return; }
+    busy = true; render();
+    apiPost('/api/activer-code', {code:v}).then(function(r){
+      if(!r.expire_le) throw new Error(r.erreur);
+      return CodeAcces.rafraichirAcces().then(function(){ payMsg={w:'code',k:'ok',t:'Accès complet activé pour 3 mois !'}; });
+    }).catch(function(err){ payMsg={w:'code',k:'ko',t:(err && err.message) || 'Activation impossible pour le moment.'}; })
+      .then(function(){ busy = false; render(); });
   }
   else if(a==='read'){ store.read[d('f')] = 1; save(); go('cours'); }
 });
+$app.addEventListener('change', function(e){
+  if(e.target.id==='cgv') cgvOk = e.target.checked;
+  if(e.target.id==='ren') renOk = e.target.checked;
+});
 
+(function(){
+  var p = new URLSearchParams(location.search);
+  if(p.get('ecran')==='premium'){
+    screen = 'premium';
+    if(p.get('paiement')==='annule') payMsg = {w:'buy', k:'ko', t:'Paiement annulé : aucun montant n’a été débité.'};
+    try{ history.replaceState(null, '', location.pathname); }catch(e){}
+  }
+})();
 render();
+// Mise à jour quand le compte ou l'accès change (connexion, paiement, fin d'accès)
+if(window.CodeAcces) CodeAcces.surChangement(function(){ if(screen!=='quiz') render(); });
 </script>
 </body>
 </html>

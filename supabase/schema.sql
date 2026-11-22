@@ -112,3 +112,40 @@ $$;
 
 revoke all on function public.accorder_acces(text, uuid, text, integer, text, timestamptz) from public, anon, authenticated;
 grant execute on function public.accorder_acces(text, uuid, text, integer, text, timestamptz) to service_role;
+
+-- ---------- Codes d'accès remis par l'auto-école ----------
+-- Chaque code (identifié par son empreinte) ne peut être utilisé qu'une seule fois.
+create table if not exists public.codes_utilises (
+  empreinte   bigint primary key,
+  user_id     uuid references auth.users (id) on delete set null,
+  utilise_le  timestamptz not null default now()
+);
+alter table public.codes_utilises enable row level security;
+-- aucune règle : seul le serveur (service_role) y accède
+
+create or replace function public.activer_code(p_empreinte bigint, p_user_id uuid)
+returns timestamptz
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_fin timestamptz;
+begin
+  perform pg_advisory_xact_lock(hashtext(p_user_id::text));
+  insert into codes_utilises (empreinte, user_id) values (p_empreinte, p_user_id)
+  on conflict (empreinte) do nothing;
+  if not found then
+    raise exception 'deja_utilise';
+  end if;
+
+  select greatest(coalesce(max(expire_le), now()), now()) + interval '3 months' into v_fin
+    from acces where user_id = p_user_id;
+  insert into acces (user_id, expire_le, mis_a_jour) values (p_user_id, v_fin, now())
+  on conflict (user_id) do update set expire_le = excluded.expire_le, mis_a_jour = now();
+  return v_fin;
+end;
+$$;
+
+revoke all on function public.activer_code(bigint, uuid) from public, anon, authenticated;
+grant execute on function public.activer_code(bigint, uuid) to service_role;

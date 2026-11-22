@@ -1,68 +1,66 @@
 /* Pages du site (compte, paiement, mentions). L'appli garde son propre design.
    Pour harmoniser avec l'appli, changez seulement les couleurs ci-dessous. */
 :root {
-  --fond: #f3f6fb;
-  --carte: #ffffff;
-  --texte: #1b2433;
-  --doux: #5a6678;
-  --principal: #1a3a6b;
+  /* mêmes couleurs que l'appli Code Ludique */
+  --fond: #f6f1ec;
+  --carte: #fffdfb;
+  --texte: #1f2a44;
+  --doux: #6b7590;
+  --principal: #4aa03e;
+  --principal-ombre: #3b8531;
   --principal-texte: #ffffff;
-  --accent: #e8b500;
-  --ok: #1e8e4e;
-  --erreur: #c0392b;
-  --bord: #dde3ec;
-  --rayon: 14px;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --fond: #0f1622; --carte: #182233; --texte: #e8edf5; --doux: #a3afc2;
-    --principal: #5b8fe0; --principal-texte: #0b1220; --bord: #2a3850;
-  }
+  --lien: #4a5bd6;
+  --accent: #2f6fd6;
+  --ok: #2f7a25;
+  --erreur: #d93a2f;
+  --bord: #e6e1da;
+  --rayon: 22px;
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--fond); color: var(--texte);
-  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font: 600 16px/1.55 'Nunito', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(180deg, #f4efe9, #eaeff7) fixed;
 }
-a { color: var(--principal); }
+a { color: var(--lien); }
 .entete {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   max-width: 760px; margin: 0 auto; padding: 16px;
 }
-.logo { font-weight: 700; text-decoration: none; color: var(--texte); font-size: 18px; }
-.logo span { color: var(--accent); }
+.logo { font-weight: 900; text-decoration: none; color: var(--accent); font-size: 20px; letter-spacing: -.3px; }
 main { max-width: 760px; margin: 0 auto; padding: 0 16px 40px; }
 .carte {
   background: var(--carte); border: 1px solid var(--bord); border-radius: var(--rayon);
-  padding: 24px; margin: 16px 0; box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  padding: 24px; margin: 16px 0; box-shadow: 0 4px 18px rgba(60,50,40,.07);
 }
 .etroit { max-width: 440px; margin-left: auto; margin-right: auto; }
-h1 { font-size: 26px; line-height: 1.25; margin: 8px 0 12px; }
-h2 { font-size: 19px; margin: 24px 0 8px; }
+h1 { font-weight: 900; font-size: 26px; line-height: 1.25; margin: 8px 0 12px; }
+h2 { font-weight: 900; font-size: 19px; margin: 24px 0 8px; }
 p { margin: 0 0 12px; }
-label { display: block; font-weight: 600; margin: 12px 0 6px; }
+label { display: block; font-weight: 800; margin: 12px 0 6px; }
 input[type=email], input[type=password] {
-  width: 100%; padding: 12px; border: 1px solid var(--bord); border-radius: 10px;
-  font: inherit; background: var(--fond); color: var(--texte);
+  width: 100%; padding: 13px 14px; border: 2px solid var(--bord); border-radius: 16px;
+  font: inherit; background: #fff; color: var(--texte);
 }
 .case { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; margin: 12px 0; }
 .case input { margin-top: 4px; width: 18px; height: 18px; flex: none; }
 .bouton {
   display: inline-block; width: 100%; text-align: center; border: 0; cursor: pointer;
-  background: var(--principal); color: var(--principal-texte); font-family: inherit; font-size: 16px; font-weight: 600; line-height: 1.2;
-  padding: 14px 16px; border-radius: 10px; text-decoration: none; margin-top: 12px;
+  background: var(--principal); color: var(--principal-texte); font-family: inherit; font-size: 16px; line-height: 1.2;
+  padding: 14px 16px; border-radius: 999px; text-decoration: none; margin-top: 12px;
+  font-weight: 900; box-shadow: 0 3px 0 var(--principal-ombre);
 }
 .bouton[disabled] { opacity: .55; cursor: not-allowed; }
-.bouton.secondaire { background: transparent; color: var(--principal); border: 1px solid var(--bord); }
-.bouton.danger { background: transparent; color: var(--erreur); border: 1px solid var(--erreur); }
-.lien-bouton { background: none; border: 0; color: var(--principal); font: inherit; cursor: pointer; padding: 0; text-decoration: underline; }
-.message { padding: 12px 14px; border-radius: 10px; margin: 12px 0; display: none; }
+.bouton.secondaire { background: #fff; color: var(--texte); border: 2px solid var(--bord); box-shadow: none; }
+.bouton.danger { background: #fff; color: var(--erreur); border: 2px solid var(--erreur); box-shadow: none; }
+.lien-bouton { background: none; border: 0; color: var(--lien); font: inherit; cursor: pointer; padding: 0; text-decoration: underline; }
+.message { padding: 12px 14px; border-radius: 16px; font-weight: 800; margin: 12px 0; display: none; }
 .message.visible { display: block; }
 .message.ok { background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); }
 .message.erreur { background: color-mix(in srgb, var(--erreur) 14%, transparent); color: var(--erreur); }
-.prix { font-size: 40px; font-weight: 800; margin: 4px 0; }
+.prix { font-size: 40px; font-weight: 900; margin: 4px 0; }
 .prix small { font-size: 16px; font-weight: 500; color: var(--doux); }
 .liste-avantages { padding-left: 20px; margin: 8px 0 16px; }
 .statut { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 14px; font-weight: 600; }
@@ -72,9 +70,9 @@ input[type=email], input[type=password] {
 .onglets { display: flex; gap: 8px; margin-bottom: 8px; }
 .onglets button {
   flex: 1; padding: 10px; border: 1px solid var(--bord); background: transparent; color: var(--texte);
-  border-radius: 10px; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
+  border-radius: 999px; font-family: inherit; font-size: 15px; font-weight: 900; cursor: pointer;
 }
-.onglets button[aria-selected=true] { background: var(--principal); color: var(--principal-texte); border-color: var(--principal); }
+.onglets button[aria-selected=true] { background: var(--accent); color: var(--principal-texte); border-color: var(--accent); }
 .legal h2 { margin-top: 28px; }
 .legal li { margin-bottom: 6px; }
 .a-completer { background: #fff3b0; color: #5a4500; padding: 0 4px; border-radius: 4px; }

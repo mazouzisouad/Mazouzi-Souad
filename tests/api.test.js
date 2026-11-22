@@ -19,6 +19,13 @@ before(async () => {
         res.statusCode = 401; return res.end(JSON.stringify({ msg: 'invalid' }));
       }
       if (req.url.startsWith('/rest/v1/rpc/accorder_acces')) return res.end(JSON.stringify('2027-02-22T10:00:00+00:00'));
+      if (req.url.startsWith('/rest/v1/rpc/activer_code')) {
+        const c = JSON.parse(corps);
+        if (c.p_empreinte === globalThis.EMPREINTE_DEJA_UTILISEE) {
+          res.statusCode = 400; return res.end(JSON.stringify({ code: 'P0001', message: 'deja_utilise' }));
+        }
+        return res.end(JSON.stringify('2027-02-22T10:00:00+00:00'));
+      }
       res.statusCode = 404; res.end('{}');
     });
   }).listen(0);
@@ -128,4 +135,50 @@ test('config : ne sert que les clés publiques', async () => {
   config(requete({ method: 'GET' }), res);
   assert.match(res.corps, /cle-anon/);
   assert.doesNotMatch(res.corps, /cle-service|sk_test|whsec/);
+});
+
+test('activer-code : code inconnu → 400, aucun appel base', async () => {
+  const { default: activer } = await import('../api/activer-code.js');
+  appels.length = 0;
+  const res = reponse();
+  await activer(requete({ headers: { authorization: 'Bearer bon-jeton' }, corps: '{"code":"FAUX-123"}' }), res);
+  assert.equal(res.statusCode, 400);
+  assert.equal(appels.filter((a) => a.url.includes('activer_code')).length, 0);
+});
+
+test('activer-code : code valide (minuscules, espaces) → accès accordé au compte', async () => {
+  const { EMPREINTES_CODES, cyrb53 } = await import('../api/_lib/codes.js');
+  EMPREINTES_CODES.push(cyrb53('CODE-TEST42'), cyrb53('CODE-USAGE1'));
+  globalThis.EMPREINTE_DEJA_UTILISEE = cyrb53('CODE-USAGE1');
+  const { default: activer } = await import('../api/activer-code.js');
+  appels.length = 0;
+  let res = reponse();
+  await activer(requete({ headers: { authorization: 'Bearer bon-jeton' }, corps: '{"code":" code-test42 "}' }), res);
+  assert.equal(res.statusCode, 200, res.corps);
+  const rpc = appels.find((a) => a.url.includes('activer_code'));
+  assert.deepEqual(rpc.corps, { p_empreinte: cyrb53('CODE-TEST42'), p_user_id: 'u-123' });
+
+  res = reponse();
+  await activer(requete({ headers: { authorization: 'Bearer bon-jeton' }, corps: '{"code":"CODE-USAGE1"}' }), res);
+  assert.equal(res.statusCode, 409);
+  assert.match(res.corps, /déjà été utilisé/);
+});
+
+test('activer-code : non connecté → 401', async () => {
+  const { default: activer } = await import('../api/activer-code.js');
+  const res = reponse();
+  await activer(requete({ headers: {}, corps: '{"code":"X"}' }), res);
+  assert.equal(res.statusCode, 401);
+});
+
+test('cyrb53 serveur identique à celui de l’appli d’origine', async () => {
+  const { cyrb53 } = await import('../api/_lib/codes.js');
+  // version copiée telle quelle de l'appli d'origine
+  function orig(s){var h1=0xdeadbeef,h2=0x41c6ce57;for(var i=0,ch;i<s.length;i++){ch=s.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return 4294967296*(2097151&h2)+(h1>>>0);}
+  for (const s of ['', 'CODE-ABC123', 'ÉCOLE-2026', 'x'.repeat(50)]) assert.equal(cyrb53(s), orig(s));
+});
+
+test('creer-paiement : annulation → retour à l’écran Accès complet de l’appli', async () => {
+  const src = (await import('node:fs')).readFileSync(new URL('../api/creer-paiement.js', import.meta.url), 'utf8');
+  assert.match(src, /cancel_url: `\$\{site\}\/\?ecran=premium&paiement=annule`/);
 });
