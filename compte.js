@@ -47,7 +47,10 @@ function compteEleve(eid, ajout) {
       if (l.pu > 0) res.examens += l.pu;
       continue;
     }
-    const fait = STATUTS_FAITS.includes(p.statut);
+    // leçon passée encore « prévue » (présence pas notée) : elle compte comme faite
+    const aNoter = p.statut === 'prevu' && s.date < auj && s.id !== ajout?.id;
+    if (aNoter) res.aNoter = (res.aNoter || 0) + durH(s);
+    const fait = STATUTS_FAITS.includes(p.statut) || aNoter;
     // évaluation de départ : hors forfait, prix fixe
     if (modeDe(s, eid) === 'evaluation') { if (fait) { res.evaluations += DB.settings.tarifEvaluation ?? 50; } continue; }
     const prevu = p.statut === 'prevu' && (s.date >= auj || s.id === ajout?.id);

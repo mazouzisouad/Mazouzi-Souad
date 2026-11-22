@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · récap du mois ludique';
+const APP_VERSION = '2026-11-22 · leçons passées sans présence comptées dans le compte';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -245,12 +245,13 @@ function eleveSeances(eid) {
     .sort((a, b) => (a.date + a.debut).localeCompare(b.date + b.debut));
 }
 function eleveHeures(eid) {
-  const res = { plateau: 0, circulation: 0, aVenir: 0 };
+  const res = { plateau: 0, circulation: 0, aVenir: 0, aNoter: 0 };
   const now = todayISO();
   for (const s of eleveSeances(eid)) {
     const p = s.eleves.find((x) => x.eleveId === eid);
     if (['present', 'valide', 'nonvalide'].includes(p.statut) && !isExam(s.type)) res[baseDe(s.type)] += durH(s);
     else if (p.statut === 'prevu' && s.date >= now) res.aVenir += durH(s);
+    else if (p.statut === 'prevu' && !isExam(s.type)) { res[baseDe(s.type)] += durH(s); res.aNoter += durH(s); }
   }
   return res;
 }
@@ -1362,6 +1363,7 @@ function viewFiche(id) {
       <div><span>Plateau</span><strong>${fmtH(h.plateau)}</strong></div>
       <div><span>Circulation</span><strong>${fmtH(h.circulation)}</strong></div>
       <div><span>À venir</span><strong>${fmtH(h.aVenir)}</strong></div>
+      ${h.aNoter ? `<div title="Leçons passées dont la présence n'a pas été notée : elles sont comptées comme faites"><span>⚠️ Présence à noter</span><strong style="color:var(--warn)">${fmtH(h.aNoter)}</strong></div>` : ''}
       <div><span>Examen plateau</span><strong class="exam-res ${ex.exam_plateau.cls}">${ex.exam_plateau.txt}</strong></div>
       <div><span>Examen circulation</span><strong class="exam-res ${ex.exam_circulation.cls}">${ex.exam_circulation.txt}</strong></div>
       ${['plateau', 'circulation'].map((b) => { const ex = prochainExamen(id, b); return ex ? `<div><span>Prépa examen ${b} (le ${fmtDate(ex.date)})</span><strong>${prepBadge(preparation(id, ex))}</strong></div>` : ''; }).join('')}
