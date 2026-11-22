@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · prépa examen affichée à côté de chaque élève';
+const APP_VERSION = '2026-11-22 · prépa examen choisie élève par élève';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -37,9 +37,9 @@ const MODES_ELEVE = { lecon: 'Leçon', blanc: '📝 Examen blanc', prepa: '🎯 
 function modeDe(s, eleveId) {
   if (categorie(s.type) !== 'lecon') return isBlanc(s.type) ? 'blanc' : 'exam';
   const p = s.eleves.find((x) => x.eleveId === eleveId);
-  return (p && p.mode) || (s.prepa ? 'prepa' : 'lecon');
+  return (p && p.mode) || 'lecon'; // sans choix : leçon normale
 }
-const modeP = (s, p) => (categorie(s.type) !== 'lecon' ? (isBlanc(s.type) ? 'blanc' : 'exam') : p.mode || (s.prepa ? 'prepa' : 'lecon'));
+const modeP = (s, p) => (categorie(s.type) !== 'lecon' ? (isBlanc(s.type) ? 'blanc' : 'exam') : p.mode || 'lecon');
 const statutsEleve = (s, p) => (categorie(s.type) === 'lecon' && p && p.mode === 'blanc' ? STATUTS_BLANC : statutsPour(s.type));
 const statutLabelEleve = (s, p) => statutsEleve(s, p)[p.statut] || p.statut;
 const STATUTS_ELEVE = { en_cours: 'En formation', inactif: 'Inactif', obtenu: 'Permis obtenu', abandon: 'Abandon' };
@@ -942,7 +942,7 @@ function openSeanceMoniteur(s) {
   draft = JSON.parse(JSON.stringify(s));
   const exam = isExam(s.type);
   openModal({
-    title: `${TYPES[s.type].label}${s.prepa ? ' · 🎯 Prépa examen' : ''} — ${esc(fmtDayLong(s.date))}`,
+    title: `${TYPES[s.type].label} — ${esc(fmtDayLong(s.date))}`,
     body: `
       <p><strong>${s.debut} – ${s.fin}</strong>${s.lieu ? ` · 📍 ${esc(s.lieu)}` : ''}${exam && (s.rdvHeure || s.rdvLieu) ? `<br><span class="small muted">RDV élèves : ${esc(s.rdvHeure || '')} ${esc(s.rdvLieu || '')}</span>` : ''}</p>
       <div class="lbl">Élèves (${s.eleves.length})</div>
@@ -1034,13 +1034,6 @@ function openSeance(seance) {
         </div>
         <datalist id="lieux-exam">${[...new Set(DB.seances.filter((x) => isExam(x.type)).map((x) => x.lieu).filter(Boolean))].map((l) => `<option value="${esc(l)}">`).join('')}</datalist>
       </div>
-      <div id="s-prepa-wrap">
-        <div class="lbl">Toute la leçon est…</div>
-        <div class="seg" id="s-prepa">
-          <button data-action="setPrepa" data-v="0">Leçon normale</button>
-          <button data-action="setPrepa" data-v="1">🎯 Préparation à l'examen</button>
-        </div>
-      </div>
       <div class="lbl">Durée</div>
       <div class="seg" id="s-duree"></div>
       <div class="lbl row between"><span>Élèves <span id="s-cap" class="fill"></span></span></div>
@@ -1083,8 +1076,6 @@ function refreshDraft() {
   const dur = toMin(draft.fin) - toMin(draft.debut);
   $$('#s-type button').forEach((b) => b.classList.toggle('on', b.dataset.t === draft.type));
   $('#s-lieu-wrap').hidden = !isExam(draft.type);
-  $('#s-prepa-wrap').hidden = categorie(draft.type) !== 'lecon';
-  $$('#s-prepa button').forEach((b) => b.classList.toggle('on', (b.dataset.v === '1') === !!draft.prepa));
   if (isExam(draft.type)) $('#s-rdvh').placeholder = heureRdv({ ...draft, rdvHeure: '' });
   if ($('#s-rappel')) $('#s-rappel').hidden = !isExam(draft.type);
   $('#s-duree').innerHTML = DUREES.map((d) => `<button data-action="setDuree" data-d="${d}" class="${d === dur ? 'on' : ''}">${fmtH(d / 60)}</button>`).join('')
@@ -1154,7 +1145,7 @@ function renderResults() {
       for (const e of list) if (!tags.has(e.id) && eleveExamens(e.id).exam_plateau.cls === 'ok' && eleveExamens(e.id).exam_circulation.cls !== 'warn') tags.set(e.id, 'plateau ✅');
     }
   }
-  if (draft.prepa && categorie(draft.type) === 'lecon') {
+  if (categorie(draft.type) === 'lecon') {
     for (const e of list) {
       const ex = prochainExamen(e.id, baseDe(draft.type));
       if (ex) { const p = preparation(e.id, ex); tags.set(e.id, `examen le ${fmtDate(ex.date)} · prépa ${fmtH(p.total)}/${DB.settings.heuresPrepa.min}h`); }
@@ -2165,7 +2156,7 @@ function demoData() {
   add(-7, '08:00', '10:00', 'plateau', 'm1', [0, 1, 2, 3, 4]);
   add(-7, '10:00', '12:00', 'circulation', 'm2', [5, 6, 7]);
   add(-3, '14:00', '16:00', 'circulation', 'm1', [0, 1]);
-  db.seances[db.seances.length - 1].prepa = true;
+  db.seances[db.seances.length - 1].eleves[0].mode = 'prepa';
   add(0, '08:00', '10:00', 'plateau', 'm1', [0, 2, 4, 6, 8]);
   add(0, '08:00', '10:00', 'circulation', 'm2', [1, 3, 5]);
   add(0, '10:30', '12:30', 'circulation', 'm1', [7, 9]);
@@ -2176,7 +2167,7 @@ function demoData() {
   add(2, '08:00', '10:00', 'plateau', 'm1', [0, 1, 2, 3]);
   add(3, '10:00', '12:00', 'circulation', 'm2', [4, 5, 7]);
   add(2, '14:00', '16:00', 'circulation', 'm2', [0, 3]);
-  db.seances[db.seances.length - 1].prepa = true;
+  db.seances[db.seances.length - 1].eleves[0].mode = 'prepa';
   add(-2, '08:00', '11:00', 'exam_plateau', 'm2', [5, 6, 7]);
   add(4, '13:00', '16:00', 'exam_circulation', 'm1', [0, 3]);
   db.seances[db.seances.length - 2].lieu = "Centre d'examen Lyon Sud";
@@ -2285,15 +2276,9 @@ const ACTIONS = {
     if (!draft.id && categorie(avant) !== categorie(draft.type)) draft.fin = fromMin(toMin(draft.debut) + dureeDe(draft.type));
     refreshDraft();
   },
-  setPrepa(d) {
-    draft.prepa = d.v === '1';
-    // toute la leçon change : les élèves suivent, sauf ceux en examen blanc
-    draft.eleves.forEach((p) => { if (p.mode !== 'blanc') delete p.mode; });
-    refreshDraft();
-  },
   setModeEleve(d) {
     const p = draft.eleves[+d.i]; if (!p) return;
-    const parDefaut = draft.prepa ? 'prepa' : 'lecon';
+    const parDefaut = 'lecon';
     if (d.m === parDefaut) delete p.mode; else p.mode = d.m;
     if (!statutsEleve(draft, p)[p.statut]) p.statut = 'prevu';
     refreshDraft();
