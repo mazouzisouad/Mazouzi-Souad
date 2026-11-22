@@ -854,3 +854,10 @@ tr.sous-titre td { background: #f8fafc; font-weight: 700; font-size: 12.5px; col
 /* Planning : pas de sélection de texte ni de loupe sur appui long (iPhone / iPad) */
 .agenda { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .ag-fantome.ag-trace { left: 4px; right: 4px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 1px; }
+
+/* Changement de jour au doigt : petite glissade */
+@keyframes arriveDroite { from { transform: translateX(40px); opacity: .3; } to { transform: none; opacity: 1; } }
+@keyframes arriveGauche { from { transform: translateX(-40px); opacity: .3; } to { transform: none; opacity: 1; } }
+.agenda-wrap.arrive-droite { animation: arriveDroite .22s ease-out; }
+.agenda-wrap.arrive-gauche { animation: arriveGauche .22s ease-out; }
+@media (prefers-reduced-motion: reduce) { .agenda-wrap.arrive-droite, .agenda-wrap.arrive-gauche { animation: none; } }

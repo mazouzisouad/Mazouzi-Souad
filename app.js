@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · créer une leçon en glissant le doigt';
+const APP_VERSION = '2026-11-23 · changer de jour en glissant le doigt';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -856,6 +856,32 @@ document.addEventListener('pointercancel', () => {
 });
 document.addEventListener('touchmove', (e) => { if (TRACE.actif) e.preventDefault(); }, { passive: false });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && TRACE.actif) finirTrace(true); });
+
+/* ---------------------------------------------------------------------
+   CHANGER DE JOUR EN GLISSANT LE DOIGT (téléphone / tablette)
+   Vers la gauche : jour (ou semaine) suivant ; vers la droite : précédent.
+   Si le planning est plus large que l'écran, il défile d'abord jusqu'au bord.
+   --------------------------------------------------------------------- */
+const BALAYE = { debut: null };
+document.addEventListener('touchstart', (e) => {
+  BALAYE.debut = null;
+  if (UI.view !== 'planning' || e.touches.length !== 1 || document.querySelector('.modal')) return;
+  const wrap = e.target.closest && e.target.closest('#agenda'); if (!wrap) return;
+  const t = e.touches[0];
+  BALAYE.debut = { x: t.clientX, y: t.clientY, quand: Date.now(), wrap, scroll: wrap.scrollLeft };
+}, { passive: true });
+document.addEventListener('touchend', (e) => {
+  const d = BALAYE.debut; BALAYE.debut = null;
+  if (!d || GLISSE.actif || TRACE.actif || GLISSE.ignorerClic) return;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - d.x, dy = t.clientY - d.y;
+  if (Math.abs(dx) < 70 || Math.abs(dy) > Math.abs(dx) * 0.6 || Date.now() - d.quand > 800) return;
+  if (Math.abs(d.wrap.scrollLeft - d.scroll) > 2) return; // le planning a défilé : pas de changement de jour
+  const suivant = dx < 0;
+  if (suivant) ACTIONS.navNext(); else ACTIONS.navPrev();
+  const a = $('#agenda');
+  if (a) { a.classList.remove('arrive-droite', 'arrive-gauche'); void a.offsetWidth; a.classList.add(suivant ? 'arrive-droite' : 'arrive-gauche'); }
+}, { passive: true });
 
 // le clic qui suit un glissé n'ouvre pas la leçon
 document.addEventListener('click', (e) => { if (GLISSE.ignorerClic && e.target.closest('.ag-bloc, .ag-slot')) { e.stopPropagation(); e.preventDefault(); } }, true);
