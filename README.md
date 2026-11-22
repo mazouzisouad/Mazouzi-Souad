@@ -73,9 +73,7 @@ et ajoute un commentaire. Depuis le planning (bouton « 📋 Suivi » à côté 
 Onglet « 🏍️ Motos » : une carte par moto (surnom, modèle, plaque, où elle se trouve, dernier plein,
 compteur, consommation). « ⛽ Plein » : choisir la moto, litres + montant (le prix au litre se calcule),
 compteur facultatif pour la consommation. « 📍 Où est-elle ? » : agence, piste, avec un moniteur,
-garage, autre. Le plan « Où sont les motos ? » : touchez une moto puis un lieu, elle y roule.
-Chaque moto peut avoir sa photo (✏️ → 📷) ; la jauge estime l'essence restante d'après le
-dernier plein, les km notés depuis et la taille du réservoir. En bas : dépenses des 6 derniers mois et liste des pleins par mois / par moto.
+garage, autre. En bas : dépenses des 6 derniers mois et liste des pleins par mois / par moto.
 Les moniteurs voient la flotte, notent leurs pleins et déplacent les motos ; seule la direction
 ajoute, modifie ou retire une moto.
 

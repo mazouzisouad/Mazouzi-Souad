@@ -48,115 +48,7 @@ function statsMois(mois) {
   return { euros: l.reduce((s, p) => s + Number(p.montant || 0), 0), litres: l.reduce((s, p) => s + Number(p.litres || 0), 0), nb: l.length };
 }
 
-
-/* ---------- Essence qui reste (estimation) ----------
-   Après un plein, le réservoir est plein ; ensuite on retire ce que la moto
-   consomme selon les km notés depuis (conso mesurée, sinon 5 L/100 km). */
-function niveauEssence(m) {
-  const pl = pleinsDe(m.id);
-  const dernier = pl[pl.length - 1];
-  if (!dernier) return null;
-  const reservoir = Number(m.reservoir) || 14;
-  const conso = consoMoto(m.id) || 5;
-  const km = Number(m.km) > 0 && Number(dernier.km) > 0 ? Math.max(0, Number(m.km) - Number(dernier.km)) : 0;
-  return Math.max(0, Math.min(1, 1 - (km * conso) / 100 / reservoir));
-}
-
-/* ---------- Moto dessinée (quand il n'y a pas encore de photo) ---------- */
-function motoSVG(c) {
-  const roue = (x) => `<g class="roue"><circle cx="${x}" cy="88" r="23" fill="#111827"/><circle cx="${x}" cy="88" r="16" fill="#9ca3af"/><circle cx="${x}" cy="88" r="12.5" fill="#374151"/>
-    ${[0, 60, 120].map((a) => `<rect x="${x - 1.5}" y="76" width="3" height="24" fill="#d1d5db" transform="rotate(${a} ${x} 88)"/>`).join('')}<circle cx="${x}" cy="88" r="4" fill="#e5e7eb"/></g>`;
-  const g = 'g' + c.replace(/[^0-9a-f]/gi, '');
-  return `<svg class="moto-svg" viewBox="0 0 200 115" aria-hidden="true">
-    <defs><linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
-    <ellipse cx="100" cy="112" rx="82" ry="3.5" fill="rgba(0,0,0,.15)"/>
-    ${roue(42)}${roue(158)}
-    <g class="caisse">
-      <path d="M42 88 L96 78" stroke="#4b5563" stroke-width="6" stroke-linecap="round"/>
-      <path d="M130 40 L158 88" stroke="#d1d5db" stroke-width="6" stroke-linecap="round"/>
-      <rect x="80" y="62" width="34" height="24" rx="5" fill="#4b5563"/>
-      <rect x="86" y="66" width="22" height="4" rx="2" fill="#6b7280"/><rect x="86" y="74" width="22" height="4" rx="2" fill="#6b7280"/>
-      <path d="M66 86 L116 84 L118 92 L70 95 Z" fill="#9ca3af"/>
-      <path d="M36 50 L60 46 L64 58 L40 60 Z" fill="${c}"/>
-      <path d="M56 50 Q72 42 88 48 L86 58 Q70 58 58 60 Z" fill="#111827"/>
-      <path d="M84 50 Q98 32 126 40 L134 56 Q110 66 84 62 Z" fill="${c}"/>
-      <path d="M84 50 Q98 32 126 40 L134 56 Q110 66 84 62 Z" fill="url(#${g})"/>
-      <path d="M126 34 L140 28" stroke="#1f2937" stroke-width="4" stroke-linecap="round"/>
-      <circle cx="141" cy="50" r="7" fill="#fde68a" stroke="#1f2937" stroke-width="2"/>
-      <path d="M140 72 Q158 58 176 74" stroke="${c}" stroke-width="5" fill="none" stroke-linecap="round"/>
-    </g></svg>`;
-}
-const visuelMoto = (m) => (m.photo ? `<img class="moto-photo" src="${m.photo}" alt="${esc(nomMoto(m))}">` : motoSVG(m.couleur || '#2563eb'));
-
-function jaugeSVG(n) {
-  return `<svg class="jauge" viewBox="0 0 120 74" role="img" aria-label="${n == null ? 'Essence inconnue' : 'Essence environ ' + Math.round(n * 100) + ' %'}">
-    <path d="M12 60 A48 48 0 0 1 108 60" fill="none" stroke="var(--line)" stroke-width="10" stroke-linecap="round"/>
-    <path d="M12 60 A48 48 0 0 1 26 26" fill="none" stroke="#ef4444" stroke-width="10" stroke-linecap="round"/>
-    <path d="M94 26 A48 48 0 0 1 108 60" fill="none" stroke="#22c55e" stroke-width="10" stroke-linecap="round"/>
-    <text x="7" y="73">E</text><text x="105" y="73">F</text>
-    <g class="aiguille" data-angle="${n == null ? -90 : -90 + 180 * n}" style="transform:rotate(-90deg)"><path d="M58 60 L60 18 L62 60 Z" fill="var(--ink)"/></g>
-    <circle cx="60" cy="60" r="6" fill="var(--ink)"/></svg>`;
-}
-
-/* ---------- Le plan : où sont les motos ---------- */
-function zonesPlan() {
-  const haut = DB.agences.map((a) => ({ cle: 'agence:' + a.id, type: 'agence', ref: a.id, e: '🏢', nom: a.nom, c: a.couleur || '#60a5fa' }));
-  const bas = [{ cle: 'piste:', type: 'piste', ref: '', e: '🏁', nom: 'Piste', c: '#f97316' },
-    ...DB.moniteurs.map((mo) => ({ cle: 'moniteur:' + mo.id, type: 'moniteur', ref: mo.id, e: '🧑‍🏫', nom: 'Avec ' + moniteurNom(mo), c: mo.couleur || '#a855f7' })),
-    { cle: 'garage:', type: 'garage', ref: '', e: '🔧', nom: 'Garage', c: '#64748b' }];
-  if (motosActives().some((m) => m.emplacement?.type === 'autre')) bas.push({ cle: 'autre:', type: 'autre', ref: '', e: '📍', nom: 'Ailleurs', c: '#0ea5e9' });
-  const parRang = window.innerWidth < 600 ? 3 : 5;
-  const rangs = [];
-  for (const groupe of [haut, bas]) for (let i = 0; i < groupe.length; i += parRang) rangs.push(groupe.slice(i, i + parRang));
-  rangs.forEach((r, ri) => r.forEach((z, i) => { z.x = ((i + 1) / (r.length + 1)) * 100; z.y = ((ri + 0.5) / rangs.length) * 100; }));
-  return { zones: rangs.flat(), hauteur: rangs.length * 128 };
-}
-const cleLieu = (m) => { const e = m.emplacement || {}; return (e.type || 'agence') + ':' + (['agence', 'moniteur'].includes(e.type) ? (e.ref || '') : ''); };
-
-function positionsPlan(zones, motos) {
-  const pos = {};
-  for (const z of zones) {
-    const ici = motos.filter((m) => cleLieu(m) === z.cle);
-    ici.forEach((m, i) => { pos[m.id] = { x: z.x, y: z.y, dx: (i - (ici.length - 1) / 2) * 44 - 21, dy: 6 }; });
-  }
-  return pos;
-}
-
-function planMotos(motos) {
-  const { zones, hauteur } = zonesPlan();
-  const pos = positionsPlan(zones, motos);
-  const route = (z) => `<path d="M${z.x} ${z.y} Q ${(z.x + 50) / 2} 50 50 50" vector-effect="non-scaling-stroke"/>`;
-  return `
-  <div class="card plan-card">
-    <div class="row between" style="margin-bottom:8px"><h2 style="margin:0">📍 Où sont les motos ?</h2><span class="small muted" id="plan-aide">Touchez une moto, puis l'endroit où elle va.</span></div>
-    <div class="plan" id="plan" style="height:${hauteur}px">
-      <svg class="routes" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        ${zones.map(route).join('')}${zones.map((z) => route(z).replace('<path', '<path class="ligne"')).join('')}
-        <ellipse cx="50" cy="50" rx="4" ry="6" fill="var(--route)"/></svg>
-      ${zones.map((z) => `<button class="zone" data-action="planZone" data-cle="${z.cle}" style="--z:${esc(z.c)};left:${z.x}%;top:${z.y}%"><span class="ze">${z.e}</span>${esc(z.nom)}</button>`).join('')}
-      ${motos.filter((m) => pos[m.id]).map((m) => { const p = pos[m.id]; return `<button class="mchip ${m.photo ? 'photo' : ''}" data-action="planMoto" data-id="${m.id}" title="${esc(nomMoto(m))}" aria-label="${esc(nomMoto(m))}"
-        style="--mc:${esc(m.couleur || '#2563eb')};left:calc(${p.x}% + ${p.dx}px);top:calc(${p.y}% + ${p.dy}px)">${m.photo ? `<img src="${m.photo}" alt="">` : motoSVG(m.couleur || '#2563eb')}<span class="bulle">${esc(nomMoto(m))}</span></button>`; }).join('')}
-    </div>
-  </div>`;
-}
-
-// Après affichage : aiguilles et compteurs qui bougent
-const MEMO_JAUGES = {};
-function animerMotos() {
-  $$('.moto-card').forEach((c) => {
-    const id = c.dataset.id;
-    const a = c.querySelector('.aiguille');
-    if (a) {
-      const avant = MEMO_JAUGES[id] ?? -90;
-      a.style.transition = 'none'; a.style.transform = `rotate(${avant}deg)`;
-      a.getBoundingClientRect();
-      a.style.transition = ''; a.style.transform = `rotate(${a.dataset.angle}deg)`;
-      MEMO_JAUGES[id] = +a.dataset.angle;
-    }
-  });
-}
-
-const UI_MOTOS = { filtre: '', mois: '', choisie: null };
+const UI_MOTOS = { filtre: '', mois: '' };
 
 function viewMotos() {
   const motos = motosActives();
@@ -165,7 +57,6 @@ function viewMotos() {
   const st = statsMois(mois);
   const consos = motos.map((m) => ({ m, c: consoMoto(m.id) })).filter((x) => x.c);
   const sobre = consos.sort((a, b) => a.c - b.c)[0];
-  requestAnimationFrame(animerMotos);
   const parLieu = {};
   for (const m of motos) { const l = lieuMoto(m); parLieu[l.emoji] = (parLieu[l.emoji] || 0) + 1; }
 
@@ -191,7 +82,7 @@ function viewMotos() {
     <div class="ms"><span class="ms-emoji">📍</span><div><strong>${motos.length} moto${motos.length > 1 ? 's' : ''}</strong><span>${Object.entries(parLieu).map(([e, n]) => `${e} ${n}`).join('  ') || 'aucune pour l\'instant'}</span></div></div>
   </div>
 
-  ${motos.length ? `<div class="motos-grid">${motos.map(carteMoto).join('')}</div>${planMotos(motos)}`
+  ${motos.length ? `<div class="motos-grid">${motos.map(carteMoto).join('')}</div>`
     : `<div class="card empty">Aucune moto pour l'instant.${estMoniteur() ? '' : '<br><br><button class="btn primary" data-action="editMoto">+ Ajouter votre première moto</button>'}</div>`}
 
   <div class="grid cols-2" style="margin-top:16px">
@@ -229,27 +120,20 @@ function carteMoto(m) {
   const pl = pleinsDe(m.id);
   const dernier = pl[pl.length - 1];
   const conso = consoMoto(m.id);
-  const niv = niveauEssence(m);
   const couleur = m.couleur || '#2563eb';
   return `
-  <div class="moto-card" data-id="${m.id}" style="--mc:${esc(couleur)}">
+  <div class="moto-card" style="--mc:${esc(couleur)}">
     <div class="moto-top">
+      <div class="moto-emoji">🏍️</div>
       <div class="moto-titre"><strong>${esc(nomMoto(m))}</strong><span>${esc([m.modele, m.categorie].filter(Boolean).join(' · '))}</span></div>
-      ${estMoniteur() ? '' : `<button class="btn small ghost moto-edit" data-action="editMoto" data-id="${m.id}" title="Modifier / ajouter une photo">✏️</button>`}
+      ${estMoniteur() ? '' : `<button class="btn small ghost moto-edit" data-action="editMoto" data-id="${m.id}" title="Modifier">✏️</button>`}
     </div>
-    <button class="scene ${m.photo ? 'avec-photo' : ''}" data-action="vroum" title="Vroum !">
-      ${m.photo ? '' : '<div class="sol"></div>'}${visuelMoto(m)}
-      ${!m.photo && !estMoniteur() ? '<span class="ajout-photo">📷 Ajoutez une photo avec ✏️</span>' : ''}
-    </button>
     <div class="plaque"><span class="plaque-f">F</span><span class="plaque-n">${esc(fmtPlaque(m.plaque))}</span><span class="plaque-d"></span></div>
     <div class="moto-lieu" ${l.couleur ? `style="--lc:${esc(l.couleur)}"` : ''}><span>${l.emoji}</span> ${esc(l.txt)}${m.emplacement?.majLe ? `<small>${ilYa(m.emplacement.majLe)}</small>` : ''}</div>
-    <div class="moto-tableau">
-      <div class="jauge-bloc">${jaugeSVG(niv)}<strong class="${niv != null && niv < 0.2 ? 'bas' : ''}">${niv == null ? 'Essence ?' : niv < 0.2 ? '⚠️ Presque vide' : '≈ ' + Math.round(niv * 100) + ' %'}</strong></div>
-      <dl class="moto-infos">
-        <div><dt>Compteur</dt><dd class="odo">${m.km ? Number(m.km).toLocaleString('fr-FR') + ' km' : '—'}</dd></div>
-        <div><dt>Dernier plein</dt><dd>${dernier ? `${ilYa(dernier.date)} · ${fmtNombre(dernier.litres)} L` : '—'}</dd></div>
-        <div><dt>Conso</dt><dd>${conso ? fmtNombre(conso) + ' L/100' : '—'}</dd></div>
-      </dl>
+    <div class="moto-infos">
+      <div><span>Dernier plein</span><strong>${dernier ? `${ilYa(dernier.date)} · ${fmtNombre(dernier.litres)} L` : '—'}</strong></div>
+      <div><span>Compteur</span><strong>${m.km ? Number(m.km).toLocaleString('fr-FR') + ' km' : '—'}</strong></div>
+      <div><span>Conso</span><strong>${conso ? fmtNombre(conso) + ' L/100' : '—'}</strong></div>
     </div>
     <div class="moto-actions">
       <button class="btn primary" data-action="nouveauPlein" data-moto="${m.id}">⛽ Plein</button>
@@ -313,7 +197,6 @@ function openDeplacer(m) {
 /* ---------- Ajouter / modifier une moto (direction) ---------- */
 function openMoto(m) {
   const isNew = !m;
-  openMoto.photo = m ? m.photo || '' : '';
   m = m || { couleur: COULEURS_MOTO[(DB.motos || []).length % COULEURS_MOTO.length], categorie: 'A2' };
   openModal({
     title: isNew ? '🏍️ Nouvelle moto' : `🏍️ ${esc(nomMoto(m))}`,
@@ -324,13 +207,7 @@ function openMoto(m) {
         <label class="field"><span>Plaque *</span><input name="plaque" value="${esc(m.plaque || '')}" required placeholder="AB-123-CD" style="text-transform:uppercase"></label>
         <label class="field"><span>Catégorie</span><select name="categorie">${CATEGORIES_MOTO.map((c) => `<option ${m.categorie === c ? 'selected' : ''}>${c}</option>`).join('')}</select></label>
         <label class="field"><span>Compteur (km)</span><input name="km" type="number" min="0" value="${esc(m.km || '')}"></label>
-        <label class="field"><span>Réservoir (litres)</span><input name="reservoir" type="number" min="1" step="0.1" value="${esc(m.reservoir || 14)}"></label>
         <label class="field"><span>Couleur de la carte</span><input name="couleur" type="color" value="${esc(m.couleur || '#2563eb')}"></label>
-        <div class="field full"><span>Photo de la moto</span>
-          <div class="photo-moto-edit"><div id="moto-photo-apercu">${visuelMoto(m)}</div>
-            <div class="row" style="gap:6px"><label class="btn">📷 ${m.photo ? 'Changer la photo' : 'Ajouter une photo'}<input type="file" accept="image/*" hidden data-on-change="motoPhoto"></label>
-            ${m.photo ? '<button type="button" class="btn ghost" data-action="motoPhotoSuppr">Retirer</button>' : ''}</div>
-            <span class="small muted">Prenez la moto de côté, sur un fond simple : c'est plus joli.</span></div></div>
         <label class="field full"><span>Notes (entretien, pneus, assurance…)</span><textarea name="notes">${esc(m.notes || '')}</textarea></label>
       </form>`,
     foot: `${!isNew ? `<div class="left"><button class="btn danger" data-action="archiverMoto" data-id="${m.id}">Retirer de la flotte</button></div>` : ''}
@@ -340,48 +217,6 @@ function openMoto(m) {
 }
 
 const MOTO_ACTIONS = {
-  async motoPhoto(d, el) {
-    const file = el.files[0]; if (!file) return;
-    try {
-      openMoto.photo = await photoReduite(file);
-      $('#moto-photo-apercu').innerHTML = `<img class="moto-photo" src="${openMoto.photo}" alt="">`;
-    } catch (e) { toast('Photo non reconnue : ' + e.message, true); }
-  },
-  motoPhotoSuppr() { openMoto.photo = ''; $('#moto-photo-apercu').innerHTML = motoSVG($('#moto-form [name=couleur]').value); },
-  vroum(d, el) {
-    if (el.classList.contains('roule')) return;
-    el.classList.add('roule'); setTimeout(() => el.classList.remove('roule'), 1600);
-  },
-  planMoto(d, el) {
-    UI_MOTOS.choisie = UI_MOTOS.choisie === d.id ? null : d.id;
-    $$('.mchip').forEach((c) => c.classList.toggle('choisie', c.dataset.id === UI_MOTOS.choisie));
-    $('#plan').classList.toggle('en-choix', !!UI_MOTOS.choisie);
-    $('#plan-aide').textContent = UI_MOTOS.choisie ? `${nomMoto(byId('motos', d.id))} : touchez l'endroit où elle va.` : "Touchez une moto, puis l'endroit où elle va.";
-  },
-  planZone(d) {
-    if (!UI_MOTOS.choisie) { $('#plan-aide').textContent = "👆 Touchez d'abord une moto."; return; }
-    const m = byId('motos', UI_MOTOS.choisie); UI_MOTOS.choisie = null;
-    const [type, ref] = d.cle.split(':');
-    if (type === 'autre') { openDeplacer(m); return; }
-    m.emplacement = { type, ref: ref || '', texte: '', majLe: new Date().toISOString() };
-    m.majLe = new Date().toISOString(); m.majPar = nomAuteurMoi();
-    save();
-    // la moto roule jusqu'à sa nouvelle place, puis on rafraîchit
-    const { zones } = zonesPlan();
-    const pos = positionsPlan(zones, motosActives());
-    for (const c of $$('.mchip')) {
-      const p = pos[c.dataset.id]; if (!p) continue;
-      const avant = c.offsetLeft, apres = (p.x / 100) * $('#plan').clientWidth + p.dx;
-      c.style.left = `calc(${p.x}% + ${p.dx}px)`; c.style.top = `calc(${p.y}% + ${p.dy}px)`;
-      if (c.dataset.id === m.id) {
-        c.classList.remove('choisie'); c.classList.add('roule');
-        c.classList.toggle('gauche', apres < avant - 1);
-      }
-    }
-    $('#plan').classList.remove('en-choix');
-    $('#plan-aide').textContent = `${lieuMoto(m).emoji} ${nomMoto(m)} : ${lieuMoto(m).txt}`;
-    setTimeout(() => { if (UI.view === 'motos' && !$('.modal')) render(); }, 1500);
-  },
   motosFiltre(d, el) { UI_MOTOS.filtre = el.value; render(); },
   motosMois(d, el) { if (el.value) { UI_MOTOS.mois = el.value; render(); } },
   nouveauPlein(d) { openPlein({ motoId: d.moto || motosActives()[0]?.id }); },
@@ -435,8 +270,6 @@ const MOTO_ACTIONS = {
     const f = formData(form);
     f.plaque = fmtPlaque(f.plaque);
     f.km = f.km ? Number(f.km) : '';
-    f.reservoir = Number(f.reservoir) || 14;
-    f.photo = openMoto.photo || '';
     DB.motos = DB.motos || [];
     if (d.id) Object.assign(byId('motos', d.id), f);
     else DB.motos.push({ id: uid(), ...f, emplacement: DB.agences[0] ? { type: 'agence', ref: DB.agences[0].id, texte: '', majLe: new Date().toISOString() } : {} });
@@ -448,23 +281,3 @@ const MOTO_ACTIONS = {
     m.archivee = true; save(); closeModal(); render();
   },
 };
-
-// Photo de moto : réduite (JPEG ~ 60 Ko) pour rester légère en ligne
-function photoReduite(file, max = 640) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      const k = Math.min(1, max / Math.max(img.width, img.height));
-      const c = document.createElement('canvas');
-      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-      const ctx = c.getContext('2d');
-      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
-      ctx.drawImage(img, 0, 0, c.width, c.height);
-      URL.revokeObjectURL(url);
-      resolve(c.toDataURL('image/jpeg', 0.78));
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('image illisible')); };
-    img.src = url;
-  });
-}
