@@ -1,56 +1,782 @@
-<!doctype html>
-<!--
-  ╔══════════════════════════════════════════════════════════════════════╗
-  ║  PAGE TEMPORAIRE : à remplacer par votre fichier HTML d'entraînement. ║
-  ║                                                                      ║
-  ║  Pour brancher votre appli, il suffit :                              ║
-  ║   1) d'ajouter ces 3 lignes dans <head>, AVANT vos scripts :         ║
-  ║        <script src="/api/config"></script>                           ║
-  ║        <script src="/vendor/supabase.js"></script>                   ║
-  ║        <script src="/js/acces.js"></script>                          ║
-  ║      → comptes + sauvegarde en ligne de la progression (localStorage) ║
-  ║   2) avant d'ouvrir un contenu payant :                              ║
-  ║        if (!CodeAcces.exigerPremium()) return;                       ║
-  ║   3) d'ajouter des liens vers /cgv /confidentialite /mentions-legales ║
-  ╚══════════════════════════════════════════════════════════════════════╝
--->
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Code de la route – entraînement</title>
-<script src="/api/config"></script>
-<script src="/vendor/supabase.js"></script>
-<script src="/js/acces.js"></script>
-<link rel="stylesheet" href="/css/site.css">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f8fe0">
+<title>Code Ludique : entraînement au code de la route</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1f2a44; --muted:#6b7590; --line:#e6e1da;
+  --bg:#f6f1ec; --card:#fffdfb;
+  --green:#4aa03e; --green-d:#3b8531; --purple:#3d2bd0; --blue:#4a8be6; --red:#d93a2f;
+  --sig:#fde6dc; --reg:#e2e9f4; --cond:#e8e2f6; --veh:#fcefc2;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{font-family:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--ink);background:linear-gradient(180deg,#f4efe9,#eaeff7);min-height:100vh}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+.app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;padding-bottom:104px;background:var(--bg)}
+.app.noNav{padding-bottom:40px}
+
+/* hero */
+.hero{position:relative;height:236px;overflow:hidden;color:#fff;padding:54px 20px 0;background:linear-gradient(180deg,#4a86dd 0%,#76b0ee 62%,#a8d3f4 100%)}
+.hero .cloud{position:absolute;background:rgba(255,255,255,.55);border-radius:40px}
+.hero .hills{position:absolute;left:0;right:0;bottom:0;width:100%;height:70px}
+.hero .sub{font-size:15px;font-weight:600;opacity:.95;line-height:1.35;max-width:55%}
+.hero h1{margin:0;font-size:34px;font-weight:900;letter-spacing:-.5px;line-height:1.05}
+.hero .lab{font-size:17px;font-weight:700}
+.hero .big{font-size:58px;font-weight:900;line-height:1;letter-spacing:-1.5px;margin:4px 0 10px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:#dff3d4;color:#2f6b25;font-weight:800;font-size:13px;padding:7px 12px;border-radius:999px}
+.mascot{position:absolute;right:6px;bottom:4px;width:52%;max-width:240px}
+.bubble{position:absolute;right:18px;top:44px;background:#ffe27a;color:#4a3a08;font-weight:800;font-size:13px;line-height:1.15;text-align:center;padding:8px 12px;border-radius:16px;max-width:112px;z-index:2;transform:rotate(3deg)}
+.sheet{position:relative;margin-top:-26px;background:var(--bg);border-radius:26px 26px 0 0;padding:16px 14px 6px}
+
+/* cards */
+.card{background:var(--card);border-radius:22px;padding:14px;box-shadow:0 4px 18px rgba(60,50,40,.07);border:1px solid rgba(0,0,0,.03);margin-bottom:14px}
+.ctitle{display:flex;align-items:center;gap:8px;font-weight:900;font-size:17px;margin-bottom:10px}
+.ctitle svg{width:22px;height:22px;flex:none}
+.ctitle .date{margin-left:auto;font-size:12px;font-weight:700;color:#4aa03e}
+.row{display:flex;align-items:center;gap:12px}
+.inner{background:#fff;border-radius:16px;padding:12px;border:1px solid var(--line)}
+.sec{display:flex;align-items:center;justify-content:space-between;margin:6px 4px 10px}
+.sec h2{margin:0;font-size:20px;font-weight:900}
+.link{color:#4a5bd6;font-weight:800;font-size:13px}
+.muted{color:var(--muted);font-size:13px;font-weight:600}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-weight:900;border-radius:999px;padding:12px 20px;font-size:15px;color:#fff}
+.btn.green{background:var(--green);box-shadow:0 3px 0 var(--green-d)}
+.btn.purple{background:var(--purple);box-shadow:0 3px 0 #2a1d9a}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:none}
+.btn.sm{padding:9px 16px;font-size:14px}
+.btn.full{width:100%}
+.btn:disabled{opacity:.45;box-shadow:none;cursor:default}
+.btn svg{width:14px;height:14px}
+
+/* ring */
+.ring{position:relative;width:58px;height:58px;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900}
+.bar{height:8px;border-radius:99px;background:#ece7e1;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--green)}
+
+/* category tiles */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tiles.two{grid-template-columns:1fr 1fr;gap:10px}
+.tile{border-radius:18px;padding:12px 8px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;min-height:118px;justify-content:space-between;position:relative}
+.tile svg.ic{width:44px;height:44px}
+.tile .nm{font-weight:900;font-size:12.5px;line-height:1.15}
+.tile .pc{font-weight:900;font-size:11px;align-self:flex-start}
+.tile .bar{width:100%;height:5px}
+.tile.wide{flex-direction:row;text-align:left;justify-content:flex-start;padding:12px;gap:10px;min-height:0}
+.tile.wide .nm{font-size:14px}
+.tile.wide .ct{font-size:12.5px;font-weight:700;color:var(--muted)}
+.tile.wide .chev{margin-left:auto;color:var(--muted);width:14px;height:14px}
+.tile.on{outline:3px solid #4a5bd6}
+.t-sig{background:var(--sig)} .t-reg{background:var(--reg)} .t-cond{background:var(--cond)} .t-veh{background:var(--veh)}
+
+/* highlight cards */
+.daily{background:linear-gradient(135deg,#e9e5fb,#f3efff);border-radius:22px;padding:14px;margin-bottom:14px;display:flex;gap:12px;align-items:center}
+.daily .tx{flex:1}
+.daily .kick{display:flex;align-items:center;gap:6px;color:#4a3bc4;font-weight:900;font-size:13px}
+.daily h3{margin:6px 0 10px;font-size:16px;line-height:1.25;font-weight:900}
+.daily .pic{width:104px;height:104px;border-radius:16px;background:linear-gradient(180deg,#bfe0ff,#e6f4d8);display:flex;align-items:center;justify-content:center;flex:none}
+.daily .pic svg{width:64px;height:64px}
+.note{display:flex;align-items:center;gap:12px;background:#fff8e6;border-radius:18px;padding:12px 14px;margin-bottom:14px}
+.note svg{width:36px;height:36px;flex:none}
+.note b{display:block;font-weight:900;font-size:15px}
+.note span{font-size:13px;font-weight:600;color:var(--muted)}
+.exam{display:flex;gap:6px;align-items:flex-end;background:linear-gradient(135deg,#e5f4ea,#eef7e6);border-radius:22px;padding:14px 8px 14px 14px;margin-bottom:14px;overflow:hidden}
+.exam .tx{flex:1;padding-bottom:2px}
+.exam h3{margin:4px 0 6px;font-size:17px;line-height:1.2;font-weight:900}
+.exam svg.m{width:44%;max-width:160px;flex:none;margin-bottom:-6px}
+
+/* lists */
+.item{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line);text-align:left;width:100%}
+.item:last-child{border-bottom:0}
+.item .ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none}
+.item .ico svg{width:26px;height:26px}
+.item .tt{font-weight:900;font-size:14.5px;line-height:1.2}
+.item .ss{font-size:12.5px;font-weight:600;color:var(--muted);margin-top:2px}
+.item .dt{margin-left:auto;font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.barrow{display:flex;align-items:center;gap:12px;padding:8px 0}
+.barrow .ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none}
+.barrow .ico svg{width:26px;height:26px}
+.barrow .mid{flex:1}
+.barrow .mid b{display:block;font-weight:900;font-size:14.5px;margin-bottom:5px}
+.barrow .pc{font-weight:900;font-size:14px;width:40px;text-align:right}
+.empty{padding:14px 6px;text-align:center;color:var(--muted);font-weight:700;font-size:14px}
+
+/* nav */
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:max(10px,env(safe-area-inset-bottom));width:calc(100% - 24px);max-width:456px;background:#fff;border-radius:26px;padding:8px;display:flex;gap:4px;box-shadow:0 8px 28px rgba(40,50,80,.18);z-index:20}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px;border-radius:20px;font-size:11.5px;font-weight:800;color:#8a93aa}
+.nav button svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nav button.on{background:#e6efff;color:#2f6fd6}
+
+/* quiz */
+.qwrap{padding:16px 14px 0}
+.qtop{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.qtop .x{width:38px;height:38px;border-radius:50%;background:#fff;border:2px solid var(--line);font-size:22px;line-height:1;font-weight:700;color:var(--muted)}
+.qbar{flex:1;height:12px;border-radius:99px;background:#e5dfd8;overflow:hidden}
+.qbar i{display:block;height:100%;background:var(--green);border-radius:99px;transition:width .3s}
+.qtop .cnt{font-weight:900;font-size:14px;color:var(--muted);min-width:42px;text-align:right}
+.qcard{background:#fff;border-radius:22px;padding:18px;box-shadow:0 4px 18px rgba(60,50,40,.07);margin-bottom:14px}
+.qtheme{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:900;padding:5px 10px;border-radius:99px;margin-bottom:10px}
+.qtheme svg{width:16px;height:16px}
+.qcard h2{margin:0;font-size:20px;line-height:1.3;font-weight:900}
+.opts{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;background:#fff;border:2px solid var(--line);border-radius:18px;padding:13px 14px;font-weight:700;font-size:15.5px;line-height:1.3;box-shadow:0 2px 0 var(--line)}
+.opt b{width:30px;height:30px;border-radius:50%;background:#eef1f7;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;flex:none}
+.opt.sel{border-color:#4a8be6;background:#eaf2ff;box-shadow:0 2px 0 #4a8be6}
+.opt.sel b{background:#4a8be6;color:#fff}
+.opt.ok{border-color:var(--green);background:#e7f5e2;box-shadow:0 2px 0 var(--green)}
+.opt.ok b{background:var(--green);color:#fff}
+.opt.ko{border-color:var(--red);background:#fdeceb;box-shadow:0 2px 0 var(--red)}
+.opt.ko b{background:var(--red);color:#fff}
+.opt.dim{opacity:.55}
+.fb{border-radius:18px;padding:14px;margin-bottom:14px;font-weight:600;font-size:14.5px;line-height:1.4}
+.fb b{display:block;font-size:16px;font-weight:900;margin-bottom:4px}
+.fb.ok{background:#e7f5e2;color:#25601d}
+.fb.ko{background:#fdeceb;color:#8f241d}
+
+/* result + fiche */
+.revi{border-top:1px solid var(--line);padding:12px 2px}
+.revi:first-child{border-top:0}
+.revi .qq{font-weight:900;font-size:14.5px;line-height:1.3;margin-bottom:6px}
+.revi .you{font-size:13px;font-weight:700;color:var(--red);margin-bottom:3px}
+.revi .good{font-size:13px;font-weight:700;color:#2f7a25;margin-bottom:3px}
+.revi .why{font-size:13px;font-weight:600;color:var(--muted);line-height:1.4}
+.back{display:inline-flex;align-items:center;gap:6px;color:#fff;font-weight:900;font-size:14px;margin-bottom:12px}
+.back svg{width:16px;height:16px}
+.fiche ul{margin:0;padding-left:0;list-style:none}
+.fiche li{position:relative;padding:10px 0 10px 28px;border-bottom:1px solid var(--line);font-weight:600;font-size:15px;line-height:1.45}
+.fiche li:last-child{border-bottom:0}
+.fiche li:before{content:"";position:absolute;left:4px;top:16px;width:12px;height:12px;border-radius:50%;background:var(--green)}
+.tag{display:inline-block;font-size:11.5px;font-weight:900;padding:4px 10px;border-radius:99px;margin-bottom:8px}
+.read{font-size:11px;font-weight:900;color:#2f7a25;background:#e1f3dc;border-radius:99px;padding:3px 8px;margin-left:8px}
+.foot{text-align:center;color:var(--muted);font-size:11.5px;font-weight:600;padding:8px 20px 4px;line-height:1.4}
+
+.lockb{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:900;background:#fff3c4;color:#7a5a00;border-radius:99px;padding:3px 8px}
+.promo{background:linear-gradient(135deg,#3d2bd0,#6a4bd0);color:#fff;border-radius:22px;padding:16px;margin-bottom:14px}
+.promo h3{margin:0 0 4px;font-size:18px;font-weight:900}
+.promo p{margin:0 0 12px;font-size:13.5px;font-weight:600;opacity:.92;line-height:1.4}
+.promo .btn{background:#fff;color:#3d2bd0;box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.price{font-size:34px;font-weight:900;letter-spacing:-1px}
+.price small{font-size:14px;font-weight:700;color:var(--muted);letter-spacing:0}
+.perks{list-style:none;margin:12px 0 4px;padding:0}
+.perks li{padding:7px 0 7px 30px;position:relative;font-weight:700;font-size:14.5px}
+.perks li:before{content:"✓";position:absolute;left:0;top:6px;width:21px;height:21px;border-radius:50%;background:var(--green);color:#fff;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.inp{width:100%;font:inherit;font-weight:800;font-size:16px;letter-spacing:1px;text-transform:uppercase;border:2px solid var(--line);border-radius:16px;padding:13px 14px;background:#fff;color:var(--ink);margin-bottom:10px}
+.inp:focus{outline:none;border-color:#4a8be6}
+.msg{font-size:13.5px;font-weight:800;margin:-2px 0 10px}
+.msg.ko{color:var(--red)} .msg.ok{color:#2f7a25}
+</style>
 </head>
 <body>
-<main>
-  <div class="carte">
-    <h1>Entraînement au code de la route</h1>
-    <p class="doux">Page de démonstration : elle sera remplacée par l’appli d’entraînement.</p>
-    <p>Séries terminées sur cet appareil et dans votre compte : <b id="compteur">0</b></p>
-    <button class="bouton secondaire" id="gratuite" type="button">Série 1 (gratuite)</button>
-    <button class="bouton" id="payante" type="button">Série 2 (accès complet)</button>
-  </div>
-</main>
-<footer class="pied">
-  <a href="/compte">Mon compte</a>
-  <a href="/cgv">Conditions de vente</a>
-  <a href="/confidentialite">Confidentialité</a>
-  <a href="/mentions-legales">Mentions légales</a>
-</footer>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="sloth" viewBox="0 0 140 130">
+      <circle cx="18" cy="52" r="12" fill="#7a4f30"/><circle cx="122" cy="52" r="12" fill="#7a4f30"/>
+      <ellipse cx="70" cy="70" rx="56" ry="48" fill="#9a6a43"/>
+      <ellipse cx="70" cy="77" rx="42" ry="33" fill="#ecd9b5"/>
+      <ellipse cx="46" cy="70" rx="14" ry="9" transform="rotate(-22 46 70)" fill="#5c3b24"/>
+      <ellipse cx="94" cy="70" rx="14" ry="9" transform="rotate(22 94 70)" fill="#5c3b24"/>
+      <path d="M39 70 Q46 61 53 70" stroke="#fff" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+      <path d="M87 70 Q94 61 101 70" stroke="#fff" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="70" cy="84" rx="8" ry="6" fill="#2b1a10"/>
+      <path d="M59 94 Q70 105 81 94" stroke="#2b1a10" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+      <circle cx="37" cy="90" r="6" fill="#f2a08e" opacity=".5"/><circle cx="103" cy="90" r="6" fill="#f2a08e" opacity=".5"/>
+      <path d="M17 58 Q70 -16 123 58 Q70 42 17 58Z" fill="#2f6fd6"/>
+      <ellipse cx="70" cy="30" rx="17" ry="11" fill="#fff"/>
+      <path d="M26 55 Q70 74 116 55 Q104 48 70 48 Q38 48 26 55Z" fill="#1f56b8"/>
+    </symbol>
+    <symbol id="car" viewBox="0 0 240 110">
+      <path d="M52 62 Q62 12 108 12 L142 12 Q182 12 192 62Z" fill="#5a9bf0"/>
+      <rect x="10" y="56" width="220" height="40" rx="20" fill="#3d78d8"/>
+      <path d="M170 60 h46 q8 0 8 8 v6 h-54z" fill="#4a8be6"/>
+      <circle cx="218" cy="72" r="7" fill="#ffe27a"/>
+      <rect x="100" y="70" width="26" height="18" rx="4" fill="#fff"/>
+      <text x="113" y="84" font-size="13" font-weight="900" text-anchor="middle" fill="#2f6fd6" font-family="Nunito,sans-serif">A</text>
+      <circle cx="62" cy="96" r="15" fill="#243049"/><circle cx="62" cy="96" r="6" fill="#cfd8e8"/>
+      <circle cx="178" cy="96" r="15" fill="#243049"/><circle cx="178" cy="96" r="6" fill="#cfd8e8"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="app" class="app"></div>
+
 <script>
-  // L'appli garde sa logique habituelle : elle écrit simplement dans localStorage.
-  function lire() { return Number(localStorage.getItem('series_terminees') || 0); }
-  function afficher() { document.getElementById('compteur').textContent = lire(); }
-  function terminerSerie() { localStorage.setItem('series_terminees', lire() + 1); afficher(); }
-  document.getElementById('gratuite').onclick = terminerSerie;
-  document.getElementById('payante').onclick = function () {
-    if (!CodeAcces.exigerPremium()) return;   // propose de se connecter / payer
-    terminerSerie();
-  };
-  afficher();
+var Q = [
+    // Priorités
+    {t:'Priorités', q:'À une intersection sans panneau ni feu, qui est prioritaire ?', o:['Le véhicule qui vient de votre droite','Le véhicule qui vient de votre gauche','Le véhicule le plus rapide','Le véhicule le plus gros'], e:'En l’absence de signalisation, on applique la priorité à droite.'},
+    {t:'Priorités', q:'Vous arrivez devant un panneau STOP et la voie semble libre. Que faites-vous ?', o:['Vous vous arrêtez complètement, puis vous regardez','Vous ralentissez seulement','Vous vous arrêtez uniquement si un véhicule arrive','Vous klaxonnez avant de passer'], e:'Le STOP impose un arrêt complet, même si personne n’arrive.'},
+    {t:'Priorités', q:'À l’entrée d’un carrefour à sens giratoire signalé par un panneau « cédez le passage », qui passe en premier ?', o:['Les véhicules déjà engagés sur l’anneau','Les véhicules qui veulent y entrer','Les véhicules qui arrivent sur votre droite à l’entrée','Le véhicule le plus rapide'], e:'Vous cédez le passage aux véhicules déjà engagés sur l’anneau (article R415-10 du Code de la route).'},
+    {t:'Priorités', q:'Un véhicule de secours avec sirène et gyrophare arrive derrière vous. Que faites-vous ?', o:['Vous vous rangez dès que possible pour le laisser passer','Vous accélérez pour dégager la route','Vous freinez et vous vous arrêtez au milieu de la voie','Vous continuez normalement'], e:'Vous facilitez son passage en vous rangeant sans prendre de risque.'},
+    {t:'Priorités', q:'Un piéton s’engage sur un passage protégé devant vous. Que devez-vous faire ?', o:['Lui céder le passage','Klaxonner pour qu’il se dépêche','Passer devant lui s’il marche lentement','Accélérer pour passer avant lui'], e:'Le piéton engagé sur un passage protégé est prioritaire.'},
+    {t:'Priorités', q:'Le feu passe à l’orange fixe alors que vous approchez. Que faites-vous ?', o:['Vous vous arrêtez, sauf si l’arrêt est trop brusque pour être sûr','Vous accélérez systématiquement','Vous passez toujours, car l’orange est tolérée','Vous freinez à fond dans tous les cas'], e:'L’orange fixe annonce le rouge : il faut s’arrêter, sauf si l’arrêt ne peut se faire dans de bonnes conditions de sécurité.'},
+    {t:'Priorités', q:'Un véhicule d’intervention avec gyrophare bleu et sirène à deux tons arrive à un carrefour où vous avez le feu vert. Que faites-vous ?', o:['Vous lui cédez le passage sans mettre personne en danger','Vous passez, car vous avez le feu vert','Vous accélérez pour libérer le carrefour avant lui','Vous klaxonnez pour le prévenir'], e:'Un véhicule prioritaire en intervention bénéficie de la priorité, même si le feu est vert pour vous. Cédez-lui le passage en restant prudent.'},
+    {t:'Priorités', q:'Un véhicule a un gyrophare bleu et une sirène à trois tons. Que devez-vous faire ?', o:['Faciliter son passage, sans qu’il soit prioritaire aux intersections','Lui céder la priorité à tous les carrefours, comme à un véhicule des pompiers','L’ignorer, car il n’a aucun droit particulier','Passer avant lui dans tous les cas'], e:'Avec une sirène à trois tons, le véhicule bénéficie de facilités de passage : vous l’aidez à passer, mais il doit respecter la signalisation et les priorités.'},
+    // Vitesse et distances
+    {t:'Vitesse et distances', q:'Sauf indication contraire, quelle est la vitesse maximale en agglomération ?', o:['50 km/h','30 km/h','60 km/h','70 km/h'], e:'La limite générale en agglomération est de 50 km/h.'},
+    {t:'Vitesse et distances', q:'Sauf indication contraire, quelle est la vitesse maximale sur une route à double sens sans séparateur central, hors agglomération ?', o:['80 km/h','70 km/h','90 km/h','100 km/h'], e:'Sur ces routes, la limite générale est de 80 km/h.'},
+    {t:'Vitesse et distances', q:'Par temps de pluie, quelle est la vitesse maximale sur autoroute pour un conducteur confirmé ?', o:['110 km/h','90 km/h','100 km/h','130 km/h'], e:'La limite est de 130 km/h par temps sec et de 110 km/h par temps de pluie. Un jeune conducteur reste limité à 110 km/h dans tous les cas.'},
+    {t:'Vitesse et distances', q:'Quelle est la distance de sécurité minimale avec le véhicule qui vous précède ?', o:['Un intervalle d’au moins 2 secondes','Un intervalle d’une demi-seconde','La longueur d’une voiture','Environ 5 mètres, quelle que soit la vitesse'], e:'Gardez au moins 2 secondes d’écart. Il faut l’augmenter quand la route est mouillée.'},
+    {t:'Vitesse et distances', q:'La distance d’arrêt est égale à…', o:['la distance de réaction plus la distance de freinage','la distance de freinage seulement','la distance de réaction seulement','la distance de sécurité'], e:'Pendant le temps de réaction, le véhicule roule encore avant même que le freinage commence.'},
+    {t:'Vitesse et distances', q:'Sur chaussée mouillée, la distance de freinage…', o:['augmente nettement','reste la même','diminue légèrement','diminue beaucoup'], e:'L’adhérence est moins bonne, il faut freiner plus tôt et rouler moins vite.'},
+    {t:'Vitesse et distances', q:'Votre véhicule commence à aquaplaner. Que faites-vous ?', o:['Vous relâchez progressivement l’accélérateur et tenez fermement le volant','Vous freinez très fort','Vous donnez un coup de volant brusque','Vous accélérez pour retrouver de l’adhérence'], e:'Évitez tout geste brusque : ralentissez progressivement jusqu’à ce que les pneus retrouvent le contact avec la route.'},
+    {t:'Vitesse et distances', q:'Le brouillard réduit la visibilité à moins de 50 mètres. Quelle est la vitesse maximale sur tous types de route ?', o:['50 km/h','30 km/h','70 km/h','80 km/h'], e:'Quand la visibilité est inférieure à 50 mètres, la vitesse est limitée à 50 km/h sur toutes les routes.'},
+    {t:'Vitesse et distances', q:'Sur autoroute, quelle distance minimale respecter derrière le véhicule qui vous précède, avec les traits de la bande d’arrêt d’urgence ?', o:['Au moins deux traits','Un seul trait','Quatre traits en toutes circonstances','Il n’y a pas de repère'], e:'Un trait correspond à un danger, deux traits au minimum de sécurité. Ce repère aide à garder environ 2 secondes ou plus d’écart.'},
+    // Panneaux et feux
+    {t:'Panneaux et feux', q:'Un panneau triangulaire avec une bordure rouge indique…', o:['un danger','une interdiction','une obligation','une indication de direction'], e:'Les panneaux triangulaires à bordure rouge avertissent d’un danger.'},
+    {t:'Panneaux et feux', q:'Un panneau rond avec une bordure rouge indique en général…', o:['une interdiction ou une restriction','une obligation','un danger','un parking'], e:'Les panneaux ronds à bordure rouge interdisent ou limitent quelque chose.'},
+    {t:'Panneaux et feux', q:'Un panneau rond à fond bleu indique en général…', o:['une obligation','une interdiction','un danger','une fin de limitation'], e:'Les panneaux ronds à fond bleu imposent une obligation.'},
+    {t:'Panneaux et feux', q:'Que signifie une ligne continue au centre de la chaussée ?', o:['Il ne faut ni la franchir ni la chevaucher','On peut la franchir pour doubler','On peut la chevaucher si la route est libre','Elle indique seulement un virage'], e:'La ligne continue interdit en principe de la franchir ou de la chevaucher. Une exception encadrée existe pour dépasser un cycliste.'},
+    {t:'Panneaux et feux', q:'À un passage à niveau, les feux rouges clignotent. Que faites-vous ?', o:['Vous vous arrêtez','Vous passez vite avant le train','Vous ralentissez et vous passez si la voie est libre','Vous klaxonnez et vous passez'], e:'Les feux rouges clignotants imposent l’arrêt, même si aucun train n’est en vue.'},
+    // Alcool, fatigue, santé
+    {t:'Alcool, fatigue, santé', q:'À partir de quel taux d’alcool dans le sang la conduite est-elle interdite pour un conducteur confirmé ?', o:['0,5 g par litre de sang','0,8 g par litre de sang','1 g par litre de sang','0,2 g par litre de sang'], e:'La conduite est interdite dès 0,5 g/L de sang. Le mieux reste de ne pas boire du tout avant de conduire.'},
+    {t:'Alcool, fatigue, santé', q:'À partir de quel taux d’alcool dans le sang la conduite est-elle interdite pour un jeune conducteur en permis probatoire ?', o:['0,2 g par litre de sang','0,5 g par litre de sang','0,8 g par litre de sang','1 g par litre de sang'], e:'Le seuil est de 0,2 g/L de sang pour les permis probatoires. Il s’applique aussi en conduite accompagnée.'},
+    {t:'Alcool, fatigue, santé', q:'En pratique, que représente la limite de 0,2 g/L pour un jeune conducteur ?', o:['Zéro verre d’alcool, car un seul verre peut suffire à la dépasser','Deux verres au maximum','Un verre seulement si le repas est copieux','Trois verres espacés dans la soirée'], e:'Cette limite peut être dépassée dès le premier verre : la seule règle sûre est de ne pas boire.'},
+    {t:'Alcool, fatigue, santé', q:'Quel est le seuil légal d’alcool dans l’air expiré pour un conducteur confirmé ?', o:['0,25 mg par litre d’air expiré','0,10 mg par litre d’air expiré','0,50 mg par litre d’air expiré','0,80 mg par litre d’air expiré'], e:'0,25 mg/L d’air expiré correspond à 0,5 g/L de sang. Pour un permis probatoire, c’est 0,10 mg/L.'},
+    {t:'Alcool, fatigue, santé', q:'Lors d’un long trajet, il est recommandé de faire une pause…', o:['au moins toutes les 2 heures','toutes les 6 heures','seulement quand on s’endort','une seule fois dans la journée'], e:'La fatigue réduit les réflexes avant même qu’on s’en aperçoive.'},
+    {t:'Alcool, fatigue, santé', q:'Que provoque la fatigue sur votre temps de réaction ?', o:['Il augmente','Il diminue','Il ne change pas','Il disparaît'], e:'En moyenne, il passe d’environ 1 seconde reposé à environ 2 secondes après 2 heures de conduite.'},
+    {t:'Alcool, fatigue, santé', q:'Au feu rouge, pouvez-vous tenir votre téléphone en main ?', o:['Non, vous êtes toujours en circulation','Oui, car vous êtes arrêté','Oui, si le feu dure longtemps','Oui, si vous ne téléphonez pas'], e:'Tenir un téléphone en main est interdit tant que vous êtes en circulation, même arrêté au feu.'},
+    {t:'Alcool, fatigue, santé', q:'Quelle sanction encourt-on pour un téléphone tenu en main au volant ?', o:['135 € d’amende et le retrait de 3 points','35 € d’amende sans retrait de points','750 € et le retrait automatique du permis','Un simple avertissement'], e:'C’est une contravention de 4e classe : amende forfaitaire de 135 € et retrait de 3 points.'},
+    {t:'Alcool, fatigue, santé', q:'Avez-vous le droit de conduire avec des écouteurs ou un casque audio sur les oreilles ?', o:['Non, c’est interdit','Oui, pour écouter de la musique','Oui, avec un seul écouteur','Oui, en dehors de la ville'], e:'Écouteurs, oreillettes et casques sont interdits au volant, avec la même sanction que le téléphone tenu en main.'},
+    {t:'Alcool, fatigue, santé', q:'Que signifie un pictogramme rouge (niveau 3) sur une boîte de médicament ?', o:['Danger : ne pas conduire, et demander l’avis d’un médecin avant de reprendre le volant','Soyez prudent : ne pas conduire sans avoir lu la notice','Soyez très prudent : ne pas conduire sans l’avis d’un professionnel de santé','Aucune restriction pour la conduite'], e:'Le rouge (niveau 3) indique un risque élevé : on ne conduit pas. Le jaune demande de la prudence, l’orange l’avis d’un professionnel de santé.'},
+    {t:'Alcool, fatigue, santé', q:'Que faut-il faire avec un médicament portant un pictogramme orange (niveau 2) ?', o:['Ne pas conduire sans l’avis d’un professionnel de santé','Conduire normalement','Ne pas conduire du tout, quoi qu’en dise le médecin','Seulement lire la notice avant de conduire'], e:'Le niveau 2 demande d’être très prudent et de prendre l’avis d’un médecin ou d’un pharmacien avant de conduire.'},
+    // Véhicule et équipements
+    {t:'Véhicule et équipements', q:'Quelle est la profondeur minimale des sculptures des pneus ?', o:['1,6 mm','0,5 mm','3 mm','5 mm'], e:'En dessous de 1,6 mm, le pneu est considéré comme usé et dangereux.'},
+    {t:'Véhicule et équipements', q:'À quelles places la ceinture de sécurité est-elle obligatoire ?', o:['À toutes les places équipées','Seulement à l’avant','Seulement pour le conducteur','Seulement hors agglomération'], e:'Tous les occupants doivent attacher leur ceinture, devant comme derrière.'},
+    {t:'Véhicule et équipements', q:'Un enfant de moins de 10 ans doit voyager…', o:['dans un siège ou un rehausseur adapté à sa taille et à son poids','sur les genoux d’un adulte','avec la ceinture seulement, s’il est sage','sans dispositif s’il est à l’arrière'], e:'Le dispositif de retenue doit être homologué et adapté à la morphologie de l’enfant.'},
+    {t:'Véhicule et équipements', q:'Un enfant de moins de 10 ans voyage dans votre voiture. Où doit-il être installé en principe ?', o:['À l’arrière, dans un dispositif de retenue adapté','À l’avant, avec la ceinture seulement','Sur les genoux d’un adulte à l’arrière','Où il veut, s’il est attaché'], e:'En principe à l’arrière, dans un dispositif homologué. Des exceptions existent, par exemple si le véhicule n’a pas de banquette arrière.'},
+    {t:'Véhicule et équipements', q:'Dans quels cas peut-on utiliser les feux antibrouillard arrière ?', o:['Uniquement en cas de brouillard ou de chute de neige','Dès qu’il pleut','La nuit, en ville','Toujours, pour être mieux vu'], e:'L’article R416-7 réserve les feux antibrouillard arrière au brouillard et à la neige. Par simple pluie, ils ne peuvent pas être utilisés.'},
+    {t:'Véhicule et équipements', q:'Dans quels cas les feux antibrouillard avant peuvent-ils remplacer ou compléter les feux de croisement ?', o:['En cas de brouillard, de chute de neige ou de forte pluie','Dès que la route est mouillée','Uniquement la nuit sur autoroute','Jamais, ils sont interdits en France'], e:'C’est ce que prévoit l’article R416-7 du Code de la route. On les éteint dès que la visibilité redevient normale.'},
+    {t:'Véhicule et équipements', q:'Où doit se trouver le gilet de haute visibilité dans votre voiture ?', o:['Dans l’habitacle, à portée de main du conducteur','Dans le coffre','Sous le siège passager arrière','Il n’est pas obligatoire'], e:'Il doit être rangé à portée de main, pour pouvoir l’enfiler sans sortir du véhicule.'},
+    {t:'Véhicule et équipements', q:'Quels équipements doivent être à bord d’une voiture en circulation ?', o:['Un gilet de haute visibilité et un triangle de présignalisation','Un extincteur et une lampe torche','Une trousse de secours seulement','Aucun équipement obligatoire'], e:'Depuis 2008, le gilet et le triangle sont obligatoires dans les voitures.'},
+    {t:'Véhicule et équipements', q:'Votre voiture est immobilisée sur la route après un arrêt d’urgence. Que faites-vous avant de sortir ?', o:['Vous enfilez le gilet de haute visibilité','Vous sortez vite puis vous cherchez le gilet','Vous laissez le gilet dans le coffre','Vous n’en avez pas besoin si les feux de détresse sont allumés'], e:'Le conducteur revêt le gilet avant de quitter son véhicule immobilisé sur la chaussée ou ses abords.'},
+    {t:'Véhicule et équipements', q:'Pour une voiture neuve, quand doit avoir lieu le premier contrôle technique ?', o:['Dans les 6 mois précédant les 4 ans de la voiture','Dans l’année qui suit la mise en circulation','Au bout de 10 ans','Il n’y en a pas pour une voiture neuve'], e:'Le premier contrôle a lieu dans les 6 mois précédant le 4e anniversaire de la mise en circulation, puis tous les 2 ans.'},
+    {t:'Véhicule et équipements', q:'Après un contrôle technique défavorable, dans quel délai faut-il passer la contre-visite ?', o:['Dans les 2 mois','Dans les 15 jours','Dans les 6 mois','Dans l’année'], e:'Pour une voiture particulière, la contre-visite doit être faite dans les 2 mois.'},
+    // Circulation et stationnement
+    {t:'Circulation et stationnement', q:'Sur autoroute, sur quelle voie roulez-vous normalement ?', o:['La voie la plus à droite, sauf pour dépasser','La voie du milieu, pour être tranquille','La voie la plus à gauche, pour aller plus vite','Celle qui est la plus libre, sans règle'], e:'On revient à droite dès que le dépassement est terminé.'},
+    {t:'Circulation et stationnement', q:'Dans quel cas est-il interdit de dépasser ?', o:['À l’approche d’un sommet de côte où la visibilité est insuffisante','Sur une route droite et dégagée','Sur une ligne discontinue','Sur une route droite en rase campagne'], e:'On ne dépasse jamais sans voir suffisamment loin devant soi, notamment dans un virage ou au sommet d’une côte.'},
+    {t:'Circulation et stationnement', q:'Quand vous dépassez un cycliste hors agglomération, quelle distance latérale devez-vous laisser ?', o:['Au moins 1,5 mètre','Au moins 50 centimètres','Au moins 3 mètres','Aucune règle'], e:'Il faut laisser au moins 1 mètre en agglomération et 1,5 mètre hors agglomération.'},
+    {t:'Circulation et stationnement', q:'En agglomération, quelle distance latérale minimale laissez-vous en dépassant un cycliste ?', o:['Au moins 1 mètre','Au moins 50 centimètres','Au moins 1,5 mètre','Aucune règle'], e:'Le minimum est de 1 mètre en agglomération et de 1,5 mètre hors agglomération.'},
+    {t:'Circulation et stationnement', q:'Peut-on stationner sur un passage piéton ?', o:['Non, et aussi à moins de 5 mètres avant','Oui, si on reste dans la voiture','Oui, pour moins de 5 minutes','Oui, la nuit'], e:'Le stationnement est interdit sur le passage piéton et à moins de 5 mètres avant, pour garder la visibilité entre piétons et conducteurs.'},
+    {t:'Circulation et stationnement', q:'Avant de changer de file, que devez-vous faire ?', o:['Mettre le clignotant, regarder dans les rétroviseurs et vérifier l’angle mort','Mettre le clignotant seulement','Regarder dans le rétroviseur intérieur seulement','Klaxonner'], e:'L’angle mort ne se voit pas dans les rétroviseurs : il faut tourner la tête.'},
+    // Permis et examen
+    {t:'Permis et examen', q:'Combien de points compte un permis probatoire au départ ?', o:['6 points','12 points','8 points','10 points'], e:'Le capital augmente ensuite progressivement, jusqu’à 12 points au bout de 3 ans, ou 2 ans après une conduite accompagnée, sans infraction.'},
+    {t:'Permis et examen', q:'Quelle est la durée de la période probatoire après un apprentissage classique ?', o:['3 ans','1 an','2 ans','5 ans'], e:'Elle dure 3 ans, ou 2 ans après une conduite accompagnée.'},
+    {t:'Permis et examen', q:'À partir de quel âge peut-on commencer la conduite accompagnée ?', o:['15 ans','14 ans','16 ans','17 ans'], e:'L’apprentissage anticipé de la conduite est possible dès 15 ans.'},
+    {t:'Permis et examen', q:'Combien de bonnes réponses faut-il pour réussir l’examen du code ?', o:['35 sur 40','30 sur 40','32 sur 40','38 sur 40'], e:'L’examen compte 40 questions et il faut au moins 35 bonnes réponses, soit 5 erreurs maximum.'},
+    {t:'Permis et examen', q:'Combien de temps le code reste-t-il valable pour passer l’épreuve pratique ?', o:['5 ans','2 ans','1 an','10 ans'], e:'Une fois le code réussi, il reste valable 5 ans pour passer l’examen pratique.'},
+    // Accident et secours
+    {t:'Accident et secours', q:'Vous arrivez sur un accident. Quelles sont les trois actions à mener, dans l’ordre ?', o:['Protéger, alerter, secourir','Secourir, protéger, alerter','Alerter, filmer, protéger','Déplacer les victimes, alerter, partir'], e:'On sécurise d’abord les lieux pour éviter un suraccident, puis on appelle les secours et on aide les victimes.'},
+    {t:'Accident et secours', q:'Quel est le numéro d’urgence européen, valable dans tous les pays de l’Union européenne ?', o:['112','100','911','118'], e:'Le 112 est le numéro d’urgence européen.'},
+    {t:'Accident et secours', q:'Quel est le numéro du SAMU en France ?', o:['15','18','17','19'], e:'Le 15 est le numéro du SAMU, le 18 celui des pompiers et le 112 le numéro d’urgence européen.'},
+    {t:'Accident et secours', q:'Un motard blessé porte son casque et respire normalement. Que faites-vous ?', o:['Vous ne retirez pas le casque et vous attendez les secours','Vous retirez le casque tout de suite','Vous relevez le motard pour l’asseoir','Vous lui donnez à boire'], e:'Retirer le casque peut aggraver une blessure à la nuque. On ne le fait que si la victime ne respire plus.'},
+    {t:'Accident et secours', q:'Un motard blessé porte son casque. Que pouvez-vous faire, si c’est possible, pour l’aider ?', o:['Ouvrir sa visière sans retirer le casque','Retirer son casque','Le tirer par les épaules pour le dégager','Lui faire boire un peu d’eau'], e:'On ne retire pas le casque, mais on ouvre la visière si possible.'},
+    {t:'Accident et secours', q:'Lorsque vous appelez les secours, que devez-vous indiquer en priorité ?', o:['Le lieu précis de l’accident','Le nom de l’assureur','La marque des véhicules','Le nom des témoins'], e:'Sans le lieu exact, les secours ne peuvent pas arriver vite. Précisez aussi le nombre de victimes et leur état.'},
+    {t:'Accident et secours', q:'Une victime d’accident vous demande à boire. Que faites-vous ?', o:['Vous ne lui donnez pas à boire','Vous lui donnez un peu d’eau','Vous lui donnez du café chaud','Vous lui donnez à boire s’il est conscient'], e:'On ne donne rien à boire à un blessé : mieux vaut le rassurer et attendre les secours.'},
+    {t:'Accident et secours', q:'Il n’y a aucun risque de feu ni d’explosion. Que faites-vous des victimes de l’accident ?', o:['Vous ne les déplacez pas','Vous les déplacez sur le bas-côté','Vous les faites asseoir','Vous les faites marcher'], e:'La règle générale est de ne pas déplacer les blessés, sauf danger immédiat comme un incendie ou un risque d’explosion.'}
+  ];
+
+
+var CAT = [
+  {id:'sig',  name:'Signalisation',        themes:['Panneaux et feux','Priorités'],                     icon:'tri',  cls:'t-sig',  bar:'#4aa03e'},
+  {id:'reg',  name:'Règles de circulation', themes:['Vitesse et distances','Circulation et stationnement'], icon:'road', cls:'t-reg',  bar:'#4a7fd4'},
+  {id:'cond', name:'Conduite',              themes:['Alcool, fatigue, santé','Permis et examen'],        icon:'car',  cls:'t-cond', bar:'#6a4bd0'},
+  {id:'veh',  name:'Véhicule et secours',   themes:['Véhicule et équipements','Accident et secours'],    icon:'cross',cls:'t-veh',  bar:'#e0a21b'}
+];
+var ALL = Q.map(function(_,i){ return i; });
+CAT.forEach(function(c){
+  c.ids = ALL.filter(function(i){ return c.themes.indexOf(Q[i].t) >= 0; });
+  c.n = Math.max(1, Math.ceil(c.ids.length/10));
+});
+function catOf(id){ for(var i=0;i<CAT.length;i++){ if(CAT[i].themes.indexOf(Q[id].t)>=0) return CAT[i]; } return CAT[0]; }
+function catById(id){ for(var i=0;i<CAT.length;i++){ if(CAT[i].id===id) return CAT[i]; } return CAT[0]; }
+
+var FICHES = [
+  {id:'f1', c:'sig', t:'Panneaux, lignes et feux', min:3, pts:[
+    'Triangle à bordure rouge : il avertit d’un danger.',
+    'Rond à bordure rouge : interdiction ou restriction.',
+    'Rond à fond bleu : obligation.',
+    'Ligne continue : on ne la franchit pas et on ne la chevauche pas (une exception encadrée existe pour dépasser un cycliste).',
+    'Passage à niveau, feux rouges clignotants : arrêt obligatoire, même si aucun train n’est en vue.',
+    'Feu orange fixe : il annonce le rouge. On s’arrête, sauf si l’arrêt est trop brusque pour se faire en sécurité.'
+  ]},
+  {id:'f2', c:'sig', t:'Les priorités', min:3, pts:[
+    'Sans panneau ni feu : priorité à droite.',
+    'STOP : arrêt complet, même si la voie semble libre.',
+    'Rond-point avec « cédez le passage » à l’entrée : on cède aux véhicules déjà engagés sur l’anneau.',
+    'Piéton engagé sur un passage protégé : il est prioritaire.',
+    'Véhicule de secours avec sirène et gyrophare : on facilite son passage en se rangeant, sans prendre de risque.'
+  ]},
+  {id:'f3', c:'reg', t:'Les vitesses maximales', min:2, pts:[
+    'En agglomération : 50 km/h, sauf indication contraire.',
+    'Route à double sens sans séparateur central, hors agglomération : 80 km/h.',
+    'Autoroute : 130 km/h par temps sec, 110 km/h par temps de pluie. Un jeune conducteur reste à 110 km/h.',
+    'Visibilité inférieure à 50 mètres (brouillard) : 50 km/h sur toutes les routes.'
+  ]},
+  {id:'f4', c:'reg', t:'Les distances de sécurité', min:3, pts:[
+    'Gardez au moins 2 secondes d’écart avec le véhicule qui vous précède. Augmentez-le sur route mouillée.',
+    'Distance d’arrêt = distance de réaction + distance de freinage.',
+    'Sur chaussée mouillée, la distance de freinage augmente nettement.',
+    'Sur autoroute, repère : au moins deux traits de la bande d’arrêt d’urgence.',
+    'Aquaplanage : relâchez progressivement l’accélérateur et tenez fermement le volant, sans geste brusque.'
+  ]},
+  {id:'f5', c:'reg', t:'Dépasser, changer de file, stationner', min:3, pts:[
+    'Autoroute : voie la plus à droite, sauf pour dépasser. On revient à droite dès le dépassement terminé.',
+    'Dépasser est interdit quand la visibilité est insuffisante (virage, sommet de côte).',
+    'Dépasser un cycliste : au moins 1 mètre en agglomération, 1,5 mètre hors agglomération.',
+    'Le stationnement est interdit sur un passage piéton et à moins de 5 mètres avant.',
+    'Changer de file : clignotant, rétroviseurs, puis coup d’œil dans l’angle mort.'
+  ]},
+  {id:'f6', c:'cond', t:'Alcool et conduite', min:2, pts:[
+    'Conducteur confirmé : conduite interdite dès 0,5 g/L de sang (0,25 mg/L d’air expiré).',
+    'Permis probatoire : 0,2 g/L de sang (0,10 mg/L d’air expiré), y compris en conduite accompagnée.',
+    'Pour un jeune conducteur, un seul verre peut suffire à dépasser la limite : la règle sûre est de ne pas boire.'
+  ]},
+  {id:'f7', c:'cond', t:'Fatigue, téléphone, médicaments', min:3, pts:[
+    'Faites une pause au moins toutes les 2 heures. La fatigue augmente le temps de réaction.',
+    'Téléphone tenu en main : interdit, même arrêté au feu. Sanction : 135 € et 3 points.',
+    'Écouteurs, oreillettes et casque audio : interdits au volant.',
+    'Pictogramme orange (niveau 2) sur un médicament : très prudent, avis d’un médecin ou d’un pharmacien avant de conduire.',
+    'Pictogramme rouge (niveau 3) : on ne conduit pas, et on demande l’avis d’un médecin avant de reprendre le volant.'
+  ]},
+  {id:'f8', c:'cond', t:'Permis probatoire et examen', min:2, pts:[
+    'Permis probatoire : 6 points au départ, jusqu’à 12 points en 3 ans (2 ans après une conduite accompagnée) sans infraction.',
+    'La conduite accompagnée est possible dès 15 ans.',
+    'Examen du code : 40 questions, 35 bonnes réponses minimum (5 erreurs maximum).',
+    'Une fois le code réussi, il reste valable 5 ans pour passer l’examen pratique.'
+  ]},
+  {id:'f9', c:'veh', t:'Équipements et contrôle technique', min:3, pts:[
+    'Pneus : profondeur minimale des sculptures de 1,6 mm.',
+    'Ceinture de sécurité obligatoire à toutes les places équipées.',
+    'Enfant de moins de 10 ans : dispositif de retenue adapté à sa taille et à son poids, en principe à l’arrière.',
+    'Feux antibrouillard arrière : brouillard ou chute de neige seulement. Avant : brouillard, neige ou forte pluie.',
+    'Gilet de haute visibilité (à portée de main) et triangle obligatoires. On enfile le gilet avant de sortir du véhicule.',
+    'Contrôle technique : le premier dans les 6 mois avant les 4 ans de la voiture, puis tous les 2 ans. Contre-visite sous 2 mois.'
+  ]},
+  {id:'f10', c:'veh', t:'Accident : protéger, alerter, secourir', min:3, pts:[
+    'Dans l’ordre : protéger, alerter, secourir.',
+    'Numéros : 112 (urgence européen), 15 (SAMU), 18 (pompiers).',
+    'Au téléphone, indiquez en priorité le lieu précis de l’accident, puis le nombre de victimes et leur état.',
+    'Ne déplacez pas les blessés, sauf danger immédiat (incendie, risque d’explosion).',
+    'Motard blessé : on ne retire pas le casque. On ouvre la visière si c’est possible.',
+    'On ne donne rien à boire à un blessé.'
+  ]}
+];
+
+/* ---------- accès gratuit / premium ---------- */
+var PAY_URL = 'https://buy.stripe.com/REMPLACER';   // à remplacer par ton lien de paiement Stripe
+var PRICE = '9,90 €', PREM_DAYS = 90;
+var CODES = [997899237460645, 371386072721844, 5171951318268295, 5618724655633229, 6443889238390320, 6544723450888883, 2686765284634331, 5918525155673982, 61800051289866, 4313681511400290, 8934943355262407, 7377063734074142, 2407039596151176, 5238613196211084, 3323033046700580, 4956787592260920, 7307078643118911, 2194765664207146, 5244394521147916, 4054896237954719, 2825677608897498, 2395021628310966, 5267797875160296, 4589559434427939, 6620671085480584, 6016434098146070, 5636845473968207, 1813176710549481, 2180460363356789, 1896380714709208];
+function cyrb53(s){var h1=0xdeadbeef,h2=0x41c6ce57;for(var i=0,ch;i<s.length;i++){ch=s.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return 4294967296*(2097151&h2)+(h1>>>0);}
+var FREE_FICHES = {f1:1, f4:1};
+var FREE_IDS = {};
+CAT.forEach(function(c){ c.ids.slice(0,4).forEach(function(i){ FREE_IDS[i]=1; }); });
+function fichesOf(cid){ return FICHES.filter(function(f){ return f.c===cid; }); }
+
+/* ---------- icons ---------- */
+var IC = {
+  tri:'<svg class="ic" viewBox="0 0 48 48"><path d="M24 5 45 41H3Z" fill="#fff" stroke="#d93a2f" stroke-width="5" stroke-linejoin="round"/><circle cx="24" cy="21" r="3" fill="#222"/><path d="M24 25v8M24 28l-5 4M24 28l5 4M24 33l-4 5M24 33l4 5" stroke="#222" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>',
+  road:'<svg class="ic" viewBox="0 0 48 48"><path d="M17 6h14l13 36H4Z" fill="#33466e"/><path d="M24 10v5M24 20v6M24 31v8" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>',
+  car:'<svg class="ic" viewBox="0 0 48 48"><path d="M5 31q0-9 7-11l4-8h16l4 8q7 2 7 11v5H5Z" fill="#3d78d8"/><path d="M14 20l3-6h14l3 6Z" fill="#cfe4ff"/><circle cx="14" cy="37" r="5" fill="#243049"/><circle cx="34" cy="37" r="5" fill="#243049"/></svg>',
+  cross:'<svg class="ic" viewBox="0 0 48 48"><circle cx="24" cy="24" r="19" fill="#fff"/><path d="M20 12h8v8h8v8h-8v8h-8v-8h-8v-8h8z" fill="#d93a2f"/></svg>'
+};
+function icon(c){ return IC[c.icon]; }
+var TAB = {
+  home:'<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>',
+  series:'<svg viewBox="0 0 24 24"><path d="M9 3 5 21M15 3l4 18M12 6v3M12 12v3M12 18v3"/></svg>',
+  stats:'<svg viewBox="0 0 24 24"><path d="M5 20v-8M12 20V4M19 20v-6"/></svg>',
+  cours:'<svg viewBox="0 0 24 24"><path d="M3 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H3zM21 5h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7z"/></svg>'
+};
+var CHEV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>';
+var BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>';
+var I_CAL = '<svg viewBox="0 0 24 24" fill="none" stroke="#1f2a44" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>';
+var I_BARS = '<svg viewBox="0 0 24 24" fill="#1f2a44"><rect x="4" y="12" width="4" height="8" rx="1"/><rect x="10" y="4" width="4" height="16" rx="1"/><rect x="16" y="9" width="4" height="11" rx="1"/></svg>';
+var I_STAR = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#4a3bc4" stroke-width="2" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.7 6.6 19.7l1.1-6.1L3.2 9.4l6.1-.8z"/></svg>';
+var I_BOOK = '<svg viewBox="0 0 24 24" fill="none" stroke="#1f2a44" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H3zM21 5h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7z"/></svg>';
+var I_DOC = '<svg viewBox="0 0 24 24" fill="none" stroke="#1f2a44" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>';
+var I_CLOCK = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#6b7590" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-2px"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+var I_UP = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#2f6b25" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></svg>';
+var I_TROPHY = '<svg viewBox="0 0 48 48"><path d="M14 8h20v12a10 10 0 0 1-20 0z" fill="#f3b72b"/><path d="M14 11H7q0 10 8 11M34 11h7q0 10-8 11" stroke="#e29b12" stroke-width="3" fill="none"/><rect x="21" y="30" width="6" height="7" fill="#e29b12"/><rect x="15" y="37" width="18" height="5" rx="2" fill="#f3b72b"/><path d="M24 12l2 4 4 .5-3 3 .8 4-3.8-2-3.8 2 .8-4-3-3 4-.5z" fill="#fff6cf"/></svg>';
+var I_BULB = '<svg viewBox="0 0 48 48"><path d="M24 5a13 13 0 0 0-7 24c1.5 1.2 2 2.4 2 4h10c0-1.6.5-2.8 2-4A13 13 0 0 0 24 5z" fill="#ffd54a"/><rect x="19" y="35" width="10" height="4" rx="2" fill="#9aa3b8"/><rect x="21" y="40" width="6" height="3" rx="1.5" fill="#9aa3b8"/></svg>';
+var I_TARGET = '<svg viewBox="0 0 48 48"><circle cx="22" cy="26" r="17" fill="#fff" stroke="#d93a2f" stroke-width="4"/><circle cx="22" cy="26" r="9" fill="#fff" stroke="#d93a2f" stroke-width="4"/><circle cx="22" cy="26" r="3" fill="#d93a2f"/><path d="M22 26L40 8M34 8h6v6" stroke="#2f6fd6" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>';
+
+/* ---------- mascot ---------- */
+function mascot(kind, cls){
+  var acc = '';
+  var base;
+  if(kind==='trophy' || kind==='book' || kind==='clip'){
+    base = '<use href="#sloth" x="55" y="16" width="130" height="120"/>';
+    if(kind==='trophy') acc = '<g transform="translate(150 70)"><path d="M0 0h34v22a17 17 0 0 1-34 0z" fill="#f3b72b"/><path d="M0 4h-9q0 16 12 18M34 4h9q0 16-12 18" stroke="#e29b12" stroke-width="4" fill="none"/><rect x="14" y="38" width="6" height="12" fill="#e29b12"/><rect x="6" y="50" width="22" height="7" rx="3" fill="#f3b72b"/><path d="M17 8l3 6 6 1-4.500 4 1 6-5.500-3-5.500 3 1-6-4.500-4 6-1z" fill="#fff6cf"/></g>';
+    if(kind==='book') acc = '<g transform="translate(62 108)"><rect x="0" y="0" width="116" height="62" rx="8" fill="#2f6fd6"/><rect x="58" y="0" width="2" height="62" fill="#1f56b8"/><text x="30" y="30" font-size="13" font-weight="900" fill="#fff" text-anchor="middle" font-family="Nunito,sans-serif">CODE</text><text x="30" y="45" font-size="8" font-weight="800" fill="#cfe0ff" text-anchor="middle" font-family="Nunito,sans-serif">DE LA ROUTE</text></g>';
+    if(kind==='clip') acc = '<g transform="translate(130 92)"><rect x="0" y="0" width="52" height="64" rx="6" fill="#fff" stroke="#c9b48a" stroke-width="3"/><rect x="14" y="-5" width="24" height="10" rx="4" fill="#8a8f9c"/><path d="M10 20h6M20 20h24M10 34h6M20 34h24M10 48h6M20 48h24" stroke="#4aa03e" stroke-width="3" stroke-linecap="round"/></g>';
+    return '<svg class="'+(cls||'')+'" viewBox="0 0 240 170" aria-hidden="true">'+base+acc+'</svg>';
+  }
+  base = '<use href="#car" x="0" y="62" width="240" height="110"/><use href="#sloth" x="72" y="0" width="100" height="92"/>';
+  if(kind==='thumb') acc = '<g transform="translate(176 66)"><ellipse cx="14" cy="16" rx="12" ry="10" fill="#8a5a38"/><rect x="8" y="-6" width="8" height="18" rx="4" fill="#8a5a38"/></g>';
+  if(kind==='flag') acc = '<g transform="translate(178 6)"><rect x="0" y="0" width="4" height="86" fill="#3a3f4d"/><rect x="4" y="0" width="40" height="28" fill="#fff" stroke="#3a3f4d" stroke-width="2"/><path d="M4 0h10v9H4zM24 0h10v9H24zM14 9h10v9H14zM34 9h10v9H34zM4 18h10v10H4zM24 18h10v10H24z" fill="#1d2230"/></g>';
+  return '<svg class="'+(cls||'')+'" viewBox="0 0 240 170" aria-hidden="true">'+base+acc+'</svg>';
+}
+function hills(){
+  return '<span class="cloud" style="left:-10px;top:96px;width:90px;height:22px"></span><span class="cloud" style="left:40%;top:30px;width:70px;height:18px"></span>'+
+    '<svg class="hills" viewBox="0 0 480 70" preserveAspectRatio="none"><path d="M0 40Q60 6 130 30T260 36 400 24 480 34V70H0Z" fill="#6cc04f"/><path d="M0 56Q90 34 190 54T380 52 480 50V70H0Z" fill="#f6f1ec"/></svg>';
+}
+
+/* ---------- state ---------- */
+var KEY = 'code-ludique-v1', mem = null, store;
+function loadStore(){
+  var s = null;
+  try { var raw = localStorage.getItem(KEY); if(raw) s = JSON.parse(raw); } catch(e){}
+  if(!s) s = mem;
+  s = s || {};
+  s.ans = s.ans || {}; s.log = s.log || []; s.done = s.done || []; s.read = s.read || {};
+  if(s.best === undefined) s.best = null;
+  if(s.resume === undefined) s.resume = null;
+  if(s.prem === undefined) s.prem = null;
+  return s;
+}
+function save(){ mem = store; try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e){} }
+store = loadStore();
+
+var screen = 'home', lastScreen = null, run = null, coursCat = null, ficheId = null, payMsg = null;
+var $app = document.getElementById('app');
+
+function shuffle(a){ a = a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function mastery(ids){ var n=0; ids.forEach(function(i){ if(store.ans[i] && store.ans[i].ok) n++; }); return ids.length ? Math.round(100*n/ids.length) : 0; }
+function rate(){
+  var L = store.log.slice(-60);
+  if(!L.length) return null;
+  return Math.round(100*L.filter(function(x){ return x.ok; }).length/L.length);
+}
+function weekDelta(){
+  var lim = Date.now()-7*864e5;
+  var wk = store.log.filter(function(x){ return x.ts>=lim; });
+  var pv = store.log.filter(function(x){ return x.ts<lim; }).slice(-60);
+  if(wk.length<5 || pv.length<5) return null;
+  var a = wk.filter(function(x){ return x.ok; }).length/wk.length;
+  var b = pv.filter(function(x){ return x.ok; }).length/pv.length;
+  return Math.round(100*(a-b));
+}
+function doneSince(ms){ return store.done.filter(function(t){ return t>=ms; }).length; }
+function doneToday(){ var d = new Date().toDateString(); return store.done.filter(function(t){ return new Date(t).toDateString()===d; }).length; }
+function dayIdx(){ return Math.floor((Date.now()+36e5)/864e5); }
+function frDate(){ var s = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); return s.charAt(0).toUpperCase()+s.slice(1); }
+function shortDate(ts){ return new Date(ts).toLocaleDateString('fr-FR',{day:'numeric',month:'short'}); }
+function cut(s,n){ return s.length>n ? s.slice(0,n-1).replace(/\s+\S*$/,'')+'…' : s; }
+function ring(frac, label){
+  var r=24, c=2*Math.PI*r, f=Math.max(0,Math.min(1,frac));
+  return '<div class="ring"><svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="'+r+'" fill="none" stroke="#e7e2db" stroke-width="6"/><circle cx="30" cy="30" r="'+r+'" fill="none" stroke="#4aa03e" stroke-width="6" stroke-linecap="round" stroke-dasharray="'+(c*f).toFixed(1)+' '+c.toFixed(1)+'"/></svg><b>'+label+'</b></div>';
+}
+function hero(inner, kind, bubble){
+  return '<div class="hero">'+hills()+inner+'<div class="bubble">'+bubble+'</div>'+mascot(kind,'mascot')+'</div>';
+}
+function nav(){
+  var items = [['home','Accueil'],['series','Séries'],['stats','Statistiques'],['cours','Cours']];
+  return '<nav class="nav">'+items.map(function(x){
+    return '<button data-a="tab" data-t="'+x[0]+'" class="'+(screen===x[0]?'on':'')+'">'+TAB[x[0]]+'<span>'+x[1]+'</span></button>';
+  }).join('')+'</nav>';
+}
+function isPrem(){ return !!store.prem && Date.now() < store.prem + PREM_DAYS*864e5; }
+function premDays(){ return Math.max(0, Math.ceil((store.prem + PREM_DAYS*864e5 - Date.now())/864e5)); }
+function usable(c){ return isPrem() ? c.ids : c.ids.filter(function(i){ return FREE_IDS[i]; }); }
+var I_LOCK = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+function pickSeries(c){
+  var ids = shuffle(usable(c));
+  ids.sort(function(a,b){
+    function p(i){ var s=store.ans[i]; return !s?0:(s.ok?2:1); }
+    return p(a)-p(b);
+  });
+  return shuffle(ids.slice(0,10));
+}
+function weakest(){
+  var best = CAT[0], bv = 999;
+  CAT.forEach(function(c){ var m = mastery(c.ids); if(m<bv){ bv=m; best=c; } });
+  return best;
+}
+
+/* ---------- screens ---------- */
+function promo(){
+  if(isPrem()) return '<div class="note" style="background:#e7f5e2">'+I_TROPHY+'<div><b>Accès complet actif</b><span>Encore '+premDays()+' jour'+(premDays()>1?'s':'')+' • '+Q.length+' questions, examens blancs et toutes les fiches</span></div></div>';
+  return '<div class="promo"><h3>Passe à l’accès complet</h3><p>'+Q.length+' questions, examens blancs de 40 questions et 10 fiches de cours. '+PRICE+' pour 3 mois.</p><button class="btn sm" data-a="premium">Découvrir '+CHEV+'</button></div>';
+}
+function vHome(){
+  var r = rate(), d = weekDelta();
+  var chip = d!==null ? I_UP+' '+(d>=0?'+':'')+d+'% cette semaine' : (store.log.length ? store.log.length+' réponses données' : 'Prêt à commencer ?');
+  var bub = r===null ? 'On commence ?' : (r>=70 ? 'Tu assures !' : 'Courage !');
+  var h = hero('<div class="lab">Ton taux de réussite</div><div class="big">'+(r===null?'–':r+'%')+'</div><span class="chip">'+chip+'</span>','thumb',bub);
+  var w = weakest(), today = doneToday();
+  var html = h+'<div class="sheet">';
+  html += '<div class="card"><div class="ctitle">'+I_CAL+'Aujourd’hui<span class="date">'+frDate()+'</span></div>'+
+    '<div class="inner row">'+ring(today/3, Math.min(today,3)+'/3')+
+    '<div style="flex:1"><div style="font-weight:900;font-size:16px">Série thématique</div><div style="font-weight:700;font-size:14px">'+w.name+'</div><div class="muted">'+I_CLOCK+' '+Math.min(10,usable(w).length)+' questions • ~4 min</div></div>'+
+    '<button class="btn green sm" data-a="cat" data-c="'+w.id+'">Commencer '+CHEV+'</button></div></div>';
+  html += '<div class="sec"><h2>Tes séries</h2><button class="link" data-a="tab" data-t="series">Voir tout ›</button></div><div class="tiles" style="margin-bottom:14px">';
+  CAT.forEach(function(c){
+    var m = mastery(c.ids);
+    html += '<button class="tile '+c.cls+'" data-a="cat" data-c="'+c.id+'">'+icon(c)+'<span class="nm">'+c.name+'</span><span class="pc" style="color:'+c.bar+'">'+m+'%</span><span class="bar"><i style="width:'+m+'%;background:'+c.bar+'"></i></span></button>';
+  });
+  html += '</div>';
+  var qi = dayIdx() % Q.length, qc = catOf(qi);
+  html += '<div class="daily"><div class="tx"><div class="kick">'+I_STAR+' La question du jour</div><h3>'+cut(Q[qi].q,84)+'</h3><button class="btn purple sm" data-a="daily">Répondre '+CHEV+'</button></div><div class="pic">'+icon(qc)+'</div></div>';
+  html += promo();
+  var wk = doneSince(Date.now()-7*864e5);
+  html += '<div class="note">'+I_TROPHY+'<div><b>'+(wk?'Bravo !':'C’est parti !')+'</b><span>'+(wk?('Tu as validé '+wk+' série'+(wk>1?'s':'')+' cette semaine'):'Termine ta première série de la semaine')+'</span></div></div>';
+  html += '<div class="foot">Questions d’entraînement originales, non officielles. Elles ne remplacent pas la préparation en auto-école.</div></div>';
+  return html;
+}
+
+function vSeries(){
+  var total = store.done.length, goal = 10;
+  var h = hero('<h1>Séries</h1><div class="sub" style="margin-top:8px">Entraîne-toi par thème ou en conditions d’examen !</div>','flag','Prêt à t’entraîner ?');
+  var html = h+'<div class="sheet">';
+  html += '<div class="card"><div class="ctitle">'+I_BARS+'Ta progression<button class="link" style="margin-left:auto" data-a="tab" data-t="stats">Voir mes stats ›</button></div><div class="inner row">'+ring(total/goal, Math.min(total,goal)+'/'+goal)+
+    '<div style="flex:1"><div style="font-weight:900;font-size:15px">Séries réalisées</div><div class="muted" style="margin-bottom:6px">'+(total?'Continue comme ça !':'Lance ta première série')+'</div><div class="bar"><i style="width:'+Math.min(100,total*100/goal)+'%"></i></div></div><b style="font-size:13px;color:var(--muted)">'+Math.min(100,Math.round(total*100/goal))+'%</b></div></div>';
+  html += '<div class="sec"><h2>Toutes les séries</h2></div><div class="tiles two" style="margin-bottom:14px">';
+  CAT.forEach(function(c){
+    html += '<button class="tile wide '+c.cls+'" data-a="cat" data-c="'+c.id+'">'+icon(c)+'<span><span class="nm" style="display:block">'+c.name+'</span><span class="ct">'+(isPrem()?c.n+' séries':usable(c).length+' questions gratuites')+'</span></span><span class="chev">'+CHEV+'</span></button>';
+  });
+  html += '</div>';
+  var nEx = Math.min(40,Q.length);
+  html += '<div class="exam"><div class="tx"><div class="ctitle" style="margin:0">'+I_DOC+'Examen blanc</div><h3>Teste-toi en conditions réelles'+(isPrem()?'':' <span class="lockb">'+I_LOCK+' Premium</span>')+'</h3><div class="muted" style="margin-bottom:10px">'+I_CLOCK+' '+nEx+' questions • ~20 min</div><button class="btn green sm" data-a="exam">Commencer '+CHEV+'</button>'+
+    (store.best!==null?'<div class="muted" style="margin-top:8px">Meilleur score : '+store.best+' / '+nEx+'</div>':'')+'</div>'+mascot('clip','m')+'</div>';
+  html += '<div class="sec"><h2>Reprendre une série</h2></div>';
+  if(store.resume){
+    var c = catById(store.resume.cat), n = store.resume.ids.length, i = store.resume.results.length;
+    html += '<div class="card"><div class="row"><div class="item" style="padding:0;border:0;flex:1;cursor:default"><span class="ico '+c.cls+'">'+icon(c)+'</span><span style="flex:1"><div class="tt">'+c.name+'</div><div class="ss">Série en cours • '+i+'/'+n+'</div><div class="bar" style="margin-top:6px"><i style="width:'+Math.round(100*i/n)+'%"></i></div></span></div><button class="btn green sm" data-a="resume">Continuer '+CHEV+'</button></div></div>';
+  } else {
+    html += '<div class="card"><div class="empty">Aucune série en cours.<br>Choisis un thème ci-dessus pour commencer.</div></div>';
+  }
+  return html+'</div>';
+}
+
+function vStats(){
+  var all = mastery(ALL), r = rate(), d = weekDelta();
+  var chip = d!==null ? I_UP+' '+(d>=0?'+':'')+d+'% cette semaine' : (Object.keys(store.ans).length+' / '+Q.length+' questions vues');
+  var h = hero('<div class="lab">Ta progression</div><div class="big">'+all+'%</div><span class="chip">'+chip+'</span>','trophy',all>=80?'Quel progrès !':'On progresse !');
+  var html = h+'<div class="sheet">';
+  html += '<div class="card"><div class="ctitle">'+I_BARS+'Ta progression par thème</div>';
+  CAT.forEach(function(c){
+    var m = mastery(c.ids);
+    html += '<div class="barrow"><span class="ico '+c.cls+'">'+icon(c)+'</span><span class="mid"><b>'+c.name+'</b><span class="bar"><i style="width:'+m+'%;background:'+c.bar+'"></i></span></span><span class="pc">'+m+'%</span></div>';
+  });
+  html += '</div>';
+  var seen = Object.keys(store.ans).length;
+  html += '<div class="note" style="background:#fff;box-shadow:0 4px 18px rgba(60,50,40,.07)">'+I_TARGET+'<div><b>'+(seen?'Tu es sur la bonne voie !':'Commence à t’entraîner')+'</b><span>'+(seen?(all>=100?'Tu maîtrises toutes les questions':'Encore '+(100-all)+'% pour atteindre 100%'):'Réponds à quelques questions pour voir tes stats')+'</span></div></div>';
+  var wrong = [], seenIds = {};
+  for(var k=store.log.length-1;k>=0 && wrong.length<5;k--){
+    var e = store.log[k];
+    if(seenIds[e.id]) continue;
+    seenIds[e.id] = 1;
+    if(!e.ok && store.ans[e.id] && !store.ans[e.id].ok) wrong.push(e);
+  }
+  html += '<div class="card"><div class="ctitle"><span style="width:22px;height:22px;border-radius:50%;background:#6a4bd0;color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;font-weight:900">!</span>Tes erreurs récentes'+(wrong.length?'<button class="link" style="margin-left:auto" data-a="errors">Revoir ›</button>':'')+'</div>';
+  if(!wrong.length){ html += '<div class="empty">Aucune erreur à revoir pour l’instant.</div>'; }
+  wrong.forEach(function(e){
+    var c = catOf(e.id);
+    html += '<button class="item" data-a="errors"><span class="ico '+c.cls+'">'+icon(c)+'</span><span><div class="tt">'+cut(Q[e.id].q,62)+'</div><div class="ss">Bonne réponse : '+cut(Q[e.id].o[0],54)+'</div></span><span class="dt">'+shortDate(e.ts)+'</span></button>';
+  });
+  html += '</div>';
+  var wk = doneSince(Date.now()-7*864e5);
+  html += '<div class="note">'+I_TROPHY+'<div><b>'+(seen?'Bravo !':'À toi de jouer !')+'</b><span>'+(wk?('Tu as validé '+wk+' série'+(wk>1?'s':'')+' cette semaine'):'Tes progrès apparaîtront ici')+'</span></div></div>';
+  return html+'</div>';
+}
+
+function vCours(){
+  var read = FICHES.filter(function(f){ return store.read[f.id]; }).length;
+  var p = Math.round(100*read/FICHES.length);
+  var h = hero('<h1 style="font-size:28px">Apprends le code<br>à ton rythme !</h1><div class="sub" style="margin-top:8px;font-size:13.5px">Des fiches claires pour bien comprendre.</div>','book','Petit à petit, tu y es !');
+  var html = h+'<div class="sheet">';
+  html += '<div class="card"><div class="ctitle">'+I_BOOK+'Ta progression dans les cours</div><div class="row"><div class="bar" style="flex:1;height:10px"><i style="width:'+p+'%"></i></div><b style="color:#2f7a25">'+p+'%</b></div><div class="muted" style="margin-top:6px">'+read+' fiche'+(read>1?'s':'')+' sur '+FICHES.length+' lue'+(read>1?'s':'')+'</div></div>';
+  html += '<div class="sec"><h2>Les grands chapitres</h2>'+(coursCat?'<button class="link" data-a="filter" data-c="">Tout afficher</button>':'')+'</div><div class="tiles two" style="margin-bottom:14px">';
+  CAT.forEach(function(c){
+    var fl = fichesOf(c.id), rd = fl.filter(function(f){ return store.read[f.id]; }).length;
+    html += '<button class="tile wide '+c.cls+(coursCat===c.id?' on':'')+'" data-a="filter" data-c="'+c.id+'">'+icon(c)+'<span style="flex:1"><span class="nm" style="display:block">'+c.name+'</span><span class="ct">'+fl.length+' fiches</span><span class="bar" style="display:block;margin-top:6px;height:5px"><i style="width:'+Math.round(100*rd/fl.length)+'%;background:'+c.bar+'"></i></span></span></button>';
+  });
+  html += '</div>';
+  var fd = FICHES[dayIdx() % FICHES.length];
+  html += '<div class="daily"><div class="tx"><div class="kick">'+I_STAR+' Ta fiche du jour</div><h3>'+fd.t+'</h3><div class="muted" style="margin:-4px 0 10px">'+I_CLOCK+' ~'+fd.min+' min de lecture</div><button class="btn purple sm" data-a="fiche" data-f="'+fd.id+'">Lire la fiche '+CHEV+'</button></div><div class="pic">'+icon(catById(fd.c))+'</div></div>';
+  html += '<div class="sec"><h2>'+(coursCat?catById(coursCat).name:'Toutes les fiches')+'</h2></div><div class="card" style="padding:6px 12px">';
+  FICHES.filter(function(f){ return !coursCat || f.c===coursCat; }).forEach(function(f){
+    var c = catById(f.c);
+    html += '<button class="item" data-a="fiche" data-f="'+f.id+'"><span class="ico '+c.cls+'">'+icon(c)+'</span><span><div class="tt">'+f.t+(store.read[f.id]?'<span class="read">Lue</span>':'')+((!isPrem() && !FREE_FICHES[f.id])?'<span class="lockb" style="margin-left:8px">'+I_LOCK+' Premium</span>':'')+'</div><div class="ss">'+I_CLOCK+' ~'+f.min+' min</div></span><span class="dt" style="width:14px">'+CHEV+'</span></button>';
+  });
+  html += '</div>';
+  html += '<div class="note">'+I_BULB+'<div><b>Bon à savoir !</b><span>Sur route sèche, la distance de sécurité est d’au moins 2 secondes.</span></div></div>';
+  return html+'</div>';
+}
+
+function vFiche(){
+  var f = FICHES.filter(function(x){ return x.id===ficheId; })[0], c = catById(f.c);
+  var html = '<div class="hero" style="height:150px;padding-top:50px">'+hills()+'<button class="back" data-a="tab" data-t="cours">'+BACK+' Cours</button><h1 style="font-size:26px;max-width:64%">'+f.t+'</h1>'+mascot('book','mascot')+'</div><div class="sheet fiche">';
+  html += '<div class="card"><span class="tag '+c.cls+'">'+c.name+' • ~'+f.min+' min</span><ul>'+f.pts.map(function(p){ return '<li>'+p+'</li>'; }).join('')+'</ul></div>';
+  html += '<div class="foot" style="margin-bottom:10px">Résumé établi à partir des règles du Code de la route. Vérifie toujours avec ton moniteur.</div>';
+  html += '<div style="display:flex;flex-direction:column;gap:10px"><button class="btn green full" data-a="read" data-f="'+f.id+'">'+(store.read[f.id]?'Fiche déjà lue • Revenir aux cours':'J’ai lu cette fiche')+'</button><button class="btn ghost full" data-a="cat" data-c="'+c.id+'">S’entraîner sur ce thème</button></div></div>';
+  return html;
+}
+
+function vPremium(){
+  var html = '<div class="hero" style="height:170px;padding-top:50px">'+hills()+'<button class="back" data-a="backprem">'+BACK+' Retour</button><h1 style="font-size:26px;max-width:62%">Accès complet</h1>'+mascot('trophy','mascot')+'</div><div class="sheet">';
+  if(isPrem()){
+    html += '<div class="card"><div class="ctitle">Accès complet actif</div><div class="muted">Encore '+premDays()+' jour'+(premDays()>1?'s':'')+'. Bonne préparation !</div></div>';
+    return html+'</div>';
+  }
+  html += '<div class="card"><div class="price">'+PRICE+' <small>pour 3 mois</small></div><ul class="perks"><li>Les '+Q.length+' questions, sur tous les thèmes</li><li>Examens blancs de 40 questions, avec correction</li><li>Les 10 fiches de cours</li><li>Suivi de tes progrès et de tes erreurs</li></ul>'+
+    '<button class="btn green full" style="margin-top:10px" data-a="buy">Acheter l’accès complet</button>'+(payMsg&&payMsg.k==='ko'&&payMsg.t.indexOf('paiement')>=0?'<div class="msg ko" style="margin-top:10px">'+payMsg.t+'</div>':'')+'</div>';
+  html += '<div class="card"><div class="ctitle">Tu as déjà un code ?</div><input id="code" class="inp" placeholder="CODE-XXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">'+(payMsg&&payMsg.t.indexOf('paiement')<0?'<div class="msg '+payMsg.k+'">'+payMsg.t+'</div>':'')+'<button class="btn purple full" data-a="activate">Activer mon code</button></div>';
+  html += '<div class="foot">Gratuit : '+Object.keys(FREE_IDS).length+' questions et 2 fiches. Questions d’entraînement originales, non officielles.</div></div>';
+  return html;
+}
+function modeLabel(){ return run.mode==='exam'?'Examen blanc':run.mode==='errors'?'Mes erreurs':run.mode==='daily'?'Question du jour':catById(run.cat).name; }
+function vQuiz(){
+  var id = run.ids[run.i], q = Q[id], c = catOf(id), n = run.ids.length, exam = run.mode==='exam';
+  var last = run.i===n-1;
+  var html = '<div class="qwrap"><div class="qtop"><button class="x" data-a="close" aria-label="Quitter">×</button><div class="qbar"><i style="width:'+Math.round(100*(run.i+(run.done?1:0))/n)+'%"></i></div><span class="cnt">'+(run.i+1)+'/'+n+'</span></div>';
+  html += '<div class="qcard"><span class="qtheme '+c.cls+'">'+icon(c)+' '+q.t+'</span><h2>'+q.q+'</h2></div><div class="opts">';
+  run.opts.forEach(function(o,k){
+    var cl = 'opt';
+    if(run.done){ if(o.ok) cl+=' ok'; else if(k===run.sel) cl+=' ko'; else cl+=' dim'; }
+    else if(k===run.sel) cl+=' sel';
+    html += '<button class="'+cl+'" data-a="opt" data-k="'+k+'"><b>'+String.fromCharCode(65+k)+'</b><span>'+o.t+'</span></button>';
+  });
+  html += '</div>';
+  if(run.done && !exam){
+    var good = run.opts[run.sel].ok;
+    html += '<div class="fb '+(good?'ok':'ko')+'"><b>'+(good?'Bonne réponse !':'Pas tout à fait')+'</b>'+q.e+'</div>';
+  }
+  var ready = exam ? run.sel!==null : run.done;
+  html += '<button class="btn green full" data-a="next"'+(ready?'':' disabled')+'>'+(last?'Voir le résultat':(exam?'Valider et continuer':'Question suivante'))+'</button></div>';
+  return html;
+}
+
+function vResult(){
+  var n = run.results.length, good = run.results.filter(function(r){ return r.ok; }).length, errs = n-good, exam = run.mode==='exam';
+  var verdict, bub;
+  if(exam){
+    var pass = errs<=5;
+    verdict = pass ? 'Réussi : '+errs+' erreur'+(errs>1?'s':'')+' (5 maximum)' : 'Non réussi : '+errs+' erreurs (5 maximum)';
+    bub = pass ? 'Bravo !' : 'Courage !';
+  } else {
+    verdict = errs ? errs+' erreur'+(errs>1?'s':'')+' à revoir' : 'Sans faute !';
+    bub = errs ? 'Tu progresses !' : 'Parfait !';
+  }
+  var h = hero('<div class="lab">'+modeLabel()+'</div><div class="big">'+good+' / '+n+'</div><span class="chip">'+verdict+'</span>', good*2>=n?'trophy':'thumb', bub);
+  var html = h+'<div class="sheet"><div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px"><button class="btn green full" data-a="again">Rejouer</button><button class="btn ghost full" data-a="home">Retour à l’accueil</button></div>';
+  var wr = run.results.filter(function(r){ return !r.ok; });
+  if(wr.length){
+    html += '<div class="sec"><h2>À revoir</h2></div><div class="card" style="padding:6px 14px">';
+    wr.forEach(function(r){
+      var q = Q[r.id];
+      html += '<div class="revi"><div class="qq">'+q.q+'</div><div class="you">Ta réponse : '+r.pick+'</div><div class="good">Bonne réponse : '+q.o[0]+'</div><div class="why">'+q.e+'</div></div>';
+    });
+    html += '</div>';
+  }
+  return html+'</div>';
+}
+
+function render(){
+  var tabs = {home:vHome, series:vSeries, stats:vStats, cours:vCours};
+  var html, withNav = false;
+  if(tabs[screen]){ html = tabs[screen](); withNav = true; }
+  else if(screen==='fiche') html = vFiche();
+  else if(screen==='premium') html = vPremium();
+  else if(screen==='quiz') html = vQuiz();
+  else html = vResult();
+  $app.className = 'app'+(withNav?'':' noNav');
+  $app.innerHTML = html + (withNav?nav():'');
+  if(screen!==lastScreen){ try{ window.scrollTo(0,0); }catch(e){} lastScreen = screen; }
+}
+function go(s){ screen = s; render(); }
+
+/* ---------- quiz logic ---------- */
+function buildOpts(id){ return shuffle(Q[id].o.map(function(t,k){ return {t:t, ok:k===0}; })); }
+function startRun(mode, ids, cat, resume){
+  if(!ids.length) return;
+  run = {mode:mode, cat:cat||null, ids:ids, i:resume?resume.results.length:0, results:resume?resume.results.slice():[], sel:null, done:false};
+  run.opts = buildOpts(run.ids[run.i]);
+  go('quiz');
+}
+function record(id, ok, pick){
+  store.ans[id] = {ok:ok, ts:Date.now()};
+  store.log.push({id:id, ok:ok, ts:Date.now()});
+  if(store.log.length>400) store.log = store.log.slice(-400);
+  run.results.push({id:id, ok:ok, pick:pick});
+}
+function validate(){
+  var id = run.ids[run.i], o = run.opts[run.sel];
+  record(id, o.ok, o.t);
+  run.done = true;
+}
+function finish(){
+  if(run.mode==='serie'){ store.done.push(Date.now()); store.resume = null; }
+  if(run.mode==='exam'){
+    var g = run.results.filter(function(r){ return r.ok; }).length;
+    if(store.best===null || g>store.best) store.best = g;
+  }
+  save(); go('result');
+}
+function nextQ(){
+  if(run.i>=run.ids.length-1){ finish(); return; }
+  run.i++; run.sel = null; run.done = false; run.opts = buildOpts(run.ids[run.i]);
+  if(run.mode==='serie'){ store.resume = {cat:run.cat, ids:run.ids, results:run.results}; }
+  save(); render();
+}
+
+$app.addEventListener('click', function(e){
+  var b = e.target.closest ? e.target.closest('[data-a]') : null;
+  if(!b || b.disabled) return;
+  var a = b.getAttribute('data-a'), d = function(k){ return b.getAttribute('data-'+k); };
+  if(a==='tab'){ go(d('t')); }
+  else if(a==='cat'){ var c = catById(d('c')); startRun('serie', pickSeries(c), c.id); }
+  else if(a==='exam'){ if(!isPrem()){ payMsg=null; go('premium'); return; } startRun('exam', shuffle(ALL).slice(0,Math.min(40,Q.length))); }
+  else if(a==='daily'){ startRun('daily', [dayIdx()%Q.length]); }
+  else if(a==='resume'){ var r = store.resume; if(r) startRun('serie', r.ids, r.cat, r); }
+  else if(a==='errors'){
+    var wr = ALL.filter(function(i){ return store.ans[i] && !store.ans[i].ok; });
+    startRun('errors', shuffle(wr.length?wr:ALL).slice(0,10));
+  }
+  else if(a==='opt'){
+    if(run.done) return;
+    run.sel = parseInt(d('k'),10);
+    if(run.mode!=='exam'){ validate(); }
+    render();
+  }
+  else if(a==='next'){
+    if(run.mode==='exam'){ if(run.sel===null) return; validate(); }
+    nextQ();
+  }
+  else if(a==='close'){
+    if(run.mode==='serie' && run.results.length && run.results.length<run.ids.length){
+      store.resume = {cat:run.cat, ids:run.ids, results:run.results}; save();
+    }
+    go(run.mode==='serie'?'series':'home');
+  }
+  else if(a==='again'){
+    if(run.mode==='exam' && isPrem()) startRun('exam', shuffle(ALL).slice(0,Math.min(40,Q.length)));
+    else if(run.mode==='serie') startRun('serie', pickSeries(catById(run.cat)), run.cat);
+    else go('home');
+  }
+  else if(a==='home'){ go('home'); }
+  else if(a==='backprem'){ go('home'); }
+  else if(a==='filter'){ coursCat = d('c') && coursCat!==d('c') ? d('c') : null; render(); }
+  else if(a==='fiche'){ if(!isPrem() && !FREE_FICHES[d('f')]){ payMsg=null; go('premium'); return; } ficheId = d('f'); go('fiche'); }
+  else if(a==='premium'){ payMsg=null; go('premium'); }
+  else if(a==='buy'){ if(PAY_URL.indexOf('REMPLACER')>=0){ payMsg={k:'ko',t:'Le paiement en ligne sera disponible très bientôt.'}; render(); } else { try{ window.open(PAY_URL,'_blank','noopener'); }catch(e){} } }
+  else if(a==='activate'){
+    var inp = document.getElementById('code'), v = inp ? inp.value.toUpperCase().replace(/\s/g,'') : '';
+    if(CODES.indexOf(cyrb53(v))>=0){ store.prem = Date.now(); save(); payMsg={k:'ok',t:'Accès complet activé pour 3 mois !'}; }
+    else payMsg={k:'ko',t:'Code incorrect. Vérifie les majuscules et le tiret.'};
+    render();
+  }
+  else if(a==='read'){ store.read[d('f')] = 1; save(); go('cours'); }
+});
+
+render();
 </script>
 </body>
 </html>
