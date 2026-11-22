@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · style moderne par défaut';
+const APP_VERSION = '2026-11-22 · motos & essence';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -110,6 +110,8 @@ function defaultState() {
     modeles: modelesParDefaut(),
     contrats: [],
     suivi: [],
+    motos: [],
+    pleins: [],
     eleves: [],
     seances: [],
     factures: [],
@@ -147,7 +149,7 @@ function migrate(db) {
   for (const k of ['capacite', 'tarifHeure', 'tarifExamen', 'fraisRepassage', 'heuresPrepa', 'dureeDefaut', 'rappel']) db.settings[k] = Object.assign({}, def.settings[k], db.settings[k] || {});
   db.settings.rappel.documents = Object.assign({}, def.settings.rappel.documents, db.settings.rappel.documents || {});
   db.entreprise = Object.assign({}, def.entreprise, db.entreprise || {});
-  for (const k of ['agences', 'moniteurs', 'prestations', 'eleves', 'seances', 'factures', 'paiements', 'contrats', 'suivi']) db[k] = db[k] || [];
+  for (const k of ['agences', 'moniteurs', 'prestations', 'eleves', 'seances', 'factures', 'paiements', 'contrats', 'suivi', 'motos', 'pleins']) db[k] = db[k] || [];
   // Couleurs demandées pour les auto-écoles (appliquées une seule fois ; modifiables ensuite dans Paramètres)
   if (db.settings && !db.settings.couleursAuto1 && Array.isArray(db.agences)) {
     for (const a of db.agences) {
@@ -429,12 +431,13 @@ function render() {
     : '';
   if (bloque) { v.innerHTML = viewConnexion(); return; }
   // Moniteur : uniquement le planning
-  $$('#tabs button').forEach((b) => { b.hidden = estMoniteur() && b.dataset.view !== 'planning'; });
-  if (estMoniteur() && UI.view !== 'planning') UI.view = 'planning';
+  $$('#tabs button').forEach((b) => { b.hidden = estMoniteur() && !['planning', 'motos'].includes(b.dataset.view); });
+  if (estMoniteur() && !['planning', 'motos'].includes(UI.view)) UI.view = 'planning';
   majMenu();
   if (UI.view === 'planning') v.innerHTML = viewPlanning();
   else if (UI.view === 'eleves') v.innerHTML = UI.eleveOuvert ? viewFiche(UI.eleveOuvert) : viewEleves();
   else if (UI.view === 'paiements') v.innerHTML = viewPaiements();
+  else if (UI.view === 'motos') v.innerHTML = viewMotos();
   else if (UI.view === 'parametres') v.innerHTML = viewParametres();
 }
 
@@ -1923,6 +1926,18 @@ function demoData() {
   db.seances[db.seances.length - 1].eleves = [{ eleveId: 'el4', statut: 'valide' }, { eleveId: 'el9', statut: 'nonvalide' }];
   add(-6, '10:00', '11:00', 'blanc_circulation', 'm2', [0, 3]);
   db.seances[db.seances.length - 1].eleves = [{ eleveId: 'el0', statut: 'valide' }, { eleveId: 'el3', statut: 'valide' }];
+  // Motos & pleins (démo)
+  const ilya = (j) => { const d = new Date(); d.setDate(d.getDate() - j); return toISODate(d); };
+  db.motos = [
+    { id: 'mo1', surnom: 'La Bleue', modele: 'Yamaha MT-07', plaque: 'GH-482-KL', categorie: 'A2', couleur: '#2563eb', km: 18420, emplacement: { type: 'agence', ref: 'ag1', texte: '', majLe: new Date().toISOString() } },
+    { id: 'mo2', surnom: 'Flash', modele: 'Kawasaki Z650', plaque: 'FT-219-BN', categorie: 'A2', couleur: '#16a34a', km: 23110, emplacement: { type: 'piste', ref: '', texte: '', majLe: new Date().toISOString() } },
+    { id: 'mo3', surnom: 'Titan', modele: 'Honda CB650R', plaque: 'EZ-731-QR', categorie: 'A2', couleur: '#dc2626', km: 9870, emplacement: { type: 'moniteur', ref: 'm2', texte: '', majLe: new Date().toISOString() } },
+  ];
+  const pl = (motoId, j, litres, montant, km, station) => db.pleins.push({ id: uid(), motoId, date: ilya(j), litres, montant, km, station, auteur: 'local', auteurNom: 'Karim B.', creeLe: new Date().toISOString() });
+  db.pleins = [];
+  pl('mo1', 70, 12.1, 22.4, 17940, 'Total'); pl('mo1', 40, 11.8, 21.9, 18180, 'Total'); pl('mo1', 12, 12.4, 23.1, 18420, 'Leclerc');
+  pl('mo2', 55, 13.0, 24.2, 22610, 'Esso'); pl('mo2', 20, 13.5, 25.0, 22860, 'Total'); pl('mo2', 3, 12.9, 24.6, 23100, 'Total');
+  pl('mo3', 33, 11.0, 20.5, 9620, 'Leclerc'); pl('mo3', 6, 11.6, 21.8, 9850, 'Esso');
   return db;
 }
 
@@ -2352,7 +2367,7 @@ const ACTIONS = {
   },
 };
 
-Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS, SUIVI_ACTIONS, EMAIL_ACTIONS);
+Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS, SUIVI_ACTIONS, EMAIL_ACTIONS, MOTO_ACTIONS);
 
 /* ---------------------------------------------------------------------
    Synchronisation en ligne

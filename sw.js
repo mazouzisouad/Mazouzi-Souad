@@ -1,7 +1,7 @@
 // Service worker : permet d'utiliser l'appli hors connexion (installée sur le téléphone).
-const CACHE = 'moto-planning-v17';
+const CACHE = 'moto-planning-v18';
 const FILES = ['./', 'index.html', 'styles.css', 'app.js', 'icon.svg', 'manifest.webmanifest', 'vendor/jspdf.umd.min.js',
-  'config.js', 'cloud.js', 'contrats.js', 'rappels.js', 'suivi.js', 'email.js', 'pdfdesign.js', 'vendor/fonts/Poppins-Regular.ttf', 'vendor/fonts/Poppins-SemiBold.ttf', 'vendor/fonts/Poppins-Bold.ttf', 'vendor/firebase/firebase-app-compat.js', 'vendor/firebase/firebase-auth-compat.js', 'vendor/firebase/firebase-firestore-compat.js'];
+  'config.js', 'cloud.js', 'contrats.js', 'rappels.js', 'suivi.js', 'email.js', 'motos.js', 'pdfdesign.js', 'vendor/fonts/Poppins-Regular.ttf', 'vendor/fonts/Poppins-SemiBold.ttf', 'vendor/fonts/Poppins-Bold.ttf', 'vendor/firebase/firebase-app-compat.js', 'vendor/firebase/firebase-auth-compat.js', 'vendor/firebase/firebase-firestore-compat.js'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));

@@ -68,6 +68,15 @@ un avis en 1 clic (😊 Bien / 😐 Moyen / 😟 À revoir), coche les points tr
 et ajoute un commentaire. Depuis le planning (bouton « 📋 Suivi » à côté de chaque élève) ou la fiche élève
 (onglet « 📋 Suivi »). Les moniteurs lisent tout le suivi et modifient seulement leurs propres commentaires.
 
+## 🏍️ Motos & essence
+
+Onglet « 🏍️ Motos » : une carte par moto (surnom, modèle, plaque, où elle se trouve, dernier plein,
+compteur, consommation). « ⛽ Plein » : choisir la moto, litres + montant (le prix au litre se calcule),
+compteur facultatif pour la consommation. « 📍 Où est-elle ? » : agence, piste, avec un moniteur,
+garage, autre. En bas : dépenses des 6 derniers mois et liste des pleins par mois / par moto.
+Les moniteurs voient la flotte, notent leurs pleins et déplacent les motos ; seule la direction
+ajoute, modifie ou retire une moto.
+
 ## Places d'examen réservées
 
 Dès la réservation sur RdvPermis, l'agence place l'examen au planning avec le **nombre de places réservées**

@@ -47,6 +47,19 @@ service cloud.firestore {
       allow update: if moniteur() && resource.data.auteur == email() && request.resource.data.auteur == email();
       allow delete: if moniteur() && resource.data.auteur == email();
     }
+    // Motos : tous les moniteurs voient la flotte et peuvent dire où est une moto
+    match /motos/{id} {
+      allow read: if moniteur();
+      allow update: if moniteur()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['emplacement', 'km', 'majLe', 'majPar']);
+    }
+    // Pleins d'essence : chacun ajoute / corrige les siens
+    match /pleins/{id} {
+      allow read: if moniteur();
+      allow create: if moniteur() && request.resource.data.auteur == email();
+      allow update: if moniteur() && resource.data.auteur == email() && request.resource.data.auteur == email();
+      allow delete: if moniteur() && resource.data.auteur == email();
+    }
     match /seances/{id} {
       allow read: if moniteur() && resource.data.moniteurId == monId();
       allow update: if moniteur()

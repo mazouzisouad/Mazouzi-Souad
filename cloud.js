@@ -20,11 +20,12 @@
      ecole/public     → auto-écoles (nom, couleur), moniteurs, réglages du planning
      eleves_planning/{id} → nom, prénom, téléphone, auto-école de chaque élève
      eleves/{id}, seances/{id}, factures/{id}, paiements/{id}, contrats/{id}
+     motos/{id}, pleins/{id} → flotte de motos et pleins d'essence
    ===================================================================== */
 'use strict';
 
 const CLOUD_CFG_KEY = 'motoplanning_firebase';
-const CLOUD_COLLS = ['eleves', 'seances', 'factures', 'paiements', 'contrats', 'suivi'];
+const CLOUD_COLLS = ['eleves', 'seances', 'factures', 'paiements', 'contrats', 'suivi', 'motos', 'pleins'];
 const CLOUD_CONFIG_KEYS = ['version', 'settings', 'entreprise', 'agences', 'moniteurs', 'prestations', 'modeles'];
 
 // JSON avec clés triées : sert à comparer local / en ligne sans faux écarts
@@ -185,7 +186,7 @@ const Cloud = {
 
   subscribe() {
     const admin = this.role === 'admin';
-    const attendus = new Set(admin ? ['config', 'compteur', 'public', 'roles', 'eleves_planning', ...CLOUD_COLLS] : ['public', 'eleves_planning', 'seances', 'suivi']);
+    const attendus = new Set(admin ? ['config', 'compteur', 'public', 'roles', 'eleves_planning', ...CLOUD_COLLS] : ['public', 'eleves_planning', 'seances', 'suivi', 'motos', 'pleins']);
     const recu = (k) => {
       attendus.delete(k);
       if (attendus.size) return;
@@ -225,6 +226,7 @@ const Cloud = {
     } else {
       coll('seances', this.fs.collection('seances').where('moniteurId', '==', this.monId));
       coll('suivi'); // fiche de suivi : lue par tous les moniteurs, chacun écrit les siens
+      coll('motos'); coll('pleins'); // flotte : tout le monde note les pleins et où sont les motos
       // Si la direction retire l'accès, l'appli se ferme aussitôt
       const email = (this.user.email || '').toLowerCase();
       this.unsubs.push(this.fs.collection('ecole').doc('roles').onSnapshot((d) => {
@@ -255,6 +257,8 @@ const Cloud = {
         moniteurs: clean(pub.moniteurs || []),
         prestations: [], modeles: [], factures: [], paiements: [], contrats: [],
         suivi: [...this.remote.suivi.values()].map(clean),
+        motos: [...this.remote.motos.values()].map(clean),
+        pleins: [...this.remote.pleins.values()].map(clean),
         eleves: [...this.remote.eleves_planning.values()].map(clean),
         seances: [...this.remote.seances.values()].map(clean),
       };
@@ -311,6 +315,26 @@ const Cloud = {
       }
       for (const [id, s] of [...this.synced.suivi.entries()]) {
         if (!ids.has(id) && JSON.parse(s).auteur === moi) { ops.push(['delete', this.fs.collection('suivi').doc(id)]); this.synced.suivi.delete(id); }
+      }
+      // … où sont les motos (emplacement / compteur uniquement)
+      for (const m of db.motos || []) {
+        if (!this.synced.motos.has(m.id)) continue;
+        const s = stableStringify(clean(m));
+        if (this.synced.motos.get(m.id) !== s) {
+          const champs = clean({ emplacement: m.emplacement || {}, km: m.km ?? '', majLe: m.majLe || '', majPar: m.majPar || '' });
+          ops.push(['update', this.fs.collection('motos').doc(m.id), champs]); this.synced.motos.set(m.id, s);
+        }
+      }
+      // … et ses propres pleins d'essence
+      const idsP = new Set();
+      for (const p of db.pleins || []) {
+        if (p.auteur !== moi) continue;
+        idsP.add(p.id);
+        const s = stableStringify(clean(p));
+        if (this.synced.pleins.get(p.id) !== s) { ops.push(['set', this.fs.collection('pleins').doc(p.id), clean(p)]); this.synced.pleins.set(p.id, s); }
+      }
+      for (const [id, s] of [...this.synced.pleins.entries()]) {
+        if (!idsP.has(id) && JSON.parse(s).auteur === moi) { ops.push(['delete', this.fs.collection('pleins').doc(id)]); this.synced.pleins.delete(id); }
       }
     } else {
       const cfg = {};
