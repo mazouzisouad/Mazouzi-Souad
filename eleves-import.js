@@ -157,6 +157,9 @@ function openImportEleves() {
     body: `
       <div class="form-grid">
         <label class="field"><span>Auto-école de ces élèves *</span><select id="imp-el-ag">${DB.agences.map((a) => `<option value="${a.id}" ${UI.filtreAgence === a.id ? 'selected' : ''}>${esc(a.nom)}</option>`).join('')}</select></label>
+        <label class="field"><span>Ces élèves sont…</span><select id="imp-el-statut">
+          <option value="en_cours">En formation (actifs)</option><option value="inactif">Inactifs (anciens élèves)</option>
+          <option value="obtenu">Permis obtenu</option></select></label>
         <label class="field"><span>Fichier : PDF « Statistiques élèves » d'AGX, ou CSV</span><input type="file" id="imp-el-fichier" accept=".pdf,.csv,.txt,application/pdf,text/csv" data-on-change="impElFichier"></label>
         <label class="field full"><span>… ou collez ici un tableau copié depuis Excel (avec la ligne des titres : Nom, Prénom, Téléphone…)</span>
           <textarea id="imp-el-texte" rows="4" placeholder="Nom&#9;Prénom&#9;Téléphone&#9;E-mail…"></textarea></label>
@@ -198,7 +201,12 @@ const IMPORT_ELEVES_ACTIONS = {
     const etat = $('#imp-el-etat'); etat.textContent = 'Lecture du fichier…';
     try {
       let rows = null;
-      if (/\.pdf$/i.test(f.name) || f.type === 'application/pdf') rows = lireListeAgx(await textePdf(await f.arrayBuffer()));
+      if (/\.pdf$/i.test(f.name) || f.type === 'application/pdf') {
+        const items = await textePdf(await f.arrayBuffer());
+        const crit = items.find((it) => /actif\s*:/i.test(it.str));
+        if (crit) $('#imp-el-statut').value = /actif\s*:\s*non/i.test(crit.str) ? 'inactif' : 'en_cours';
+        rows = lireListeAgx(items);
+      }
       else rows = lireTableau(await f.text());
       if (!rows || !rows.length) { etat.textContent = ''; return toast("Je n'ai pas trouvé de liste d'élèves dans ce fichier.", true); }
       preparerLignes(rows, f.name);
@@ -212,17 +220,19 @@ const IMPORT_ELEVES_ACTIONS = {
   impElCoche(d, el) { IMPORT_EL.rows[+d.i].ok = el.checked; afficherApercuImport(); },
   impElTous(d, el) { IMPORT_EL.rows.forEach((r) => { r.ok = el.checked; }); afficherApercuImport(); },
   impElValider() {
-    const agenceId = $('#imp-el-ag').value;
+    const agenceId = $('#imp-el-ag').value, statut = $('#imp-el-statut').value || 'en_cours';
     const choisis = IMPORT_EL.rows.filter((r) => r.ok);
     for (const r of choisis) {
       DB.eleves.push({
-        id: uid(), agenceId, statut: 'en_cours', nom: r.nom, prenom: r.prenom, civilite: r.civilite || '',
+        id: uid(), agenceId, statut, nom: r.nom, prenom: r.prenom, civilite: r.civilite || '',
         tel: r.tel, email: r.email, adresse: r.adresse, cp: r.cp, ville: r.ville, naissance: r.naissance, neph: r.neph,
         formation: r.formation || 'A2', inscription: r.inscription || todayISO(), importe: IMPORT_EL.source || 'import',
       });
     }
+    let reactives = 0;
+    if (statut === 'en_cours') for (const r of IMPORT_EL.rows) if (!r.ok && r.doublon && r.doublon.statut === 'inactif') { r.doublon.statut = 'en_cours'; reactives++; }
     save(); closeModal(); render();
-    toast(`✅ ${choisis.length} élève${choisis.length > 1 ? 's' : ''} importé${choisis.length > 1 ? 's' : ''} dans ${byId('agences', agenceId)?.nom || ''}`);
+    toast(`✅ ${choisis.length} élève${choisis.length > 1 ? 's' : ''} importé${choisis.length > 1 ? 's' : ''} dans ${byId('agences', agenceId)?.nom || ''}${statut === 'inactif' ? ' (inactifs)' : ''}${reactives ? ` · ${reactives} ancien${reactives > 1 ? 's' : ''} élève${reactives > 1 ? 's' : ''} redevenu${reactives > 1 ? 's' : ''} actif${reactives > 1 ? 's' : ''}` : ''}`);
   },
 };
 

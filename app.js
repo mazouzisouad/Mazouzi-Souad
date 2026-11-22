@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · import des élèves (AGX, Excel)';
+const APP_VERSION = '2026-11-23 · import des élèves actifs / inactifs';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -42,7 +42,7 @@ function modeDe(s, eleveId) {
 const modeP = (s, p) => (categorie(s.type) !== 'lecon' ? (isBlanc(s.type) ? 'blanc' : 'exam') : p.mode || (s.prepa ? 'prepa' : 'lecon'));
 const statutsEleve = (s, p) => (categorie(s.type) === 'lecon' && p && p.mode === 'blanc' ? STATUTS_BLANC : statutsPour(s.type));
 const statutLabelEleve = (s, p) => statutsEleve(s, p)[p.statut] || p.statut;
-const STATUTS_ELEVE = { en_cours: 'En formation', obtenu: 'Permis obtenu', abandon: 'Abandon' };
+const STATUTS_ELEVE = { en_cours: 'En formation', inactif: 'Inactif', obtenu: 'Permis obtenu', abandon: 'Abandon' };
 const FORMATIONS = ['A2', 'A', 'Passerelle A2 → A', 'Formation 125 cm³', 'Autre'];
 const MODES_PAIEMENT = ['CB', 'Espèces', 'Chèque', 'Virement', 'CPF', 'Autre'];
 const COULEURS_AGENCE = ['#f97316', '#16a34a', '#db2777', '#0891b2', '#ca8a04', '#7c3aed'];
@@ -1243,7 +1243,7 @@ function viewEleves() {
       </tr>`;
     }).join('')}
     </tbody></table></div>` : `<div class="card empty">Aucun élève. <br><br><button class="btn primary" data-action="newEleve">+ Ajouter un élève</button> <button class="btn" data-action="importEleves">📥 Importer depuis AGX / Excel</button></div>`}
-  <label class="row small muted" style="margin-top:10px;gap:6px"><input type="checkbox" style="width:auto" data-on-change="voirAnciens" ${UI.voirAnciens ? 'checked' : ''}> Afficher aussi les anciens élèves (permis obtenu, abandon)</label>`}`;
+  <label class="row small muted" style="margin-top:10px;gap:6px"><input type="checkbox" style="width:auto" data-on-change="voirAnciens" ${UI.voirAnciens ? 'checked' : ''}> Afficher aussi les anciens élèves (inactifs, permis obtenu, abandon)</label>`}`;
 }
 
 function agenceSelect(val, handler, withAll = true) {
