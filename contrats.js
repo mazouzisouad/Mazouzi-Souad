@@ -31,6 +31,7 @@ const CHAMPS_CONTRAT = {
   garantie_financiere: 'Garantie financière',
   mediateur: 'Médiateur de la consommation',
   date_du_jour: 'Date du jour',
+  prix_evaluation: 'Prix évaluation de départ',
   prix_heure_plateau: 'Prix heure plateau',
   prix_heure_circulation: 'Prix heure circulation',
   prix_examen_plateau: '1er accompagnement examen plateau',
@@ -89,7 +90,7 @@ En cas de litige, l'élève peut recourir gratuitement à un médiateur de la co
 
 Fait à {{ville_agence}}, le {{date_du_jour}}.`;
 
-const MODELE_CONTRAT_DEFAUT = `# CONTRAT D'ENSEIGNEMENT DE LA CONDUITE – MOTOCYCLETTE – {{formation}}
+const MODELE_V3 = `# CONTRAT D'ENSEIGNEMENT DE LA CONDUITE – MOTOCYCLETTE – {{formation}}
 
 Entre les soussignés :
 L'école de conduite {{auto_ecole}}, {{auto_ecole_adresse}}, SIRET {{siret}}, représentée par {{exploitant}}, agréée sous le n° {{agrement}} délivré le {{date_agrement}}, assurée pour sa responsabilité civile auprès de {{assureur}}, contrat n° {{police_assurance}}, téléphone {{auto_ecole_telephone}}, e-mail {{auto_ecole_email}}, ci-après « l'école de conduite »,
@@ -167,6 +168,87 @@ En cas de litige, l'élève s'adresse d'abord à l'école de conduite. À défau
 
 Fait à {{ville_agence}}, le {{date_du_jour}}, en deux exemplaires.`;
 
+// Version 4 : évaluation de départ obligatoire, hors forfait
+const MODELE_CONTRAT_DEFAUT = `# CONTRAT D'ENSEIGNEMENT DE LA CONDUITE – MOTOCYCLETTE – {{formation}}
+
+Entre les soussignés :
+L'école de conduite {{auto_ecole}}, {{auto_ecole_adresse}}, SIRET {{siret}}, représentée par {{exploitant}}, agréée sous le n° {{agrement}} délivré le {{date_agrement}}, assurée pour sa responsabilité civile auprès de {{assureur}}, contrat n° {{police_assurance}}, téléphone {{auto_ecole_telephone}}, e-mail {{auto_ecole_email}}, ci-après « l'école de conduite »,
+et
+{{prenom}} {{nom}}, né(e) le {{date_naissance}}, demeurant {{adresse_complete}}, téléphone {{telephone}}, e-mail {{email}}, N° NEPH {{neph}}, ci-après « l'élève ». Si l'élève est mineur, il est représenté par son représentant légal, signataire du présent contrat.
+
+# Article 1 – Objet du contrat
+Le présent contrat a pour objet l'enseignement de la conduite des motocyclettes en vue de l'obtention du permis de conduire (formation {{formation}}) : formation pratique hors circulation (plateau) et en circulation, et accompagnement de l'élève aux épreuves pratiques de l'examen.
+
+# Article 2 – Évaluation de départ obligatoire
+Avant toute formation, l'élève passe obligatoirement une évaluation de départ, réalisée par un enseignant de l'école de conduite. Cette évaluation est obligatoire dans toutes les écoles de conduite. Elle n'est pas comprise dans le forfait de formation et est facturée à part : {{prix_evaluation}}.
+À l'issue de cette évaluation, le volume prévisionnel de formation pratique est estimé à {{heures_prevues}} heures.
+Ce volume est indicatif : il peut être révisé en fonction de la progression de l'élève. Toute modification est discutée au préalable avec l'élève.
+
+# Article 3 – Programme et déroulement de la formation
+La formation suit le programme officiel de formation à la conduite (référentiel pour l'éducation à une mobilité citoyenne). L'élève reçoit un livret d'apprentissage qui permet de suivre sa progression.
+Elle comprend des leçons sur plateau hors circulation (jusqu'à {{max_plateau}} élèves par enseignant) et des leçons en circulation (jusqu'à {{max_circulation}} élèves par enseignant). Les leçons sont dispensées par des enseignants titulaires d'une autorisation d'enseigner en cours de validité, sur des motocyclettes adaptées et assurées.
+L'élève doit porter un équipement conforme : casque homologué, gants certifiés, blouson ou veste à manches longues, pantalon ou combinaison, bottes ou chaussures montantes.
+
+# Article 4 – Examen blanc et préparation aux examens
+Avant chaque épreuve pratique, plateau (hors circulation) comme circulation, l'élève doit valider un examen blanc. L'examen blanc se déroule dans les mêmes conditions que l'examen final ; il est validé si l'élève ne commet aucune faute éliminatoire.
+Une fois l'examen blanc validé, l'école de conduite inscrit l'élève sur une date d'examen, selon les places disponibles.
+Avant cette date, une préparation à l'examen est planifiée : {{heures_preparation_min}} heures minimum et {{heures_preparation_max}} heures maximum, pour l'épreuve plateau comme pour l'épreuve circulation.
+
+# Article 5 – Présentation aux épreuves
+L'école de conduite présente l'élève aux épreuves pratiques dès que les conditions de l'article 4 sont remplies, selon les places d'examen qui lui sont attribuées. Elle met à disposition la motocyclette et l'accompagnement nécessaires le jour de l'examen.
+
+# Article 6 – Obligations de l'école de conduite
+L'école de conduite s'engage à :
+- dispenser une formation conforme au programme officiel et au présent contrat ;
+- informer régulièrement l'élève de sa progression ;
+- présenter l'élève aux épreuves dans les conditions prévues aux articles 4 et 5 ;
+- remettre une facture pour chaque paiement ;
+- restituer gratuitement son dossier à l'élève qui en fait la demande.
+
+# Article 7 – Obligations de l'élève
+L'élève s'engage à :
+- suivre la formation avec assiduité et respecter les horaires des leçons ;
+- porter l'équipement obligatoire à chaque leçon et à l'examen ;
+- se présenter aux leçons et aux examens en état de conduire (ni alcool, ni stupéfiants, ni médicament incompatible avec la conduite) ;
+- respecter les consignes des enseignants et le règlement de l'école de conduite ;
+- régler les prestations selon les modalités prévues à l'article 8.
+
+# Article 8 – Prix et modalités de paiement (TTC)
+Évaluation de départ (obligatoire, hors forfait) : {{prix_evaluation}}
+Heure de formation plateau : {{prix_heure_plateau}}
+Heure de formation circulation : {{prix_heure_circulation}}
+Premier accompagnement à l'examen plateau : {{prix_examen_plateau}}
+Premier accompagnement à l'examen circulation : {{prix_examen_circulation}}
+En cas d'échec, chaque nouvelle présentation donne lieu à des frais de repassage :
+- examen plateau : {{prix_repassage_plateau}}
+- examen circulation : {{prix_repassage_circulation}}
+Les prestations sont payables selon l'échéancier convenu entre les parties. Une facture est remise pour chaque paiement.
+
+# Article 9 – Annulation et report des leçons
+{{conditions_rdv}}
+Une leçon annulée par l'école de conduite est reportée sans frais pour l'élève.
+
+# Article 10 – Durée et résiliation
+Le présent contrat est conclu pour la durée de la formation.
+L'élève peut résilier le contrat à tout moment, par écrit, sans frais de résiliation. Les prestations effectuées jusqu'à la date de résiliation restent dues ; les sommes versées pour des prestations non effectuées lui sont remboursées.
+L'école de conduite peut résilier le contrat en cas de manquement grave de l'élève à ses obligations, après une mise en demeure restée sans effet.
+Le présent contrat est résilié de plein droit en cas de retrait de l'agrément de l'école de conduite. L'école de conduite rembourse alors sans délai à l'élève toutes les sommes payées n'ayant pas donné lieu à prestation.
+En cas de résiliation, le dossier de l'élève lui est restitué sans frais.
+
+# Article 11 – Droit de rétractation
+Si le présent contrat est conclu à distance ou hors de l'établissement, l'élève dispose d'un délai de quatorze jours pour se rétracter, sans avoir à se justifier, conformément au Code de la consommation.
+
+# Article 12 – Garantie financière
+{{garantie_financiere}}
+
+# Article 13 – Données personnelles
+Les informations recueillies sont nécessaires à la formation et à l'inscription aux examens. Elles sont conservées par l'école de conduite pendant la durée nécessaire. L'élève peut y accéder et les faire rectifier en s'adressant à l'école de conduite.
+
+# Article 14 – Litiges et médiation
+En cas de litige, l'élève s'adresse d'abord à l'école de conduite. À défaut d'accord, il peut recourir gratuitement au médiateur de la consommation : {{mediateur}}.
+
+Fait à {{ville_agence}}, le {{date_du_jour}}, en deux exemplaires.`;
+
 // Ancienne version (v1) du modèle fourni : remplacée automatiquement si elle n'a pas été modifiée
 const ANCIEN_BLOC_V1 = `# Article 4 – Tarifs (TTC)
 Heure de formation plateau : {{prix_heure_plateau}}
@@ -188,7 +270,7 @@ function majModelesFournis(modeles) {
   const debut = MODELE_V2.indexOf('# Article 4 –');
   const fin = MODELE_V2.indexOf('# Article 8 – Résiliation') + '# Article 8 – Résiliation'.length;
   const v1 = MODELE_V2.slice(0, debut) + ANCIEN_BLOC_V1 + MODELE_V2.slice(fin);
-  for (const m of modeles) if (m.texte === v1 || m.texte === MODELE_V2) m.texte = MODELE_CONTRAT_DEFAUT;
+  for (const m of modeles) if (m.texte === v1 || m.texte === MODELE_V2 || m.texte === MODELE_V3) m.texte = MODELE_CONTRAT_DEFAUT;
 }
 
 function modelesParDefaut() {
@@ -226,6 +308,7 @@ function variablesContrat(e) {
     garantie_financiere: ec.garantie || "L'école de conduite ne dispose pas de garantie financière.",
     mediateur: ec.mediateur,
     date_du_jour: fmtDate(todayISO()),
+    prix_evaluation: eur(s.tarifEvaluation ?? 50),
     prix_heure_plateau: eur(s.tarifHeure.plateau),
     prix_heure_circulation: eur(s.tarifHeure.circulation),
     prix_examen_plateau: s.tarifExamen.exam_plateau ? eur(s.tarifExamen.exam_plateau) : 'offert',

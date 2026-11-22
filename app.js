@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · import Google Agenda, évaluation de départ';
+const APP_VERSION = '2026-11-23 · évaluation obligatoire dans le contrat';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
