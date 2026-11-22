@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Codes d’accès au code de la route pour auto-écoles | Code Ludique</title>
+<meta name="description" content="Auto-écoles : offrez à vos élèves l’entraînement au code de la route Code Ludique. Lots de 10, 30 ou 100 codes, achat en ligne, codes reçus immédiatement.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Code Ludique">
+<meta property="og:title" content="Code Ludique pour les auto-écoles">
+<meta property="og:description" content="Lots de codes d’accès pour vos élèves : achat en ligne, codes reçus immédiatement.">
+<meta property="og:image" content="/og-image.png">
+<meta name="theme-color" content="#4f8fe0">
+<link rel="icon" href="/icons/icone.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/css/pages-code.css">
+<style>
+  .lots { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 14px 0; }
+  .lot { background: #fff; border: 2px solid var(--bord); border-radius: 20px; padding: 18px; text-align: center; cursor: pointer; position: relative; }
+  .lot input { position: absolute; opacity: 0; }
+  .lot:has(input:checked) { border-color: var(--principal); background: #f1faee; }
+  .lot:has(input:focus-visible) { outline: 3px solid #2f6fd6; outline-offset: 2px; }
+  .lot b { display: block; font-size: 22px; font-weight: 900; }
+  .lot .prix { font-size: 30px; margin: 6px 0 2px; }
+  .lot small { display: block; color: var(--doux); font-weight: 700; }
+  .lot .badge { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; font-size: 12px; font-weight: 900; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+  .etapes { counter-reset: e; list-style: none; padding: 0; }
+  .etapes li { counter-increment: e; position: relative; padding: 6px 0 10px 44px; }
+  .etapes li::before { content: counter(e); position: absolute; left: 0; top: 4px; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+  details { background: #fff; border: 1px solid var(--bord); border-radius: 14px; padding: 12px 14px; margin: 8px 0; }
+  details summary { font-weight: 800; cursor: pointer; }
+</style>
+</head>
+<body>
+<header class="entete">
+  <a class="logo" href="/code">Code Ludique</a>
+  <a class="bouton-entete" href="/">Voir l’appli</a>
+</header>
+<main>
+  <h1>Code Ludique pour votre auto-école</h1>
+  <p class="gros">Offrez à vos élèves un entraînement au code complet : questions illustrées et vérifiées, examens blancs de 40 questions,
+    fiches de cours, écoute des questions à voix haute, sur téléphone et ordinateur. <b>Achat en ligne, codes reçus immédiatement.</b></p>
+
+  <section class="carte">
+    <h2>Comment ça marche</h2>
+    <ol class="etapes">
+      <li><b>Choisissez un lot et payez par carte.</b> Une facture vous est envoyée automatiquement.</li>
+      <li><b>Recevez vos codes</b> à l’écran et par e-mail, à télécharger ou imprimer.</li>
+      <li><b>Remettez un code à chaque élève.</b> Il crée son compte, saisit le code dans « Accès complet » et profite de 3 mois d’accès complet.</li>
+    </ol>
+  </section>
+
+  <section class="carte" id="commander">
+    <h2>Choisissez votre lot</h2>
+    <div class="lots" role="radiogroup" aria-label="Lots de codes">
+      <label class="lot"><input type="radio" name="lot" value="l10"><b>10 codes</b><div class="prix">69 €</div><small>soit 6,90 € par élève</small></label>
+      <label class="lot"><span class="badge">Le plus choisi</span><input type="radio" name="lot" value="l30" checked><b>30 codes</b><div class="prix">179 €</div><small>soit 5,97 € par élève</small></label>
+      <label class="lot"><input type="radio" name="lot" value="l100"><b>100 codes</b><div class="prix">490 €</div><small>soit 4,90 € par élève</small></label>
+    </div>
+    <p class="doux">Prix TTC. Chaque code : 3 mois d’accès complet pour un élève, usage unique, à activer dans les 24 mois.
+      Prix public pour un élève seul : 9,90 €.</p>
+    <label class="case"><input type="checkbox" id="cgv">
+      <span>J’accepte les <a href="/cgv#auto-ecoles" target="_blank">conditions de vente aux auto-écoles</a> et j’achète pour mon activité professionnelle.</span></label>
+    <div id="msg" class="message" role="status"></div>
+    <button class="bouton" id="acheter" type="button">Acheter et recevoir mes codes</button>
+    <p class="doux" style="text-align:center">Paiement sécurisé par Stripe : carte bancaire, Apple Pay, Google Pay.</p>
+  </section>
+
+  <section class="carte">
+    <h2>Questions fréquentes</h2>
+    <details><summary>Faut-il créer un compte pour acheter ?</summary><p>Non. Indiquez simplement le nom de votre auto-école et votre e-mail au moment du paiement : les codes s’affichent tout de suite et vous sont envoyés par e-mail.</p></details>
+    <details><summary>Recevrai-je une facture ?</summary><p>Oui, une facture est envoyée automatiquement à l’adresse indiquée lors du paiement.</p></details>
+    <details><summary>Quand les 3 mois commencent-ils ?</summary><p>Au moment où l’élève active son code, pas au moment de l’achat. Vous pouvez donc acheter un lot d’avance.</p></details>
+    <details><summary>Puis-je suivre les progrès de mes élèves ?</summary><p>Chaque élève voit sa progression, ses statistiques et ses examens blancs dans son appli. Vous pouvez lui demander de vous montrer son score aux examens blancs.</p></details>
+    <details><summary>Les questions sont-elles fiables ?</summary><p>Chaque question a été vérifiée avec les textes officiels (service-public.gouv.fr, Sécurité routière, signalisation officielle) ou, à défaut, avec au moins deux sites de formation au code concordants.</p></details>
+  </section>
+</main>
+<footer class="pied">
+  <a href="/code">Code de la route</a><a href="/code/test-gratuit">Test gratuit</a><a href="/cgv">Conditions de vente</a><a href="/confidentialite">Confidentialité</a><a href="/mentions-legales">Mentions légales</a>
+</footer>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  function message(t, type) { var m = $('msg'); m.textContent = t; m.className = 'message visible ' + (type || 'erreur'); }
+  if (new URLSearchParams(location.search).get('paiement') === 'annule') message('Paiement annulé : aucun montant n’a été débité.');
+  $('acheter').onclick = function () {
+    var lot = (document.querySelector('input[name="lot"]:checked') || {}).value;
+    if (!lot) return message('Choisissez un lot.');
+    if (!$('cgv').checked) return message('Merci d’accepter les conditions de vente.');
+    $('acheter').disabled = true; message('Redirection vers le paiement sécurisé…', 'ok');
+    fetch('/api/acheter-codes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lot: lot, cgv: true }) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (d.url) location.assign(d.url); else throw new Error(d.erreur || 'Erreur inattendue'); })
+      .catch(function (e) { message(e.message); $('acheter').disabled = false; });
+  };
+})();
+</script>
+</body>
+</html>

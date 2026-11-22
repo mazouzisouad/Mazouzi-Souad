@@ -36,6 +36,14 @@ before(async () => {
       if (req.url.startsWith('/rest/v1/rpc/stats_admin')) return res.end(JSON.stringify({ total_centimes: 1980, nb_paiements: 2 }));
       if (req.url.startsWith('/rest/v1/rpc/rembourser') || req.url.startsWith('/rest/v1/rpc/lier_payment_intent')) return res.end('true');
       if (req.url.startsWith('/rest/v1/rpc/recompenser_parrain')) return res.end('null');
+      if (req.url.startsWith('/rest/v1/rpc/annuler_codes_lot')) return res.end('0');
+      if (req.url.startsWith('/rest/v1/rpc/creer_commande_codes')) return res.end(JSON.stringify(Array.from({ length: JSON.parse(corps).p_quantite }, (_, i) => 'CL-AAAA-' + String(1000 + i))));
+      if (req.url.startsWith('/rest/v1/rpc/activer_code_ecole')) {
+        const c = JSON.parse(corps).p_code;
+        if (c === 'CL-USEE-0000') { res.statusCode = 400; return res.end(JSON.stringify({ code: 'P0001', message: 'deja_utilise' })); }
+        if (c === 'CL-INCO-NNUE') { res.statusCode = 400; return res.end(JSON.stringify({ code: 'P0001', message: 'inconnu' })); }
+        return res.end(JSON.stringify('2027-03-01T10:00:00+00:00'));
+      }
       if (req.url.startsWith('/rest/v1/acces')) {
         const ligne = globalThis.EXPIRE_LE ? { expire_le: globalThis.EXPIRE_LE } : null;
         const objet = (req.headers.accept || '').includes('vnd.pgrst.object');
@@ -409,4 +417,67 @@ test('robots.txt : pages privées exclues, plan du site indiqué', async () => {
   assert.match(res.corps, /Disallow: \/admin/);
   assert.match(res.corps, /Disallow: \/api\//);
   assert.match(res.corps, /Sitemap: https:\/\/code-ludique\.fr\/sitemap\.xml/);
+});
+
+const sessionLot = {
+  id: 'cs_test_lot', object: 'checkout.session', mode: 'payment', payment_status: 'paid', amount_total: 17900, currency: 'eur',
+  metadata: { type: 'lot', lot: 'l30' }, customer_details: { email: 'ae@exemple.fr', name: 'Jean Test' },
+  custom_fields: [{ key: 'auto_ecole', text: { value: 'Auto-école du Centre' } }], payment_intent: 'pi_lot',
+};
+
+test('lot auto-école : paiement → 30 codes créés pour l’auto-école, sans compte élève', async () => {
+  const { default: webhook } = await import('../api/stripe-webhook.js');
+  const { charge, sig } = evenementSigne(sessionLot);
+  appels.length = 0;
+  const res = reponse();
+  await webhook(requete({ headers: { 'stripe-signature': sig }, corps: charge }), res);
+  assert.equal(res.statusCode, 200, res.corps);
+  const r = appels.find((a) => a.url.includes('creer_commande_codes'));
+  assert.deepEqual(r.corps, { p_session_id: 'cs_test_lot', p_email: 'ae@exemple.fr', p_acheteur: 'Auto-école du Centre', p_quantite: 30, p_montant: 17900, p_devise: 'eur' });
+  assert.equal(appels.filter((a) => a.url.includes('accorder_acces')).length, 0);
+});
+
+test('lot auto-école : montant qui ne correspond pas au lot → refusé', async () => {
+  const { default: webhook } = await import('../api/stripe-webhook.js');
+  const { charge, sig } = evenementSigne({ ...sessionLot, id: 'cs_test_lot2', amount_total: 100 });
+  appels.length = 0;
+  const res = reponse();
+  await webhook(requete({ headers: { 'stripe-signature': sig }, corps: charge }), res);
+  assert.equal(res.statusCode, 500);
+  assert.equal(appels.filter((a) => a.url.includes('creer_commande_codes')).length, 0);
+});
+
+test('code d’auto-école : activé pour l’élève ; déjà utilisé → 409 ; inconnu → 400', async () => {
+  const { default: activer } = await import('../api/activer-code.js');
+  let res = reponse();
+  await activer(requete({ headers: { authorization: 'Bearer bon-jeton' }, corps: '{"code":"cl-abcd-2345"}' }), res);
+  assert.equal(res.statusCode, 200, res.corps);
+  assert.deepEqual(appels.filter((a) => a.url.includes('activer_code_ecole')).pop().corps, { p_code: 'CL-ABCD-2345', p_user_id: 'u-123' });
+  res = reponse();
+  await activer(requete({ headers: { authorization: 'Bearer bon-jeton' }, corps: '{"code":"CL-USEE-0000"}' }), res);
+  assert.equal(res.statusCode, 409);
+  res = reponse();
+  await activer(requete({ headers: { authorization: 'Bearer bon-jeton' }, corps: '{"code":"CL-INCO-NNUE"}' }), res);
+  assert.equal(res.statusCode, 400);
+});
+
+test('achat de lot : lot inconnu ou conditions non acceptées → 400 ; commande : identifiant invalide → 400', async () => {
+  const { default: acheter } = await import('../api/acheter-codes.js');
+  let res = reponse();
+  await acheter(requete({ corps: '{"lot":"l1000","cgv":true}' }), res);
+  assert.equal(res.statusCode, 400);
+  res = reponse();
+  await acheter(requete({ corps: '{"lot":"l10"}' }), res);
+  assert.equal(res.statusCode, 400);
+  const { default: commande } = await import('../api/commande-codes.js');
+  res = reponse();
+  await commande(requete({ method: 'GET', url: '/api/commande-codes?session_id=abc' }), res);
+  assert.equal(res.statusCode, 400);
+});
+
+test('e-mail des codes : tous les codes, texte échappé', async () => {
+  const { contenuCodes } = await import('../api/_lib/emails.js');
+  const c = contenuCodes(['CL-AAAA-BBBB', 'CL-CCCC-DDDD'], '<b>AE</b>', 'https://x.fr');
+  assert.match(c.html, /CL-AAAA-BBBB/); assert.match(c.texte, /CL-CCCC-DDDD/);
+  assert.doesNotMatch(c.html, /<b>AE<\/b>/);
 });

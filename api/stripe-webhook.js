@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   try {
     if (evenement.type === 'checkout.session.completed' ||
         evenement.type === 'checkout.session.async_payment_succeeded') {
-      const fin = await traiterSessionPayee(evenement.data.object);
+      const fin = await traiterSessionPayee(Object.assign(evenement.data.object, { __depuisWebhook: true }));
       if (fin) console.log(`Accès débloqué jusqu'au ${fin} (session ${evenement.data.object.id})`);
     }
     if (evenement.type === 'charge.refunded') {
@@ -26,6 +26,8 @@ export default async function handler(req, res) {
       // remboursement total uniquement : les 3 mois sont retirés de l'accès
       if (charge.refunded && charge.payment_intent) {
         const pi = typeof charge.payment_intent === 'string' ? charge.payment_intent : charge.payment_intent.id;
+        const { error: errCodes } = await supabaseAdmin().rpc('annuler_codes_lot', { p_payment_intent: pi });
+        if (errCodes) throw new Error(`annuler_codes_lot : ${errCodes.message}`);
         const { error } = await supabaseAdmin().rpc('rembourser', { p_payment_intent: pi });
         if (error) throw new Error(`rembourser : ${error.message}`);
         console.log(`Remboursement enregistré (${pi})`);

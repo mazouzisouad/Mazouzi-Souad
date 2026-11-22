@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Vos codes – Code Ludique</title>
+<link rel="icon" href="/icons/icone.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/css/pages-code.css">
+<style>
+  .codes { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin: 14px 0; }
+  .codes span { font: 800 15px/1 ui-monospace, Menlo, Consolas, monospace; background: #fff; border: 1px dashed var(--bord); border-radius: 10px; padding: 12px 8px; text-align: center; letter-spacing: .5px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .actions .bouton { width: auto; flex: 1 1 160px; }
+  @media print {
+    header, footer, .actions, .doux, h1 + p { display: none !important; }
+    body { background: #fff; }
+    .carte { box-shadow: none; border: 0; }
+    .codes { grid-template-columns: repeat(3, 1fr); gap: 0; }
+    .codes span { border: 1px dashed #999; border-radius: 0; padding: 22px 8px; font-size: 16px; }
+    .codes span::before { content: 'Code Ludique – 3 mois d’accès complet'; display: block; font: 700 10px Arial, sans-serif; margin-bottom: 8px; letter-spacing: 0; }
+  }
+</style>
+</head>
+<body>
+<header class="entete"><a class="logo" href="/code">Code Ludique</a><a class="bouton-entete" href="/">Voir l’appli</a></header>
+<main>
+  <div class="carte">
+    <h1 id="titre">Préparation de vos codes…</h1>
+    <p id="texte">Merci de patienter quelques secondes.</p>
+    <div class="codes" id="codes"></div>
+    <div class="actions" id="actions" hidden>
+      <button class="bouton" id="copier" type="button">Copier tous les codes</button>
+      <button class="bouton secondaire" id="csv" type="button">Télécharger (tableur)</button>
+      <button class="bouton secondaire" id="imprimer" type="button">Imprimer à découper</button>
+    </div>
+    <div id="msg" class="message" role="status"></div>
+    <p class="doux" id="aide" hidden>Pour l’élève : créer un compte sur Code Ludique, ouvrir « Accès complet », puis saisir le code dans « Tu as déjà un code ? ».
+      Chaque code donne 3 mois d’accès complet, une seule fois, et doit être activé dans les 24 mois. Les codes vous ont aussi été envoyés par e-mail.</p>
+  </div>
+</main>
+<footer class="pied"><a href="/auto-ecoles">Auto-écoles</a><a href="/cgv">Conditions de vente</a><a href="/mentions-legales">Mentions légales</a></footer>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var id = new URLSearchParams(location.search).get('session_id'), essais = 0, codes = [];
+  function afficher(d) {
+    codes = d.codes || [];
+    $('titre').textContent = 'Vos ' + codes.length + ' codes' + (d.acheteur ? ' – ' + d.acheteur : '');
+    $('texte').textContent = 'Merci pour votre achat ! Remettez un code à chaque élève.';
+    var box = $('codes'); box.innerHTML = '';
+    codes.forEach(function (c) { var s = document.createElement('span'); s.textContent = c; box.appendChild(s); });
+    $('actions').hidden = false; $('aide').hidden = false;
+  }
+  function charger() {
+    essais++;
+    fetch('/api/commande-codes?session_id=' + encodeURIComponent(id)).then(function (r) { return r.json().then(function (d) { d._s = r.status; return d; }); })
+      .then(function (d) {
+        if (d.statut === 'paye') return afficher(d);
+        if (d._s === 202 && essais < 8) return setTimeout(charger, 2500);
+        $('titre').textContent = 'Commande en cours de validation';
+        $('texte').textContent = d.erreur || 'Le paiement n’est pas encore confirmé. Vos codes vous seront envoyés par e-mail dès sa validation.';
+      })
+      .catch(function () { if (essais < 8) setTimeout(charger, 2500); });
+  }
+  if (!id) { $('titre').textContent = 'Commande introuvable'; $('texte').textContent = ''; } else charger();
+  $('copier').onclick = function () {
+    (navigator.clipboard ? navigator.clipboard.writeText(codes.join('\n')) : Promise.reject()).then(function () {
+      var m = $('msg'); m.textContent = 'Codes copiés !'; m.className = 'message visible ok';
+    }).catch(function () {});
+  };
+  $('csv').onclick = function () {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['﻿Code;Élève;Remis le\n' + codes.map(function (c) { return c + ';;'; }).join('\n')], { type: 'text/csv;charset=utf-8' }));
+    a.download = 'codes-code-ludique.csv'; a.click();
+  };
+  $('imprimer').onclick = function () { window.print(); };
+})();
+</script>
+</body>
+</html>

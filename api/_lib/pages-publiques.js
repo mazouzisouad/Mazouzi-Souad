@@ -1,6 +1,7 @@
 // Généré par scripts/generer-pages-seo.mjs : ne pas modifier à la main.
 export const PAGES_PUBLIQUES = [
  "/",
+ "/auto-ecoles",
  "/code/panneaux/a1a",
  "/code/panneaux/a1b",
  "/code/panneaux/a1c",

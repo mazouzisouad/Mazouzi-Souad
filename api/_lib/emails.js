@@ -86,3 +86,22 @@ export async function envoyerEmail({ a, sujet, html, texte, lienDesinscription }
   });
   if (!r.ok) throw new Error(`Brevo ${r.status} : ${(await r.text()).slice(0, 200)}`);
 }
+
+// E-mail envoyé à une auto-école après l'achat d'un lot de codes
+export function contenuCodes(codes, acheteur, site) {
+  const liste = codes.map((c) => `<li style="font:700 16px/1.8 monospace">${echapper(c)}</li>`).join('');
+  return {
+    sujet: `Vos ${codes.length} codes Code Ludique`,
+    html: `<!doctype html><html lang="fr"><body style="margin:0;background:#f6f1ec;font-family:Nunito,Arial,sans-serif;color:${TEXTE}">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:24px 12px"><tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#fffdfb;border-radius:22px;overflow:hidden">
+<tr><td style="background:${BLEU};padding:20px 24px;color:#fff;font-size:22px;font-weight:900">Code Ludique</td></tr>
+<tr><td style="padding:24px"><h1 style="margin:0 0 12px;font-size:21px">Merci${acheteur ? ' ' + echapper(acheteur) : ''} !</h1>
+<p style="font-size:15px;line-height:1.5">Voici vos ${codes.length} codes. Chaque code donne <b>3 mois d’accès complet</b> à un élève et ne sert qu’une fois.
+Il est à activer dans les 24 mois.</p>
+<p style="font-size:15px;line-height:1.5"><b>Pour l’élève :</b> créer un compte sur ${echapper(site || 'le site')}, ouvrir « Accès complet », puis saisir le code dans « Tu as déjà un code ? ».</p>
+<ol>${liste}</ol>
+<p style="font-size:13px;color:${DOUX}">Votre facture est envoyée séparément par notre prestataire de paiement (Stripe).</p></td></tr></table></td></tr></table></body></html>`,
+    texte: `Merci${acheteur ? ' ' + acheteur : ''} !\n\nVoici vos ${codes.length} codes (3 mois d’accès complet chacun, usage unique, à activer dans les 24 mois) :\n\n${codes.join('\n')}\n\nPour l’élève : créer un compte sur ${site || 'le site'}, ouvrir « Accès complet », puis saisir le code dans « Tu as déjà un code ? ».`,
+  };
+}

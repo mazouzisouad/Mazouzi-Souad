@@ -160,3 +160,14 @@ Le plan du site (`/sitemap.xml`) et `/robots.txt` sont produits automatiquement 
 
 Google met en général 2 à 6 mois à bien positionner un nouveau site. Le test `npm test` vérifie qu'aucune question
 payante n'apparaît dans les pages publiques.
+
+## Vente aux auto-écoles en libre-service (`/auto-ecoles`)
+
+Une auto-école choisit un lot (10, 30 ou 100 codes), paie par carte sans créer de compte, reçoit une facture Stripe,
+voit ses codes à l'écran (copier, télécharger en tableur, imprimer à découper) et les reçoit par e-mail.
+Chaque code `CL-XXXX-XXXX` donne 3 mois d'accès complet à un élève, une seule fois, à activer dans les 24 mois.
+Un lot remboursé depuis Stripe annule les codes non utilisés. Les ventes apparaissent dans le tableau de bord.
+
+- Prix : constante `LOTS` dans `api/_lib/serveur.js` (et textes de `public/auto-ecoles.html`).
+- Stripe facture les lots (`invoice_creation`) : vérifiez dans Stripe → Paramètres → Facturation que vos informations
+  (nom, adresse, SIRET, TVA) figurent sur les factures.

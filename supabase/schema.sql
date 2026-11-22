@@ -386,6 +386,91 @@ $$;
 revoke all on function public.rembourser(text) from public, anon, authenticated;
 grant execute on function public.rembourser(text) to service_role;
 
+
+-- ============================================================
+--  Lots de codes pour les auto-écoles (achat en libre-service)
+-- ============================================================
+alter table public.paiements add column if not exists type text not null default 'eleve';  -- eleve | lot_codes
+alter table public.paiements add column if not exists quantite integer;
+alter table public.paiements add column if not exists acheteur text;                        -- nom de l'auto-école
+alter table public.paiements alter column debut_periode drop not null;
+alter table public.paiements alter column fin_periode drop not null;
+
+create table if not exists public.codes_ecole (
+  code          text primary key,
+  session_id    text not null references public.paiements (stripe_session_id),
+  cree_le       timestamptz not null default now(),
+  valable_jusqu timestamptz not null default now() + interval '24 months',
+  utilise_par   uuid references auth.users (id) on delete set null,
+  utilise_le    timestamptz,
+  annule_le     timestamptz
+);
+create index if not exists codes_ecole_session on public.codes_ecole (session_id);
+alter table public.codes_ecole enable row level security;  -- aucune règle : serveur uniquement
+
+-- Crée la commande et ses codes (sans effet si déjà faite) et renvoie les codes. Format : CL-XXXX-XXXX.
+create or replace function public.creer_commande_codes(p_session_id text, p_email text, p_acheteur text,
+                                                       p_quantite integer, p_montant integer, p_devise text)
+returns setof text
+language plpgsql security definer set search_path = public as $$
+declare
+  alphabet constant text := 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  v_code text;
+  v_faits integer;
+begin
+  perform pg_advisory_xact_lock(hashtext(p_session_id));
+  insert into paiements (stripe_session_id, user_id, email, montant_centimes, devise, debut_periode, fin_periode, type, quantite, acheteur)
+  values (p_session_id, null, p_email, p_montant, p_devise, null, null, 'lot_codes', p_quantite, p_acheteur)
+  on conflict (stripe_session_id) do nothing;
+  select count(*) into v_faits from codes_ecole where session_id = p_session_id;
+  while v_faits < p_quantite loop
+    v_code := 'CL-';
+    for i in 1..8 loop
+      v_code := v_code || substr(alphabet, 1 + floor(random() * length(alphabet))::int, 1);
+      if i = 4 then v_code := v_code || '-'; end if;
+    end loop;
+    insert into codes_ecole (code, session_id) values (v_code, p_session_id) on conflict do nothing;
+    if found then v_faits := v_faits + 1; end if;
+  end loop;
+  return query select code from codes_ecole where session_id = p_session_id order by cree_le, code;
+end;
+$$;
+revoke all on function public.creer_commande_codes(text, text, text, integer, integer, text) from public, anon, authenticated;
+grant execute on function public.creer_commande_codes(text, text, text, integer, integer, text) to service_role;
+
+-- Activation d'un code d'auto-école : 3 mois d'accès complet, une seule fois.
+create or replace function public.activer_code_ecole(p_code text, p_user_id uuid) returns timestamptz
+language plpgsql security definer set search_path = public as $$
+declare
+  v_fin timestamptz;
+begin
+  perform pg_advisory_xact_lock(hashtext(p_user_id::text));
+  update codes_ecole set utilise_par = p_user_id, utilise_le = now()
+  where code = upper(p_code) and utilise_le is null and annule_le is null and valable_jusqu > now();
+  if not found then
+    if exists (select 1 from codes_ecole where code = upper(p_code)) then raise exception 'deja_utilise'; end if;
+    raise exception 'inconnu';
+  end if;
+  select greatest(coalesce(max(expire_le), now()), now()) + interval '3 months' into v_fin from acces where user_id = p_user_id;
+  insert into acces (user_id, expire_le, mis_a_jour) values (p_user_id, v_fin, now())
+  on conflict (user_id) do update set expire_le = excluded.expire_le, mis_a_jour = now();
+  return v_fin;
+end;
+$$;
+revoke all on function public.activer_code_ecole(text, uuid) from public, anon, authenticated;
+grant execute on function public.activer_code_ecole(text, uuid) to service_role;
+
+-- Remboursement d'un lot : les codes pas encore utilisés sont annulés
+create or replace function public.annuler_codes_lot(p_payment_intent text) returns integer
+language sql security definer set search_path = public as $$
+  with s as (select stripe_session_id from paiements where payment_intent = p_payment_intent and type = 'lot_codes'),
+       u as (update codes_ecole set annule_le = now() where session_id in (select stripe_session_id from s)
+             and utilise_le is null and annule_le is null returning 1)
+  select count(*)::integer from u;
+$$;
+revoke all on function public.annuler_codes_lot(text) from public, anon, authenticated;
+grant execute on function public.annuler_codes_lot(text) to service_role;
+
 -- ============================================================
 --  Tableau de bord interne (ventes)
 -- ============================================================
@@ -395,7 +480,7 @@ language sql security definer set search_path = public as $$
   select jsonb_build_object(
     'total_centimes',      coalesce((select sum(montant_centimes) from p), 0),
     'nb_paiements',        (select count(*) from p),
-    'nb_payeurs',          (select count(distinct coalesce(user_id::text, email)) from p),
+    'nb_payeurs',          (select count(distinct coalesce(user_id::text, email)) from p where type = 'eleve'),
     'nb_rembourses',       (select count(*) from paiements where rembourse_le is not null),
     'total_rembourse_centimes', coalesce((select sum(montant_centimes) from paiements where rembourse_le is not null), 0),
     'mois_centimes',       coalesce((select sum(montant_centimes) from p where cree_le >= date_trunc('month', now())), 0),
@@ -405,6 +490,10 @@ language sql security definer set search_path = public as $$
     'acces_actifs',        (select count(*) from acces where expire_le > now()),
     'codes_utilises',      (select count(*) from codes_utilises),
     'actifs_7j',           (select count(*) from progression where mis_a_jour > now() - interval '7 days'),
+    'lots_vendus',         (select count(*) from p where type = 'lot_codes'),
+    'lots_centimes',       coalesce((select sum(montant_centimes) from p where type = 'lot_codes'), 0),
+    'codes_ecole_vendus',  (select count(*) from codes_ecole where annule_le is null),
+    'codes_ecole_utilises',(select count(*) from codes_ecole where utilise_le is not null),
     'parrainages',         (select count(*) from parrainages where annule_le is null),
     'parrainages_mois',    (select count(*) from parrainages where annule_le is null and cree_le >= date_trunc('month', now())),
     'par_mois', coalesce((
@@ -415,7 +504,7 @@ language sql security definer set search_path = public as $$
     'derniers', coalesce((
       select jsonb_agg(x order by x->>'date' desc) from (
         select jsonb_build_object('date', cree_le, 'email', email, 'centimes', montant_centimes,
-                                  'rembourse', rembourse_le is not null) x
+                                  'rembourse', rembourse_le is not null, 'type', type, 'quantite', quantite, 'acheteur', acheteur) x
         from paiements order by cree_le desc limit 20) d
     ), '[]'::jsonb)
   );

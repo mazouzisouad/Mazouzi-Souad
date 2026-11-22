@@ -70,7 +70,7 @@ ${appel()}
 </main>
 <footer class="pied">
   <a href="/code">Code de la route</a><a href="/code/test-gratuit">Test gratuit</a><a href="/code/panneaux">Panneaux</a>
-  <a href="/cgv">Conditions de vente</a><a href="/confidentialite">Confidentialité</a><a href="/mentions-legales">Mentions légales</a>
+  <a href="/auto-ecoles">Auto-écoles</a><a href="/cgv">Conditions de vente</a><a href="/confidentialite">Confidentialité</a><a href="/mentions-legales">Mentions légales</a>
 </footer>
 <script src="/js/mini-quiz.js" defer></script>
 </body>
@@ -190,5 +190,5 @@ pages.push(ecrire('/code', page({
 
 // liste des pages pour le plan du site (servi par api/sitemap.js)
 fs.writeFileSync(path.join(RACINE, 'api', '_lib', 'pages-publiques.js'),
-  '// Généré par scripts/generer-pages-seo.mjs : ne pas modifier à la main.\nexport const PAGES_PUBLIQUES = ' + JSON.stringify(['/', ...pages], null, 1) + ';\n');
+  '// Généré par scripts/generer-pages-seo.mjs : ne pas modifier à la main.\nexport const PAGES_PUBLIQUES = ' + JSON.stringify(['/', '/auto-ecoles', ...pages], null, 1) + ';\n');
 console.log(pages.length, 'pages générées dans public/code/', SITE ? '(adresse : ' + SITE + ')' : '(sans adresse du site : relancez avec SITE_URL=… une fois le domaine connu)');
