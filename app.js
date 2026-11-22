@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · forfait payé librement, heures payées / posées';
+const APP_VERSION = '2026-11-23 · import des élèves (AGX, Excel)';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -1222,6 +1222,7 @@ function viewEleves() {
     <div class="spacer"></div>
     <input type="search" placeholder="🔍 Rechercher" value="${esc(UI.rechercheEleve)}" data-on-input="rechercheEleve" style="max-width:220px" id="search-eleve">
     ${agenceSelect(UI.filtreAgence, 'filtreAgence')}
+    <button class="btn" data-action="importEleves" title="PDF « Statistiques élèves » d'AGX, Excel ou CSV">📥 Importer des élèves</button>
     <button class="btn primary" data-action="newEleve">+ Nouvel élève</button>
   </div>
   ${ongletsEleves()}
@@ -1241,7 +1242,7 @@ function viewEleves() {
         <td class="num">${cpt.montantNonPaye > 0.005 ? `<span class="badge ${cpt.nonPayeFait > 0 ? 'bad' : 'warn'}" title="Heures posées non payées">⚠️ ${eur(cpt.montantNonPaye)} à encaisser</span>` : cpt.reste > 0.005 ? `<span class="txt-bad" title="Reste à payer sur le forfait">${eur(cpt.reste)}</span>` : '<span class="muted">—</span>'}${!cpt.forfait && e.statut === 'en_cours' ? ' <span class="badge" title="Aucun forfait choisi">sans forfait</span>' : ''}</td>
       </tr>`;
     }).join('')}
-    </tbody></table></div>` : `<div class="card empty">Aucun élève. <br><br><button class="btn primary" data-action="newEleve">+ Ajouter un élève</button></div>`}
+    </tbody></table></div>` : `<div class="card empty">Aucun élève. <br><br><button class="btn primary" data-action="newEleve">+ Ajouter un élève</button> <button class="btn" data-action="importEleves">📥 Importer depuis AGX / Excel</button></div>`}
   <label class="row small muted" style="margin-top:10px;gap:6px"><input type="checkbox" style="width:auto" data-on-change="voirAnciens" ${UI.voirAnciens ? 'checked' : ''}> Afficher aussi les anciens élèves (permis obtenu, abandon)</label>`}`;
 }
 
@@ -2587,7 +2588,7 @@ const ACTIONS = {
   },
 };
 
-Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS, SUIVI_ACTIONS, EMAIL_ACTIONS, MOTO_ACTIONS, COMPTE_ACTIONS);
+Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS, SUIVI_ACTIONS, EMAIL_ACTIONS, MOTO_ACTIONS, COMPTE_ACTIONS, IMPORT_ELEVES_ACTIONS);
 
 /* ---------------------------------------------------------------------
    Synchronisation en ligne

@@ -86,6 +86,17 @@ et la facture indique « Examen blanc » ou « (préparation examen) » pour l'�
 - Examens (accompagnement / repassage) et lignes ajoutées à la main sur une facture s'ajoutent.
 - Paramètres → Prestations : indiquez les heures incluses pour chaque forfait.
 
+## Importer des élèves (AGX / HarMobil', Excel, CSV)
+
+Élèves → « 📥 Importer des élèves » :
+- **AGX / HarMobil'** : imprimez la liste « Statistiques élèves » en PDF et déposez le fichier. L'appli lit
+  nom, prénom, civilité, NEPH, adresse, téléphone, permis, date d'inscription, date de naissance et e-mail
+  (le solde d'AGX n'est pas repris).
+- **Excel** : copiez le tableau (avec la ligne des titres : Nom, Prénom, Téléphone…) et collez-le.
+- **CSV** : déposez le fichier.
+On choisit l'auto-école des élèves, on vérifie le tableau ; les élèves déjà présents (même NEPH, téléphone,
+e-mail ou nom) sont repérés et décochés. Le lecteur de PDF (pdf.js, licence Apache 2.0) est dans vendor/pdfjs.
+
 ## Fiche de suivi
 
 Pour chaque élève, un historique de suivi pédagogique : après une leçon, le moniteur (ou la direction) choisit
