@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · l’appli s’appelle Go Moto';
+const APP_VERSION = '2026-11-23 · créer une leçon en glissant le doigt';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -777,8 +777,86 @@ document.addEventListener('pointercancel', () => {
 // pendant un glissé au doigt, la page ne défile pas
 document.addEventListener('touchmove', (e) => { if (GLISSE.actif) e.preventDefault(); }, { passive: false });
 // pas de menu « copier » sur appui long dans le planning
-document.addEventListener('contextmenu', (e) => { if (e.target.closest && e.target.closest('.ag-bloc') && !estMoniteur()) e.preventDefault(); });
+document.addEventListener('contextmenu', (e) => { if (e.target.closest && e.target.closest('.agenda')) e.preventDefault(); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && GLISSE.actif) finirGlisse(true); });
+/* ---------------------------------------------------------------------
+   CRÉER UNE LEÇON EN TRAÇANT SON CRÉNEAU
+   Souris : on appuie sur une case vide et on glisse jusqu'à l'heure de fin.
+   Téléphone / tablette : appui d'un instant sur une case vide, puis on glisse.
+   --------------------------------------------------------------------- */
+const TRACE = { pret: null, actif: null };
+function heureSous(col, y) {
+  const hMin = toMin(DB.settings.heureMin), hMax = toMin(DB.settings.heureMax);
+  const t = hMin + Math.floor((y - col.getBoundingClientRect().top) / ROW_H) * 30;
+  return Math.max(hMin, Math.min(hMax - 30, t));
+}
+function commencerTrace(g) {
+  g.fantome = document.createElement('div');
+  g.fantome.className = 'ag-fantome ag-trace';
+  g.col.appendChild(g.fantome);
+  TRACE.actif = g; TRACE.pret = null;
+  document.body.classList.add('glisse-en-cours');
+  if (navigator.vibrate && g.tactile) try { navigator.vibrate(15); } catch (err) { /* */ }
+  bougerTrace(g.y0);
+}
+function bougerTrace(y) {
+  const g = TRACE.actif; if (!g) return;
+  if (y < 60) window.scrollBy(0, -14); else if (y > window.innerHeight - 50) window.scrollBy(0, 14);
+  const hMin = toMin(DB.settings.heureMin);
+  const t = heureSous(g.col, y);
+  if (t !== g.t0) g.bouge = true;
+  const a = Math.min(g.t0, t), b = Math.max(g.t0, t) + 30;
+  const pris = DB.seances.find((x) => x.date === g.col.dataset.date && x.moniteurId === g.col.dataset.mon && toMin(x.debut) < b && a < toMin(x.fin));
+  g.creneau = { debut: a, fin: b, pris };
+  g.fantome.style.top = (((a - hMin) / 30) * ROW_H + 1) + 'px';
+  g.fantome.style.height = (((b - a) / 30) * ROW_H - 2) + 'px';
+  g.fantome.classList.toggle('refus', !!pris);
+  g.fantome.innerHTML = `<b>${fromMin(a)} – ${fromMin(b)}</b><span>${fmtH((b - a) / 60)}</span>${pris ? `<em>⛔ ${esc(messageMoniteurPris(pris))}</em>` : ''}`;
+}
+function finirTrace(annule) {
+  const g = TRACE.actif; TRACE.actif = null; TRACE.pret = null;
+  document.body.classList.remove('glisse-en-cours');
+  if (!g) return;
+  g.fantome.remove();
+  GLISSE.ignorerClic = true; setTimeout(() => { GLISSE.ignorerClic = false; }, 350);
+  if (annule || !g.creneau) return;
+  // appui sans glisser : comme un simple clic (durée habituelle)
+  if (!g.bouge) return ACTIONS.slot({ date: g.col.dataset.date, mon: g.col.dataset.mon, t: fromMin(g.t0) });
+  if (g.creneau.pris) return toast(messageMoniteurPris(g.creneau.pris), true);
+  openSeance({ type: 'circulation', date: g.col.dataset.date, debut: fromMin(g.creneau.debut), fin: fromMin(g.creneau.fin), moniteurId: g.col.dataset.mon, lieu: '', eleves: [] });
+}
+document.addEventListener('pointerdown', (e) => {
+  if (estMoniteur() || UI.view !== 'planning' || e.button > 0) return;
+  const slot = e.target.closest('.ag-slot'); if (!slot) return;
+  const col = slot.closest('.ag-col'); if (!col) return;
+  const tactile = e.pointerType !== 'mouse';
+  TRACE.pret = { col, t0: toMin(slot.dataset.t), x0: e.clientX, y0: e.clientY, tactile, pid: e.pointerId };
+  if (tactile) {
+    TRACE.pret.minuteur = setTimeout(() => {
+      const g = TRACE.pret; if (!g) return;
+      try { col.setPointerCapture(g.pid); } catch (err) { /* */ }
+      commencerTrace(g);
+    }, 350);
+  }
+});
+document.addEventListener('pointermove', (e) => {
+  if (TRACE.actif) { e.preventDefault(); bougerTrace(e.clientY); return; }
+  const g = TRACE.pret; if (!g) return;
+  const d = Math.hypot(e.clientX - g.x0, e.clientY - g.y0);
+  if (g.tactile) { if (d > 10) { clearTimeout(g.minuteur); TRACE.pret = null; } return; } // le doigt fait défiler
+  if (d > 8) commencerTrace(g);
+});
+document.addEventListener('pointerup', () => {
+  if (TRACE.pret) { clearTimeout(TRACE.pret.minuteur); TRACE.pret = null; }
+  if (TRACE.actif) finirTrace(false);
+});
+document.addEventListener('pointercancel', () => {
+  if (TRACE.pret) { clearTimeout(TRACE.pret.minuteur); TRACE.pret = null; }
+  if (TRACE.actif) finirTrace(true);
+});
+document.addEventListener('touchmove', (e) => { if (TRACE.actif) e.preventDefault(); }, { passive: false });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && TRACE.actif) finirTrace(true); });
+
 // le clic qui suit un glissé n'ouvre pas la leçon
 document.addEventListener('click', (e) => { if (GLISSE.ignorerClic && e.target.closest('.ag-bloc, .ag-slot')) { e.stopPropagation(); e.preventDefault(); } }, true);
 

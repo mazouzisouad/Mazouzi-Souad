@@ -850,3 +850,7 @@ tr.sous-titre td { background: #f8fafc; font-weight: 700; font-size: 12.5px; col
 .badge.info { background: #e0f2fe; color: #075985; }
 .lien-signature { display: flex; gap: 6px; margin-top: 10px; }
 .lien-signature input { flex: 1; min-width: 0; font-size: 13px; }
+
+/* Planning : pas de sélection de texte ni de loupe sur appui long (iPhone / iPad) */
+.agenda { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.ag-fantome.ag-trace { left: 4px; right: 4px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 1px; }
