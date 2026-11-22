@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · les motos roulent jusqu’à leur place';
+const APP_VERSION = '2026-11-23 · leçons à faire glisser, semaine à 2 moniteurs';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -462,17 +462,21 @@ document.addEventListener('change', (e) => {
 function viewPlanning() {
   const moni = estMoniteur();
   if (moni) UI.moniteurSemaine = Cloud.monId;
-  if (!UI.moniteurSemaine || !byId('moniteurs', UI.moniteurSemaine)) UI.moniteurSemaine = DB.moniteurs[0]?.id || null;
+  if (!UI.moniteurSemaine || (UI.moniteurSemaine !== 'tous' && !byId('moniteurs', UI.moniteurSemaine))) UI.moniteurSemaine = 'tous';
   const moniteursVus = moni ? DB.moniteurs.filter((m) => m.id === Cloud.monId) : DB.moniteurs;
   const semaine = UI.mode === 'semaine';
   const lundi = mondayOf(UI.date);
 
   let cols;
   if (semaine) {
-    cols = Array.from({ length: 7 }, (_, i) => {
+    const vus = UI.moniteurSemaine === 'tous' ? moniteursVus : moniteursVus.filter((m) => m.id === UI.moniteurSemaine);
+    cols = [];
+    for (let i = 0; i < 7; i++) {
       const d = addDays(lundi, i);
-      return { date: d, mon: UI.moniteurSemaine, titre: fmtDayHead(d), today: d === todayISO() };
-    });
+      vus.forEach((m, j) => cols.push(vus.length > 1
+        ? { date: d, mon: m.id, titre: moniteurNom(m), couleur: m.couleur, jour: fmtDayHead(d), debutJour: j === 0, nbJour: vus.length, today: d === todayISO() }
+        : { date: d, mon: m.id, titre: fmtDayHead(d), today: d === todayISO() }));
+    }
   } else {
     cols = moniteursVus.map((m) => ({ date: UI.date, mon: m.id, titre: moniteurNom(m), couleur: m.couleur }));
   }
@@ -497,10 +501,11 @@ function viewPlanning() {
   </div>
   ${moni ? '' : bandeauRappels()}
   ${semaine && !moni ? `<div class="seg" style="margin-bottom:10px">
+      ${DB.moniteurs.length > 1 ? `<button class="${UI.moniteurSemaine === 'tous' ? 'on' : ''}" data-action="setMonSemaine" data-id="tous">👥 Tous les moniteurs</button>` : ''}
       ${DB.moniteurs.map((m) => `<button class="${UI.moniteurSemaine === m.id ? 'on' : ''}" data-action="setMonSemaine" data-id="${m.id}"><span class="dot" style="background:${esc(m.couleur)}"></span>${esc(moniteurNom(m))}</button>`).join('')}
     </div>` : ''}
   ${cols.length ? agendaGrid(cols) : `<div class="card empty">${moni ? "Votre compte n'est relié à aucun moniteur : contactez la direction." : 'Ajoutez vos moniteurs dans Paramètres.'}</div>`}
-  <p class="muted small" style="margin-top:8px">${moni ? 'Cliquez sur une leçon ou un examen pour voir les élèves et noter les présences ou les résultats.' : 'Cliquez sur une case vide pour placer une leçon ou un examen · Cliquez dessus pour ajouter un élève, noter les présences ou les résultats.'}
+  <p class="muted small" style="margin-top:8px">${moni ? 'Cliquez sur une leçon ou un examen pour voir les élèves et noter les présences ou les résultats.' : 'Cliquez sur une case vide pour placer une leçon ou un examen · Cliquez dessus pour ajouter un élève, noter les présences ou les résultats · Faites-la glisser pour la déplacer (sur tablette : appuyez un instant puis glissez).'}
   &nbsp; ${DB.agences.length > 1 ? DB.agences.map((a) => `<span class="dot" style="background:${esc(a.couleur)}"></span>${esc(a.nom)}`).join(' &nbsp; ') : ''}</p>`;
 }
 
@@ -515,14 +520,16 @@ function agendaGrid(cols) {
   const times = [];
   for (let t = hMin; t < hMax; t += 60) times.push(`<div class="ag-time" style="height:${ROW_H * 2}px">${pad(Math.floor(t / 60))}h</div>`);
 
+  const groupes = cols.some((c) => c.jour);
   return `
   <div class="agenda-wrap" id="agenda">
-    <div class="agenda" style="--cols:${cols.length}">
+    <div class="agenda ${groupes ? 'groupes' : ''}" style="--cols:${cols.length}">
+      ${groupes ? `<div class="ag-corner"></div>${cols.filter((c) => c.debutJour).map((c) => `<div class="ag-dayhead ${c.today ? 'today' : ''}" style="grid-column: span ${c.nbJour}"><strong class="cap">${esc(c.jour)}</strong></div>`).join('')}` : ''}
       <div class="ag-corner"></div>
       ${cols.map((c) => {
         const ss = DB.seances.filter((s) => s.date === c.date && s.moniteurId === c.mon);
         const h = ss.reduce((n, s) => n + durH(s), 0);
-        return `<div class="ag-colhead ${c.today ? 'today' : ''}">
+        return `<div class="ag-colhead ${c.today ? 'today' : ''} ${c.debutJour ? 'debut-jour' : ''} ${c.jour ? 'mini' : ''}">
           ${c.couleur ? `<span class="dot" style="background:${esc(c.couleur)}"></span>` : ''}<strong class="cap">${esc(c.titre)}</strong>
           <div class="muted small">${ss.length ? `${ss.length} leçon${ss.length > 1 ? 's' : ''} · ${fmtH(h)}` : '—'}</div>
         </div>`;
@@ -539,7 +546,7 @@ function agendaGrid(cols) {
           .map((s) => blocSeance(s, hMin)).join('');
         const line = c.date === todayISO() && nowMin >= hMin && nowMin <= hMax
           ? `<div class="ag-now" style="top:${((nowMin - hMin) / 30) * ROW_H}px"></div>` : '';
-        return `<div class="ag-col" style="height:${H}px">${slots}${blocks}${line}</div>`;
+        return `<div class="ag-col ${c.debutJour ? 'debut-jour' : ''}" style="height:${H}px" data-date="${c.date}" data-mon="${c.mon}">${slots}${blocks}${line}</div>`;
       }).join('')}
     </div>
   </div>`;
@@ -566,6 +573,123 @@ function blocSeance(s, hMin) {
   </div>`;
 }
 
+
+/* ---------------------------------------------------------------------
+   DÉPLACER UNE LEÇON EN LA FAISANT GLISSER (souris, doigt, stylet)
+   Souris : on attrape la leçon et on la lâche ailleurs (jour, heure, moniteur).
+   Tablette / téléphone : appui d'un instant sur la leçon, puis on glisse
+   (un glissé rapide fait toujours défiler le planning).
+   Les règles habituelles sont vérifiées (moniteur ou élève déjà pris…).
+   --------------------------------------------------------------------- */
+const GLISSE = { pret: null, actif: null, ignorerClic: false };
+const PAS_MIN = 15; // on aligne sur le quart d'heure
+
+function colonneSous(x, y) {
+  for (const el of document.elementsFromPoint(x, y)) if (el.classList && el.classList.contains('ag-col')) return el;
+  return null;
+}
+function commencerGlisse(g) {
+  const s = byId('seances', g.id); if (!s) return;
+  const r = g.el.getBoundingClientRect();
+  g.dureeMin = toMin(s.fin) - toMin(s.debut);
+  g.decalY = g.y0 - r.top;
+  g.seance = s;
+  g.el.classList.add('glisse-origine');
+  const fantome = document.createElement('div');
+  fantome.className = 'ag-fantome';
+  fantome.style.height = r.height + 'px';
+  g.fantome = fantome;
+  GLISSE.actif = g;
+  document.body.classList.add('glisse-en-cours');
+  if (navigator.vibrate && g.tactile) try { navigator.vibrate(15); } catch (e) { /* */ }
+  bougerGlisse(g.x0, g.y0);
+}
+function bougerGlisse(x, y) {
+  const g = GLISSE.actif; if (!g) return;
+  // défilement automatique près des bords
+  const wrap = $('#agenda');
+  if (wrap) {
+    const r = wrap.getBoundingClientRect();
+    if (x < r.left + 50) wrap.scrollLeft -= 14; else if (x > r.right - 40) wrap.scrollLeft += 14;
+  }
+  if (y < 60) window.scrollBy(0, -14); else if (y > window.innerHeight - 50) window.scrollBy(0, 14);
+  const col = colonneSous(x, y);
+  if (!col) { g.cible = null; g.fantome.remove(); return; }
+  const hMin = toMin(DB.settings.heureMin), hMax = toMin(DB.settings.heureMax);
+  const haut = y - g.decalY - col.getBoundingClientRect().top;
+  let debut = hMin + Math.round(((haut / ROW_H) * 30) / PAS_MIN) * PAS_MIN;
+  debut = Math.max(hMin, Math.min(debut, hMax - g.dureeMin));
+  const essai = Object.assign({}, g.seance, { date: col.dataset.date, moniteurId: col.dataset.mon, debut: fromMin(debut), fin: fromMin(debut + g.dureeMin) });
+  const { errors } = seanceConflicts(essai);
+  g.cible = { date: essai.date, mon: essai.moniteurId, debut: essai.debut, fin: essai.fin, erreur: errors[0] || '' };
+  if (g.fantome.parentNode !== col) col.appendChild(g.fantome);
+  g.fantome.style.top = (((debut - hMin) / 30) * ROW_H + 1) + 'px';
+  g.fantome.classList.toggle('refus', !!g.cible.erreur);
+  const mo = byId('moniteurs', essai.moniteurId);
+  g.fantome.innerHTML = `<b>${essai.debut} – ${essai.fin}</b><span>${esc(fmtDayHead(essai.date))}${DB.moniteurs.length > 1 ? ' · ' + esc(moniteurNom(mo)) : ''}</span>${g.cible.erreur ? `<em>⛔ ${esc(g.cible.erreur)}</em>` : ''}`;
+}
+function finirGlisse(annule) {
+  const g = GLISSE.actif;
+  GLISSE.actif = null; GLISSE.pret = null;
+  document.body.classList.remove('glisse-en-cours');
+  if (!g) return;
+  g.fantome.remove(); g.el.classList.remove('glisse-origine');
+  GLISSE.ignorerClic = true; setTimeout(() => { GLISSE.ignorerClic = false; }, 350);
+  const c = g.cible, s = g.seance;
+  if (annule || !c) return;
+  if (c.date === s.date && c.mon === s.moniteurId && c.debut === s.debut) return;
+  if (c.erreur) return toast(c.erreur, true);
+  const avant = { date: s.date, moniteurId: s.moniteurId, debut: s.debut, fin: s.fin };
+  Object.assign(s, { date: c.date, moniteurId: c.mon, debut: c.debut, fin: c.fin });
+  GLISSE.annuler = { id: s.id, avant };
+  save(); render();
+  const mo = byId('moniteurs', c.mon);
+  toastAnnuler(`✅ Déplacée : ${fmtDayHead(c.date)} ${c.debut} – ${c.fin}${DB.moniteurs.length > 1 ? ' · ' + moniteurNom(mo) : ''}`);
+}
+// message avec un bouton « Annuler » pour revenir en arrière
+function toastAnnuler(msg) {
+  const t = $('#toast');
+  t.innerHTML = `${esc(msg)} <button class="toast-annuler" data-action="annulerDeplacement">Annuler</button>`;
+  t.className = 'toast'; t.hidden = false;
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { t.hidden = true; }, 6000);
+}
+
+document.addEventListener('pointerdown', (e) => {
+  if (estMoniteur() || UI.view !== 'planning' || e.button > 0) return;
+  const el = e.target.closest('.ag-bloc'); if (!el) return;
+  const tactile = e.pointerType !== 'mouse';
+  GLISSE.pret = { id: el.dataset.id, el, x0: e.clientX, y0: e.clientY, tactile, pid: e.pointerId };
+  if (tactile) {
+    GLISSE.pret.minuteur = setTimeout(() => {
+      const g = GLISSE.pret; if (!g) return;
+      try { el.setPointerCapture(g.pid); } catch (err) { /* */ }
+      commencerGlisse(g);
+    }, 380);
+  }
+});
+document.addEventListener('pointermove', (e) => {
+  if (GLISSE.actif) { e.preventDefault(); bougerGlisse(e.clientX, e.clientY); return; }
+  const g = GLISSE.pret; if (!g) return;
+  const d = Math.hypot(e.clientX - g.x0, e.clientY - g.y0);
+  if (g.tactile) { if (d > 10) { clearTimeout(g.minuteur); GLISSE.pret = null; } return; } // le doigt fait défiler
+  if (d > 6) commencerGlisse(g);
+});
+document.addEventListener('pointerup', () => {
+  if (GLISSE.pret) clearTimeout(GLISSE.pret.minuteur);
+  if (GLISSE.actif) finirGlisse(false); else GLISSE.pret = null;
+});
+document.addEventListener('pointercancel', () => {
+  if (GLISSE.pret) clearTimeout(GLISSE.pret.minuteur);
+  if (GLISSE.actif) finirGlisse(true); else GLISSE.pret = null;
+});
+// pendant un glissé au doigt, la page ne défile pas
+document.addEventListener('touchmove', (e) => { if (GLISSE.actif) e.preventDefault(); }, { passive: false });
+// pas de menu « copier » sur appui long dans le planning
+document.addEventListener('contextmenu', (e) => { if (e.target.closest && e.target.closest('.ag-bloc') && !estMoniteur()) e.preventDefault(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && GLISSE.actif) finirGlisse(true); });
+// le clic qui suit un glissé n'ouvre pas la leçon
+document.addEventListener('click', (e) => { if (GLISSE.ignorerClic && e.target.closest('.ag-bloc, .ag-slot')) { e.stopPropagation(); e.preventDefault(); } }, true);
 
 /* ---------------------------------------------------------------------
    IMPORT DES DATES D'EXAMEN (copier-coller depuis RdvPermis)
@@ -1964,6 +2088,12 @@ const ACTIONS = {
   /* Navigation planning */
   setMode(d) { UI.mode = d.m; render(); },
   setMonSemaine(d) { UI.moniteurSemaine = d.id; render(); },
+  annulerDeplacement() {
+    const a = GLISSE.annuler; if (!a) return;
+    const s = byId('seances', a.id); if (!s) return;
+    Object.assign(s, a.avant); GLISSE.annuler = null;
+    save(); render(); toast('Déplacement annulé');
+  },
   navPrev() { UI.date = addDays(UI.date, UI.mode === 'semaine' ? -7 : -1); render(); },
   navNext() { UI.date = addDays(UI.date, UI.mode === 'semaine' ? 7 : 1); render(); },
   navToday() { UI.date = todayISO(); render(); },

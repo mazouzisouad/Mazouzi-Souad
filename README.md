@@ -30,6 +30,12 @@ puis, sur le téléphone, « Ajouter à l'écran d'accueil » pour l'utiliser co
 Pour essayer : **Paramètres → Charger des données de démonstration**.
 Ensuite, dans Paramètres : « Mon auto-école » (nom, SIRET, TVA… pour les factures), vos agences et vos moniteurs.
 
+- **Déplacer une leçon** : attrapez-la à la souris et lâchez-la ailleurs (autre heure, autre jour en vue
+  semaine, autre moniteur). Sur tablette : appuyez un instant sur la leçon, puis faites-la glisser.
+  L'heure s'aligne au quart d'heure ; si le moniteur ou un élève est déjà pris, le cadre devient rouge et la
+  leçon ne bouge pas. Bouton « Annuler » dans le message qui confirme le déplacement.
+- **Vue semaine** : « 👥 Tous les moniteurs » affiche chaque jour avec une colonne par moniteur.
+
 ## Contrats et signature électronique
 
 - **Paramètres → Auto-écoles** : chaque auto-école a sa propre identité (nom, SIRET, agrément, assurance, garantie financière, médiateur).
