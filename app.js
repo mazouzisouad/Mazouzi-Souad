@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · motos & essence';
+const APP_VERSION = '2026-11-22 · garage des motos';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -1929,9 +1929,9 @@ function demoData() {
   // Motos & pleins (démo)
   const ilya = (j) => { const d = new Date(); d.setDate(d.getDate() - j); return toISODate(d); };
   db.motos = [
-    { id: 'mo1', surnom: 'La Bleue', modele: 'Yamaha MT-07', plaque: 'GH-482-KL', categorie: 'A2', couleur: '#2563eb', km: 18420, emplacement: { type: 'agence', ref: 'ag1', texte: '', majLe: new Date().toISOString() } },
-    { id: 'mo2', surnom: 'Flash', modele: 'Kawasaki Z650', plaque: 'FT-219-BN', categorie: 'A2', couleur: '#16a34a', km: 23110, emplacement: { type: 'piste', ref: '', texte: '', majLe: new Date().toISOString() } },
-    { id: 'mo3', surnom: 'Titan', modele: 'Honda CB650R', plaque: 'EZ-731-QR', categorie: 'A2', couleur: '#dc2626', km: 9870, emplacement: { type: 'moniteur', ref: 'm2', texte: '', majLe: new Date().toISOString() } },
+    { id: 'mo1', surnom: 'La Bleue', modele: 'Yamaha MT-07', plaque: 'GH-482-KL', categorie: 'A2', couleur: '#2563eb', km: 18560, reservoir: 14, emplacement: { type: 'agence', ref: 'ag1', texte: '', majLe: new Date().toISOString() } },
+    { id: 'mo2', surnom: 'Flash', modele: 'Kawasaki Z650', plaque: 'FT-219-BN', categorie: 'A2', couleur: '#16a34a', km: 23110, reservoir: 14, emplacement: { type: 'piste', ref: '', texte: '', majLe: new Date().toISOString() } },
+    { id: 'mo3', surnom: 'Titan', modele: 'Honda CB650R', plaque: 'EZ-731-QR', categorie: 'A2', couleur: '#dc2626', km: 10080, reservoir: 14, emplacement: { type: 'moniteur', ref: 'm2', texte: '', majLe: new Date().toISOString() } },
   ];
   const pl = (motoId, j, litres, montant, km, station) => db.pleins.push({ id: uid(), motoId, date: ilya(j), litres, montant, km, station, auteur: 'local', auteurNom: 'Karim B.', creeLe: new Date().toISOString() });
   db.pleins = [];
