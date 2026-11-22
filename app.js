@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · leçons à faire glisser, semaine à 2 moniteurs';
+const APP_VERSION = '2026-11-23 · un moniteur : plateau OU circulation';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -952,6 +952,7 @@ function openSeance(seance) {
           ${DB.moniteurs.map((x) => `<option value="${x.id}" ${x.id === m?.id ? 'selected' : ''}>${esc(moniteurNom(x))}</option>`).join('')}
         </select>
       </div>
+      <div id="s-errors-haut"></div>
       <div class="lbl">Type</div>
       <div class="seg big types" id="s-type">
         ${Object.entries(TYPES).map(([k, t]) => `<button data-action="setType" data-t="${k}" class="${draft.type === k ? 'on' : ''} ${k}">${t.exam ? '🎓 ' : t.blanc ? '📝 ' : ''}${t.label}<small>${t.exam ? 'accompagnement · ' : t.blanc ? 'sans faute éliminatoire · ' : ''}max ${capDe({ type: k })}</small></button>`).join('')}
@@ -1049,6 +1050,8 @@ function refreshDraft() {
 
   const { errors } = seanceConflicts(draft);
   $('#s-errors').innerHTML = errors.map((e) => `<div class="alert bad">⛔ ${esc(e)}</div>`).join('');
+  const pris = errors.find((e) => e.includes('plateau et circulation'));
+  $('#s-errors-haut').innerHTML = pris ? `<div class="alert bad" style="margin-bottom:10px">⛔ ${esc(pris)}</div>` : '';
 }
 
 function renderResults() {
@@ -1090,6 +1093,10 @@ function renderResults() {
   }).join('') + `<button class="result add" data-action="quickEleve">＋ Nouvel élève${q ? ` « ${esc(q)} »` : ''}</button>`;
 }
 
+// Un moniteur ne peut faire qu'une chose à la fois : soit du plateau, soit de la circulation (ou un examen)
+function messageMoniteurPris(o) {
+  return `${moniteurNom(byId('moniteurs', o.moniteurId))} a déjà ${isExam(o.type) ? 'un ' : isBlanc(o.type) ? 'un ' : 'une leçon de '}${TYPES[o.type].label.toLowerCase()} de ${o.debut} à ${o.fin} : un moniteur ne peut pas avoir plateau et circulation en même temps.`;
+}
 function seanceConflicts(s) {
   const errors = [];
   const cap = capDe(s);
@@ -1097,7 +1104,7 @@ function seanceConflicts(s) {
   if (isExam(s.type) && Number(s.places) > DB.settings.capacite[s.type]) errors.push(`${s.places} places : le maximum réglé pour un ${TYPES[s.type].label.toLowerCase()} est ${DB.settings.capacite[s.type]} (modifiable dans Paramètres).`);
   if (s.eleves.length > cap) errors.push(`${s.eleves.length} élèves pour ${cap} place${cap > 1 ? 's' : ''} en ${TYPES[s.type].label.toLowerCase()}.`);
   for (const o of DB.seances.filter((x) => x.id !== s.id && overlaps(x, s))) {
-    if (o.moniteurId === s.moniteurId) errors.push(`${moniteurNom(byId('moniteurs', s.moniteurId))} a déjà une leçon de ${o.debut} à ${o.fin}.`);
+    if (o.moniteurId === s.moniteurId) errors.push(messageMoniteurPris(o));
     for (const p of s.eleves) {
       if (o.eleves.some((x) => x.eleveId === p.eleveId)) errors.push(`${eleveNom(byId('eleves', p.eleveId))} est déjà en leçon de ${o.debut} à ${o.fin}.`);
     }
@@ -2103,8 +2110,19 @@ const ACTIONS = {
   slot(d) {
     if (estMoniteur()) return toast('Seule la direction place les leçons. Cliquez sur une leçon pour noter les présences.');
     const type = 'circulation';
-    const dur = dureeDe(type);
-    openSeance({ type, date: d.date, debut: d.t, fin: fromMin(toMin(d.t) + dur), moniteurId: d.mon, lieu: '', eleves: [] });
+    const debut = toMin(d.t);
+    const duMoniteur = DB.seances.filter((x) => x.date === d.date && x.moniteurId === d.mon);
+    // le moniteur est déjà occupé à cette heure → on ne propose pas de créneau
+    const pris = duMoniteur.find((x) => toMin(x.debut) <= debut && debut < toMin(x.fin));
+    if (pris) return toast(messageMoniteurPris(pris), true);
+    // la durée habituelle s'arrête avant la leçon suivante du moniteur
+    const suivante = duMoniteur.map((x) => toMin(x.debut)).filter((t) => t > debut).sort((a, b) => a - b)[0];
+    let fin = debut + dureeDe(type);
+    if (suivante != null && suivante < fin) {
+      if (suivante - debut < 30) return toast(`Moins de 30 min libres avant la leçon de ${fromMin(suivante)} : choisissez un autre horaire.`, true);
+      fin = suivante;
+    }
+    openSeance({ type, date: d.date, debut: d.t, fin: fromMin(fin), moniteurId: d.mon, lieu: '', eleves: [] });
   },
   editSeance(d) { const s = byId('seances', d.id); if (s) (estMoniteur() ? openSeanceMoniteur(s) : openSeance(s)); },
   suiviDepuisSeance(d) {
