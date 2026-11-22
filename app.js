@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · leçons passées sans présence comptées dans le compte';
+const APP_VERSION = '2026-11-22 · planning plus ludique';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -523,10 +523,10 @@ function viewPlanning() {
       <button class="${!semaine ? 'on' : ''}" data-action="setMode" data-m="jour">Jour</button>
       <button class="${semaine ? 'on' : ''}" data-action="setMode" data-m="semaine">Semaine</button>
     </div>
-    <button class="btn" data-action="navPrev" aria-label="Précédent">◀</button>
+    <div class="ag-datepill"><button class="btn" data-action="navPrev" aria-label="Précédent">◀</button>
+      <input type="date" value="${UI.date}" data-on-change="navPick" aria-label="Date">
+      <button class="btn" data-action="navNext" aria-label="Suivant">▶</button></div>
     <button class="btn" data-action="navToday">Aujourd'hui</button>
-    <button class="btn" data-action="navNext" aria-label="Suivant">▶</button>
-    <input type="date" value="${UI.date}" data-on-change="navPick" style="width:auto">
     <h1 class="cap">${esc(titre)}</h1>
     <div class="spacer"></div>
     ${moni ? '' : `<button class="btn" data-action="importExamens" title="Coller l'e-mail RdvPermis pour placer les examens">📥 Importer des examens (RdvPermis)</button>
@@ -565,12 +565,15 @@ function agendaGrid(cols) {
         const ss = DB.seances.filter((s) => s.date === c.date && s.moniteurId === c.mon);
         const h = ss.reduce((n, s) => n + durH(s), 0);
         return `<div class="ag-colhead ${c.today ? 'today' : ''} ${c.debutJour ? 'debut-jour' : ''} ${c.jour ? 'mini' : ''}">
-          ${c.couleur ? `<span class="dot" style="background:${esc(c.couleur)}"></span>` : ''}<strong class="cap">${esc(c.titre)}</strong>
-          <div class="muted small">${ss.length ? `${ss.length} leçon${ss.length > 1 ? 's' : ''} · ${fmtH(h)}` : '—'}</div>
+          ${c.couleur && !c.jour ? `<div class="ag-moni" style="--c:${esc(c.couleur)}"><span class="ag-av">${esc((String(c.titre).trim()[0] || '?').toUpperCase())}</span>
+            <div><strong class="cap">${esc(c.titre)}</strong><div class="muted small">${ss.length ? `${ss.length} leçon${ss.length > 1 ? 's' : ''} · ${fmtH(h)}` : 'aucune leçon'}</div>
+            <span class="ag-jauge"><i style="width:${Math.min(100, (h / 8) * 100)}%"></i></span></div></div>`
+          : `${c.couleur ? `<span class="ag-av mini" style="--c:${esc(c.couleur)}">${esc((String(c.titre).trim()[0] || '?').toUpperCase())}</span>` : ''}<strong class="cap">${esc(c.titre)}</strong>
+          <div class="muted small">${ss.length ? `${ss.length} leçon${ss.length > 1 ? 's' : ''} · ${fmtH(h)}` : '—'}</div>`}
         </div>`;
       }).join('')}
-      <div class="ag-times">${times.join('')}</div>
-      ${cols.map((c) => {
+      <div class="ag-times">${times.join('')}${cols.some((c) => c.date === todayISO()) && nowMin >= hMin && nowMin <= hMax ? `<div class="ag-now-h" style="top:${((nowMin - hMin) / 30) * ROW_H}px">${pad(now.getHours())}:${pad(now.getMinutes())}</div>` : ''}</div>
+      ${cols.map((c, ci) => {
         let slots = '';
         for (let i = 0; i < nSlots; i++) {
           const t = fromMin(hMin + i * 30);
@@ -580,13 +583,20 @@ function agendaGrid(cols) {
           .filter((s) => s.date === c.date && s.moniteurId === c.mon)
           .map((s) => blocSeance(s, hMin)).join('');
         const line = c.date === todayISO() && nowMin >= hMin && nowMin <= hMax
-          ? `<div class="ag-now" style="top:${((nowMin - hMin) / 30) * ROW_H}px"></div>` : '';
+          ? `<div class="ag-now ${cols.findIndex((x) => x.date === c.date) === ci ? 'moto' : ''}" style="top:${((nowMin - hMin) / 30) * ROW_H}px"></div>` : '';
         return `<div class="ag-col ${c.debutJour ? 'debut-jour' : ''} ${c.today ? 'today' : ''}" style="height:${H}px" data-date="${c.date}" data-mon="${c.mon}">${slots}${blocks}${line}</div>`;
       }).join('')}
     </div>
   </div>`;
 }
 
+const ICONE_TYPE = { plateau: '🅿️', circulation: '🛣️' };
+function placesRonds(n, cap) {
+  const court = `<span class="fill ${n >= cap ? 'full' : 'free'}">${n}/${cap}</span>`;
+  if (cap > 8) return court;
+  const ronds = Array.from({ length: cap }, (_, i) => `<span class="${i < n ? '' : 'vide'}"></span>`).join('');
+  return `<span class="ag-places" title="${n} élève${n > 1 ? 's' : ''} sur ${cap}">${ronds}<em>${n >= cap ? 'complet' : `${cap - n} place${cap - n > 1 ? 's' : ''}`}</em></span>${court}`;
+}
 function blocSeance(s, hMin) {
   const top = ((toMin(s.debut) - hMin) / 30) * ROW_H;
   const height = Math.max(ROW_H, ((toMin(s.fin) - toMin(s.debut)) / 30) * ROW_H) - 2;
@@ -601,7 +611,7 @@ function blocSeance(s, hMin) {
     const tag = m === 'blanc' ? '<span class="tag-el blanc"><span class="long">📝 Examen blanc</span><span class="court">📝 Ex. blanc</span></span>'
       : m === 'prepa' && !s.prepa ? '<span class="tag-el prepa"><span class="long">🎯 Prépa examen</span><span class="court">🎯 Prépa ex.</span></span>'
       : m === 'evaluation' ? '<span class="tag-el evaluation"><span class="long">🧭 Évaluation de départ</span><span class="court">🧭 Évaluation</span></span>' : '';
-    return `<div class="ag-el ${barre ? 'abs' : ''}"><span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}"></span>${esc(eleveCourt(e))}${res}${tag}</div>`;
+    return `<div class="ag-el ${barre ? 'abs' : ''}" style="--a:${esc(a?.couleur || '#94a3b8')}"><span class="ini">${esc((e?.prenom || eleveCourt(e) || '?').trim()[0]?.toUpperCase() || '?')}</span>${esc(eleveCourt(e))}${res}${tag}</div>`;
   }).join('');
   const nbBlancs = categorie(s.type) === 'lecon' ? s.eleves.filter((p) => modeP(s, p) === 'blanc').length : 0;
   const nbPrepa = categorie(s.type) === 'lecon' && !s.prepa ? s.eleves.filter((p) => modeP(s, p) === 'prepa').length : 0;
@@ -609,7 +619,7 @@ function blocSeance(s, hMin) {
   const resume = (nbBlancs ? ` <span class="tag-blancs resume-mode">📝 ${nbBlancs} blanc${nbBlancs > 1 ? 's' : ''}</span>` : '') + (nbPrepa ? ` <span class="tag-prepa resume-mode">🎯 ${nbPrepa} prépa</span>` : '');
   return `
   <div class="ag-bloc ${s.type}${s.prepa ? ' prepa' : ''}" style="top:${top + 1}px;height:${height}px" data-action="editSeance" data-id="${s.id}">
-    <div class="ag-bloc-top"><span>${s.debut} ${TYPES[s.type].short}${s.prepa ? ' <span class="tag-prepa">🎯 Prépa exam</span>' : ''}${resume}</span><span class="fill ${n >= cap ? 'full' : 'free'}">${n}/${cap}</span></div>
+    <div class="ag-bloc-top"><span class="ag-type"><i>${ICONE_TYPE[baseDe(s.type)] || '🏍️'}</i><span>${s.debut}<span class="ag-nomtype"> · ${TYPES[s.type].short}</span></span>${s.prepa ? ' <span class="tag-prepa">🎯 Prépa exam</span>' : ''}${resume}</span>${placesRonds(n, cap)}</div>
     <div class="ag-els ${nbBlancs || nbPrepa || nbEval ? 'en-lignes' : ''}">${noms}</div>
     ${isExam(s.type) && n < cap ? `<div class="ag-libre">${cap - n} place${cap - n > 1 ? 's' : ''} à attribuer</div>` : ''}
     ${isExam(s.type) && s.lieu ? `<div class="ag-lieu">📍 ${esc(s.lieu)}</div>` : ''}
