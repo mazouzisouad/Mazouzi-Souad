@@ -1238,7 +1238,7 @@ function viewEleves() {
         <td>${agenceBadge(agenceDe(e))}</td>
         <td>${esc(e.tel || '')}</td>
         <td>${next ? `${fmtDate(next.date)} ${next.debut} · ${TYPES[next.type].short}` : '<span class="muted">—</span>'}</td>
-        <td class="num">${cpt.montantNonPaye > 0.005 ? `<span class="badge ${cpt.nonPayeFait > 0 ? 'bad' : 'warn'}" title="Heures posées non payées">⚠️ ${eur(cpt.montantNonPaye)} à encaisser</span>` : cpt.reste > 0.005 ? `<span class="muted small" title="Reste à payer sur le forfait">${eur(cpt.reste)}</span>` : '<span class="muted">—</span>'}${!cpt.forfait && e.statut === 'en_cours' ? ' <span class="badge" title="Aucun forfait choisi">sans forfait</span>' : ''}</td>
+        <td class="num">${cpt.montantNonPaye > 0.005 ? `<span class="badge ${cpt.nonPayeFait > 0 ? 'bad' : 'warn'}" title="Heures posées non payées">⚠️ ${eur(cpt.montantNonPaye)} à encaisser</span>` : cpt.reste > 0.005 ? `<span class="txt-bad" title="Reste à payer sur le forfait">${eur(cpt.reste)}</span>` : '<span class="muted">—</span>'}${!cpt.forfait && e.statut === 'en_cours' ? ' <span class="badge" title="Aucun forfait choisi">sans forfait</span>' : ''}</td>
       </tr>`;
     }).join('')}
     </tbody></table></div>` : `<div class="card empty">Aucun élève. <br><br><button class="btn primary" data-action="newEleve">+ Ajouter un élève</button></div>`}
@@ -1331,7 +1331,7 @@ function viewFiche(id) {
       <div><span>Examen plateau</span><strong class="exam-res ${ex.exam_plateau.cls}">${ex.exam_plateau.txt}</strong></div>
       <div><span>Examen circulation</span><strong class="exam-res ${ex.exam_circulation.cls}">${ex.exam_circulation.txt}</strong></div>
       ${['plateau', 'circulation'].map((b) => { const ex = prochainExamen(id, b); return ex ? `<div><span>Prépa examen ${b} (le ${fmtDate(ex.date)})</span><strong>${prepBadge(preparation(id, ex))}</strong></div>` : ''; }).join('')}
-      ${(() => { const c = compteEleve(id); return `<div class="clickable" data-action="ongletFiche" data-o="compte"><span>${c.forfait ? '📦 ' + esc(c.forfait.libelle) : 'Sans forfait'}</span><strong style="color:${c.nonPayeFait > 0 ? 'var(--bad)' : c.montantNonPaye > 0 ? 'var(--warn)' : c.reste > 0.005 ? 'var(--ink)' : 'var(--ok)'}">${c.montantNonPaye > 0.005 ? '⚠️ ' + eur(c.montantNonPaye) + ' à encaisser' : c.reste > 0.005 ? 'Reste ' + eur(c.reste) : 'À jour ✅'}</strong></div>`; })()}
+      ${(() => { const c = compteEleve(id); return `<div class="clickable" data-action="ongletFiche" data-o="compte"><span>${c.forfait ? '📦 ' + esc(c.forfait.libelle) : 'Sans forfait'}</span><strong style="color:${c.reste > 0.005 || c.montantNonPaye > 0.005 ? 'var(--bad)' : 'var(--ok)'}">${c.montantNonPaye > 0.005 ? '⚠️ ' + eur(c.montantNonPaye) + ' à encaisser' : c.reste > 0.005 ? 'Reste ' + eur(c.reste) : 'À jour ✅'}</strong></div>`; })()}
     </div>
     <div class="seg" style="margin:14px 0 12px">
       <button class="${o === 'lecons' ? 'on' : ''}" data-action="ongletFiche" data-o="lecons">Leçons</button>
@@ -1471,7 +1471,7 @@ function viewPaiements() {
           <td class="small">${c.forfait ? esc(c.forfait.libelle) : '<span class="badge">sans forfait</span>'}</td>
           <td class="num">${c.montantNonPaye > 0.005 ? `<span class="badge ${c.nonPayeFait > 0 ? 'bad' : 'warn'}">⚠️ ${fmtH(c.heuresNonPayees)} · ${eur(c.montantNonPaye)}</span>` : '—'}</td>
           <td class="num">${eur(c.paye)}</td>
-          <td class="num"><strong>${eur(Math.max(0, c.reste))}</strong></td>
+          <td class="num"><strong class="txt-bad">${eur(Math.max(0, c.reste))}</strong></td>
         </tr>`).join('')}</tbody></table></div>` : '<div class="card empty">Tout est à jour 👍</div>';
   }
 
@@ -1485,7 +1485,7 @@ function viewPaiements() {
   </div>
   <div class="mini-stats card" style="margin-bottom:14px">
     <div><span>Encaissé ce mois</span><strong>${eur(encMois)}</strong></div>
-    <div><span>Reste à encaisser</span><strong style="color:var(--warn)">${eur(impayes)}</strong></div>
+    <div><span>Reste à encaisser</span><strong style="color:var(--bad)">${eur(impayes)}</strong></div>
     <div><span>Heures posées non payées</span><strong style="color:var(--bad)">${eur(nonPayees)}</strong></div>
   </div>
   <div class="seg" style="margin-bottom:12px">

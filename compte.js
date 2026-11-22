@@ -143,7 +143,7 @@ function blocCompte(eid) {
       ${c.autres ? ligne('Autres (ajoutés sur les factures)', c.autres) : ''}
       ${ligne('Déjà payé', c.paye, 'paye')}
       ${f ? ligne('Reste à payer sur le forfait', c.resteForfait, c.resteForfait > 0.005 ? 'reste' : 'solde') : ''}
-      ${ligne(c.reste >= 0 ? 'Reste à payer au total' : 'Trop-perçu (à reporter ou rembourser)', Math.abs(c.reste), c.reste > 0.005 ? 'total' : 'solde')}
+      ${ligne(c.reste >= 0 ? 'Reste à payer au total' : 'Trop-perçu (à reporter ou rembourser)', Math.abs(c.reste), c.reste > 0.005 ? 'total reste' : 'solde')}
     </div>
     <div class="row" style="margin-top:12px">
       <button class="btn primary" data-action="encaisserCompte" data-id="${eid}" data-montant="${c.montantNonPaye > 0.005 ? c.montantNonPaye : ''}">💶 Encaisser un règlement${c.montantNonPaye > 0.005 ? ` (${eur(c.montantNonPaye)} pour les heures posées)` : ''}</button>
