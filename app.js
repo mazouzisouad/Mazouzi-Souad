@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · examen blanc et prépa par élève';
+const APP_VERSION = '2026-11-23 · « Examen blanc » / « Prépa examen » écrits sur le planning';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -49,7 +49,7 @@ const COULEURS_AGENCE = ['#f97316', '#16a34a', '#db2777', '#0891b2', '#ca8a04', 
 const DUREES = [60, 90, 120, 150, 180, 240];
 
 // Grille du planning
-const ROW_H = 24; // hauteur (px) d'un créneau de 30 min
+let ROW_H = 24; // hauteur (px) d'un créneau de 30 min (un peu plus en vue semaine à plusieurs moniteurs)
 
 /* ---------------------------------------------------------------------
    Utilitaires
@@ -523,6 +523,7 @@ function viewPlanning() {
 }
 
 function agendaGrid(cols) {
+  ROW_H = cols.some((c) => c.jour) ? 34 : 24;
   const hMin = toMin(DB.settings.heureMin);
   const hMax = toMin(DB.settings.heureMax);
   const nSlots = Math.ceil((hMax - hMin) / 30);
@@ -576,16 +577,17 @@ function blocSeance(s, hMin) {
     const barre = p.statut === 'absent' || p.statut === 'excuse';
     const res = ['admis', 'valide'].includes(p.statut) ? ' ✅' : ['ajourne', 'nonvalide'].includes(p.statut) ? ' ❌' : '';
     const m = categorie(s.type) === 'lecon' ? modeP(s, p) : '';
-    const tag = m === 'blanc' ? '<span class="tag-el blanc">📝</span>' : m === 'prepa' && !s.prepa ? '<span class="tag-el prepa">🎯</span>' : '';
-    return `<div class="ag-el ${barre ? 'abs' : ''}"><span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}"></span>${esc(eleveCourt(e))}${tag}${res}</div>`;
+    const tag = m === 'blanc' ? '<span class="tag-el blanc"><span class="long">📝 Examen blanc</span><span class="court">📝 Ex. blanc</span></span>'
+      : m === 'prepa' && !s.prepa ? '<span class="tag-el prepa"><span class="long">🎯 Prépa examen</span><span class="court">🎯 Prépa ex.</span></span>' : '';
+    return `<div class="ag-el ${barre ? 'abs' : ''}"><span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}"></span>${esc(eleveCourt(e))}${res}${tag}</div>`;
   }).join('');
   const nbBlancs = categorie(s.type) === 'lecon' ? s.eleves.filter((p) => modeP(s, p) === 'blanc').length : 0;
   const nbPrepa = categorie(s.type) === 'lecon' && !s.prepa ? s.eleves.filter((p) => modeP(s, p) === 'prepa').length : 0;
-  const resume = (nbBlancs ? ` <span class="tag-blancs">📝 ${nbBlancs} blanc${nbBlancs > 1 ? 's' : ''}</span>` : '') + (nbPrepa ? ` <span class="tag-prepa">🎯 ${nbPrepa} prépa</span>` : '');
+  const resume = (nbBlancs ? ` <span class="tag-blancs resume-mode">📝 ${nbBlancs} blanc${nbBlancs > 1 ? 's' : ''}</span>` : '') + (nbPrepa ? ` <span class="tag-prepa resume-mode">🎯 ${nbPrepa} prépa</span>` : '');
   return `
   <div class="ag-bloc ${s.type}${s.prepa ? ' prepa' : ''}" style="top:${top + 1}px;height:${height}px" data-action="editSeance" data-id="${s.id}">
     <div class="ag-bloc-top"><span>${s.debut} ${TYPES[s.type].short}${s.prepa ? ' <span class="tag-prepa">🎯 Prépa exam</span>' : ''}${resume}</span><span class="fill ${n >= cap ? 'full' : 'free'}">${n}/${cap}</span></div>
-    <div class="ag-els">${noms}</div>
+    <div class="ag-els ${nbBlancs || nbPrepa ? 'en-lignes' : ''}">${noms}</div>
     ${isExam(s.type) && n < cap ? `<div class="ag-libre">${cap - n} place${cap - n > 1 ? 's' : ''} à attribuer</div>` : ''}
     ${isExam(s.type) && s.lieu ? `<div class="ag-lieu">📍 ${esc(s.lieu)}</div>` : ''}
   </div>`;
