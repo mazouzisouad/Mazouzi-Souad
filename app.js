@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · changer de jour en glissant le doigt';
+const APP_VERSION = '2026-11-23 · glisser pour changer de jour : plus fiable';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -868,7 +868,9 @@ document.addEventListener('touchstart', (e) => {
   if (UI.view !== 'planning' || e.touches.length !== 1 || document.querySelector('.modal')) return;
   const wrap = e.target.closest && e.target.closest('#agenda'); if (!wrap) return;
   const t = e.touches[0];
-  BALAYE.debut = { x: t.clientX, y: t.clientY, quand: Date.now(), wrap, scroll: wrap.scrollLeft };
+  const max = wrap.scrollWidth - wrap.clientWidth;
+  // le planning est-il déjà au bord ? (sinon le doigt le fait d'abord défiler)
+  BALAYE.debut = { x: t.clientX, y: t.clientY, quand: Date.now(), auBordGauche: wrap.scrollLeft <= 2, auBordDroit: wrap.scrollLeft >= max - 2 };
 }, { passive: true });
 document.addEventListener('touchend', (e) => {
   const d = BALAYE.debut; BALAYE.debut = null;
@@ -876,8 +878,8 @@ document.addEventListener('touchend', (e) => {
   const t = e.changedTouches[0];
   const dx = t.clientX - d.x, dy = t.clientY - d.y;
   if (Math.abs(dx) < 70 || Math.abs(dy) > Math.abs(dx) * 0.6 || Date.now() - d.quand > 800) return;
-  if (Math.abs(d.wrap.scrollLeft - d.scroll) > 2) return; // le planning a défilé : pas de changement de jour
   const suivant = dx < 0;
+  if (suivant ? !d.auBordDroit : !d.auBordGauche) return; // le planning défilait : pas de changement de jour
   if (suivant) ACTIONS.navNext(); else ACTIONS.navPrev();
   const a = $('#agenda');
   if (a) { a.classList.remove('arrive-droite', 'arrive-gauche'); void a.offsetWidth; a.classList.add(suivant ? 'arrive-droite' : 'arrive-gauche'); }

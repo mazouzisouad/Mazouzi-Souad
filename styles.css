@@ -861,3 +861,24 @@ tr.sous-titre td { background: #f8fafc; font-weight: 700; font-size: 12.5px; col
 .agenda-wrap.arrive-droite { animation: arriveDroite .22s ease-out; }
 .agenda-wrap.arrive-gauche { animation: arriveGauche .22s ease-out; }
 @media (prefers-reduced-motion: reduce) { .agenda-wrap.arrive-droite, .agenda-wrap.arrive-gauche { animation: none; } }
+
+/* Vue jour : jamais plus large que l'écran (sinon le glissé fait défiler au lieu de changer de jour) */
+.agenda:not(.groupes) { grid-template-columns: 44px repeat(var(--cols), minmax(0, 1fr)); min-width: 0; }
+.agenda:not(.groupes) .ag-colhead { min-width: 0; padding-left: 4px; padding-right: 4px; }
+.agenda:not(.groupes) .ag-moni { max-width: 100%; min-width: 0; }
+.agenda:not(.groupes) .ag-moni > div { min-width: 0; }
+.agenda:not(.groupes) .ag-moni strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.agenda:not(.groupes) .ag-jauge { width: 100%; max-width: 92px; }
+@media (max-width: 420px) { .agenda:not(.groupes) .ag-av { width: 28px; height: 28px; border-radius: 9px; } .agenda:not(.groupes) .ag-moni { gap: 6px; } }
+@media (max-width: 420px) {
+  .agenda:not(.groupes) .ag-type { flex-wrap: nowrap; white-space: nowrap; }
+  .agenda:not(.groupes) .ag-places em { display: none; }
+  .agenda:not(.groupes) .ag-bloc-top { flex-wrap: wrap; row-gap: 2px; }
+}
+@media (max-width: 420px) {
+  .agenda:not(.groupes) .resume-mode { display: none; }
+  .agenda:not(.groupes) .tag-el .long { display: none; }
+  .agenda:not(.groupes) .tag-el .court { display: inline; }
+  .agenda:not(.groupes) .ag-el { max-width: 100%; overflow: hidden; }
+}
+@media (max-width: 420px) { .agenda:not(.groupes) .ag-el { flex-wrap: wrap; row-gap: 1px; } .agenda:not(.groupes) .ag-el .tag-el { margin-left: 0; } }
