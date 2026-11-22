@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Signature du contrat</title>
+  <style>
+    :root { --bg: #f1f5f9; --card: #fff; --ink: #0f172a; --muted: #64748b; --line: #e2e8f0; --c: #f97316; --ok: #16a34a; --bad: #dc2626; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 16px max(16px, env(safe-area-inset-right)) 40px max(16px, env(safe-area-inset-left)); display: grid; gap: 14px; }
+    header { display: flex; align-items: center; gap: 12px; background: var(--card); border-radius: 16px; padding: 14px; border-top: 5px solid var(--c); }
+    header img { max-height: 48px; max-width: 120px; object-fit: contain; }
+    header h1 { font-size: 18px; margin: 0; }
+    header p { margin: 0; color: var(--muted); font-size: 14px; }
+    .carte { background: var(--card); border-radius: 16px; padding: 16px; }
+    .contrat { max-height: 55vh; overflow-y: auto; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14.5px; background: #fcfcfd; }
+    .contrat h3 { font-size: 15px; margin: 14px 0 4px; }
+    .contrat h3:first-child { margin-top: 0; font-size: 17px; }
+    .contrat p { margin: 0 0 4px; }
+    .contrat .sp { height: 8px; }
+    .astuce { color: var(--muted); font-size: 13px; margin: 6px 0 0; }
+    label.lu { display: flex; gap: 10px; align-items: flex-start; font-weight: 600; margin: 4px 0 14px; }
+    label.lu input { width: 22px; height: 22px; margin-top: 2px; flex: none; accent-color: var(--c); }
+    .champ { display: grid; gap: 4px; margin-bottom: 14px; }
+    .champ span { font-size: 13px; font-weight: 700; color: var(--muted); }
+    .champ input { font: inherit; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; }
+    canvas { width: 100%; height: 190px; border: 2px dashed #cbd5e1; border-radius: 12px; background: #fff; touch-action: none; display: block; }
+    .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
+    button { font: inherit; border-radius: 12px; border: 1px solid var(--line); background: #fff; padding: 10px 14px; cursor: pointer; }
+    button.go { background: var(--c); color: #fff; border: 0; font-weight: 800; padding: 14px 18px; width: 100%; font-size: 17px; margin-top: 14px; }
+    button:disabled { opacity: .55; cursor: wait; }
+    button:focus-visible, input:focus-visible { outline: 3px solid var(--c); outline-offset: 2px; }
+    .msg { text-align: center; padding: 34px 18px; }
+    .msg .ico { font-size: 54px; }
+    .msg h2 { margin: 6px 0; }
+    .err { color: var(--bad); font-weight: 600; font-size: 14px; min-height: 1em; margin-top: 8px; }
+    .legal { color: var(--muted); font-size: 12px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="wrap" id="app"><div class="carte msg"><div class="ico">⏳</div><p>Chargement du contrat…</p></div></div>
+
+  <script src="vendor/firebase/firebase-app-compat.js"></script>
+  <script src="vendor/firebase/firebase-firestore-compat.js"></script>
+  <script src="config.js"></script>
+  <script>
+  'use strict';
+  /* Page publique de signature à distance d'un contrat.
+     L'élève ouvre le lien unique reçu (signer.html?t=…), lit son contrat et signe au doigt.
+     Le lien ne sert qu'une fois et expire ; l'appli de l'auto-école récupère la signature. */
+  const app = document.getElementById('app');
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const message = (ico, titre, texte) => { app.innerHTML = `<div class="carte msg"><div class="ico">${ico}</div><h2>${esc(titre)}</h2><p>${esc(texte)}</p></div>`; };
+  const contratHtml = (t) => String(t || '').split(/\n/).map((l) => /^#\s+/.test(l) ? `<h3>${esc(l.replace(/^#\s+/, ''))}</h3>` : !l.trim() ? '<div class="sp"></div>' : `<p>${esc(l)}</p>`).join('');
+
+  function pad(canvas) {
+    const ctx = canvas.getContext('2d');
+    let dessine = false, vide = true, dernier = null;
+    const taille = () => {
+      const r = canvas.getBoundingClientRect(), k = window.devicePixelRatio || 1;
+      canvas.width = r.width * k; canvas.height = r.height * k;
+      ctx.setTransform(k, 0, 0, k, 0, 0); ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#0f172a';
+      vide = true;
+    };
+    taille();
+    const pos = (e) => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+    canvas.addEventListener('pointerdown', (e) => { e.preventDefault(); canvas.setPointerCapture(e.pointerId); dessine = true; dernier = pos(e); ctx.beginPath(); ctx.arc(dernier.x, dernier.y, 1.1, 0, 7); ctx.fill(); vide = false; });
+    canvas.addEventListener('pointermove', (e) => { if (!dessine) return; const p = pos(e); ctx.beginPath(); ctx.moveTo(dernier.x, dernier.y); ctx.lineTo(p.x, p.y); ctx.stroke(); dernier = p; vide = false; });
+    const fin = () => { dessine = false; };
+    canvas.addEventListener('pointerup', fin); canvas.addEventListener('pointercancel', fin);
+    return {
+      get vide() { return vide; },
+      effacer() { ctx.clearRect(0, 0, canvas.width, canvas.height); vide = true; },
+      image() {
+        // image réduite (largeur 600 px max) pour rester légère
+        const k = Math.min(1, 600 / canvas.width);
+        const c = document.createElement('canvas'); c.width = Math.round(canvas.width * k); c.height = Math.round(canvas.height * k);
+        c.getContext('2d').drawImage(canvas, 0, 0, c.width, c.height);
+        return c.toDataURL('image/png');
+      },
+    };
+  }
+
+  async function demarrer() {
+    const jeton = new URLSearchParams(location.search).get('t') || '';
+    if (!/^[A-Za-z0-9]{20,64}$/.test(jeton)) return message('🔗', 'Lien incomplet', 'Ouvrez le lien exactement comme vous l’avez reçu (SMS, WhatsApp ou e-mail).');
+    if (!window.firebase || !window.FIREBASE_CONFIG) return message('📶', 'Connexion impossible', 'Vérifiez votre connexion internet puis rechargez la page.');
+    firebase.initializeApp(window.FIREBASE_CONFIG);
+    const fs = firebase.firestore();
+    const emu = window.FIREBASE_CONFIG.emulator; // pour les tests
+    if (emu) { const [h, port] = emu.firestore.split(':'); fs.useEmulator(h, Number(port)); }
+    const ref = fs.collection('signatures').doc(jeton);
+    let d;
+    try { d = await ref.get(); } catch (e) { return message('⌛', 'Lien expiré ou déjà utilisé', 'Demandez un nouveau lien à votre auto-école.'); }
+    if (!d.exists) return message('⌛', 'Lien expiré ou déjà utilisé', 'Demandez un nouveau lien à votre auto-école.');
+    const x = d.data();
+    if (x.statut === 'signe') return message('✅', 'Contrat déjà signé', 'Merci ! Votre auto-école a bien reçu votre signature.');
+    const ec = x.ecole || {};
+    document.documentElement.style.setProperty('--c', /^#[0-9a-f]{3,8}$/i.test(ec.couleur || '') ? ec.couleur : '#f97316');
+    document.title = `Signature du contrat – ${ec.nom || ''}`;
+    app.innerHTML = `
+      <header>${ec.logo && /^data:image\//.test(ec.logo) ? `<img src="${ec.logo}" alt="">` : ''}
+        <div><h1>${esc(ec.nom || 'Votre auto-école')}</h1><p>Contrat de ${esc(x.eleve || '')} à signer</p></div></header>
+      <div class="carte">
+        <div class="contrat" id="contrat">${contratHtml(x.texte)}</div>
+        <p class="astuce">Faites défiler pour lire tout le contrat.</p>
+      </div>
+      <div class="carte">
+        <label class="lu"><input type="checkbox" id="lu"> J’ai lu le contrat et je l’accepte (lu et approuvé)</label>
+        <label class="champ"><span>Nom et prénom de la personne qui signe</span><input id="nom" autocomplete="name" value="${esc(x.signataireSuggere || '')}"></label>
+        <div class="champ" style="margin-bottom:0"><span>Signez avec le doigt dans le cadre</span></div>
+        <canvas id="pad" aria-label="Zone de signature"></canvas>
+        <div class="row"><span class="astuce" style="margin:0">Si vous êtes mineur, c’est votre parent qui signe.</span><button type="button" id="effacer">Effacer</button></div>
+        <button class="go" id="signer">✍️ Signer le contrat</button>
+        <div class="err" id="err" role="alert"></div>
+      </div>
+      <p class="legal">Signature électronique : la date et l’heure de signature sont enregistrées et le contrat signé est transmis à ${esc(ec.nom || 'votre auto-école')}.</p>`;
+    const p = pad(document.getElementById('pad'));
+    document.getElementById('effacer').onclick = () => p.effacer();
+    const err = document.getElementById('err');
+    document.getElementById('signer').onclick = async (ev) => {
+      err.textContent = '';
+      const nom = document.getElementById('nom').value.trim();
+      if (!document.getElementById('lu').checked) return (err.textContent = 'Cochez « J’ai lu le contrat et je l’accepte ».');
+      if (nom.length < 2) return (err.textContent = 'Indiquez le nom de la personne qui signe.');
+      if (p.vide) return (err.textContent = 'Signez dans le cadre avec le doigt.');
+      const b = ev.currentTarget; b.disabled = true; b.textContent = '⏳ Envoi…';
+      try {
+        await ref.update({
+          statut: 'signe', luEtApprouve: true, signataire: nom.slice(0, 100), signature: p.image(),
+          signeLe: firebase.firestore.FieldValue.serverTimestamp(), appareil: String(navigator.userAgent || '').slice(0, 250),
+        });
+        message('✅', 'Contrat signé, merci !', `${ec.nom || 'Votre auto-école'} a bien reçu votre signature. Vous recevrez une copie du contrat signé.`);
+      } catch (e) {
+        b.disabled = false; b.textContent = '✍️ Signer le contrat';
+        err.textContent = 'La signature n’a pas pu être envoyée. Vérifiez votre connexion et réessayez.';
+      }
+    };
+  }
+  demarrer();
+  </script>
+</body>
+</html>

@@ -390,10 +390,12 @@ function viewContratsEleve(eid) {
       <tbody>${list.map((c) => `<tr class="clickable" data-action="openContrat" data-id="${c.id}">
         <td><strong>${esc(c.titre)}</strong></td>
         <td>${fmtDate(c.date)}</td>
-        <td>${c.statut === 'signe' ? `<span class="badge ok">✍️ Signé le ${fmtDateHeure(c.signeLe)}</span>` : '<span class="badge warn">À signer</span>'}</td>
+        <td>${c.statut === 'signe' ? `<span class="badge ok">✍️ Signé${c.signeADistance ? ' à distance' : ''} le ${fmtDateHeure(c.signeLe)}</span>`
+          : c.distance ? `<span class="badge info">📲 Lien envoyé le ${fmtDate(c.distance.envoyeLe.slice(0, 10))} · en attente</span>` : '<span class="badge warn">À signer</span>'}</td>
         <td class="num">${c.statut === 'signe'
           ? `<button class="btn small" data-action="sendContrat" data-id="${c.id}">📤 Envoyer</button>`
-          : `<button class="btn small primary" data-action="signerContrat" data-id="${c.id}">✍️ Faire signer</button>`}</td>
+          : `<div class="row" style="gap:6px;justify-content:flex-end;flex-wrap:wrap"><button class="btn small" data-action="signerDistance" data-id="${c.id}" title="Envoyer un lien : l'élève signe sur son téléphone">📲 ${c.distance ? 'Renvoyer le lien' : 'Signer à distance'}</button>
+             <button class="btn small primary" data-action="signerContrat" data-id="${c.id}" title="L'élève signe ici, sur cet appareil">✍️ Signer sur place</button></div>`}</td>
       </tr>`).join('')}</tbody></table></div>` : '<p class="muted">Aucun contrat pour cet élève.</p>'}`;
 }
 
@@ -420,7 +422,12 @@ function openContratBrouillon(c) {
 
 function enregistrerBrouillon() {
   draftContrat.titre = $('#ct-titre').value.trim() || 'Contrat';
+  const avant = draftContrat.texte;
   draftContrat.texte = $('#ct-texte').value;
+  if (draftContrat.distance && avant !== draftContrat.texte) {
+    annulerLienDistance(draftContrat);
+    toast('Le texte a changé : le lien envoyé est annulé. Renvoyez-en un nouveau.', true);
+  }
   if (draftContrat.id) Object.assign(byId('contrats', draftContrat.id), draftContrat);
   else { draftContrat.id = uid(); DB.contrats.push(draftContrat); }
   save();
@@ -491,12 +498,119 @@ function validerSignature() {
   c.ecoleNom = a.nom || '';
   c.signeLe = new Date().toISOString();
   c.statut = 'signe';
+  if (c.distance) annulerLienDistance(c);
   save();
   closeModal();
   render();
   toast('Contrat signé ✅');
   sendContrat(c.id);
 }
+
+/* ---------- Signature à distance : l'élève signe sur son téléphone ---------- */
+const lienSignature = (jeton) => new URL('signer.html?t=' + jeton, location.href).href;
+
+function annulerLienDistance(c) {
+  const j = c.distance?.jeton;
+  delete c.distance;
+  if (j && Cloud.actif) Cloud.supprimerSignatureDistance(j).catch(() => {});
+}
+
+async function signerDistance(id) {
+  const c = byId('contrats', id);
+  const e = byId('eleves', c.eleveId);
+  const a = agenceDe(e) || {};
+  if (!(Cloud.actif && !Cloud.moniteur)) return toast("La signature à distance demande que l'appli soit connectée en ligne (compte direction).", true);
+  if (!a.signature) return toast(`Enregistrez d'abord la signature de ${a.nom || "l'auto-école"} dans Paramètres → Contrats.`, true);
+  const expire = c.distance && new Date(c.distance.expireLe) > new Date(Date.now() + 86400000);
+  if (!expire) {
+    if (c.distance) annulerLienDistance(c);
+    try {
+      const r = await Cloud.creerSignatureDistance({
+        contratId: c.id, titre: c.titre, texte: c.texte,
+        eleve: eleveNom(e), signataireSuggere: `${e.prenom || ''} ${e.nom || ''}`.trim(),
+        ecole: { nom: a.nom || '', logo: a.logo || '', couleur: a.couleur || '' },
+      });
+      c.distance = { jeton: r.jeton, envoyeLe: new Date().toISOString(), expireLe: r.expireLe };
+      save(); render();
+    } catch (err) {
+      return toast('Le lien n\'a pas pu être créé : ' + (/permission/i.test(err.message) ? 'mettez à jour les règles Firebase (voir FIREBASE.md, « Signature à distance »).' : err.message), true);
+    }
+  }
+  ouvrirLienDistance(c);
+}
+
+function ouvrirLienDistance(c) {
+  const e = byId('eleves', c.eleveId);
+  const a = agenceDe(e) || {};
+  const url = lienSignature(c.distance.jeton);
+  const texte = `Bonjour ${e.prenom || ''},\n\nVoici votre contrat de formation ${a.nom || ''} à lire et à signer en ligne, directement sur votre téléphone :\n${url}\n\nLe lien est valable jusqu'au ${fmtDate(c.distance.expireLe.slice(0, 10))}.\n\n${a.nom || ''}${a.tel ? ' - ' + a.tel : ''}`;
+  const tel = e.tel || '', email = e.email || '';
+  openModal({
+    title: '📲 Signature à distance',
+    body: `
+      <p>Envoyez ce lien à <strong>${esc(eleveNom(e))}</strong> : il ouvre son contrat sur son téléphone, le lit et signe avec le doigt.
+        Le contrat revient tout seul ici, signé, avec la signature et le tampon de ${esc(a.nom || "l'auto-école")}.</p>
+      <div class="lien-signature"><input id="ld-url" readonly value="${esc(url)}" aria-label="Lien de signature"><button class="btn" data-ld="copier">📋 Copier</button></div>
+      <div class="send-options" style="margin-top:10px">
+        <button class="btn primary" data-ld="wa" ${tel ? '' : 'disabled title="Pas de téléphone sur la fiche"'}>🟢 Par WhatsApp</button>
+        <button class="btn" data-ld="sms" ${tel ? '' : 'disabled title="Pas de téléphone sur la fiche"'}>💬 Par SMS</button>
+        <button class="btn" data-ld="mail" ${email ? '' : 'disabled title="Pas d\'e-mail sur la fiche"'}>✉️ Par e-mail</button>
+        ${navigator.share ? '<button class="btn" data-ld="partager">📤 Autre…</button>' : ''}
+      </div>
+      <p class="muted small" style="margin-top:10px">Le lien ne sert qu'une fois et expire le ${fmtDate(c.distance.expireLe.slice(0, 10))}. Si vous modifiez le contrat, il est annulé.</p>`,
+    foot: `<div class="left"><button class="btn danger" data-ld="annuler">Annuler le lien</button></div><button class="btn" data-action="closeModal">Fermer</button>`,
+    onMount: (m) => {
+      m.addEventListener('click', async (ev) => {
+        const b = ev.target.closest('[data-ld]'); if (!b) return;
+        const k = b.dataset.ld;
+        if (k === 'copier') {
+          try { await navigator.clipboard.writeText(url); toast('Lien copié'); } catch (err) { $('#ld-url').select(); }
+        } else if (k === 'wa') window.open(`https://wa.me/${phoneIntl(tel)}?text=${encodeURIComponent(texte)}`, '_blank');
+        else if (k === 'sms') window.location.href = `sms:${encodeURIComponent(tel)}${/iPhone|iPad|Mac/i.test(navigator.userAgent) ? '&' : '?'}body=${encodeURIComponent(texte)}`;
+        else if (k === 'mail') window.location.href = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent('Votre contrat à signer - ' + (a.nom || ''))}&body=${encodeURIComponent(texte)}`;
+        else if (k === 'partager') { try { await navigator.share({ title: 'Contrat à signer', text: texte }); } catch (err) { /* annulé */ } }
+        else if (k === 'annuler') {
+          if (!confirm('Annuler ce lien ? L\'élève ne pourra plus signer avec.')) return;
+          annulerLienDistance(c); save(); closeModal(); render(); toast('Lien annulé');
+        }
+      });
+    },
+  });
+}
+
+// Récupère les contrats signés à distance (appelé quand une signature arrive ou quand les données changent)
+const SIG_EN_COURS = new Set();
+function appliquerSignaturesDistance() {
+  if (!Cloud.actif || Cloud.moniteur) return;
+  for (const s of Cloud.remote?.signatures || []) {
+    if (SIG_EN_COURS.has(s.id)) continue;
+    const c = byId('contrats', s.contratId);
+    if (!c || c.statut === 'signe' || c.distance?.jeton !== s.id) {
+      // contrat supprimé, déjà signé ou lien remplacé : on nettoie
+      if (!c || c.statut === 'signe' || (c.distance && c.distance.jeton !== s.id)) { SIG_EN_COURS.add(s.id); Cloud.supprimerSignatureDistance(s.id).catch(() => SIG_EN_COURS.delete(s.id)); }
+      continue;
+    }
+    const a = agenceDe(byId('eleves', c.eleveId)) || {};
+    SIG_EN_COURS.add(s.id);
+    c.texte = s.texte || c.texte; // le texte exact que l'élève a signé
+    c.signatureEleve = s.signature;
+    c.signataireEleve = s.signataire;
+    c.signatureEcole = a.signature;
+    c.signataireEcole = a.signataire || a.exploitant || a.nom;
+    c.tamponEcole = a.tampon || '';
+    c.ecoleNom = a.nom || '';
+    c.signeLe = s.signeLe && s.signeLe.toDate ? s.signeLe.toDate().toISOString() : new Date().toISOString();
+    c.signeADistance = true;
+    c.appareilSignature = s.appareil || '';
+    c.statut = 'signe';
+    delete c.distance;
+    save();
+    Cloud.supprimerSignatureDistance(s.id).catch(() => SIG_EN_COURS.delete(s.id));
+    toast(`✍️ ${eleveNom(byId('eleves', c.eleveId))} a signé son contrat`);
+    renderPlusTard();
+  }
+}
+Cloud.onSignature = () => appliquerSignaturesDistance();
 
 /* ---------- Contrat signé : lecture ---------- */
 function openContratSigne(c) {
@@ -640,6 +754,7 @@ const CONTRAT_ACTIONS = {
   saveContratBrouillon() { enregistrerBrouillon(); closeModal(); render(); toast('Contrat enregistré'); },
   saveEtSigner() { const c = enregistrerBrouillon(); render(); openSignature(c); },
   signerContrat(d) { openSignature(byId('contrats', d.id)); },
+  signerDistance(d) { signerDistance(d.id); },
   sgEffacer(d) { openSignature.pads[d.pad]?.effacer(); },
   validerSignature,
   sendContrat(d) { sendContrat(d.id); },

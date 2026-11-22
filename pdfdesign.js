@@ -387,7 +387,7 @@ function buildContratPdfModerne(c) {
       } catch (err) { /* image illisible */ }
     }
   };
-  bloc(M, "L'élève (ou son représentant légal)", c.signataireEleve, c.signatureEleve, c.signeLe ? `Lu et approuvé — signé électroniquement le ${fmtDateHeure(c.signeLe)}` : '');
+  bloc(M, "L'élève (ou son représentant légal)", c.signataireEleve, c.signatureEleve, c.signeLe ? `Lu et approuvé — signé électroniquement${c.signeADistance ? ' à distance' : ''} le ${fmtDateHeure(c.signeLe)}` : '');
   bloc(M + colW + 8, `Pour ${ec.nom}`, c.signataireEcole, c.signatureEcole, '', c.tamponEcole);
 
   const n = doc.getNumberOfPages();
@@ -630,7 +630,7 @@ function buildContratPdfClassique(c) {
       } catch (err) { /* image illisible */ }
     }
   };
-  bloc(M, "L'élève (ou son représentant légal)", c.signataireEleve, c.signatureEleve, c.signeLe ? `Lu et approuvé - signé électroniquement le ${fmtDateHeure(c.signeLe)}` : '');
+  bloc(M, "L'élève (ou son représentant légal)", c.signataireEleve, c.signatureEleve, c.signeLe ? `Lu et approuvé - signé électroniquement${c.signeADistance ? ' à distance' : ''} le ${fmtDateHeure(c.signeLe)}` : '');
   bloc(M + colW + 10, `Pour ${c.ecoleNom || ec.nom}`, c.signataireEcole, c.signatureEcole, '', c.tamponEcole);
 
   const n = doc.getNumberOfPages();

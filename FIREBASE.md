@@ -44,6 +44,39 @@ Ensuite, au choix :
 Sur l'appareil qui contient déjà les bonnes données : connectez-vous → **« Envoyer mes données en ligne »**.
 Les autres appareils n'ont plus qu'à se connecter.
 
+## Signature des contrats à distance (à faire une fois)
+
+Pour que les élèves puissent signer leur contrat sur leur propre téléphone, il faut **ajouter** un bloc
+dans les règles Firebase. **N'effacez rien** : vos e-mails de propriétaires doivent rester tels quels.
+
+1. <https://console.firebase.google.com> → votre projet → **Firestore Database** → onglet **Règles**.
+2. Repérez la ligne `match /seances/{id} {` (vers la fin).
+3. **Juste au-dessus**, collez ce bloc :
+
+```
+    // Signature à distance d'un contrat : l'élève, sans compte, ouvre SON lien (jeton secret)
+    // et signe une seule fois, avant la date d'expiration. Impossible de lister les liens.
+    match /signatures/{jeton} {
+      allow get: if resource.data.expireLe > request.time;
+      allow update: if resource.data.statut == 'attente'
+        && resource.data.expireLe > request.time
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['statut', 'signature', 'signataire', 'signeLe', 'appareil', 'luEtApprouve'])
+        && request.resource.data.statut == 'signe'
+        && request.resource.data.luEtApprouve == true
+        && request.resource.data.signature is string && request.resource.data.signature.size() < 400000
+        && request.resource.data.signature.matches('^data:image/png;base64,.*')
+        && request.resource.data.signataire is string && request.resource.data.signataire.size() > 1 && request.resource.data.signataire.size() <= 100
+        && request.resource.data.appareil is string && request.resource.data.appareil.size() <= 250
+        && request.resource.data.signeLe == request.time;
+    }
+```
+
+4. Cliquez sur **Publier**.
+
+Sécurité : chaque lien contient un code secret de 32 caractères, impossible à deviner. Sans ce lien, personne ne peut
+lire ni lister les contrats. Un lien ne sert qu'une fois, expire au bout de 30 jours et est effacé dès que l'appli
+a récupéré la signature.
+
 ## Mettre l'appli en ligne (GitHub Pages)
 
 Sur GitHub : dépôt → **Settings → Pages** → Source : *Deploy from a branch* → choisir la branche de l'appli → `/ (root)` → Save.

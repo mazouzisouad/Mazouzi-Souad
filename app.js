@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-22 · horaire par élève dans une leçon (évaluation 1h)';
+const APP_VERSION = '2026-11-22 · signature des contrats à distance';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -2749,6 +2749,7 @@ Cloud.onChange = (db) => {
   DB = migrate(db);
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); } catch (e) { /* plein */ }
   renderPlusTard();
+  setTimeout(appliquerSignaturesDistance, 0); // contrats signés à distance en attente
 };
 Cloud.onState = () => render();
 

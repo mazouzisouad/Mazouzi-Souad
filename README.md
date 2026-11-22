@@ -46,7 +46,12 @@ Ensuite, dans Paramètres : « Mon auto-école » (nom, SIRET, TVA… pour les f
   Le modèle fourni est indicatif : vérifiez-le ou collez le texte de votre contrat habituel.
 - **Fiche élève → Contrats → Nouveau contrat** : le contrat est rempli tout seul, modifiable avant signature.
 - Le modèle fourni prévoit l'examen blanc obligatoire avant chaque épreuve, 4 à 6 h de préparation, le 1er accompagnement offert et les frais de repassage (100 € plateau, 150 € circulation) — réglables dans Paramètres.
-- **Faire signer** : l'élève (ou son représentant légal) coche « lu et approuvé » et signe au doigt sur le téléphone / la tablette.
+- **✍️ Signer sur place** : l'élève (ou son représentant légal) coche « lu et approuvé » et signe au doigt sur le téléphone / la tablette.
+- **📲 Signer à distance** : l'appli crée un lien unique (envoi par WhatsApp, SMS ou e-mail). L'élève ouvre son contrat sur son
+  téléphone, sans compte, coche « lu et approuvé », écrit son nom et signe au doigt. Le contrat revient tout seul dans l'appli,
+  signé (avec la signature et le tampon de l'auto-école), et le PDF porte la mention « signé électroniquement à distance le … ».
+  Le lien ne sert qu'une fois, expire au bout de 30 jours et est annulé si on modifie le texte du contrat.
+  À activer une fois dans Firebase : voir [FIREBASE.md](FIREBASE.md), « Signature des contrats à distance ».
 - Le contrat signé (date et heure de signature) est envoyé en PDF par e-mail, WhatsApp…
 
 ## Rappels d'examen (la veille)

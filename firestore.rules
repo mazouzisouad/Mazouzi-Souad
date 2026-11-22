@@ -60,6 +60,21 @@ service cloud.firestore {
       allow update: if moniteur() && resource.data.auteur == email() && request.resource.data.auteur == email();
       allow delete: if moniteur() && resource.data.auteur == email();
     }
+    // Signature à distance d'un contrat : l'élève, sans compte, ouvre SON lien (jeton secret)
+    // et signe une seule fois, avant la date d'expiration. Impossible de lister les liens.
+    match /signatures/{jeton} {
+      allow get: if resource.data.expireLe > request.time;
+      allow update: if resource.data.statut == 'attente'
+        && resource.data.expireLe > request.time
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['statut', 'signature', 'signataire', 'signeLe', 'appareil', 'luEtApprouve'])
+        && request.resource.data.statut == 'signe'
+        && request.resource.data.luEtApprouve == true
+        && request.resource.data.signature is string && request.resource.data.signature.size() < 400000
+        && request.resource.data.signature.matches('^data:image/png;base64,.*')
+        && request.resource.data.signataire is string && request.resource.data.signataire.size() > 1 && request.resource.data.signataire.size() <= 100
+        && request.resource.data.appareil is string && request.resource.data.appareil.size() <= 250
+        && request.resource.data.signeLe == request.time;
+    }
     match /seances/{id} {
       allow read: if moniteur() && resource.data.moniteurId == monId();
       allow update: if moniteur()

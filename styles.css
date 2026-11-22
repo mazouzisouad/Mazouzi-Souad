@@ -845,3 +845,8 @@ tr.sous-titre td { background: #f8fafc; font-weight: 700; font-size: 12.5px; col
 .tag-el.tag-heure { font-variant-numeric: tabular-nums; }
 .tag-el.lecon.tag-heure { background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; }
 .agenda.groupes .tag-el.tag-heure { display: table; margin: 0 0 1px 0; }
+
+/* ---------- Signature à distance ---------- */
+.badge.info { background: #e0f2fe; color: #075985; }
+.lien-signature { display: flex; gap: 6px; margin-top: 10px; }
+.lien-signature input { flex: 1; min-width: 0; font-size: 13px; }

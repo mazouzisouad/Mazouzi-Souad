@@ -224,6 +224,11 @@ const Cloud = {
       }, onErr));
       doc('roles', 'roles');
       for (const c of CLOUD_COLLS) coll(c);
+      // contrats signés à distance par les élèves
+      this.unsubs.push(this.fs.collection('signatures').where('statut', '==', 'signe').onSnapshot((snap) => {
+        this.remote.signatures = snap.docs.map((d) => Object.assign({ id: d.id }, d.data()));
+        this.onSignature();
+      }, () => { /* règles pas encore mises à jour : on ignore */ }));
     } else {
       coll('seances', this.fs.collection('seances').where('moniteurId', '==', this.monId));
       coll('suivi'); // fiche de suivi : lue par tous les moniteurs, chacun écrit les siens
@@ -392,6 +397,22 @@ const Cloud = {
     });
   },
   setCompteur(n, cle = 'n') { return this.fs.collection('ecole').doc('compteur').set({ [cle]: Number(n) || 0 }, { merge: true }); },
+
+  // Signature à distance d'un contrat : un lien unique (jeton), lisible sans compte, signé une seule fois
+  onSignature: () => {},
+  async creerSignatureDistance(data, jours = 30) {
+    const lettres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const alea = crypto.getRandomValues(new Uint8Array(32));
+    const jeton = Array.from(alea, (n) => lettres[n % lettres.length]).join('');
+    const expire = new Date(Date.now() + jours * 86400000);
+    await this.fs.collection('signatures').doc(jeton).set(Object.assign({}, data, {
+      statut: 'attente',
+      creeLe: firebase.firestore.FieldValue.serverTimestamp(),
+      expireLe: firebase.firestore.Timestamp.fromDate(expire),
+    }));
+    return { jeton, expireLe: expire.toISOString() };
+  },
+  supprimerSignatureDistance(jeton) { return this.fs.collection('signatures').doc(jeton).delete(); },
 
   get actif() { return this.enabled && this.user && this.ready && !this.empty; },
   get moniteur() { return this.actif && this.role === 'moniteur'; },
