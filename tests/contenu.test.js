@@ -43,6 +43,11 @@ test('aucun texte payant dans public/', () => {
   const dir = new URL('../public/', import.meta.url);
   const tout = fs.readdirSync(dir, { recursive: true }).filter((f) => /\.(html|js|json)$/.test(f))
     .map((f) => fs.readFileSync(new URL(f, dir), 'utf8')).join('\n');
-  for (const q of Object.values(QUESTIONS_PREMIUM)) assert.ok(!tout.includes(q.q), q.q);
+  // fuite = une explication payante, ou un énoncé propre à une question (les énoncés génériques
+  // comme « Que signifie ce panneau ? » sont partagés et ne révèlent rien)
+  for (const q of Object.values(QUESTIONS_PREMIUM)) {
+    assert.ok(!tout.includes(q.e), 'explication payante publiée : ' + q.e);
+    if (q.q.length > 45) assert.ok(!tout.includes(q.q), 'question payante publiée : ' + q.q);
+  }
   for (const p of Object.values(FICHES_PREMIUM).flat()) assert.ok(!tout.includes(p), p);
 });

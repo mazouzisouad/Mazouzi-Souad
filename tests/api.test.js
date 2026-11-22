@@ -391,3 +391,22 @@ test('parrainage : paiement sans code → aucune récompense demandée', async (
   await webhook(requete({ headers: { 'stripe-signature': sig }, corps: charge }), res);
   assert.equal(appels.filter((a) => a.url.includes('recompenser_parrain')).length, 0);
 });
+
+test('plan du site : toutes les pages publiques, adresse du site', async () => {
+  const { default: sitemap } = await import('../api/sitemap.js');
+  const res = reponse();
+  sitemap(requete({ method: 'GET' }), res);
+  assert.match(res.corps, /<loc>https:\/\/code-ludique\.fr\/code\/test-gratuit<\/loc>/);
+  assert.match(res.corps, /<loc>https:\/\/code-ludique\.fr\/code\/panneaux\/ab4<\/loc>/);
+  assert.doesNotMatch(res.corps, /admin|compte|connexion/);
+  assert.ok((res.corps.match(/<url>/g) || []).length >= 70);
+});
+
+test('robots.txt : pages privées exclues, plan du site indiqué', async () => {
+  const { default: robots } = await import('../api/robots.js');
+  const res = reponse();
+  robots(requete({ method: 'GET' }), res);
+  assert.match(res.corps, /Disallow: \/admin/);
+  assert.match(res.corps, /Disallow: \/api\//);
+  assert.match(res.corps, /Sitemap: https:\/\/code-ludique\.fr\/sitemap\.xml/);
+});

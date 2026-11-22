@@ -5,7 +5,8 @@
   "type": "module",
   "description": "Entraînement au code de la route : comptes élèves, paiement Stripe, progression en ligne (Supabase + Vercel).",
   "scripts": {
-    "test": "node --test tests/*.test.js"
+    "test": "node --test tests/*.test.js",
+    "pages": "node scripts/generer-pages-seo.mjs"
   },
   "engines": {
     "node": ">=20"

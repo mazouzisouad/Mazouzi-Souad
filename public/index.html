@@ -13,6 +13,13 @@
 <meta name="apple-mobile-web-app-title" content="Code Ludique">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Code Ludique : entraînement au code de la route</title>
+<meta name="description" content="Révise le code de la route avec des questions illustrées et corrigées, des examens blancs de 40 questions et des fiches de cours. Commence gratuitement.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Code Ludique">
+<meta property="og:title" content="Code Ludique : entraînement au code de la route">
+<meta property="og:description" content="Questions illustrées, examens blancs, fiches de cours. Commence gratuitement.">
+<meta property="og:image" content="/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
 <!-- Comptes élèves, accès payant et sauvegarde en ligne de la progression -->
 <script src="/api/config"></script>
 <script src="/vendor/supabase.js"></script>
@@ -1120,7 +1127,7 @@ function premEnd(){ return new Date(CodeAcces.expireLe).toLocaleDateString('fr-F
 var I_USER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.5-6 8-6s7 1.5 8 6"/></svg>';
 function confortBtn(){ return '<button class="confort-btn" data-a="confort" aria-label="Confort de lecture : texte plus grand, lecture à voix haute">Aa</button>'; }
 function acct(){ return confortBtn()+'<a class="acct" href="/compte">'+I_USER+(connecte()?'Mon compte':'Se connecter')+'</a>'; }
-function legal(){ return '<div class="legal"><a href="/compte">Mon compte</a><a href="/cgv">Conditions de vente</a><a href="/confidentialite">Confidentialité</a><a href="/mentions-legales">Mentions légales</a></div>'; }
+function legal(){ return '<div class="legal"><a href="/code">Réviser le code</a><a href="/compte">Mon compte</a><a href="/cgv">Conditions de vente</a><a href="/confidentialite">Confidentialité</a><a href="/mentions-legales">Mentions légales</a></div>'; }
 // Contenu payant : absent de la page, chargé depuis le serveur quand l'accès complet est actif
 var complet = false, chargement = null;
 function dispo(i){ return !Q[i].p; }

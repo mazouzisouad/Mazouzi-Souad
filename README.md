@@ -146,3 +146,17 @@ npm test
   est envoyée en ligne au retour du réseau. Le contenu payant, le paiement et le compte demandent une connexion.
 - Après une grosse mise à jour, changez `VERSION` en haut de `public/sw.js` pour forcer le renouvellement des fichiers
   gardés sur les téléphones.
+
+## Être trouvé sur Google (pages publiques)
+
+`public/code/` contient 71 pages publiques générées à partir du contenu **gratuit** et vérifié : une page par panneau,
+une page par thème avec ses questions gratuites, un test gratuit de 10 questions et une page d'accueil `/code`.
+Le plan du site (`/sitemap.xml`) et `/robots.txt` sont produits automatiquement avec l'adresse du site.
+
+1. Une fois le nom de domaine connu, régénérez les pages avec l'adresse (pour les aperçus de liens partagés) :
+   `SITE_URL=https://www.votre-site.fr npm run pages`, puis enregistrez et déployez.
+2. Créez un compte **Google Search Console** (gratuit), ajoutez votre domaine, puis envoyez `https://www.votre-site.fr/sitemap.xml`.
+3. Après avoir ajouté des questions gratuites ou des panneaux, relancez `npm run pages`.
+
+Google met en général 2 à 6 mois à bien positionner un nouveau site. Le test `npm test` vérifie qu'aucune question
+payante n'apparaît dans les pages publiques.
