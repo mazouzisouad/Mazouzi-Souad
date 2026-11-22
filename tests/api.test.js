@@ -243,8 +243,9 @@ test('contenu : accès actif → questions et fiches payantes, jamais en cache',
   const d = JSON.parse(res.corps);
   const { QUESTIONS_PREMIUM } = await import('../api/_lib/contenu-premium.js');
   assert.equal(Object.keys(d.questions).length, Object.keys(QUESTIONS_PREMIUM).length);
-  assert.ok(Object.keys(d.questions).length >= 200);
-  assert.equal(Object.keys(d.fiches).length, 8);
+  assert.ok(Object.keys(d.questions).length >= 150);
+  const { FICHES_PREMIUM } = await import('../api/_lib/contenu-premium.js');
+  assert.equal(Object.keys(d.fiches).length, Object.keys(FICHES_PREMIUM).length);
   assert.equal(res.entetes['cache-control'], 'no-store');
 });
 

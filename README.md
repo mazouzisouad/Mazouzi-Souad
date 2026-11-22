@@ -5,7 +5,7 @@ Site d'entraînement au code de la route avec :
 - **comptes élèves** par e-mail et mot de passe (confirmation par e-mail, mot de passe oublié) ;
 - **paiement Stripe de 9,90 € pour 3 mois**, paiement unique sans abonnement ;
 - **codes d'accès** remis par l'auto-école (3 mois, usage unique, liés au compte) ;
-- **252 questions** (16 gratuites) et 10 fiches de cours ;
+- **252 questions** et 10 fiches de cours ; **gratuit** : 60 questions (15 par thème), 4 fiches et 1 examen blanc ;
 - **séries de jours d'affilée et 11 badges** à débloquer ;
 - **rappels par e-mail** : inactivité depuis 3 jours (si l'élève l'a accepté), fin d'accès dans 7 jours, accès terminé ;
 - **écran « Passer le code »** : niveau de l'élève, étapes (NEPH, 30 €, réservation, jour J), liens vers les
@@ -44,7 +44,7 @@ Technologies : Supabase (comptes + base de données), Stripe (paiement), Vercel 
 
 ## Ce qui a changé dans l'appli
 
-Questions, fiches, design et contenu gratuit (4 questions par thème + 2 fiches) sont inchangés. Seuls ajouts :
+Questions, fiches, design et contenu gratuit (60 questions, 4 fiches et 1 examen blanc) sont inchangés. Seuls ajouts :
 
 - **le contenu payant n'est plus dans la page** : les 47 questions et 8 fiches payantes sont sur le serveur
   (`api/_lib/contenu-premium.js`) et ne sont envoyées qu'aux élèves connectés dont l'accès est actif ;
