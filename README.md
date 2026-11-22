@@ -111,6 +111,16 @@ Planning → « 📥 Importer Google Agenda ». Dans Google Agenda (ordinateur) 
 **Évaluation de départ** : dans une leçon, bouton « 🧭 Évaluation » par élève ; hors forfait, prix fixe
 (50 € par défaut, Paramètres → Leçons & tarifs).
 
+## 📊 Récap du mois (direction)
+
+- **Moniteurs** : heures faites, heures encore prévues dans le mois, taux horaire (Paramètres → Moniteurs),
+  montant dû, « Marquer payé » ; détail : temps par auto-école et liste des leçons.
+- **Auto-écoles** : élèves vus, heures plateau / circulation de leurs élèves, temps moniteur (durée de chaque
+  leçon partagée selon le nombre d'élèves de chaque auto-école) et son coût, examens, examens blancs,
+  évaluations, encaissements du mois.
+- **Export Excel** (CSV) : moniteurs, temps par auto-école, auto-écoles, détail des leçons.
+Les taux et montants ne sont jamais envoyés aux moniteurs.
+
 ## Fiche de suivi
 
 Pour chaque élève, un historique de suivi pédagogique : après une leçon, le moniteur (ou la direction) choisit

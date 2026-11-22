@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · évaluation obligatoire dans le contrat';
+const APP_VERSION = '2026-11-23 · récap du mois et paie des moniteurs';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -462,6 +462,7 @@ function render() {
   else if (UI.view === 'eleves') v.innerHTML = UI.eleveOuvert ? viewFiche(UI.eleveOuvert) : viewEleves();
   else if (UI.view === 'paiements') v.innerHTML = viewPaiements();
   else if (UI.view === 'motos') v.innerHTML = viewMotos();
+  else if (UI.view === 'recap') v.innerHTML = viewRecap();
   else if (UI.view === 'parametres') v.innerHTML = viewParametres();
 }
 
@@ -1895,7 +1896,7 @@ function viewParametres() {
     </div>
     <div class="card">
       <h2>Moniteurs</h2>
-      ${DB.moniteurs.map((m) => ligne(`<span class="dot" style="background:${esc(m.couleur)}"></span><span class="name">${esc(moniteurNom(m))}</span>`, 'editMoniteur', m.id)).join('')}
+      ${DB.moniteurs.map((m) => ligne(`<span class="dot" style="background:${esc(m.couleur)}"></span><span class="name">${esc(moniteurNom(m))}</span>${tauxDe(m) ? `<span class="muted small">${eur(tauxDe(m))} /h</span>` : '<span class="muted small">taux horaire à indiquer</span>'}`, 'editMoniteur', m.id)).join('')}
       <button class="btn" data-action="editMoniteur">+ Ajouter un moniteur</button>
     </div>
     <div class="card">
@@ -2481,6 +2482,7 @@ const ACTIONS = {
       fields: [
         { name: 'prenom', label: 'Prénom *', required: true }, { name: 'nom', label: 'Nom' },
         { name: 'tel', label: 'Téléphone', type: 'tel' }, { name: 'couleur', label: 'Couleur', type: 'color' },
+        { name: 'tauxHoraire', label: 'Taux horaire (€ de l\'heure, pour le récap et la paie)', type: 'number', step: '0.01' },
       ],
       onSave: (data) => { if (m) Object.assign(m, data); else DB.moniteurs.push({ id: uid(), ...data }); },
       onDelete: m && (() => {
@@ -2600,7 +2602,7 @@ const ACTIONS = {
   },
 };
 
-Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS, SUIVI_ACTIONS, EMAIL_ACTIONS, MOTO_ACTIONS, COMPTE_ACTIONS, IMPORT_ELEVES_ACTIONS, IMPORT_AGENDA_ACTIONS);
+Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS, SUIVI_ACTIONS, EMAIL_ACTIONS, MOTO_ACTIONS, COMPTE_ACTIONS, IMPORT_ELEVES_ACTIONS, IMPORT_AGENDA_ACTIONS, RECAP_ACTIONS);
 
 /* ---------------------------------------------------------------------
    Synchronisation en ligne

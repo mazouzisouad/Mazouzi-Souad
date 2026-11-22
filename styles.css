@@ -676,3 +676,9 @@ body.glisse-en-cours, body.glisse-en-cours * { cursor: grabbing !important; user
 .imp-el tr.a-creer td { background: #eff6ff; }
 .imp-el select { font-size: 12.5px; padding: 3px 6px; max-width: 260px; }
 .imp-el select.a-verifier { border-color: #f59e0b; background: #fffbeb; }
+
+/* ---------- Récap du mois ---------- */
+.recap-detail td { background: #f8fafc; }
+.recap-cols { display: grid; grid-template-columns: minmax(220px, 1fr) 2fr; gap: 18px; padding: 6px 2px; }
+.recap-lecons { max-height: 260px; overflow: auto; display: grid; gap: 3px; }
+@media (max-width: 700px) { .recap-cols { grid-template-columns: 1fr; } }
