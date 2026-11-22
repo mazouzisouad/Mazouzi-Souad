@@ -24,6 +24,7 @@ Technologies : Supabase (comptes + base de données), Stripe (paiement), Vercel 
 | `api/stripe-webhook.js` | Reçoit la confirmation de Stripe et débloque l'accès |
 | `api/verifier-paiement.js` | Débloque l'accès tout de suite au retour du paiement |
 | `api/activer-code.js` + `api/_lib/codes.js` | Activation des codes d'accès |
+| `api/contenu.js` + `api/_lib/contenu-premium.js` | Questions et fiches payantes, envoyées aux seuls élèves dont l'accès est actif |
 | `api/supprimer-compte.js` | Suppression du compte |
 | `supabase/schema.sql` | Tables et règles de sécurité |
 | `supabase/nettoyage.sql` | Suppression des comptes inactifs depuis 3 ans |
@@ -32,12 +33,24 @@ Technologies : Supabase (comptes + base de données), Stripe (paiement), Vercel 
 
 Questions, fiches, design et contenu gratuit (4 questions par thème + 2 fiches) sont inchangés. Seuls ajouts :
 
+- **le contenu payant n'est plus dans la page** : les 47 questions et 8 fiches payantes sont sur le serveur
+  (`api/_lib/contenu-premium.js`) et ne sont envoyées qu'aux élèves connectés dont l'accès est actif ;
+
 - 3 scripts dans `<head>` : comptes, accès payant, sauvegarde en ligne de la progression
   (la clé `code-ludique-v1` du navigateur est recopiée dans le compte et restaurée sur les autres appareils) ;
 - l'accès complet vient du compte (et non plus de l'appareil) ;
 - « Acheter » ouvre le paiement Stripe après les deux cases obligatoires (CGV + renonciation au droit de rétractation) ;
 - « Activer mon code » vérifie le code sur le serveur : il est lié au compte et ne sert qu'une fois ;
 - un bouton « Se connecter / Mon compte » dans le bandeau bleu, et les liens légaux en bas des écrans.
+
+**Modifier les questions** :
+- questions et fiches **gratuites** : dans `public/index.html` (comme avant) ;
+- questions et fiches **payantes** : dans `api/_lib/contenu-premium.js`. Dans `index.html`, chaque question payante
+  est remplacée par un emplacement `{t:'Thème', p:1}` qui garde sa place dans la liste.
+- Pour **ajouter** une question payante, ajoutez un emplacement **à la fin** de la liste `Q` dans `index.html`
+  et la question sous le même numéro dans `contenu-premium.js`. Ne supprimez pas et ne réordonnez pas les questions
+  existantes : la progression des élèves est enregistrée par numéro de question.
+- `npm test` vérifie que les deux fichiers concordent et qu'aucun texte payant n'est resté dans la page.
 
 **Codes d'accès** : la liste des empreintes est dans `api/_lib/codes.js` (les codes en clair ne sont pas dans le dépôt).
 Pour ajouter des codes, ajoutez leurs empreintes à cette liste. Les élèves qui avaient déjà activé un code dans l'ancienne
@@ -90,7 +103,6 @@ npm test
 
 ## À savoir
 
-- **Protection du contenu** : les 63 questions et les fiches sont écrites dans `index.html`, comme dans l'appli
-  d'origine. Une personne qui s'y connaît peut donc les lire dans le code source sans payer. Pour une vraie
-  protection, les questions payantes devraient être envoyées par le serveur aux seuls élèves ayant payé.
+- **Protection du contenu** : la page ne contient que le contenu gratuit. Le contenu payant est envoyé par le serveur
+  après vérification de l'accès. Un élève qui a payé peut évidemment voir les questions qu'il a débloquées.
 - La clé `service_role` et les clés Stripe restent côté serveur : elles ne sont jamais envoyées au navigateur.

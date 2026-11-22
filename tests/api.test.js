@@ -18,6 +18,11 @@ before(async () => {
         if (req.headers.authorization === 'Bearer bon-jeton') return res.end(JSON.stringify({ id: 'u-123', email: 'eleve@example.com' }));
         res.statusCode = 401; return res.end(JSON.stringify({ msg: 'invalid' }));
       }
+      if (req.url.startsWith('/rest/v1/acces')) {
+        const ligne = globalThis.EXPIRE_LE ? { expire_le: globalThis.EXPIRE_LE } : null;
+        const objet = (req.headers.accept || '').includes('vnd.pgrst.object');
+        return res.end(JSON.stringify(objet ? ligne : (ligne ? [ligne] : [])));
+      }
       if (req.url.startsWith('/rest/v1/rpc/accorder_acces')) return res.end(JSON.stringify('2027-02-22T10:00:00+00:00'));
       if (req.url.startsWith('/rest/v1/rpc/activer_code')) {
         const c = JSON.parse(corps);
@@ -181,4 +186,35 @@ test('cyrb53 serveur identique à celui de l’appli d’origine', async () => {
 test('creer-paiement : annulation → retour à l’écran Accès complet de l’appli', async () => {
   const src = (await import('node:fs')).readFileSync(new URL('../api/creer-paiement.js', import.meta.url), 'utf8');
   assert.match(src, /cancel_url: `\$\{site\}\/\?ecran=premium&paiement=annule`/);
+});
+
+test('contenu : non connecté → 401', async () => {
+  const { default: contenu } = await import('../api/contenu.js');
+  const res = reponse();
+  await contenu(requete({ method: 'GET', headers: {} }), res);
+  assert.equal(res.statusCode, 401);
+  assert.doesNotMatch(res.corps, /"questions"/);
+});
+
+test('contenu : connecté sans accès ou accès expiré → 403, aucun contenu', async () => {
+  const { default: contenu } = await import('../api/contenu.js');
+  for (const exp of [null, new Date(Date.now() - 1000).toISOString()]) {
+    globalThis.EXPIRE_LE = exp;
+    const res = reponse();
+    await contenu(requete({ method: 'GET', headers: { authorization: 'Bearer bon-jeton' } }), res);
+    assert.equal(res.statusCode, 403, String(exp));
+    assert.doesNotMatch(res.corps, /"questions"/);
+  }
+});
+
+test('contenu : accès actif → questions et fiches payantes, jamais en cache', async () => {
+  const { default: contenu } = await import('../api/contenu.js');
+  globalThis.EXPIRE_LE = new Date(Date.now() + 864e5).toISOString();
+  const res = reponse();
+  await contenu(requete({ method: 'GET', headers: { authorization: 'Bearer bon-jeton' } }), res);
+  assert.equal(res.statusCode, 200, res.corps);
+  const d = JSON.parse(res.corps);
+  assert.equal(Object.keys(d.questions).length, 47);
+  assert.equal(Object.keys(d.fiches).length, 8);
+  assert.equal(res.entetes['cache-control'], 'no-store');
 });
