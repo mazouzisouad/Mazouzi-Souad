@@ -882,3 +882,24 @@ tr.sous-titre td { background: #f8fafc; font-weight: 700; font-size: 12.5px; col
   .agenda:not(.groupes) .ag-el { max-width: 100%; overflow: hidden; }
 }
 @media (max-width: 420px) { .agenda:not(.groupes) .ag-el { flex-wrap: wrap; row-gap: 1px; } .agenda:not(.groupes) .ag-el .tag-el { margin-left: 0; } }
+
+/* ---------- Téléphones pliables et petits écrans ---------- */
+/* Les boutons à long texte passent à la ligne au lieu de dépasser de l'écran */
+.btn { max-width: 100%; }
+@media (max-width: 480px) { .row.nowrap { flex-wrap: wrap; } .row.nowrap > .btn { white-space: normal; text-align: left; } }
+/* Récap : les jauges de réussite rétrécissent sur petit écran */
+.rcp-jauges { min-width: 0; }
+.rcp-jauge { min-width: 0; }
+.rcp-jauge svg { width: 100%; max-width: 120px; height: auto; }
+@media (max-width: 480px) { .rcp-reu { grid-template-columns: minmax(0, 1fr); } }
+/* Écran intérieur d'un pliable / petite tablette : la semaine tient sans défiler */
+@media (min-width: 600px) and (max-width: 1100px) {
+  .agenda.groupes { grid-template-columns: 40px repeat(var(--cols), minmax(54px, 1fr)); }
+  .agenda.groupes .ag-colhead.mini strong.cap { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+@media (max-width: 480px) {
+  #view .btn { white-space: normal; }
+  #view .row { flex-wrap: wrap; }
+  .rcp-liste .rang { grid-template-columns: minmax(0, 1fr) 56px 56px 30px; gap: 4px; padding: 6px; }
+  .rcp-liste .rang > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+}

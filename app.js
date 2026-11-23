@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · heures écrites 9h-10h';
+const APP_VERSION = '2026-11-23 · téléphones pliables et petits écrans';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -856,6 +856,14 @@ document.addEventListener('pointercancel', () => {
 });
 document.addEventListener('touchmove', (e) => { if (TRACE.actif) e.preventDefault(); }, { passive: false });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && TRACE.actif) finirTrace(true); });
+
+// Ouverture / fermeture d'un téléphone pliable, rotation : on redessine (hauteurs du planning, colonnes)
+let largeurPrec = window.innerWidth;
+window.addEventListener('resize', () => {
+  if (Math.abs(window.innerWidth - largeurPrec) < 80) return;
+  largeurPrec = window.innerWidth;
+  renderPlusTard();
+});
 
 /* ---------------------------------------------------------------------
    CHANGER DE JOUR EN GLISSANT LE DOIGT (téléphone / tablette)
