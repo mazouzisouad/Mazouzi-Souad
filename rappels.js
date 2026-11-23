@@ -14,7 +14,10 @@ const RAPPEL_DEFAUT = {
     exam_circulation: "Pièce d'identité originale en cours de validité (carte d'identité, passeport ou titre de séjour)\nConvocation à l'examen\nLivret d'apprentissage",
   },
   equipement: 'Casque homologué\nGants certifiés CE\nBlouson ou veste à manches longues\nPantalon résistant ou combinaison\nBottes ou chaussures montantes',
+  lecons: true, // rappeler aussi les leçons (pas seulement les examens)
+  messageLecon: "En cas d'empêchement, prévenez-nous au plus vite (toute leçon non décommandée 48 h à l'avance est due).",
 };
+const rappelLecons = () => rappelCfg().lecons !== false;
 
 const rappelCfg = () => DB.settings.rappel;
 
@@ -29,7 +32,39 @@ function lieuRdv(s, e) {
 }
 const liste = (txt) => String(txt || '').split('\n').map((l) => l.trim()).filter(Boolean).map((l) => `- ${l}`).join('\n');
 
+function texteRappelLecon(s, eleveId) {
+  const e = byId('eleves', eleveId);
+  const ec = ecoleDe(agenceDe(e));
+  const m = byId('moniteurs', s.moniteurId);
+  const hz = horaireDe(s, eleveId);
+  const jour = s.date === addDays(todayISO(), 1) ? 'demain' : 'le';
+  const date = parseISO(s.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+  const mode = modeDe(s, eleveId);
+  const quoi = isBlanc(s.type) || mode === 'blanc' ? `un examen blanc ${baseDe(s.type)}`
+    : mode === 'evaluation' ? 'votre évaluation de départ'
+    : `une leçon de moto ${baseDe(s.type) === 'plateau' ? 'plateau' : 'circulation'}${mode === 'prepa' ? ' (préparation à l\'examen)' : ''}`;
+  const message = rappelCfg().messageLecon ?? RAPPEL_DEFAUT.messageLecon;
+  return `Bonjour ${e.prenom},
+
+Rappel : vous avez ${jour} ${date} ${quoi}, de ${hz.debut.replace(':', 'h')} à ${hz.fin.replace(':', 'h')}.
+
+📍 Lieu : ${s.lieu || lieuRdv(s, e)}
+🏍️ Moniteur : ${moniteurNom(m)}
+
+🧥 Pensez à votre équipement :
+${liste(rappelCfg().equipement)}
+${message ? `\n${message}\n` : ''}
+À ${jour === 'demain' ? 'demain' : 'bientôt'} !
+${ec.nom}${ec.tel ? ' - ' + ec.tel : ''}`;
+}
+const sujetRappel = (r) => {
+  const ec = ecoleDe(agenceDe(r.e));
+  if (isExam(r.s.type)) return `Rappel : votre examen moto ${r.s.type === 'exam_plateau' ? 'plateau' : 'circulation'} du ${fmtDate(r.s.date)} - ${ec.nom}`;
+  return `Rappel : votre leçon de moto du ${fmtDate(r.s.date)} à ${horaireDe(r.s, r.e.id).debut.replace(':', 'h')} - ${ec.nom}`;
+};
+
 function texteRappel(s, eleveId) {
+  if (!isExam(s.type)) return texteRappelLecon(s, eleveId);
   const e = byId('eleves', eleveId);
   const ec = ecoleDe(agenceDe(e));
   const m = byId('moniteurs', s.moniteurId);
@@ -53,10 +88,10 @@ Merci d'être à l'heure. Bonne chance !
 ${ec.nom}${ec.tel ? ' - ' + ec.tel : ''}`;
 }
 
-// Élèves à prévenir pour les examens d'une date
+// Élèves à prévenir pour les examens (et les leçons) d'une date
 function rappelsDu(dateISO) {
   const out = [];
-  for (const s of DB.seances.filter((x) => isExam(x.type) && x.date === dateISO).sort((a, b) => a.debut.localeCompare(b.debut))) {
+  for (const s of DB.seances.filter((x) => (isExam(x.type) || rappelLecons()) && x.date === dateISO).sort((a, b) => (isExam(b.type) - isExam(a.type)) || a.debut.localeCompare(b.debut))) {
     for (const p of s.eleves) {
       if (p.statut !== 'prevu') continue;
       const e = byId('eleves', p.eleveId);
@@ -72,10 +107,11 @@ function bandeauRappels() {
   const list = rappelsDu(demain);
   if (!list.length) return '';
   const reste = list.filter((r) => !r.p.rappel).length;
+  const quoi = list.some((r) => isExam(r.s.type)) ? (list.some((r) => !isExam(r.s.type)) ? 'Leçons et examens demain' : 'Examens demain') : 'Leçons demain';
   return reste
-    ? `<div class="alert warn row between" style="margin-bottom:10px"><span>🔔 <strong>Examens demain : ${reste} élève${reste > 1 ? 's' : ''} à prévenir</strong> (heure et lieu du rendez-vous, moniteur, documents, équipement).</span>
+    ? `<div class="alert warn row between" style="margin-bottom:10px"><span>🔔 <strong>${quoi} : ${reste} élève${reste > 1 ? 's' : ''} à prévenir</strong> (heure, lieu, moniteur, équipement).</span>
         <button class="btn primary" data-action="openRappels" data-date="${demain}">Prévenir les élèves</button></div>`
-    : `<div class="alert info row between" style="margin-bottom:10px"><span>✅ Examens demain : tous les élèves ont été prévenus.</span>
+    : `<div class="alert info row between" style="margin-bottom:10px"><span>✅ ${quoi} : tous les élèves ont été prévenus.</span>
         <button class="btn small" data-action="openRappels" data-date="${demain}">Voir</button></div>`;
 }
 
@@ -87,17 +123,17 @@ function openRappels(date, seanceId) {
   if (seanceId) list = list.filter((r) => r.s.id === seanceId);
   const jour = parseISO(date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
   openModal({
-    title: `🔔 Rappels d'examen — ${esc(jour)}`,
+    title: `🔔 Rappels — ${esc(jour)}`,
     wide: true,
     body: `
-      <div class="row" style="margin-bottom:10px"><span class="small">Examens du</span>
+      <div class="row" style="margin-bottom:10px"><span class="small">${rappelLecons() ? 'Leçons et examens du' : 'Examens du'}</span>
         <input type="date" value="${date}" data-on-change="rappelDate" style="width:auto"></div>
       ${list.length ? list.map((r, i) => {
         const tel = r.e.tel || ''; const mail = r.e.email || '';
         return `<div class="card rappel ${r.p.rappel ? 'envoye' : ''}" style="margin-bottom:10px">
           <div class="row between">
             <div><strong>${esc(eleveNom(r.e))}</strong> ${agenceBadge(agenceDe(r.e))}
-              <div class="small muted">${TYPES[r.s.type].label} à ${r.s.debut}${r.s.lieu ? ' · ' + esc(r.s.lieu) : ''} · RDV ${heureRdv(r.s)} · ${esc(moniteurNom(byId('moniteurs', r.s.moniteurId)))}</div></div>
+              <div class="small muted">${isExam(r.s.type) ? `${TYPES[r.s.type].label} à ${r.s.debut}${r.s.lieu ? ' · ' + esc(r.s.lieu) : ''} · RDV ${heureRdv(r.s)}` : `${TYPES[r.s.type].label}${modeDe(r.s, r.e.id) !== 'lecon' ? ' · ' + MODES_ELEVE[modeDe(r.s, r.e.id)] : ''} · ${horaireDe(r.s, r.e.id).debut}–${horaireDe(r.s, r.e.id).fin}`} · ${esc(moniteurNom(byId('moniteurs', r.s.moniteurId)))}</div></div>
             ${r.p.rappel ? `<span class="badge ok">✅ Prévenu le ${fmtDateHeure(r.p.rappel)}</span>` : '<span class="badge warn">À prévenir</span>'}
           </div>
           <details style="margin-top:8px"><summary class="small muted">Voir / modifier le message</summary>
@@ -110,9 +146,9 @@ function openRappels(date, seanceId) {
             ${r.p.rappel ? '' : `<button class="btn small ghost" data-action="rappelMarquer" data-i="${i}">Marquer comme prévenu</button>`}
           </div>
         </div>`;
-      }).join('') : '<div class="empty">Aucun élève inscrit à un examen ce jour-là.</div>'}
+      }).join('') : `<div class="empty">${rappelLecons() ? 'Aucune leçon ni examen ce jour-là.' : 'Aucun élève inscrit à un examen ce jour-là.'}</div>`}
       ${emailAutoPret() && list.some((r) => !r.p.rappel && r.e.email) ? `<div class="row" style="justify-content:flex-end;margin-bottom:8px"><button class="btn primary" data-action="rappelsTousMail">📧 Envoyer tous les rappels par e-mail (${list.filter((r) => !r.p.rappel && r.e.email).length})</button></div>` : ''}
-      <p class="muted small">Le contenu (documents, équipement, heure du rendez-vous) se règle dans Paramètres → Rappels d'examen. Pour un examen précis, l'heure et le lieu du rendez-vous se changent dans l'examen.</p>`,
+      <p class="muted small">Le contenu (documents, équipement, message des leçons, heure du rendez-vous) se règle dans Paramètres → Rappels. Pour un examen précis, l'heure et le lieu du rendez-vous se changent dans l'examen.</p>`,
     foot: '<button class="btn" data-action="closeModal">Fermer</button>',
   });
   openRappels.list = list;
@@ -122,9 +158,11 @@ function viewParamRappels() {
   const r = rappelCfg();
   return `
     <div class="card">
-      <h2>🔔 Rappels d'examen</h2>
-      <p class="muted small">La veille d'un examen, le planning affiche les élèves à prévenir. Le message reprend ces informations.</p>
+      <h2>🔔 Rappels (leçons et examens)</h2>
+      <p class="muted small">La veille, le planning affiche les élèves à prévenir. Le message reprend ces informations.</p>
       <form id="rappel-form" class="form-grid" onsubmit="return false">
+        <label class="field full row" style="gap:8px;flex-direction:row;align-items:center"><input type="checkbox" name="lecons" style="width:auto" ${r.lecons !== false ? 'checked' : ''}> Rappeler aussi les <strong>leçons</strong> (pas seulement les examens)</label>
+        <label class="field full"><span>Message ajouté aux rappels de leçon</span><textarea name="messageLecon">${esc(r.messageLecon ?? RAPPEL_DEFAUT.messageLecon)}</textarea></label>
         <label class="field"><span>Rendez-vous combien de minutes avant l'examen</span><input type="number" min="0" step="5" name="avanceMin" value="${r.avanceMin}"></label>
         <label class="field"><span>Lieu de rendez-vous par défaut</span><input name="lieuDefaut" value="${esc(r.lieuDefaut)}" placeholder="vide = adresse de l'auto-école de l'élève"></label>
         <label class="field full"><span>Documents à apporter — examen plateau (un par ligne)</span><textarea name="docP">${esc(r.documents.exam_plateau)}</textarea></label>
@@ -153,11 +191,11 @@ const RAPPEL_ACTIONS = {
       else if (d.via === 'wa') window.open(`https://wa.me/${phoneIntl(e.tel)}?text=${encodeURIComponent(msg)}`, '_blank');
       else if (d.via === 'mail' && emailAutoPret()) {
         toast('Envoi en cours…');
-        const res = await envoyerEmailAuto({ to: e.email, subject: `Rappel : votre examen moto ${r.s.type === 'exam_plateau' ? 'plateau' : 'circulation'} du ${fmtDate(r.s.date)} - ${ec.nom}`, text: msg, ecole: ec });
+        const res = await envoyerEmailAuto({ to: e.email, subject: sujetRappel(r), text: msg, ecole: ec });
         const m = messageResultat(res, e.email);
         toast(m.txt, !m.ok);
         if (!m.ok) return;
-      } else if (d.via === 'mail') window.location.href = `mailto:${encodeURIComponent(e.email)}?subject=${encodeURIComponent(`Rappel : votre examen moto ${r.s.type === 'exam_plateau' ? 'plateau' : 'circulation'} du ${fmtDate(r.s.date)} - ${ec.nom}`)}&body=${encodeURIComponent(msg)}`;
+      } else if (d.via === 'mail') window.location.href = `mailto:${encodeURIComponent(e.email)}?subject=${encodeURIComponent(sujetRappel(r))}&body=${encodeURIComponent(msg)}`;
       else if (d.via === 'copie') { await navigator.clipboard.writeText(msg); toast('Message copié'); }
     } catch (err) { return toast('Impossible : ' + err.message, true); }
     if (d.via !== 'copie') RAPPEL_ACTIONS.rappelMarquer(d);
@@ -170,7 +208,7 @@ const RAPPEL_ACTIONS = {
     for (const { r, i } of list) {
       const ec = ecoleDe(agenceDe(r.e));
       const msg = $(`#rp-msg-${i}`)?.value || texteRappel(r.s, r.e.id);
-      const res = await envoyerEmailAuto({ to: r.e.email, subject: `Rappel : votre examen moto ${r.s.type === 'exam_plateau' ? 'plateau' : 'circulation'} du ${fmtDate(r.s.date)} - ${ec.nom}`, text: msg, ecole: ec });
+      const res = await envoyerEmailAuto({ to: r.e.email, subject: sujetRappel(r), text: msg, ecole: ec });
       if (res.etat === 'erreur') { ko++; continue; }
       ok++;
       const s = byId('seances', r.s.id); const p = s && s.eleves.find((x) => x.eleveId === r.e.id);
@@ -196,6 +234,8 @@ const RAPPEL_ACTIONS = {
     r.lieuDefaut = f.lieuDefaut;
     r.documents = { exam_plateau: f.docP, exam_circulation: f.docC };
     r.equipement = f.equipement;
+    r.lecons = $('#rappel-form [name=lecons]').checked;
+    r.messageLecon = f.messageLecon;
     save(); render(); toast('Rappels enregistrés');
   },
 };

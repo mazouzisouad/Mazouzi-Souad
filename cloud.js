@@ -287,7 +287,7 @@ const Cloud = {
       },
       public: {
         agences: (db.agences || []).map((a) => ({ id: a.id, nom: a.nom || '', couleur: a.couleur || '', logo: a.logo || '', adresse: a.adresse || '', cp: a.cp || '', ville: a.ville || '', tel: a.tel || '' })),
-        moniteurs: (db.moniteurs || []).map((m) => ({ id: m.id, prenom: m.prenom || '', nom: m.nom || '', couleur: m.couleur || '' })),
+        moniteurs: (db.moniteurs || []).map((m) => ({ id: m.id, prenom: m.prenom || '', nom: m.nom || '', couleur: m.couleur || '', absences: m.absences || [] })),
         settings: {
           capacite: (db.settings && db.settings.capacite) || {},
           dureeDefaut: (db.settings && db.settings.dureeDefaut) || {},

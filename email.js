@@ -34,7 +34,7 @@ function doPost(e) {
     if (d.cle !== CLE) return reponse({ ok: false, erreur: 'clé invalide' });
     const options = { name: d.nom || 'Go Moto', htmlBody: d.html };
     if (d.replyTo) options.replyTo = d.replyTo;
-    if (d.pj) options.attachments = [Utilities.newBlob(Utilities.base64Decode(d.pj.base64), 'application/pdf', d.pj.nom)];
+    if (d.pj) options.attachments = [Utilities.newBlob(Utilities.base64Decode(d.pj.base64), d.pj.type || 'application/pdf', d.pj.nom)];
     GmailApp.sendEmail(d.to, d.sujet, d.texte, options);
     return reponse({ ok: true, restant: MailApp.getRemainingDailyQuota() });
   } catch (err) {
@@ -75,7 +75,7 @@ async function envoyerEmailAuto({ to, subject, text, ecole, pj }) {
   const docMail = {
     to: [to],
     from: `"${nom}" <${c.expediteur}>`,
-    message: { subject, text, html: texteEnHtml(text), attachments: pj ? [{ filename: pj.nom, content: pj.base64, encoding: 'base64', contentType: 'application/pdf' }] : [] },
+    message: { subject, text, html: texteEnHtml(text), attachments: pj ? [{ filename: pj.nom, content: pj.base64, encoding: 'base64', contentType: pj.type || 'application/pdf' }] : [] },
     envoyePar: (Cloud.user && Cloud.user.email) || '',
     creeLe: new Date().toISOString(),
   };

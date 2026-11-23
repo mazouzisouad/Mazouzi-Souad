@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · tableaux en fiches sur petit écran';
+const APP_VERSION = '2026-11-23 · rappels des leçons, absences des moniteurs, sauvegarde auto';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -114,6 +114,7 @@ function defaultState() {
       fraisRepassage: { exam_plateau: 100, exam_circulation: 150 },
       heuresPrepa: { min: 4, max: 6 },
       rappel: JSON.parse(JSON.stringify(RAPPEL_DEFAUT)),
+      sauvegarde: { actif: true, email: '', derniere: '' }, // sauvegarde automatique chaque semaine
       dureeDefaut: { plateau: 120, circulation: 120, blanc_plateau: 60, blanc_circulation: 60, exam_plateau: 180, exam_circulation: 180 },
       heureMin: '07:00',
       heureMax: '20:00',
@@ -555,6 +556,7 @@ function viewPlanning() {
       <button class="btn" data-action="importAgenda" title="Reprendre un planning Google Agenda (fichier exporté)">📥 Importer Google Agenda</button>`}
   </div>
   ${moni ? '' : bandeauRappels()}
+  ${moni ? '' : bandeauSauvegarde()}
   ${semaine && !moni ? `<div class="seg" style="margin-bottom:10px">
       ${DB.moniteurs.length > 1 ? `<button class="${UI.moniteurSemaine === 'tous' ? 'on' : ''}" data-action="setMonSemaine" data-id="tous">👥 Tous les moniteurs</button>` : ''}
       ${DB.moniteurs.map((m) => `<button class="${UI.moniteurSemaine === m.id ? 'on' : ''}" data-action="setMonSemaine" data-id="${m.id}"><span class="dot" style="background:${esc(m.couleur)}"></span>${esc(moniteurNom(m))}</button>`).join('')}
@@ -587,7 +589,7 @@ function agendaGrid(cols) {
         const ss = DB.seances.filter((s) => s.date === c.date && s.moniteurId === c.mon);
         const h = ss.reduce((n, s) => n + durH(s), 0);
         return `<div class="ag-colhead ${c.today ? 'today' : ''} ${c.debutJour ? 'debut-jour' : ''} ${c.jour ? 'mini' : ''}">
-          ${c.couleur && !c.jour ? `<div class="ag-moni" style="--c:${esc(c.couleur)}"><span class="ag-av">${esc((String(c.titre).trim()[0] || '?').toUpperCase())}</span>
+          ${c.couleur && !c.jour ? `<div class="ag-moni" style="--c:${esc(c.couleur)}" ${estMoniteur() ? '' : `data-action="absencesMoniteur" data-id="${c.mon}" title="Absences de ce moniteur"`}><span class="ag-av">${esc((String(c.titre).trim()[0] || '?').toUpperCase())}</span>
             <div><strong class="cap">${esc(c.titre)}</strong><div class="muted small">${ss.length ? `${ss.length} leçon${ss.length > 1 ? 's' : ''} · ${fmtH(h)}` : 'aucune leçon'}</div>
             <span class="ag-jauge"><i style="width:${Math.min(100, (h / 8) * 100)}%"></i></span></div></div>`
           : `${c.couleur ? `<span class="ag-av mini" style="--c:${esc(c.couleur)}">${esc((String(c.titre).trim()[0] || '?').toUpperCase())}</span>` : ''}<strong class="cap">${esc(c.titre)}</strong>
@@ -606,7 +608,7 @@ function agendaGrid(cols) {
           .map((s) => blocSeance(s, hMin)).join('');
         const line = c.date === todayISO() && nowMin >= hMin && nowMin <= hMax
           ? `<div class="ag-now ${cols.findIndex((x) => x.date === c.date) === ci ? 'moto' : ''}" style="top:${((nowMin - hMin) / 30) * ROW_H}px"></div>` : '';
-        return `<div class="ag-col ${c.debutJour ? 'debut-jour' : ''} ${c.today ? 'today' : ''}" style="height:${H}px" data-date="${c.date}" data-mon="${c.mon}">${slots}${blocks}${line}</div>`;
+        return `<div class="ag-col ${c.debutJour ? 'debut-jour' : ''} ${c.today ? 'today' : ''}" style="height:${H}px" data-date="${c.date}" data-mon="${c.mon}">${slots}${c.mon ? blocsAbsence(c, hMin, hMax) : ''}${blocks}${line}</div>`;
       }).join('')}
     </div>
   </div>`;
@@ -807,11 +809,12 @@ function bougerTrace(y) {
   if (t !== g.t0) g.bouge = true;
   const a = Math.min(g.t0, t), b = Math.max(g.t0, t) + 30;
   const pris = DB.seances.find((x) => x.date === g.col.dataset.date && x.moniteurId === g.col.dataset.mon && toMin(x.debut) < b && a < toMin(x.fin));
-  g.creneau = { debut: a, fin: b, pris };
+  const absent = absenceSur(g.col.dataset.mon, g.col.dataset.date, a, b);
+  g.creneau = { debut: a, fin: b, pris, absent };
   g.fantome.style.top = (((a - hMin) / 30) * ROW_H + 1) + 'px';
   g.fantome.style.height = (((b - a) / 30) * ROW_H - 2) + 'px';
-  g.fantome.classList.toggle('refus', !!pris);
-  g.fantome.innerHTML = `<b>${fromMin(a)} – ${fromMin(b)}</b><span>${fmtH((b - a) / 60)}</span>${pris ? `<em>⛔ ${esc(messageMoniteurPris(pris))}</em>` : ''}`;
+  g.fantome.classList.toggle('refus', !!(pris || absent));
+  g.fantome.innerHTML = `<b>${fromMin(a)} – ${fromMin(b)}</b><span>${fmtH((b - a) / 60)}</span>${pris ? `<em>⛔ ${esc(messageMoniteurPris(pris))}</em>` : absent ? `<em>⛔ ${esc(libelleAbsence(absent.a))}</em>` : ''}`;
 }
 function finirTrace(annule) {
   const g = TRACE.actif; TRACE.actif = null; TRACE.pret = null;
@@ -823,6 +826,7 @@ function finirTrace(annule) {
   // appui sans glisser : comme un simple clic (durée habituelle)
   if (!g.bouge) return ACTIONS.slot({ date: g.col.dataset.date, mon: g.col.dataset.mon, t: fromMin(g.t0) });
   if (g.creneau.pris) return toast(messageMoniteurPris(g.creneau.pris), true);
+  if (g.creneau.absent) return toast(messageAbsence(g.col.dataset.mon, g.creneau.absent), true);
   openSeance({ type: 'circulation', date: g.col.dataset.date, debut: fromMin(g.creneau.debut), fin: fromMin(g.creneau.fin), moniteurId: g.col.dataset.mon, lieu: '', eleves: [] });
 }
 document.addEventListener('pointerdown', (e) => {
@@ -1343,6 +1347,10 @@ function seanceConflicts(s) {
   if (!s.date) errors.push('Choisissez une date.');
   if (isExam(s.type) && Number(s.places) > DB.settings.capacite[s.type]) errors.push(`${s.places} places : le maximum réglé pour un ${TYPES[s.type].label.toLowerCase()} est ${DB.settings.capacite[s.type]} (modifiable dans Paramètres).`);
   if (s.eleves.length > cap) errors.push(`${s.eleves.length} élèves pour ${cap} place${cap > 1 ? 's' : ''} en ${TYPES[s.type].label.toLowerCase()}.`);
+  const avant = s.id ? byId('seances', s.id) : null;
+  const memeCreneau = avant && avant.date === s.date && avant.debut === s.debut && avant.fin === s.fin && avant.moniteurId === s.moniteurId;
+  const absent = !memeCreneau && s.moniteurId && s.date ? absenceSur(s.moniteurId, s.date, toMin(s.debut), toMin(s.fin)) : null;
+  if (absent) errors.push(messageAbsence(s.moniteurId, absent));
   for (const o of DB.seances.filter((x) => x.id !== s.id && overlaps(x, s))) {
     if (o.moniteurId === s.moniteurId) errors.push(messageMoniteurPris(o));
     for (const p of s.eleves) {
@@ -2111,7 +2119,9 @@ function viewParametres() {
     </div>
     <div class="card">
       <h2>Moniteurs</h2>
-      ${DB.moniteurs.map((m) => ligne(`<span class="dot" style="background:${esc(m.couleur)}"></span><span class="name">${esc(moniteurNom(m))}</span>${tauxDe(m) ? `<span class="muted small">${eur(tauxDe(m))} /h</span>` : '<span class="muted small">taux horaire à indiquer</span>'}`, 'editMoniteur', m.id)).join('')}
+      ${DB.moniteurs.map((m) => { const n = absencesDe(m).filter((a) => finAbsence(a) >= todayISO()).length;
+        return ligne(`<span class="dot" style="background:${esc(m.couleur)}"></span><span class="name">${esc(moniteurNom(m))}</span>${tauxDe(m) ? `<span class="muted small">${eur(tauxDe(m))} /h</span>` : '<span class="muted small">taux horaire à indiquer</span>'}
+          <button class="btn small ghost" data-action="absencesMoniteur" data-id="${m.id}">🌴 Absences${n ? ` (${n})` : ''}</button>`, 'editMoniteur', m.id); }).join('')}
       <button class="btn" data-action="editMoniteur">+ Ajouter un moniteur</button>
     </div>
     <div class="card">
@@ -2187,7 +2197,8 @@ function viewParametres() {
     <div class="card">
       <h2>Sauvegarde</h2>
       <p class="muted small">Version de l'appli : <strong>${APP_VERSION}</strong></p>
-      <p class="muted small">Les données sont gardées sur cet appareil. Faites une sauvegarde régulièrement.</p>
+      <p class="muted small">${Cloud.actif ? 'Les données sont en ligne. Une copie de sauvegarde en plus, c\'est plus sûr.' : 'Les données sont gardées sur cet appareil. Faites une sauvegarde régulièrement.'}</p>
+      ${blocParamSauvegarde()}
       <div class="row">
         <button class="btn primary" data-action="exportData">⬇️ Sauvegarder</button>
         <label class="btn">⬆️ Restaurer<input type="file" accept="application/json,.json" hidden data-on-change="importData"></label>
@@ -2406,8 +2417,10 @@ const ACTIONS = {
     // le moniteur est déjà occupé à cette heure → on ne propose pas de créneau
     const pris = duMoniteur.find((x) => toMin(x.debut) <= debut && debut < toMin(x.fin));
     if (pris) return toast(messageMoniteurPris(pris), true);
-    // la durée habituelle s'arrête avant la leçon suivante du moniteur
-    const suivante = duMoniteur.map((x) => toMin(x.debut)).filter((t) => t > debut).sort((a, b) => a - b)[0];
+    const absent = absenceSur(d.mon, d.date, debut, debut + 30);
+    if (absent) return toast(messageAbsence(d.mon, absent), true);
+    // la durée habituelle s'arrête avant la leçon suivante (ou l'absence) du moniteur
+    const suivante = [...duMoniteur.map((x) => toMin(x.debut)), ...absencesLe(d.mon, d.date).map((x) => x.debut)].filter((t) => t > debut).sort((a, b) => a - b)[0];
     let fin = debut + dureeDe(type);
     if (suivante != null && suivante < fin) {
       if (suivante - debut < 30) return toast(`Moins de 30 min libres avant la leçon de ${fromMin(suivante)} : choisissez un autre horaire.`, true);
@@ -2763,7 +2776,8 @@ const ACTIONS = {
     });
   },
   exportData() {
-    downloadBlob(new Blob([JSON.stringify(DB, null, 2)], { type: 'application/json' }), `moto-planning-sauvegarde-${todayISO()}.json`);
+    downloadBlob(new Blob([JSON.stringify(DB, null, 2)], { type: 'application/json' }), nomSauvegarde());
+    if (directionIci()) { marquerSauvegarde('telechargement'); render(); }
   },
   importData(d, el) {
     const file = el.files[0];
@@ -2861,7 +2875,7 @@ const ACTIONS = {
   },
 };
 
-Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS, SUIVI_ACTIONS, EMAIL_ACTIONS, MOTO_ACTIONS, COMPTE_ACTIONS, IMPORT_ELEVES_ACTIONS, IMPORT_AGENDA_ACTIONS, RECAP_ACTIONS);
+Object.assign(ACTIONS, CONTRAT_ACTIONS, RAPPEL_ACTIONS, SUIVI_ACTIONS, EMAIL_ACTIONS, MOTO_ACTIONS, COMPTE_ACTIONS, IMPORT_ELEVES_ACTIONS, IMPORT_AGENDA_ACTIONS, RECAP_ACTIONS, ABSENCE_ACTIONS, SAUVEGARDE_ACTIONS);
 
 /* ---------------------------------------------------------------------
    Synchronisation en ligne
@@ -2882,6 +2896,7 @@ Cloud.onChange = (db) => {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); } catch (e) { /* plein */ }
   renderPlusTard();
   setTimeout(appliquerSignaturesDistance, 0); // contrats signés à distance en attente
+  setTimeout(sauvegardeAuto, 4000); // sauvegarde de la semaine
 };
 Cloud.onState = () => render();
 
@@ -2890,6 +2905,7 @@ Cloud.onState = () => render();
    --------------------------------------------------------------------- */
 Cloud.start();
 render();
+if (!Cloud.enabled) setTimeout(sauvegardeAuto, 4000);
 if (!Cloud.enabled) save(); // enregistre aussi les données converties depuis une ancienne version
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })

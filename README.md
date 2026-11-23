@@ -191,3 +191,23 @@ Paramètres → Sauvegarder / Restaurer pour les transférer).
 ## Technique
 
 HTML/CSS/JavaScript sans installation. PDF générés avec [jsPDF](https://github.com/parallax/jsPDF) (licence MIT) ; synchronisation avec le SDK Firebase (Apache 2.0). Les deux sont inclus dans `vendor/`.
+
+## Rappels des leçons
+
+La veille, le bandeau du planning liste les élèves à prévenir pour leurs **leçons** et leurs **examens**.
+Un clic prépare le message (date, horaire de l'élève, lieu, moniteur, équipement, message de l'auto-école) à envoyer
+par SMS, WhatsApp ou e-mail ; l'appli retient qui a été prévenu. Réglages : **Paramètres → Rappels**
+(rappeler ou non les leçons, message ajouté aux rappels de leçon).
+
+## Absences des moniteurs
+
+**Paramètres → Moniteurs → 🌴 Absences** (ou clic sur le nom du moniteur en haut du planning, vue jour) :
+congé, maladie, formation, rendez-vous… sur un ou plusieurs jours, en journée entière ou sur des heures.
+L'absence apparaît grisée dans le planning ; on ne peut plus y placer ni y déplacer de leçon. En l'ajoutant, l'appli
+prévient s'il y a déjà des leçons du moniteur sur cette période. Le Récap indique les jours d'absence du mois.
+
+## Sauvegarde automatique
+
+**Paramètres → Sauvegarde** : chaque semaine, une copie de toutes les données (fichier `.json`) part par e-mail
+à l'adresse choisie, si l'envoi automatique d'e-mails est réglé. Sinon, le planning affiche chaque semaine
+un rappel « 💾 Sauvegarde de la semaine » pour la télécharger. Le fichier se recharge avec **⬆️ Restaurer**.

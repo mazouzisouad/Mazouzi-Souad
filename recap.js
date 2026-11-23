@@ -91,7 +91,8 @@ function viewRecap() {
     const parts = [...r.parAgence.entries()].sort((x, y) => y[1] - x[1]);
     return `<div class="rcp-mon" style="--c:${esc(r.m.couleur || '#f97316')}">
       <div class="rcp-mon-tete"><div class="rcp-av">${esc((moniteurNom(r.m)[0] || '?').toUpperCase())}</div>
-        <div><strong>${esc(moniteurNom(r.m))}</strong><span>${r.taux ? eur(r.taux) + " de l'heure" : `<button class="btn small" data-action="editMoniteur" data-id="${r.m.id}">Indiquer son taux horaire</button>`}</span></div></div>
+        <div><strong>${esc(moniteurNom(r.m))}</strong><span>${r.taux ? eur(r.taux) + " de l'heure" : `<button class="btn small" data-action="editMoniteur" data-id="${r.m.id}">Indiquer son taux horaire</button>`}</span>
+          ${joursAbsence(r.m, mois) ? `<span class="rcp-abs">🌴 ${joursAbsence(r.m, mois)} jour${joursAbsence(r.m, mois) > 1 ? 's' : ''} d'absence</span>` : ''}</div></div>
       <div class="rcp-mon-corps">
         <div class="rcp-anneau"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="${R}" fill="none" stroke="var(--line)" stroke-width="12"/>
           <circle class="p" cx="60" cy="60" r="${R}" fill="none" stroke="var(--c)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C}" data-off="${C * (1 - pct)}"/></svg>

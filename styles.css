@@ -924,3 +924,19 @@ tr.sous-titre td { background: #f8fafc; font-weight: 700; font-size: 12.5px; col
   .table-wrap td input, .table-wrap td select { max-width: 60%; }
 }
 @media (max-width: 640px) { .table-wrap td { flex-wrap: wrap; row-gap: 4px; } .table-wrap td::before { margin-right: auto; } }
+
+/* ---------- Absences des moniteurs ---------- */
+.ag-absence { position: absolute; left: 0; right: 0; z-index: 1; cursor: pointer; display: flex; align-items: flex-start; justify-content: center; padding-top: 6px;
+  background: repeating-linear-gradient(135deg, rgba(148,163,184,.22) 0 8px, rgba(148,163,184,.08) 8px 16px); border-top: 2px solid #94a3b8; border-bottom: 2px solid #94a3b8; }
+.ag-absence span { background: #fff; border: 1px solid #cbd5e1; border-radius: 999px; padding: 1px 8px; font-size: 11.5px; font-weight: 700; color: #475569; max-width: 92%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ag-absence span small { font-weight: 500; }
+.ag-absence.maladie span { color: #b91c1c; } .ag-absence.formation span { color: #6d28d9; }
+.agenda.groupes .ag-absence span { font-size: 9.5px; padding: 0 4px; }
+.agenda.groupes .ag-absence span small { display: none; }
+.ag-moni[data-action] { cursor: pointer; }
+.abs-liste .chip-row.on { border-color: var(--primary); background: #fff7ed; }
+.abs-jour { flex-direction: row !important; align-items: center; gap: 8px; }
+.abs-jour input { width: auto; }
+.rcp-abs { display: block; font-size: 12px; color: #475569; font-weight: 600; margin-top: 2px; }
+/* ---------- Sauvegarde automatique ---------- */
+.sauvegarde-auto { border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin: 10px 0; background: #f8fafc; }
