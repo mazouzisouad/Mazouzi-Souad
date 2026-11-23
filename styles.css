@@ -903,3 +903,24 @@ tr.sous-titre td { background: #f8fafc; font-weight: 700; font-size: 12.5px; col
   .rcp-liste .rang { grid-template-columns: minmax(0, 1fr) 56px 56px 30px; gap: 4px; padding: 6px; }
   .rcp-liste .rang > span:first-child { min-width: 0; overflow-wrap: anywhere; }
 }
+
+/* ---------- Petits écrans : les tableaux deviennent des fiches empilées (rien de coupé) ---------- */
+@media (max-width: 640px) {
+  .table-wrap { overflow: visible; border: 0; background: none; box-shadow: none; }
+  .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td { display: block; width: 100%; }
+  .table-wrap thead { display: none; }
+  .table-wrap tr { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; margin: 0 0 8px; }
+  .table-wrap tr.clickable:active { background: #fff7ed; }
+  .table-wrap td { border: 0; padding: 3px 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; text-align: right; min-height: 0; }
+  .table-wrap td.num { text-align: right; }
+  .table-wrap td::before { content: attr(data-label); flex: none; max-width: 45%; text-align: left; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .table-wrap td[data-label=""]::before { display: none; }
+  .table-wrap td[data-label=""] { justify-content: flex-end; }
+  /* 1re case = le titre de la fiche (ex. le nom de l'élève), en grand, sans étiquette */
+  .table-wrap td:first-child { display: block; text-align: left; font-size: 16px; padding-bottom: 4px; }
+  .table-wrap td:first-child::before { display: none; }
+  .table-wrap td:empty, .table-wrap td:has(> .muted:only-child) { display: none; }
+  .table-wrap td > .row { justify-content: flex-end; }
+  .table-wrap td input, .table-wrap td select { max-width: 60%; }
+}
+@media (max-width: 640px) { .table-wrap td { flex-wrap: wrap; row-gap: 4px; } .table-wrap td::before { margin-right: auto; } }

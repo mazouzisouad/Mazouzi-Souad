@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · téléphones pliables et petits écrans';
+const APP_VERSION = '2026-11-23 · tableaux en fiches sur petit écran';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -856,6 +856,24 @@ document.addEventListener('pointercancel', () => {
 });
 document.addEventListener('touchmove', (e) => { if (TRACE.actif) e.preventDefault(); }, { passive: false });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && TRACE.actif) finirTrace(true); });
+
+// Petits écrans : chaque case d'un tableau reçoit le titre de sa colonne,
+// pour que le tableau s'affiche en petites fiches empilées (voir styles.css).
+function etiqueterTableaux(racine) {
+  for (const t of racine.querySelectorAll('.table-wrap table')) {
+    const titres = [...t.querySelectorAll('thead th')].map((th) => th.textContent.trim());
+    if (!titres.length) continue;
+    for (const tr of t.querySelectorAll('tbody tr')) {
+      [...tr.children].forEach((td, i) => { if (!td.hasAttribute('data-label')) td.setAttribute('data-label', titres[i] || ''); });
+    }
+  }
+}
+let etiquetteEnAttente = false;
+new MutationObserver(() => {
+  if (etiquetteEnAttente) return;
+  etiquetteEnAttente = true;
+  requestAnimationFrame(() => { etiquetteEnAttente = false; etiqueterTableaux(document.body); });
+}).observe(document.body, { childList: true, subtree: true });
 
 // Ouverture / fermeture d'un téléphone pliable, rotation : on redessine (hauteurs du planning, colonnes)
 let largeurPrec = window.innerWidth;
