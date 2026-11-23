@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · glisser pour changer de jour : plus fiable';
+const APP_VERSION = '2026-11-23 · « Éval » écrit à côté du prénom';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -645,7 +645,7 @@ function blocSeance(s, hMin) {
     const m = categorie(s.type) === 'lecon' ? modeP(s, p) : '';
     const hz = horaireP(s, p);
     const ICO = { lecon: '⏱', blanc: '📝', prepa: '🎯', evaluation: '🧭' };
-    const tag = hz.partiel ? `<span class="tag-el ${m} tag-heure" title="${esc(MODES_ELEVE[m] || '')} de ${hz.debut} à ${hz.fin}">${ICO[m] || '⏱'} ${heureCourte(hz.debut)}-${heureCourte(hz.fin)}</span>`
+    const tag = hz.partiel ? `<span class="tag-el ${m} tag-heure" title="${esc(MODES_ELEVE[m] || '')} de ${hz.debut} à ${hz.fin}">${ICO[m] || '⏱'} ${{ evaluation: 'Éval ', prepa: 'Prépa ', blanc: 'Blanc ' }[m] || ''}${heureCourte(hz.debut)}-${heureCourte(hz.fin)}</span>`
       : m === 'blanc' ? '<span class="tag-el blanc"><span class="long">📝 Examen blanc</span><span class="court">📝 Ex. blanc</span></span>'
       : m === 'prepa' ? '<span class="tag-el prepa"><span class="long">🎯 Prépa examen</span><span class="court">🎯 Prépa ex.</span></span>'
       : m === 'evaluation' ? '<span class="tag-el evaluation"><span class="long">🧭 Évaluation de départ</span><span class="court">🧭 Évaluation</span></span>' : '';
