@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · « Éval » écrit à côté du prénom';
+const APP_VERSION = '2026-11-23 · heures écrites 9h-10h';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -88,7 +88,7 @@ function horaireP(s, p) {
 }
 const durP = (s, p) => { const h = horaireP(s, p); return Math.max(0, (toMin(h.fin) - toMin(h.debut)) / 60); };
 const horaireDe = (s, eleveId) => horaireP(s, s.eleves.find((x) => x.eleveId === eleveId));
-const heureCourte = (t) => { const [h, m] = String(t).split(':'); return `${+h}${m && m !== '00' ? 'h' + m : ''}`; };
+const heureCourte = (t) => { const [h, m] = String(t).split(':'); return `${+h}h${m && m !== '00' ? m : ''}`; }; // 9h, 9h30
 
 function toast(msg, bad = false) {
   const t = $('#toast');
