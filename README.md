@@ -188,6 +188,15 @@ Pour que les agences et les moniteurs voient **le même planning en direct**, l'
 Sans Firebase, l'appli fonctionne seule sur un appareil (données dans le navigateur ;
 Paramètres → Sauvegarder / Restaurer pour les transférer).
 
+## 📆 Dates d'examen (appli séparée)
+
+Petite appli à part, dans le dossier [`examens/`](examens/) : adresse `…/Mazouzi-Souad/examens/`.
+- Connexion avec les **mêmes comptes que Go Moto** (comptes direction / secrétariat). Rien n'est visible sans connexion.
+- Pour chaque examen : élève, accompagnateur (Towfiq, Manel, Monim, Selim, Walid, Selma), lieu (Gennevilliers, Noisy, Bobigny), date et commentaire.
+- **Paiement W** (gérant 1) et **Paiement B** (gérant 2) : un toucher = payé, avec la date du jour.
+- Sur téléphone : ouvrir l'adresse → « Ajouter à l'écran d'accueil ».
+- Données dans Firebase, collection `dates_examen` (déjà couverte par la règle « Direction : tout »).
+
 ## Technique
 
 HTML/CSS/JavaScript sans installation. PDF générés avec [jsPDF](https://github.com/parallax/jsPDF) (licence MIT) ; synchronisation avec le SDK Firebase (Apache 2.0). Les deux sont inclus dans `vendor/`.
