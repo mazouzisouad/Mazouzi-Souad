@@ -211,3 +211,10 @@ prévient s'il y a déjà des leçons du moniteur sur cette période. Le Récap 
 **Paramètres → Sauvegarde** : chaque semaine, une copie de toutes les données (fichier `.json`) part par e-mail
 à l'adresse choisie, si l'envoi automatique d'e-mails est réglé. Sinon, le planning affiche chaque semaine
 un rappel « 💾 Sauvegarde de la semaine » pour la télécharger. Le fichier se recharge avec **⬆️ Restaurer**.
+
+## Prix des forfaits par auto-école
+
+**Paramètres → Prestations → Modifier** : en plus du prix par défaut, chaque prestation (forfait, frais…) peut avoir
+**un prix par auto-école** (ex. forfait 20 h : 790 € à Paris et à Épinay, 690 € à Tremblay). Ce prix est repris tout seul
+quand on choisit le forfait d'un élève (selon son auto-école), sur les factures et dans le contrat (`{{prix_forfait}}`).
+En changeant un prix, l'appli propose de mettre à jour les élèves qui ont déjà ce forfait.

@@ -16,6 +16,16 @@ const STATUTS_FAITS = ['present', 'absent', 'valide', 'nonvalide']; // heures du
 
 const forfaitDe = (e) => (e && e.forfait && (Number(e.forfait.prix) > 0 || Number(e.forfait.heures) > 0) ? e.forfait : null);
 const heuresDuForfait = (p) => Number(p.heures) || 0;
+// Prix d'une prestation / d'un forfait pour une auto-école (chaque auto-école peut avoir son prix)
+const prixPour = (p, agenceId) => {
+  const v = p && p.prixAgences && agenceId ? p.prixAgences[agenceId] : null;
+  return v != null && v !== '' && !isNaN(Number(v)) ? Number(v) : Number(p && p.prix) || 0;
+};
+// « 790,00 € » ou « 690,00 € à 790,00 € selon l'auto-école »
+function prixAffiche(p) {
+  const prix = [...new Set(DB.agences.map((a) => prixPour(p, a.id)))].sort((a, b) => a - b);
+  return prix.length > 1 ? `${eur(prix[0])} à ${eur(prix[prix.length - 1])} selon l'auto-école` : eur(prix[0] ?? (Number(p.prix) || 0));
+}
 const prixHeureForfait = (f) => (f && heuresDuForfait(f) > 0 ? Number(f.prix) / heuresDuForfait(f) : null);
 
 // ajout : une leçon en cours de création / modification, à compter à la place de sa version enregistrée
@@ -185,7 +195,7 @@ function openForfait(eid) {
         <label class="field full"><span>Forfait choisi</span>
           <select id="ff-choix" data-on-change="forfaitChoix">
             <option value="">— Personnalisé —</option>
-            ${forfaits.map((p) => `<option value="${p.id}" data-lib="${esc(p.libelle)}" data-prix="${p.prix}" data-h="${heuresDuForfait(p)}" ${f.prestationId === p.id ? 'selected' : ''}>${esc(p.libelle)} — ${eur(p.prix)}${heuresDuForfait(p) ? ` · ${fmtH(heuresDuForfait(p))}` : ''}</option>`).join('')}
+            ${forfaits.map((p) => `<option value="${p.id}" data-lib="${esc(p.libelle)}" data-prix="${prixPour(p, e.agenceId)}" data-h="${heuresDuForfait(p)}" ${f.prestationId === p.id ? 'selected' : ''}>${esc(p.libelle)} — ${eur(prixPour(p, e.agenceId))}${heuresDuForfait(p) ? ` · ${fmtH(heuresDuForfait(p))}` : ''}</option>`).join('')}
           </select></label>
         <label class="field full"><span>Libellé</span><input name="libelle" id="ff-lib" value="${esc(f.libelle || '')}" required placeholder="ex : Forfait 20h A2"></label>
         <label class="field"><span>Prix total (€)</span><input name="prix" id="ff-prix" type="number" step="0.01" min="0" value="${esc(f.prix ?? '')}" required></label>

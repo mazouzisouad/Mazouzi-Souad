@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-23 · rappels des leçons, absences des moniteurs, sauvegarde auto';
+const APP_VERSION = '2026-11-24 · prix des forfaits par auto-école';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -1580,7 +1580,8 @@ function openEleve(eleve, { onSaved, onCancel } = {}) {
       <label class="field"><span>Téléphone</span><input name="tel" type="tel" value="${esc(e.tel || '')}"></label>
       <label class="field"><span>E-mail</span><input name="email" type="email" value="${esc(e.email || '')}"></label>
       ${isNew ? `<label class="field"><span>📦 Forfait choisi</span>
-        <select name="forfaitId"><option value="">— À choisir plus tard —</option>${DB.prestations.filter((x) => heuresDuForfait(x) > 0 || /forfait/i.test(x.libelle)).map((x) => `<option value="${x.id}">${esc(x.libelle)} — ${eur(x.prix)}</option>`).join('')}</select></label>
+        <select name="forfaitId"><option value="">— À choisir plus tard —</option>${DB.prestations.filter((x) => heuresDuForfait(x) > 0 || /forfait/i.test(x.libelle)).map((x) => `<option value="${x.id}">${esc(x.libelle)} — ${prixAffiche(x)}</option>`).join('')}</select>
+        <span class="small muted">Le prix est celui de l'auto-école choisie au-dessus.</span></label>
 ` : ''}
       <details class="full" ${isNew ? '' : 'open'}>
         <summary class="muted">Plus d'informations (adresse, NEPH, code…)</summary>
@@ -1613,7 +1614,7 @@ function openEleve(eleve, { onSaved, onCancel } = {}) {
         if (isNew) {
           target = { id: uid(), inscription: todayISO(), ...data }; DB.eleves.push(target);
           const pr = forfaitId && byId('prestations', forfaitId);
-          if (pr) target.forfait = { prestationId: pr.id, libelle: pr.libelle, prix: round2(pr.prix), heures: heuresDuForfait(pr), date: todayISO() };
+          if (pr) target.forfait = { prestationId: pr.id, libelle: pr.libelle, prix: round2(prixPour(pr, target.agenceId)), heures: heuresDuForfait(pr), date: todayISO() };
         }
         else { target = byId('eleves', e.id); Object.assign(target, data); }
         save();
@@ -1780,7 +1781,7 @@ function openFacture(f) {
     </table></div>
     <select id="add-presta" style="max-width:340px;margin-top:8px">
       <option value="">+ Ajouter une ligne…</option>
-      ${DB.prestations.map((p) => `<option value="${p.id}">${esc(p.libelle)} — ${eur(p.prix)}</option>`).join('')}
+      ${DB.prestations.map((p) => `<option value="${p.id}">${esc(p.libelle)} — ${eur(prixPour(p, byId('eleves', draftFacture.eleveId)?.agenceId))}</option>`).join('')}
       <option value="__plateau">Heure plateau — ${eur(DB.settings.tarifHeure.plateau)}</option>
       <option value="__circulation">Heure circulation — ${eur(DB.settings.tarifHeure.circulation)}</option>
       <option value="__libre">Ligne libre</option>
@@ -1809,7 +1810,7 @@ function openFacture(f) {
           draftFacture.lignes.push({ libelle: `Heure de conduite ${TYPES[t].label.toLowerCase()}`, qte: 1, pu: DB.settings.tarifHeure[t] });
         } else {
           const p = byId('prestations', v);
-          draftFacture.lignes.push({ libelle: p.libelle, qte: 1, pu: p.prix });
+          draftFacture.lignes.push({ libelle: p.libelle, qte: 1, pu: prixPour(p, byId('eleves', draftFacture.eleveId)?.agenceId) });
         }
         ev.target.value = '';
         renderLignes();
@@ -2177,7 +2178,7 @@ function viewParametres() {
     <div class="card">
       <h2>Prestations (pour les factures)</h2>
       <p class="muted small" style="margin-top:-4px">Pour un forfait, indiquez les heures de conduite incluses : il pourra être choisi sur la fiche de l'élève.</p>
-      ${DB.prestations.map((p) => ligne(`<span class="name">${heuresDuForfait(p) ? '📦 ' : ''}${esc(p.libelle)}${heuresDuForfait(p) ? ` <span class="muted small">· ${fmtH(heuresDuForfait(p))} incluses</span>` : ''}</span><strong>${eur(p.prix)}</strong>`, 'editPrestation', p.id)).join('')}
+      ${DB.prestations.map((p) => ligne(`<span class="name">${heuresDuForfait(p) ? '📦 ' : ''}${esc(p.libelle)}${heuresDuForfait(p) ? ` <span class="muted small">· ${fmtH(heuresDuForfait(p))} incluses</span>` : ''}</span><strong>${prixAffiche(p)}</strong>`, 'editPrestation', p.id)).join('')}
       <button class="btn" data-action="editPrestation">+ Ajouter</button>
     </div>
     ${viewAcces()}
@@ -2766,12 +2767,26 @@ const ACTIONS = {
   },
   editPrestation(d) {
     const p = d.id ? byId('prestations', d.id) : null;
+    const valeurs = Object.assign({}, p || {});
+    for (const a of DB.agences) { const v = p && p.prixAgences ? p.prixAgences[a.id] : null; valeurs['pa_' + a.id] = v != null && v !== '' ? v : ''; }
     openSimpleForm({
       title: p ? 'Modifier la prestation' : 'Nouvelle prestation',
-      values: p || {},
-      fields: [{ name: 'libelle', label: 'Libellé *', required: true, full: true }, { name: 'prix', label: 'Prix TTC (€)', type: 'number', step: '0.01', required: true },
-        { name: 'heures', label: 'Heures de conduite incluses (si c\'est un forfait)', type: 'number', step: '0.5' }],
-      onSave: (data) => { data.prix = Number(data.prix) || 0; data.heures = Number(data.heures) || 0; if (p) Object.assign(p, data); else DB.prestations.push({ id: uid(), ...data }); },
+      values: valeurs,
+      fields: [{ name: 'libelle', label: 'Libellé *', required: true, full: true }, { name: 'prix', label: 'Prix TTC par défaut (€)', type: 'number', step: '0.01', required: true },
+        { name: 'heures', label: 'Heures de conduite incluses (si c\'est un forfait)', type: 'number', step: '0.5' },
+        ...DB.agences.map((a) => ({ name: 'pa_' + a.id, label: `Prix à ${a.nom} (€) — vide = prix par défaut`, type: 'number', step: '0.01' }))],
+      onSave: (data) => {
+        const prixAgences = {};
+        for (const a of DB.agences) { const v = data['pa_' + a.id]; delete data['pa_' + a.id]; if (v !== '' && v != null && !isNaN(Number(v))) prixAgences[a.id] = Number(v); }
+        data.prix = Number(data.prix) || 0; data.heures = Number(data.heures) || 0; data.prixAgences = prixAgences;
+        let cible = p;
+        if (p) Object.assign(p, data); else { cible = { id: uid(), ...data }; DB.prestations.push(cible); }
+        // les élèves qui ont déjà ce forfait : proposer de mettre leur prix à jour
+        const aMettreAJour = DB.eleves.filter((e) => e.forfait && e.forfait.prestationId === cible.id && Math.abs((Number(e.forfait.prix) || 0) - prixPour(cible, e.agenceId)) > 0.005);
+        if (aMettreAJour.length && confirm(`${aMettreAJour.length} élève${aMettreAJour.length > 1 ? 's ont' : ' a'} déjà le forfait « ${cible.libelle} » à un autre prix.\n\nMettre à jour leur prix avec celui de leur auto-école ?`)) {
+          for (const e of aMettreAJour) e.forfait.prix = round2(prixPour(cible, e.agenceId));
+        }
+      },
       onDelete: p && (() => { if (!confirm('Supprimer cette prestation ?')) return false; DB.prestations = DB.prestations.filter((x) => x.id !== p.id); return true; }),
     });
   },
