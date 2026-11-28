@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-28 · élèves côte à côte dans le planning (jour et semaine)';
+const APP_VERSION = '2026-11-28 · ajouter un élève sur un créneau à droite de la leçon';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -675,6 +675,8 @@ function blocSeance(s, hMin, coteACote) {
 // Une case par élève, côte à côte ; chaque case a la hauteur de SON horaire (ex. évaluation d'1 h dans un plateau de 2 h)
 function blocCoteACote(s, top, height, cap, etroit) {
   const n = s.eleves.length;
+  const libre = !etroit && !estMoniteur() && n < cap; // colonne « + » pour ajouter un élève sur un créneau
+  const lanes = n + (libre ? 1 : 0);
   const MOTS = { blanc: '📝 Ex. blanc', prepa: '🎯 Prépa', evaluation: '🧭 Éval' };
   const cartes = s.eleves.map((p, i) => {
     const e = byId('eleves', p.eleveId);
@@ -685,7 +687,7 @@ function blocCoteACote(s, top, height, cap, etroit) {
     const res = ['valide'].includes(p.statut) ? ' ✅' : ['nonvalide'].includes(p.statut) ? ' ❌' : '';
     const t = ((toMin(hz.debut) - toMin(s.debut)) / 30) * ROW_H;
     const h = Math.max(ROW_H, ((toMin(hz.fin) - toMin(hz.debut)) / 30) * ROW_H) - 3;
-    return `<div class="ag-carte ${baseDe(s.type)} ${m} ${barre ? 'abs' : ''}" style="left:calc(${(i * 100) / n}% + 1px);width:calc(${100 / n}% - 3px);top:${t}px;height:${h}px;--a:${esc(a?.couleur || '#94a3b8')}" title="${esc(eleveNom(e))} · ${hz.debut}–${hz.fin}">
+    return `<div class="ag-carte ${baseDe(s.type)} ${m} ${barre ? 'abs' : ''}" style="left:calc(${(i * 100) / lanes}% + 1px);width:calc(${100 / lanes}% - 3px);top:${t}px;height:${h}px;--a:${esc(a?.couleur || '#94a3b8')}" title="${esc(eleveNom(e))} · ${hz.debut}–${hz.fin}">
       <div class="c-h"><i>${ICONE_TYPE[baseDe(s.type)] || '🏍️'}</i>${hz.partiel ? `${heureCourte(hz.debut)}-${heureCourte(hz.fin)}` : hz.debut}</div>
       <div class="c-n">${esc(eleveCourt(e))}${res}</div>
       ${MOTS[m] ? `<div class="c-t">${etroit ? MOTS[m].split(' ')[0] : MOTS[m]}</div>` : ''}
@@ -693,8 +695,19 @@ function blocCoteACote(s, top, height, cap, etroit) {
   }).join('');
   return `
   <div class="ag-bloc ag-cote ${etroit ? 'etroit' : ''} ${s.type}" style="top:${top + 1}px;height:${height}px" data-action="editSeance" data-id="${s.id}" title="${TYPES[s.type].label} ${s.debut}–${s.fin} · ${n}/${cap}">
-    ${cartes}${n < cap ? `<span class="c-places">+${cap - n}</span>` : ''}
+    ${cartes}${libre ? colonneAjout(s, n, lanes) : n < cap ? `<span class="c-places">+${cap - n}</span>` : ''}
   </div>`;
+}
+
+// Colonne libre : une case par demi-heure ; un clic ajoute un élève à partir de cette heure (1 h par défaut)
+function colonneAjout(s, n, lanes) {
+  const d0 = toMin(s.debut), tot = toMin(s.fin) - d0;
+  let cases = '';
+  for (let dec = 0; dec < tot; dec += 30) {
+    cases += `<div class="aj-case" style="top:${(dec / 30) * ROW_H}px;height:${ROW_H}px" data-action="ajoutCreneau" data-id="${s.id}" data-dec="${dec}" title="Ajouter un élève à ${fromMin(d0 + dec)}"><span>＋ ${heureCourte(fromMin(d0 + dec))}</span></div>`;
+  }
+  return `<div class="ag-ajout" style="left:calc(${(n * 100) / lanes}% + 1px);width:calc(${100 / lanes}% - 3px)">
+    <span class="aj-places">＋ ${capDe(s) - n} place${capDe(s) - n > 1 ? 's' : ''}</span>${cases}</div>`;
 }
 
 /* ---------------------------------------------------------------------
@@ -1307,7 +1320,12 @@ function refreshDraft() {
   $('#s-errors').innerHTML = errors.map((e) => `<div class="alert bad">⛔ ${esc(e)}</div>`).join('')
     + alertesPaiementSeance(draft).map((a) => `<div class="alert warn">💶 ${esc(a)}</div>`).join('');
   const pris = errors.find((e) => e.includes("qu'une chose à la fois"));
-  $('#s-errors-haut').innerHTML = pris ? `<div class="alert bad" style="margin-bottom:10px">⛔ ${esc(pris)}</div>` : '';
+  const nv = draft.nouveau;
+  const totN = toMin(draft.fin) - toMin(draft.debut);
+  const bandeauNouveau = nv ? `<div class="alert info nouveau-creneau"><strong>＋ Nouvel élève de ${heureCourte(fromMin(toMin(draft.debut) + nv.dec))} à ${heureCourte(fromMin(toMin(draft.debut) + nv.dec + nv.dur))}</strong> : tapez son nom en bas, dans « Tapez le nom de l'élève ».
+    <div class="row" style="gap:6px;margin-top:6px">${[30, 60, 90, 120].filter((x) => nv.dec + x <= totN).map((x) => `<button class="btn small ${nv.dur === x ? 'primary' : ''}" data-action="nouveauDuree" data-dur="${x}">${fmtH(x / 60)}</button>`).join('')}
+      <button class="btn small ghost" data-action="nouveauAnnuler">Annuler</button></div></div>` : '';
+  $('#s-errors-haut').innerHTML = bandeauNouveau + (pris ? `<div class="alert bad" style="margin-bottom:10px">⛔ ${esc(pris)}</div>` : '');
 }
 
 // Places libres : élèves qui ont payé des heures pas encore posées (pour combler le créneau)
@@ -2521,9 +2539,22 @@ const ACTIONS = {
   },
   setDuree(d) { draft.fin = fromMin(toMin(draft.debut) + Number(d.d)); refreshDraft(); },
   searchEleve() { renderResults(); },
+  ajoutCreneau(d) {
+    if (GLISSE.ignorerClic) return;
+    const s = byId('seances', d.id); if (!s) return;
+    const tot = toMin(s.fin) - toMin(s.debut), dec = Math.min(+d.dec || 0, tot - 30);
+    openSeance(s);
+    draft.nouveau = { dec, dur: Math.min(60, tot - dec) };
+    refreshDraft();
+    setTimeout(() => $('#s-search')?.focus(), 50);
+  },
+  nouveauDuree(d) { if (draft.nouveau) { draft.nouveau.dur = +d.dur; refreshDraft(); } },
+  nouveauAnnuler() { delete draft.nouveau; refreshDraft(); },
   pickEleve(d) {
     if (draft.eleves.length >= capDe(draft)) return toast('Complet', true);
-    draft.eleves.push({ eleveId: d.id, statut: 'prevu' });
+    const nv = draft.nouveau; delete draft.nouveau;
+    const tot = toMin(draft.fin) - toMin(draft.debut);
+    draft.eleves.push(nv && !(nv.dec === 0 && nv.dur >= tot) ? { eleveId: d.id, statut: 'prevu', dec: nv.dec, dur: nv.dur } : { eleveId: d.id, statut: 'prevu' });
     $('#s-search').value = '';
     refreshDraft();
     $('#s-search')?.focus();
@@ -2546,7 +2577,9 @@ const ACTIONS = {
     const [nom, ...rest] = q.split(/\s+/);
     openEleve({ nom: nom || '', prenom: rest.join(' '), agenceId: DB.agences[0]?.id, formation: 'A2', statut: 'en_cours' }, {
       onSaved: (e) => {
-        if (snapshot.eleves.length < capDe(snapshot)) snapshot.eleves.push({ eleveId: e.id, statut: 'prevu' });
+        const nv = snapshot.nouveau; delete snapshot.nouveau;
+        const tot = toMin(snapshot.fin) - toMin(snapshot.debut);
+        if (snapshot.eleves.length < capDe(snapshot)) snapshot.eleves.push(nv && !(nv.dec === 0 && nv.dur >= tot) ? { eleveId: e.id, statut: 'prevu', dec: nv.dec, dur: nv.dur } : { eleveId: e.id, statut: 'prevu' });
         openSeance(snapshot);
       },
       onCancel: () => openSeance(snapshot),
