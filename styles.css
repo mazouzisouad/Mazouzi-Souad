@@ -955,3 +955,41 @@ tr.sous-titre td { background: #f8fafc; font-weight: 700; font-size: 12.5px; col
 .ag-bloc-top .resume-mode { display: none; } /* « 🎯 1 prépa » : l'étiquette est déjà à côté de chaque élève */
 .ag-places { flex-shrink: 0; }
 .agenda.serre .ag-places em { display: none; } /* semaine : seulement les ronds des places */
+
+/* ---------- Vue jour : une case par élève, côte à côte (comme Google Agenda) ---------- */
+.ag-bloc.ag-cote { background: none !important; box-shadow: none; padding: 0; border: 0; overflow: visible; }
+.ag-bloc.ag-cote::before { display: none; }
+.ag-bloc.ag-cote:hover { transform: none; box-shadow: none; }
+.ag-carte { position: absolute; border-radius: 9px; padding: 4px 6px 4px 8px; overflow: hidden; font-size: 12px; line-height: 1.25;
+  box-shadow: 0 2px 0 rgba(15,23,42,.06); border: 1px solid rgba(255,255,255,.7); transition: transform .15s; }
+.ag-carte::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--a); }
+.ag-carte.plateau { background: linear-gradient(160deg, #dbeafe, #eff6ff); }
+.ag-carte.circulation { background: linear-gradient(160deg, #ede9fe, #f5f3ff); }
+.ag-carte.blanc { background: linear-gradient(160deg, #fef3c7, #fffbeb); }
+.ag-carte.prepa { box-shadow: inset 0 0 0 2px #fb923c; }
+.ag-carte.evaluation { background: linear-gradient(160deg, #dcfce7, #f0fdf4); }
+.ag-carte.abs { opacity: .55; }
+.ag-carte.abs .c-n { text-decoration: line-through; color: var(--bad); }
+.ag-bloc.ag-cote:hover .ag-carte { transform: translateY(-1px); }
+.ag-carte .c-h { display: flex; align-items: center; gap: 3px; font-weight: 800; font-size: 11px; color: #334155; white-space: nowrap; overflow: hidden; }
+.ag-carte .c-h i { font-style: normal; font-size: 10px; }
+.ag-carte .c-n { font-weight: 700; overflow-wrap: anywhere; margin-top: 1px; }
+.ag-carte .c-t { display: inline-block; margin-top: 2px; font-size: 10.5px; font-weight: 800; border-radius: 6px; padding: 0 4px; background: rgba(255,255,255,.85); }
+.ag-carte.prepa .c-t { color: #c2410c; } .ag-carte.evaluation .c-t { color: #166534; } .ag-carte.blanc .c-t { color: #92400e; }
+.ag-bloc.ag-cote .c-places { position: absolute; right: 2px; bottom: 2px; font-size: 10px; font-weight: 800; color: #b45309; background: #fff7ed; border-radius: 999px; padding: 0 5px; }
+
+/* Vue semaine : cases étroites, les noms passent à la ligne (comme Google Agenda) */
+.ag-bloc.ag-cote.etroit .ag-carte { padding: 2px 2px 2px 5px; font-size: 10.5px; line-height: 1.15; border-radius: 6px; }
+.ag-bloc.ag-cote.etroit .ag-carte::before { width: 3px; }
+.ag-bloc.ag-cote.etroit .c-h { font-size: 9.5px; }
+.ag-bloc.ag-cote.etroit .c-h i { display: none; }
+.ag-bloc.ag-cote.etroit .c-n { font-weight: 700; word-break: break-word; overflow-wrap: anywhere; hyphens: auto; }
+.ag-bloc.ag-cote.etroit .c-t { font-size: 10px; padding: 0 2px; }
+.ag-bloc.ag-cote.etroit .c-places { font-size: 9px; padding: 0 3px; }
+/* cases très étroites (semaine, tous les moniteurs) : seulement le nom et l'icône */
+.ag-bloc.ag-cote.etroit .ag-carte { container-type: inline-size; }
+@container (max-width: 34px) {
+  .ag-carte .c-h { display: none; }
+  .ag-carte .c-n { font-size: 10px; line-height: 1.1; word-break: break-all; }
+  .ag-carte .c-t { background: none; padding: 0; }
+}

@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-28 · connexion de secours si Safari bloque';
+const APP_VERSION = '2026-11-28 · élèves côte à côte dans le planning (jour et semaine)';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -582,6 +582,9 @@ function agendaGrid(cols) {
   times.push(`<div class="ag-time fin">${pad(Math.floor(hMax / 60))}h${hMax % 60 ? pad(hMax % 60) : ''}</div>`); // repère de fin (ex. 20h)
 
   const groupes = cols.some((c) => c.jour);
+  // écran assez large (iPad, ordinateur) : chaque élève a sa propre case, côte à côte (comme Google Agenda),
+  // en vue jour comme en vue semaine (cases plus étroites, noms coupés sur plusieurs lignes)
+  const coteACote = window.innerWidth >= 700 ? (groupes || cols.length > 3 ? 'etroit' : 'large') : '';
   return `
   <div class="agenda-wrap" id="agenda">
     <div class="agenda ${groupes ? 'groupes' : ''} ${cols.length > 3 ? 'serre' : ''}" style="--cols:${cols.length}">
@@ -607,7 +610,7 @@ function agendaGrid(cols) {
         }
         const blocks = DB.seances
           .filter((s) => s.date === c.date && s.moniteurId === c.mon)
-          .map((s) => blocSeance(s, hMin)).join('');
+          .map((s) => blocSeance(s, hMin, coteACote)).join('');
         const line = c.date === todayISO() && nowMin >= hMin && nowMin <= hMax
           ? `<div class="ag-now ${cols.findIndex((x) => x.date === c.date) === ci ? 'moto' : ''}" style="top:${((nowMin - hMin) / 30) * ROW_H}px"></div>` : '';
         return `<div class="ag-col ${c.debutJour ? 'debut-jour' : ''} ${c.today ? 'today' : ''}" style="height:${H}px" data-date="${c.date}" data-mon="${c.mon}">${slots}${c.mon ? blocsAbsence(c, hMin, hMax) : ''}${blocks}${line}</div>`;
@@ -636,11 +639,12 @@ function choixHoraire(p, i) {
   }
   return `<select class="horaire-el ${hz.partiel ? 'partiel' : ''}" data-on-change="setHoraireEleve" data-i="${i}" aria-label="Horaire de l'élève">${opts.map(([v, l]) => `<option value="${v}" ${v === cle ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
 }
-function blocSeance(s, hMin) {
+function blocSeance(s, hMin, coteACote) {
   const top = ((toMin(s.debut) - hMin) / 30) * ROW_H;
   const height = Math.max(ROW_H, ((toMin(s.fin) - toMin(s.debut)) / 30) * ROW_H) - 2;
   const cap = capDe(s);
   const n = s.eleves.length;
+  if (coteACote && categorie(s.type) === 'lecon' && n) return blocCoteACote(s, top, height, cap, coteACote === 'etroit');
   const noms = s.eleves.map((p) => {
     const e = byId('eleves', p.eleveId);
     const a = agenceDe(e);
@@ -668,6 +672,30 @@ function blocSeance(s, hMin) {
   </div>`;
 }
 
+// Une case par élève, côte à côte ; chaque case a la hauteur de SON horaire (ex. évaluation d'1 h dans un plateau de 2 h)
+function blocCoteACote(s, top, height, cap, etroit) {
+  const n = s.eleves.length;
+  const MOTS = { blanc: '📝 Ex. blanc', prepa: '🎯 Prépa', evaluation: '🧭 Éval' };
+  const cartes = s.eleves.map((p, i) => {
+    const e = byId('eleves', p.eleveId);
+    const a = agenceDe(e);
+    const hz = horaireP(s, p);
+    const m = modeP(s, p);
+    const barre = p.statut === 'absent' || p.statut === 'excuse';
+    const res = ['valide'].includes(p.statut) ? ' ✅' : ['nonvalide'].includes(p.statut) ? ' ❌' : '';
+    const t = ((toMin(hz.debut) - toMin(s.debut)) / 30) * ROW_H;
+    const h = Math.max(ROW_H, ((toMin(hz.fin) - toMin(hz.debut)) / 30) * ROW_H) - 3;
+    return `<div class="ag-carte ${baseDe(s.type)} ${m} ${barre ? 'abs' : ''}" style="left:calc(${(i * 100) / n}% + 1px);width:calc(${100 / n}% - 3px);top:${t}px;height:${h}px;--a:${esc(a?.couleur || '#94a3b8')}" title="${esc(eleveNom(e))} · ${hz.debut}–${hz.fin}">
+      <div class="c-h"><i>${ICONE_TYPE[baseDe(s.type)] || '🏍️'}</i>${hz.partiel ? `${heureCourte(hz.debut)}-${heureCourte(hz.fin)}` : hz.debut}</div>
+      <div class="c-n">${esc(eleveCourt(e))}${res}</div>
+      ${MOTS[m] ? `<div class="c-t">${etroit ? MOTS[m].split(' ')[0] : MOTS[m]}</div>` : ''}
+    </div>`;
+  }).join('');
+  return `
+  <div class="ag-bloc ag-cote ${etroit ? 'etroit' : ''} ${s.type}" style="top:${top + 1}px;height:${height}px" data-action="editSeance" data-id="${s.id}" title="${TYPES[s.type].label} ${s.debut}–${s.fin} · ${n}/${cap}">
+    ${cartes}${n < cap ? `<span class="c-places">+${cap - n}</span>` : ''}
+  </div>`;
+}
 
 /* ---------------------------------------------------------------------
    DÉPLACER UNE LEÇON EN LA FAISANT GLISSER (souris, doigt, stylet)
