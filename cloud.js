@@ -142,7 +142,21 @@ const Cloud = {
     throw Object.assign(new Error('permission-denied'), { code: 'permission-denied' });
   },
 
-  login(email, password) { return this.auth.signInWithEmailAndPassword(email.trim(), password); },
+  // Connexion. Si Safari bloque son stockage (la connexion ne répond pas), on réessaie
+  // sans mémoriser la session sur l'appareil : il faudra se reconnecter à la prochaine ouverture.
+  async login(email, password) {
+    const essai = (ms) => Promise.race([
+      this.auth.signInWithEmailAndPassword(email.trim(), password),
+      new Promise((_, rej) => setTimeout(() => rej(Object.assign(new Error('délai dépassé'), { code: 'delai' })), ms)),
+    ]);
+    try { return await essai(8000); }
+    catch (e) {
+      if (e.code !== 'delai') throw e;
+      try { await Promise.race([this.auth.setPersistence(firebase.auth.Auth.Persistence.NONE), new Promise((r) => setTimeout(r, 2000))]); } catch (err) { /* */ }
+      this.sansMemoire = true;
+      return essai(12000);
+    }
+  },
   // Déconnexion : on efface aussi les données gardées sur l'appareil (confidentialité)
   async logout() {
     this.deconnexion = true; // plus aucune écriture locale à partir d'ici

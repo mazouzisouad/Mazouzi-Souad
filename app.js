@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-28 · connexion : message si elle ne répond pas';
+const APP_VERSION = '2026-11-28 · connexion de secours si Safari bloque';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -2835,15 +2835,12 @@ const ACTIONS = {
     const bouton = el || $('[data-action=cloudLogin]');
     if (bouton) { bouton.disabled = true; bouton.textContent = '⏳ Connexion…'; }
     // si rien ne se passe (Safari bloqué, réseau coupé), on le dit au lieu de laisser un bouton muet
-    const lent = setTimeout(() => {
-      if (Cloud.user) return;
-      Cloud.error = "La connexion ne répond pas. Vérifiez internet, puis fermez tous les onglets Go Moto et rouvrez l'appli (sur iPad : fermez Safari complètement).";
-      render();
-    }, 15000);
+    const lent = setTimeout(() => { if (bouton && bouton.isConnected && !Cloud.user) bouton.textContent = '⏳ Connexion… (2e essai)'; }, 8500);
     try { await Cloud.login(email, password); }
     catch (e) {
       const code = String((e && e.code) || '');
-      Cloud.error = /network/.test(code) ? "Pas de connexion internet : réessayez quand le réseau revient."
+      Cloud.error = code === 'delai' ? "La connexion ne répond pas. Vérifiez internet, puis fermez tous les onglets Go Moto et fermez Safari complètement avant de rouvrir l'appli (pas en navigation privée)."
+        : /network/.test(code) ? "Pas de connexion internet : réessayez quand le réseau revient."
         : /too-many-requests/.test(code) ? "Trop d'essais : attendez quelques minutes ou touchez « Mot de passe oublié ? »."
         : 'E-mail ou mot de passe incorrect.';
       render();
