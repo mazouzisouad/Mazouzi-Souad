@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-24 · prix des forfaits par auto-école';
+const APP_VERSION = '2026-11-28 · nom de l’élève cliquable dans une leçon';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -434,6 +434,7 @@ const UI = {
 };
 
 function go(view, opts = {}) {
+  if (!('retourPlanning' in opts)) UI.retourPlanning = false;
   UI.view = view;
   Object.assign(UI, opts);
   $$('#tabs button').forEach((b) => b.classList.toggle('active', b.dataset.view === view));
@@ -1256,7 +1257,7 @@ function refreshDraft() {
     const a = agenceDe(e);
     return `<div class="chip-row el-seance">
       <div class="es-tete"><span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}"></span>
-        <span class="name">${esc(eleveNom(e))} <span class="muted small">${esc(a?.nom || '')}</span></span>
+        <span class="name"><button type="button" class="nom-lien" data-action="ficheDepuisSeance" data-eleve="${p.eleveId}" title="Ouvrir la fiche de l'élève">${esc(eleveNom(e))}</button> <span class="muted small">${esc(a?.nom || '')}</span></span>
         <button class="btn small ghost es-suppr" data-action="removeEleve" data-i="${i}" title="Retirer de la leçon" aria-label="Retirer ${esc(eleveNom(e))} de la leçon">🗑️</button></div>
       <div class="es-actions">
       ${categorie(draft.type) === 'lecon' ? `<span class="mode-el">${Object.entries(MODES_ELEVE).map(([k, l]) => `<button class="${modeP(draft, p) === k ? 'on' : ''} ${k}" data-action="setModeEleve" data-i="${i}" data-m="${k}" title="${k === 'lecon' ? 'Leçon normale' : k === 'blanc' ? 'Examen blanc pendant la leçon' : k === 'evaluation' ? 'Évaluation de départ (hors forfait)' : 'Préparation à l\'examen'}">${l}</button>`).join('')}</span>` : ''}
@@ -1529,7 +1530,7 @@ function viewFiche(id) {
 
   return `
   <div class="toolbar">
-    <button class="btn" data-action="backEleves">◀ Élèves</button>
+    <button class="btn" data-action="backEleves">${UI.retourPlanning ? '◀ Planning' : '◀ Élèves'}</button>
   </div>
   <div class="card">
     <div class="fiche-head">
@@ -2444,6 +2445,18 @@ const ACTIONS = {
     }
     ACTIONS.openSuivi({ eleve: d.eleve, seance: draft.id }, null, { stopPropagation() {} });
   },
+  ficheDepuisSeance(d) {
+    if (estMoniteur()) return;
+    readDraft();
+    const avant = draft.id ? byId('seances', draft.id) : null;
+    const change = !avant || JSON.stringify(avant) !== JSON.stringify(draft);
+    if (change && (draft.eleves.length || avant) && confirm('Enregistrer les changements de cette leçon avant d\'ouvrir la fiche de l\'élève ?')) {
+      ACTIONS.saveSeance();
+      if ($('#seance-form') || document.querySelector('.modal [data-action=saveSeance]')) return; // pas enregistrée (conflit) : on reste sur la leçon
+    }
+    closeModal();
+    go('eleves', { eleveOuvert: d.eleve, ongletFiche: 'lecons', retourPlanning: true });
+  },
   saveSeanceMoniteur() {
     const s = byId('seances', draft.id);
     if (!s) return closeModal();
@@ -2595,7 +2608,11 @@ const ACTIONS = {
   openFiche(d) { go('eleves', { eleveOuvert: d.id, ongletFiche: 'lecons' }); },
   openFicheCompte(d) { go('eleves', { eleveOuvert: d.id, ongletFiche: 'compte' }); },
   ongletFiche(d) { UI.ongletFiche = d.o; render(); },
-  backEleves() { UI.eleveOuvert = null; render(); },
+  backEleves() {
+    UI.eleveOuvert = null;
+    if (UI.retourPlanning) { UI.retourPlanning = false; return go('planning'); }
+    render();
+  },
   deleteEleve(d) {
     const id = d.id;
     if (DB.factures.some((f) => f.eleveId === id) || DB.paiements.some((p) => p.eleveId === id) || DB.contrats.some((c) => c.eleveId === id && c.statut === 'signe')) {
