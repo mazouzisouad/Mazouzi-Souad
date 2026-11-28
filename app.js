@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-28 · import Google Agenda : une auto-école pour tout le fichier';
+const APP_VERSION = '2026-11-28 · planning jusqu’à 20h bien visible';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -569,7 +569,7 @@ function viewPlanning() {
 }
 
 function agendaGrid(cols) {
-  ROW_H = cols.some((c) => c.jour) ? 34 : 24;
+  ROW_H = cols.some((c) => c.jour) ? 34 : 30; // hauteur d'une demi-heure (assez pour lire les élèves d'une leçon de 2 h)
   const hMin = toMin(DB.settings.heureMin);
   const hMax = toMin(DB.settings.heureMax);
   const nSlots = Math.ceil((hMax - hMin) / 30);
@@ -579,11 +579,12 @@ function agendaGrid(cols) {
 
   const times = [];
   for (let t = hMin; t < hMax; t += 60) times.push(`<div class="ag-time" style="height:${ROW_H * 2}px">${pad(Math.floor(t / 60))}h</div>`);
+  times.push(`<div class="ag-time fin">${pad(Math.floor(hMax / 60))}h${hMax % 60 ? pad(hMax % 60) : ''}</div>`); // repère de fin (ex. 20h)
 
   const groupes = cols.some((c) => c.jour);
   return `
   <div class="agenda-wrap" id="agenda">
-    <div class="agenda ${groupes ? 'groupes' : ''}" style="--cols:${cols.length}">
+    <div class="agenda ${groupes ? 'groupes' : ''} ${cols.length > 3 ? 'serre' : ''}" style="--cols:${cols.length}">
       ${groupes ? `<div class="ag-corner"></div>${cols.filter((c) => c.debutJour).map((c) => `<div class="ag-dayhead ${c.today ? 'today' : ''}" style="grid-column: span ${c.nbJour}"><strong class="cap">${esc(c.jour)}</strong></div>`).join('')}` : ''}
       <div class="ag-corner"></div>
       ${cols.map((c) => {

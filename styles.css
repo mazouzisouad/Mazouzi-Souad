@@ -944,3 +944,14 @@ tr.sous-titre td { background: #f8fafc; font-weight: 700; font-size: 12.5px; col
 /* Nom de l'élève cliquable dans la fenêtre d'une leçon */
 .nom-lien { border: 0; background: none; padding: 0; font: inherit; font-weight: 700; color: var(--ink); cursor: pointer; text-decoration: underline; text-decoration-color: #cbd5e1; text-underline-offset: 3px; text-align: left; }
 .nom-lien:hover, .nom-lien:focus-visible { color: var(--primary); text-decoration-color: currentColor; }
+
+/* Repère de fin de journée (ex. 20h) sous la dernière heure du planning */
+.ag-time.fin { height: 18px; }
+.ag-col { margin-bottom: 18px; }
+/* En-tête d'une leçon sur une seule ligne : l'heure reste toujours visible */
+.ag-bloc-top { flex-wrap: nowrap; min-width: 0; }
+.ag-type { flex-wrap: nowrap; white-space: nowrap; min-width: 0; overflow: hidden; }
+.ag-type > span:not(.resume-mode) { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.ag-bloc-top .resume-mode { display: none; } /* « 🎯 1 prépa » : l'étiquette est déjà à côté de chaque élève */
+.ag-places { flex-shrink: 0; }
+.agenda.serre .ag-places em { display: none; } /* semaine : seulement les ronds des places */
