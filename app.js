@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-28 · ajouter un élève sur un créneau à droite de la leçon';
+const APP_VERSION = '2026-11-28 · fenêtre de leçon simplifiée';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -1225,9 +1225,7 @@ function openSeance(seance) {
       </div>
       <div id="s-errors-haut"></div>
       <div class="lbl">Type</div>
-      <div class="seg big types" id="s-type">
-        ${Object.entries(TYPES).map(([k, t]) => `<button data-action="setType" data-t="${k}" class="${draft.type === k ? 'on' : ''} ${k}">${t.exam ? '🎓 ' : t.blanc ? '📝 ' : ''}${t.label}<small>${t.exam ? 'accompagnement · ' : t.blanc ? 'sans faute éliminatoire · ' : ''}max ${capDe({ type: k })}</small></button>`).join('')}
-      </div>
+      <div class="types-simple" id="s-type"></div>
       <div id="s-lieu-wrap">
         <div class="row" style="align-items:flex-end;gap:12px">
           <div style="flex:0 0 170px"><div class="lbl">Places réservées</div>
@@ -1250,7 +1248,7 @@ function openSeance(seance) {
       <div id="s-eleves" class="chips"></div>
       <div id="s-suggest" style="margin-top:8px"></div>
       <div id="s-picker">
-        <input id="s-search" placeholder="🔍 Tapez le nom de l'élève…" autocomplete="off" data-on-input="searchEleve">
+        <input id="s-search" placeholder="＋ Ajouter un élève : tapez son nom…" autocomplete="off" data-on-input="searchEleve">
         <div id="s-results" class="results"></div>
       </div>
       <div id="s-errors" style="margin-top:10px"></div>`,
@@ -1284,7 +1282,14 @@ function refreshDraft() {
   const cap = capDe(draft);
   const n = draft.eleves.length;
   const dur = toMin(draft.fin) - toMin(draft.debut);
-  $$('#s-type button').forEach((b) => b.classList.toggle('on', b.dataset.t === draft.type));
+  const ex = isExam(draft.type);
+  $('#s-type').innerHTML = `<div class="seg">
+      <button data-action="setType" data-t="plateau" class="${draft.type === 'plateau' ? 'on' : ''}">🅿️ Plateau</button>
+      <button data-action="setType" data-t="circulation" class="${draft.type === 'circulation' ? 'on' : ''}">🛣️ Circulation</button>
+      ${isBlanc(draft.type) ? `<button data-action="setType" data-t="${draft.type}" class="on">📝 ${TYPES[draft.type].label}</button>` : ''}
+      <button data-action="setType" data-t="${ex ? draft.type : 'exam_plateau'}" class="${ex ? 'on' : ''}">🎓 Examen</button>
+    </div>
+    ${ex ? `<div class="seg petit"><button data-action="setType" data-t="exam_plateau" class="${draft.type === 'exam_plateau' ? 'on' : ''}">Plateau</button><button data-action="setType" data-t="exam_circulation" class="${draft.type === 'exam_circulation' ? 'on' : ''}">Circulation</button></div>` : ''}`;
   $('#s-lieu-wrap').hidden = !isExam(draft.type);
   if (isExam(draft.type)) $('#s-rdvh').placeholder = heureRdv({ ...draft, rdvHeure: '' });
   if ($('#s-rappel')) $('#s-rappel').hidden = !isExam(draft.type);
@@ -1297,18 +1302,21 @@ function refreshDraft() {
   $('#s-eleves').innerHTML = n ? draft.eleves.map((p, i) => {
     const e = byId('eleves', p.eleveId);
     const a = agenceDe(e);
-    return `<div class="chip-row el-seance">
-      <div class="es-tete"><span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}"></span>
-        <span class="name"><button type="button" class="nom-lien" data-action="ficheDepuisSeance" data-eleve="${p.eleveId}" title="Ouvrir la fiche de l'élève">${esc(eleveNom(e))}</button> <span class="muted small">${esc(a?.nom || '')}</span></span>
-        <button class="btn small ghost es-suppr" data-action="removeEleve" data-i="${i}" title="Retirer de la leçon" aria-label="Retirer ${esc(eleveNom(e))} de la leçon">🗑️</button></div>
-      <div class="es-actions">
-      ${categorie(draft.type) === 'lecon' ? `<span class="mode-el">${Object.entries(MODES_ELEVE).map(([k, l]) => `<button class="${modeP(draft, p) === k ? 'on' : ''} ${k}" data-action="setModeEleve" data-i="${i}" data-m="${k}" title="${k === 'lecon' ? 'Leçon normale' : k === 'blanc' ? 'Examen blanc pendant la leçon' : k === 'evaluation' ? 'Évaluation de départ (hors forfait)' : 'Préparation à l\'examen'}">${l}</button>`).join('')}</span>` : ''}
-      ${categorie(draft.type) === 'lecon' && toMin(draft.fin) - toMin(draft.debut) > 60 ? choixHoraire(p, i) : ''}
-      <select data-on-change="setPresence" data-i="${i}" class="presence ${p.statut}">
-        ${Object.entries(statutsEleve(draft, p)).map(([k, l]) => `<option value="${k}" ${p.statut === k ? 'selected' : ''}>${l}</option>`).join('')}
-      </select>
-      ${draft.id ? `<button class="btn small" data-action="suiviDepuisSeance" data-eleve="${p.eleveId}" title="Fiche de suivi">📋 Suivi</button>` : ''}
-      </div>
+    const lecon = categorie(draft.type) === 'lecon';
+    const m = lecon ? modeP(draft, p) : '';
+    const voirHoraire = lecon && toMin(draft.fin) - toMin(draft.debut) > 60 && (m === 'evaluation' || horaireP(draft, p).partiel || p.voirHoraire);
+    return `<div class="chip-row el-simple">
+      <span class="dot" style="background:${esc(a?.couleur || '#94a3b8')}" title="${esc(a?.nom || '')}"></span>
+      <button type="button" class="nom-lien" data-action="ficheDepuisSeance" data-eleve="${p.eleveId}" title="Ouvrir la fiche de l'élève (${esc(a?.nom || '')})">${esc(eleveNom(e))}</button>
+      <span class="es-droite">
+        ${lecon ? `<select class="mode-sel ${m}" data-on-change="setModeEleveSel" data-i="${i}" aria-label="Ce que fait l'élève">${Object.entries(MODES_ELEVE).map(([k, l]) => `<option value="${k}" ${m === k ? 'selected' : ''}>${l}</option>`).join('')}</select>` : ''}
+        ${voirHoraire ? choixHoraire(p, i) : lecon && toMin(draft.fin) - toMin(draft.debut) > 60 ? `<button type="button" class="btn small ghost" data-action="voirHoraire" data-i="${i}" title="Il ne fait qu'une partie de la leçon">⏱</button>` : ''}
+        <select data-on-change="setPresence" data-i="${i}" class="presence ${p.statut}" aria-label="Présence">
+          ${Object.entries(statutsEleve(draft, p)).map(([k, l]) => `<option value="${k}" ${p.statut === k ? 'selected' : ''}>${l}</option>`).join('')}
+        </select>
+        ${draft.id ? `<button class="btn small ghost" data-action="suiviDepuisSeance" data-eleve="${p.eleveId}" title="Fiche de suivi">📋</button>` : ''}
+        <button class="btn small ghost es-suppr" data-action="removeEleve" data-i="${i}" title="Retirer de la leçon" aria-label="Retirer ${esc(eleveNom(e))} de la leçon">🗑️</button>
+      </span>
     </div>`;
   }).join('') : '<div class="muted small">Aucun élève pour l\'instant.</div>';
 
@@ -1318,11 +1326,13 @@ function refreshDraft() {
 
   const { errors } = seanceConflicts(draft);
   $('#s-errors').innerHTML = errors.map((e) => `<div class="alert bad">⛔ ${esc(e)}</div>`).join('')
-    + alertesPaiementSeance(draft).map((a) => `<div class="alert warn">💶 ${esc(a)}</div>`).join('');
+    + (() => { const al = alertesPaiementSeance(draft); if (!al.length) return '';
+      return al.length === 1 ? `<div class="alert warn">💶 ${esc(al[0])}</div>`
+        : `<details class="alert warn paie-resume"><summary>💶 ${al.length} élèves ont des heures posées non payées</summary>${al.map((a) => `<div>${esc(a)}</div>`).join('')}</details>`; })();
   const pris = errors.find((e) => e.includes("qu'une chose à la fois"));
   const nv = draft.nouveau;
   const totN = toMin(draft.fin) - toMin(draft.debut);
-  const bandeauNouveau = nv ? `<div class="alert info nouveau-creneau"><strong>＋ Nouvel élève de ${heureCourte(fromMin(toMin(draft.debut) + nv.dec))} à ${heureCourte(fromMin(toMin(draft.debut) + nv.dec + nv.dur))}</strong> : tapez son nom en bas, dans « Tapez le nom de l'élève ».
+  const bandeauNouveau = nv ? `<div class="alert info nouveau-creneau"><strong>＋ Nouvel élève de ${heureCourte(fromMin(toMin(draft.debut) + nv.dec))} à ${heureCourte(fromMin(toMin(draft.debut) + nv.dec + nv.dur))}</strong> : tapez son nom en bas, dans « ＋ Ajouter un élève ».
     <div class="row" style="gap:6px;margin-top:6px">${[30, 60, 90, 120].filter((x) => nv.dec + x <= totN).map((x) => `<button class="btn small ${nv.dur === x ? 'primary' : ''}" data-action="nouveauDuree" data-dur="${x}">${fmtH(x / 60)}</button>`).join('')}
       <button class="btn small ghost" data-action="nouveauAnnuler">Annuler</button></div></div>` : '';
   $('#s-errors-haut').innerHTML = bandeauNouveau + (pris ? `<div class="alert bad" style="margin-bottom:10px">⛔ ${esc(pris)}</div>` : '');
@@ -1342,9 +1352,9 @@ function renderSuggestions() {
     .map((e) => ({ e, c: compteEleve(e.id) }))
     .filter((x) => x.c.heuresPossibles >= Math.min(h, 1) - 0.01)
     .sort((x, y) => y.c.heuresPossibles - x.c.heuresPossibles).slice(0, 6);
-  box.innerHTML = liste.length ? `<div class="suggest"><div class="lbl">💡 ${libres} place${libres > 1 ? 's' : ''} libre${libres > 1 ? 's' : ''} : ces élèves ont des heures payées pas encore posées</div>
+  box.innerHTML = liste.length ? `<details class="suggest"><summary class="small">💡 ${liste.length} élève${liste.length > 1 ? 's ont' : ' a'} des heures payées à poser</summary>
     ${liste.map(({ e, c }) => `<button class="result" data-action="pickEleve" data-id="${e.id}"><span class="dot" style="background:${esc(agenceDe(e)?.couleur || '#94a3b8')}"></span><strong>${esc(e.nom.toUpperCase())}</strong> ${esc(e.prenom)}
-      <span class="muted small">${esc(agenceDe(e)?.nom || '')}${e.tel ? ' · ' + esc(e.tel) : ''}</span><span class="badge ok">${fmtH(c.heuresPossibles)} payée${c.heuresPossibles > 1 ? 's' : ''} à poser</span></button>`).join('')}</div>` : '';
+      <span class="muted small">${esc(agenceDe(e)?.nom || '')}${e.tel ? ' · ' + esc(e.tel) : ''}</span><span class="badge ok">${fmtH(c.heuresPossibles)} payée${c.heuresPossibles > 1 ? 's' : ''} à poser</span></button>`).join('')}</details>` : '';
 }
 function renderResults() {
   const box = $('#s-results');
@@ -1370,8 +1380,9 @@ function renderResults() {
     }
   }
   list.sort((a, b) => (tags.has(b.id) - tags.has(a.id)) || triNom(a, b));
-  if (!q && list.length > 6) list = list.slice(0, Math.max(6, [...tags.keys()].length));
+  if (!q) list = isExam(draft.type) ? list.filter((e) => tags.has(e.id)).slice(0, 8) : [];
   else list = list.slice(0, 12);
+  if (!q && !list.length) { box.innerHTML = ''; return; }
   box.innerHTML = list.map((e) => {
     const a = agenceDe(e);
     const busy = occupes.has(e.id);
@@ -2526,6 +2537,8 @@ const ACTIONS = {
     if (!el.value) { delete p.dec; delete p.dur; } else { const [dec, dur] = el.value.split('-').map(Number); p.dec = dec; p.dur = dur; }
     refreshDraft();
   },
+  setModeEleveSel(d, el) { ACTIONS.setModeEleve({ i: d.i, m: el.value }); },
+  voirHoraire(d) { const p = draft.eleves[+d.i]; if (p) { p.voirHoraire = true; refreshDraft(); } },
   setModeEleve(d) {
     const p = draft.eleves[+d.i]; if (!p) return;
     const parDefaut = 'lecon';

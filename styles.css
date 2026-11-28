@@ -1002,3 +1002,23 @@ tr.sous-titre td { background: #f8fafc; font-weight: 700; font-size: 12.5px; col
 @media (hover: hover) { .ag-ajout .aj-case:hover { background: #ffedd5; } .ag-ajout .aj-case:hover span { display: inline; } .ag-ajout:hover .aj-places { display: none; } }
 .ag-ajout .aj-case:active { background: #ffedd5; }
 .nouveau-creneau { margin-bottom: 10px; }
+/* ---------- Fenêtre d'une leçon simplifiée ---------- */
+.types-simple { display: grid; gap: 6px; margin-bottom: 4px; }
+.types-simple .seg { display: flex; flex-wrap: wrap; }
+.types-simple .seg button { flex: 1; font-size: 15px; padding: 9px 10px; }
+.types-simple .seg.petit button { font-size: 13px; padding: 6px 10px; flex: 0 1 auto; }
+.chip-row.el-simple { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 6px 8px; }
+.el-simple .nom-lien { font-size: 15px; flex: 1 1 150px; min-width: 0; }
+.el-simple .es-droite { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-left: auto; }
+.el-simple select { width: auto; padding: 5px 8px; font-size: 13px; }
+.mode-sel { font-weight: 700; border-radius: 999px; }
+.mode-sel.prepa { background: #ffedd5; color: #c2410c; border-color: #fdba74; }
+.mode-sel.blanc { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+.mode-sel.evaluation { background: #dcfce7; color: #166534; border-color: #86efac; }
+details.suggest summary { cursor: pointer; color: #b45309; font-weight: 600; padding: 4px 0; }
+#s-errors .alert.warn { font-size: 12.5px; padding: 6px 10px; }
+
+.el-simple .mode-sel { width: 150px; }
+#s-results:empty { display: none; }
+details.paie-resume summary { cursor: pointer; font-weight: 600; }
+details.paie-resume div { margin-top: 4px; font-size: 12px; }
