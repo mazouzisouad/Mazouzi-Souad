@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-28 · import Google Agenda : date du 1er import retrouvée';
+const APP_VERSION = '2026-11-28 · connexion : message si elle ne répond pas';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
@@ -2826,13 +2826,28 @@ const ACTIONS = {
     };
     reader.readAsText(file);
   },
-  async cloudLogin() {
+  async cloudLogin(d, el) {
     const form = $('#login-form');
     if (!form.reportValidity()) return;
     const { email, password } = formData(form);
     Cloud.error = '';
+    if (!Cloud.auth) { Cloud.error = "La connexion en ligne n'a pas démarré. Fermez l'appli (ou l'onglet) et rouvrez-la."; return render(); }
+    const bouton = el || $('[data-action=cloudLogin]');
+    if (bouton) { bouton.disabled = true; bouton.textContent = '⏳ Connexion…'; }
+    // si rien ne se passe (Safari bloqué, réseau coupé), on le dit au lieu de laisser un bouton muet
+    const lent = setTimeout(() => {
+      if (Cloud.user) return;
+      Cloud.error = "La connexion ne répond pas. Vérifiez internet, puis fermez tous les onglets Go Moto et rouvrez l'appli (sur iPad : fermez Safari complètement).";
+      render();
+    }, 15000);
     try { await Cloud.login(email, password); }
-    catch (e) { Cloud.error = 'E-mail ou mot de passe incorrect.'; render(); }
+    catch (e) {
+      const code = String((e && e.code) || '');
+      Cloud.error = /network/.test(code) ? "Pas de connexion internet : réessayez quand le réseau revient."
+        : /too-many-requests/.test(code) ? "Trop d'essais : attendez quelques minutes ou touchez « Mot de passe oublié ? »."
+        : 'E-mail ou mot de passe incorrect.';
+      render();
+    } finally { clearTimeout(lent); if (!Cloud.user && bouton && bouton.isConnected) { bouton.disabled = false; bouton.textContent = 'Se connecter'; } }
   },
   async cloudReset() {
     const email = $('#login-form [name=email]').value.trim();
