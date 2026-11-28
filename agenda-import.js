@@ -136,20 +136,28 @@ function nomPourCreer(titre) {
   return { nom: cap(nom), prenom: cap(prenom) };
 }
 
+// Date de la première leçon déjà importée de Google Agenda pour ce moniteur (pour refaire un import sans rien ajouter de plus ancien)
+function premierImport(monId) {
+  const dates = DB.seances.filter((s) => s.importe === 'Google Agenda' && (!monId || s.moniteurId === monId)).map((s) => s.date).sort();
+  return dates[0] || '';
+}
+
 /* ---------- Écran ---------- */
 let IMPORT_AG = { evts: [], rows: [] };
 function openImportAgenda() {
   IMPORT_AG = { evts: [], rows: [] };
   const jy = DB.moniteurs.find((m) => /jean.?yves/i.test(moniteurNom(m))) || DB.moniteurs[0];
+  const deja = premierImport(jy?.id);
   openModal({
     title: '📥 Importer un planning Google Agenda',
     wide: true,
     body: `
       <p class="small muted" style="margin-top:0">Dans Google Agenda sur ordinateur : ⚙️ Paramètres → Importer et exporter → <strong>Exporter</strong>. Déposez ici le fichier .zip téléchargé (ou le .ics qu'il contient).</p>
       <div class="form-grid">
-        <label class="field"><span>Planning de quel moniteur ? *</span><select id="ag-mon">${DB.moniteurs.map((m) => `<option value="${m.id}" ${m === jy ? 'selected' : ''}>${esc(moniteurNom(m))}</option>`).join('')}</select></label>
+        <label class="field"><span>Planning de quel moniteur ? *</span><select id="ag-mon" data-on-change="agMoniteur">${DB.moniteurs.map((m) => `<option value="${m.id}" ${m === jy ? 'selected' : ''}>${esc(moniteurNom(m))}</option>`).join('')}</select></label>
         <label class="field"><span>Fichier Google Agenda (.zip ou .ics)</span><input type="file" id="ag-fichier" accept=".zip,.ics,text/calendar,application/zip" data-on-change="agFichier"></label>
-        <label class="field"><span>À partir du</span><input type="date" id="ag-du" value="${todayISO()}" data-on-change="agFiltre"></label>
+        <label class="field"><span>À partir du</span><input type="date" id="ag-du" value="${deja || todayISO()}" data-on-change="agFiltre">
+          <small class="muted" id="ag-deja">${deja ? `Date de votre 1er import (première leçon importée le ${fmtDate(deja)})` : ''}</small></label>
         <label class="field"><span>Jusqu'au (vide = tout)</span><input type="date" id="ag-au" value="" data-on-change="agFiltre"></label>
         <label class="field"><span>Auto-école des élèves de ce fichier</span><select id="ag-ag-defaut" data-on-change="agFiltre">${DB.agences.map((a) => `<option value="${a.id}">${esc(a.nom)}</option>`).join('')}</select></label>
         <label class="field ag-forcer"><span>&nbsp;</span><span class="row" style="gap:8px;font-weight:600;color:var(--ink)"><input type="checkbox" id="ag-forcer" style="width:auto" data-on-change="agFiltre"> Tous les élèves de ce fichier sont de cette auto-école (même ceux déjà dans l'appli)</span></label>
@@ -240,6 +248,12 @@ const IMPORT_AGENDA_ACTIONS = {
     } catch (e) { $('#ag-etat').textContent = ''; toast('Lecture impossible : ' + e.message, true); }
   },
   agFiltre() { if (IMPORT_AG.evts.length) analyserRdv(); },
+  agMoniteur(d, el) {
+    const deja = premierImport(el.value);
+    $('#ag-du').value = deja || todayISO();
+    $('#ag-deja').textContent = deja ? `Date de votre 1er import (première leçon importée le ${fmtDate(deja)})` : '';
+    if (IMPORT_AG.evts.length) analyserRdv();
+  },
   agChoix(d, el) { IMPORT_AG.rows[+d.i].choix = el.value; afficherApercuAgenda(); },
   agAgence(d, el) { IMPORT_AG.rows[+d.i].agCreer = el.value; },
   agType(d, el) { const [t, m] = el.value.split('|'); Object.assign(IMPORT_AG.rows[+d.i], { type: t, mode: m || null, typeSur: true }); },

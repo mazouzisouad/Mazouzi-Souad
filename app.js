@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-28 · planning jusqu’à 20h bien visible';
+const APP_VERSION = '2026-11-28 · import Google Agenda : date du 1er import retrouvée';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },
