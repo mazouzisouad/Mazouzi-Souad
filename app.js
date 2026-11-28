@@ -8,7 +8,7 @@
 'use strict';
 
 const STORAGE_KEY = 'motoplanning_v1';
-const APP_VERSION = '2026-11-28 · nom de l’élève cliquable dans une leçon';
+const APP_VERSION = '2026-11-28 · import Google Agenda : une auto-école pour tout le fichier';
 
 const TYPES = {
   plateau: { label: 'Plateau', short: 'Plateau' },

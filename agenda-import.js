@@ -106,8 +106,9 @@ function typeDuRdv(t) {
   if (/prep/.test(n)) return { type: base, mode: 'prepa', sur: circu || plat };
   return { type: base, mode: null, sur: circu || plat };
 }
+const sansPour = (t) => String(t || '').replace(/\bpour\s+\S+/gi, ' '); // « … pour Marwane » = le moniteur
 function motsDuNom(titre) {
-  return nrm(String(titre || '').replace(/\([^)]*\)/g, ' '))
+  return nrm(sansPour(titre).replace(/\([^)]*\)/g, ' '))
     .replace(/[^a-z' -]/g, ' ').split(/[\s'-]+/)
     .filter((w) => w.length >= 2 && !MOTS_OUTILS.has(w));
 }
@@ -125,7 +126,7 @@ function trouverEleves(mots, agence) {
 }
 // « Bazgua sofian » → nom Bazgua, prénom Sofian (le mot en MAJUSCULES est le nom s'il y en a un)
 function nomPourCreer(titre) {
-  const brut = String(titre || '').replace(/\([^)]*\)/g, ' ').split(/\s+/).filter((w) => w.length >= 2 && !MOTS_OUTILS.has(nrm(w).replace(/[^a-z']/g, '')) && /\p{L}/u.test(w));
+  const brut = sansPour(titre).replace(/\([^)]*\)/g, ' ').split(/\s+/).filter((w) => w.length >= 2 && !MOTS_OUTILS.has(nrm(w).replace(/[^a-z']/g, '')) && /\p{L}/u.test(w));
   if (!brut.length) return null;
   const maj = brut.filter((w) => w === w.toUpperCase());
   let nom, prenom;
@@ -150,8 +151,10 @@ function openImportAgenda() {
         <label class="field"><span>Fichier Google Agenda (.zip ou .ics)</span><input type="file" id="ag-fichier" accept=".zip,.ics,text/calendar,application/zip" data-on-change="agFichier"></label>
         <label class="field"><span>À partir du</span><input type="date" id="ag-du" value="${todayISO()}" data-on-change="agFiltre"></label>
         <label class="field"><span>Jusqu'au (vide = tout)</span><input type="date" id="ag-au" value="" data-on-change="agFiltre"></label>
-        <label class="field"><span>Auto-école des élèves inconnus (si le titre ne la dit pas)</span><select id="ag-ag-defaut" data-on-change="agFiltre">${DB.agences.map((a) => `<option value="${a.id}">${esc(a.nom)}</option>`).join('')}</select></label>
+        <label class="field"><span>Auto-école des élèves de ce fichier</span><select id="ag-ag-defaut" data-on-change="agFiltre">${DB.agences.map((a) => `<option value="${a.id}">${esc(a.nom)}</option>`).join('')}</select></label>
+        <label class="field ag-forcer"><span>&nbsp;</span><span class="row" style="gap:8px;font-weight:600;color:var(--ink)"><input type="checkbox" id="ag-forcer" style="width:auto" data-on-change="agFiltre"> Tous les élèves de ce fichier sont de cette auto-école (même ceux déjà dans l'appli)</span></label>
       </div>
+      <p class="small muted" style="margin:6px 0 0">Case cochée : par exemple l'agenda violet = My auto école Tremblay. Les élèves déjà dans l'appli y sont rangés aussi. Case décochée : l'auto-école ne sert qu'aux nouveaux élèves dont le titre ne dit pas l'auto-école.</p>
       <div class="small" id="ag-etat" style="margin-top:8px"></div>
       <div id="ag-apercu" style="margin-top:10px"></div>`,
     foot: `<button class="btn" data-action="closeModal">Annuler</button><button class="btn primary" id="ag-ok" data-action="agValider" disabled>Importer</button>`,
@@ -160,6 +163,7 @@ function openImportAgenda() {
 function analyserRdv() {
   const du = $('#ag-du').value || '0000', au = $('#ag-au').value || '9999';
   const agDefaut = byId('agences', $('#ag-ag-defaut').value);
+  const forcer = $('#ag-forcer')?.checked;
   const ancien = new Map(IMPORT_AG.rows.map((r) => [r.cle, r]));
   const rows = [];
   let ignores = 0, repetes = 0, horsPeriode = 0;
@@ -183,11 +187,12 @@ function analyserRdv() {
       agence: agMots, cands, creer,
       // élève inconnu : on propose de le créer seulement si le titre parle d'une leçon (sinon : « Rdv garage »…)
       choix: prec ? prec.choix : cands.length === 1 ? cands[0].id : (creer && mots.length && ty.sur ? 'creer' : 'ignorer'),
-      agCreer: prec ? prec.agCreer : (agMots || agDefaut)?.id || '',
+      agCreer: forcer ? agDefaut?.id || '' : prec ? prec.agCreer : (agMots || agDefaut)?.id || '',
     });
   }
   rows.sort((a, b) => (a.date + a.debut).localeCompare(b.date + b.debut));
   IMPORT_AG.rows = rows;
+  IMPORT_AG.forcer = forcer ? agDefaut?.id || '' : '';
   IMPORT_AG.stats = { ignores, repetes, horsPeriode };
   afficherApercuAgenda();
 }
@@ -211,7 +216,8 @@ function afficherApercuAgenda() {
           <option value="ignorer" ${r.choix === 'ignorer' ? 'selected' : ''}>✖ Ne pas importer</option>
           ${r.cands.length ? '' : `<optgroup label="Choisir un élève">${DB.eleves.slice().sort(triNom).map((e) => `<option value="${e.id}">${esc(e.nom.toUpperCase())} ${esc(e.prenom)}</option>`).join('')}</optgroup>`}
         </select></td>
-        <td>${r.choix === 'creer' ? `<select data-on-change="agAgence" data-i="${i}">${DB.agences.map((a) => `<option value="${a.id}" ${r.agCreer === a.id ? 'selected' : ''}>${esc(a.nom)}</option>`).join('')}</select>` : '<span class="muted small">—</span>'}</td>
+        <td>${r.choix === 'creer' ? `<select data-on-change="agAgence" data-i="${i}">${DB.agences.map((a) => `<option value="${a.id}" ${r.agCreer === a.id ? 'selected' : ''}>${esc(a.nom)}</option>`).join('')}</select>`
+          : IMPORT_AG.forcer && r.choix !== 'ignorer' && byId('eleves', r.choix)?.agenceId !== IMPORT_AG.forcer ? `<span class="badge info">→ ${esc(byId('agences', IMPORT_AG.forcer)?.nom || '')}</span>` : '<span class="muted small">—</span>'}</td>
         <td><select data-on-change="agType" data-i="${i}" class="${r.typeSur ? '' : 'a-verifier'}" title="${r.typeSur ? '' : 'Type non écrit dans le titre : à vérifier'}">${optType(r)}</select></td>
       </tr>`).join('')}</tbody></table></div>
     <p class="small muted">Les rendez-vous qui ont la même heure et le même type deviennent une seule leçon avec plusieurs élèves. Les élèves déjà présents dans une leçon identique ne sont pas ajoutés deux fois. Rendez-vous passés : élève « présent » (ou « absent » si c'est écrit) ; à venir : « prévu ».</p>` : (IMPORT_AG.evts.length ? '<p class="muted">Aucun rendez-vous d\'élève dans cette période.</p>' : '');
@@ -241,6 +247,7 @@ const IMPORT_AGENDA_ACTIONS = {
     const monId = $('#ag-mon').value, auj = todayISO();
     const crees = new Map(); // même nom créé une seule fois
     let nbCrees = 0, nbRdv = 0, nbLecons = 0;
+    const deplaces = new Set();
     for (const r of IMPORT_AG.rows) {
       if (r.choix === 'ignorer') continue;
       let eid = r.choix;
@@ -251,6 +258,9 @@ const IMPORT_AGENDA_ACTIONS = {
           DB.eleves.push(e); crees.set(k, e.id); nbCrees++;
         }
         eid = crees.get(k);
+      } else if (IMPORT_AG.forcer) {
+        const e = byId('eleves', eid);
+        if (e && e.agenceId !== IMPORT_AG.forcer) { e.agenceId = IMPORT_AG.forcer; deplaces.add(e.id); }
       }
       // leçon identique (même moniteur, jour, horaire, type) : on y ajoute l'élève
       let s = DB.seances.find((x) => x.moniteurId === monId && x.date === r.date && x.debut === r.debut && x.fin === r.fin && x.type === r.type);
@@ -262,7 +272,7 @@ const IMPORT_AGENDA_ACTIONS = {
       s.eleves.push(p); nbRdv++;
     }
     save(); closeModal(); render();
-    toast(`✅ ${nbRdv} rendez-vous importés en ${nbLecons} leçon${nbLecons > 1 ? 's' : ''}${nbCrees ? ` · ${nbCrees} élève${nbCrees > 1 ? 's' : ''} créé${nbCrees > 1 ? 's' : ''}` : ''}`);
+    toast(`✅ ${nbRdv} rendez-vous importés en ${nbLecons} leçon${nbLecons > 1 ? 's' : ''}${nbCrees ? ` · ${nbCrees} élève${nbCrees > 1 ? 's' : ''} créé${nbCrees > 1 ? 's' : ''}` : ''}${deplaces.size ? ` · ${deplaces.size} élève${deplaces.size > 1 ? 's' : ''} rangé${deplaces.size > 1 ? 's' : ''} à ${byId('agences', IMPORT_AG.forcer)?.nom || ''}` : ''}`);
   },
 };
 
